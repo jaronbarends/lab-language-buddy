@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import * as azure from '@/lib/voice/azure';
 import * as elevenlabs from '@/lib/voice/elevenlabs';
 import * as google from '@/lib/voice/google';
 
 // Deepgram is STT-only (no Norwegian TTS voice), so it's not in this map.
-const ttsProviders = { elevenlabs, google };
+const ttsProviders = { azure, elevenlabs, google };
 
 export async function POST(request: NextRequest) {
   const { text }: { text?: string } = await request.json();

@@ -4,6 +4,7 @@ import * as deepgram from '@/lib/voice/deepgram';
 import * as elevenlabs from '@/lib/voice/elevenlabs';
 import * as google from '@/lib/voice/google';
 
+// Azure isn't here: its STT REST endpoint doesn't accept our WebM/Opus recordings (see azure.ts).
 const sttProviders = { deepgram, elevenlabs, google };
 
 export async function POST(request: NextRequest) {

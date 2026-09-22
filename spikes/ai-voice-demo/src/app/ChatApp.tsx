@@ -28,7 +28,6 @@ function getFileExtension(mimeType: string): string {
 // Keeps whitespace intact (capturing group) so the rendered text still
 // matches the original spacing/punctuation.
 function renderHighlightedText(text: string, spokenWordCount: number) {
-  const currentWordIndex = spokenWordCount - 1;
   let wordIndex = 0;
 
   return text.split(/(\s+)/).map((token, tokenIndex) => {
@@ -37,13 +36,13 @@ function renderHighlightedText(text: string, spokenWordCount: number) {
       return token;
     }
 
-    const wordIsCurrent = wordIndex === currentWordIndex;
+    const wordHasBeenSpoken = wordIndex < spokenWordCount;
     wordIndex += 1;
 
     return (
       <span
         key={tokenIndex}
-        style={{ backgroundColor: wordIsCurrent ? '#fff3cd' : 'transparent' }}
+        style={{ backgroundColor: wordHasBeenSpoken ? '#fff3cd' : 'transparent' }}
       >
         {token}
       </span>

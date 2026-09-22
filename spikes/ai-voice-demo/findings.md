@@ -87,14 +87,89 @@ pricing-pagina's van Google/Azure dynamische calculators zijn die niet goed te s
 Behandel dit als eerste inschatting, niet als leverancierscontract — controleer bij een
 definitieve keuze de actuele officiële pricing.
 
+## Live/interactieve variant (uitgezocht, nog niet gebouwd)
+
+De huidige app is strikt stapsgewijs: AI spreekt volledige tekst uit, dan klik je op
+"Spreek", dan wordt je hele opname in één keer getranscribeerd. Uitgezocht wat een
+interactievere versie zou vergen — niet gebouwd, wel een aantal concrete conclusies.
+
+### UX-mogelijkheden, twee aparte richtingen
+1. **Live weergave** (tekst tonen terwijl er nog gesproken/geluisterd wordt), met
+   knoppen die blijven bestaan zoals nu:
+   - AI-tekst die meeloopt met de voorlezing (highlight of woord-voor-woord onthulling),
+     i.p.v. in één keer verschijnen vóór het geluid start.
+   - Live, doorlopend bijgewerkte transcriptie tijdens het inspreken, met een visueel
+     onderscheid tussen voorlopige tekst en vaststaande tekst (Deepgram's
+     `is_final: false/true`).
+2. **Continue open microfoon** (geen "Spreek"/"Stop"-knoppen meer, mogelijk de AI kunnen
+   onderbreken) — een fundamenteel ander interactiemodel, bouwt voort op (1).
+
+**Voorgestelde knip voor vervolg-spikes:** eerst alleen (1) bouwen, met de knoppen intact
+— dat vermijdt de twee onbeproefde risico's van (2) hieronder volledig, omdat elke beurt
+nog steeds door een klik wordt voorafgegaan. Spike naar (2) zou daarna een uitbreiding zijn
+van dezelfde WebSocket-infrastructuur (andere trigger: VAD-events i.p.v. een stopknop), geen
+nieuwe opzet — dus geen weggegooid werk.
+
+### Architectuur voor live STT: browser praat rechtstreeks met de provider
+Twee opties onderzocht voor hoe de browser authenticeert zonder de vaste API-key bloot te
+geven:
+- **A. Browser ↔ provider direct** (aanbevolen): onze server mint een kortlevend token via
+  een gewone REST-call (Deepgram: `/auth/grant`; Azure: `issueToken`, 10 min geldig), de
+  browser opent daarmee zelf de WebSocket. Bij Deepgram: `new WebSocket(url, ['token', <token>])`
+  (browsers kunnen geen `Authorization`-header op een WebSocket zetten, vandaar het
+  subprotocol-trucje). Vereist aan onze kant alleen één extra, gewone API-route
+  (token minten) — geen WebSocket-server nodig, lokaal niet en op Vercel niet.
+- **B. Server als tussenpersoon** (browser → eigen server → provider): vereist dat onze
+  server zelf een WebSocket host. **Niet gekozen.**
+
+**Hosting-implicatie (Vercel):** met optie A is er geen enkele wijziging nodig in hoe we
+hosten — de token-route is een gewone serverless function, en de daadwerkelijke streaming
+loopt buiten Vercel om, rechtstreeks tussen browser en provider. Optie B zou wél
+infrastructuur hebben gekost: Vercel heeft pas sinds juni 2026 native WebSocket-ondersteuning
+(beta), met reële beperkingen (connecties "vastgepind" aan één functie-instantie, geen
+ingebouwde fan-out tussen instanties, Redis aanbevolen voor gedeelde state). Dat is precies
+waarom optie A de juiste keuze is voor deze schaal.
+
+Voor Deepgram specifiek geldt: STT via streaming werkt op **hetzelfde nova-2-model** met
+dezelfde taalondersteuning als de pre-recorded variant die nu al werkt — geen verrassing
+daar te verwachten.
+
+### TTS-highlighting: provider bepaalt of dit via een simpele REST-call kan
+Om AI-tekst te laten meelopen met de voorlezing, moet je weten op welk audio-tijdstip elk
+woord valt. Per huidige/overwogen TTS-provider:
+
+| Provider | Woord-timing via REST? | Bevinding |
+|---|---|---|
+| **ElevenLabs** | ✅ Bevestigd | `/v1/text-to-speech/{voice_id}/with-timestamps` geeft per-karakter start/eind-tijden terug in dezelfde call — door ElevenLabs zelf genoemd als use-case ("word-highlighting, reading trainers"). |
+| **Google (Chirp3-HD)** | ⚠️ Onbevestigd | SSML `<mark>` + `SSML_MARK`-timepoints bestaan via REST, maar niet bevestigd of dit ook werkt met Chirp3-HD specifiek (documentatie gebruikte Neural2-voorbeelden). |
+| **Azure (huidige TTS-keuze)** | ❌ Nee | Word-boundary timing bestaat alleen als event in de Speech SDK, niet in de REST-call die we nu gebruiken. Zou de hele SDK erbij vereisen. |
+| **Deepgram** | n.v.t. | Geen Noorse TTS-stem, ongeacht streaming vs. batch — de taalbeperking zit aan het stemmodel (Aura) vast, niet aan de bezorgmethode. Bevestigd: streaming- en pre-recorded-TTS-endpoints gebruiken dezelfde modelnamen/taalondersteuning. |
+
+Dit is een openstaande providerkeuze, los van de knoppen-vs-continu-vraag: ElevenLabs
+terughalen specifiek voor highlighting (heropent de prijsafweging), Google's timepoints
+uittesten met Chirp3-HD, of een geschatte/benaderde highlight bouwen die met elke provider
+werkt maar minder precies is.
+
+### Continue microfoon: twee onbeproefde risico's, eerst apart te testen
+- **Audio-unlock over de hele sessie.** De huidige Safari-fix ontgrendelt het gedeelde
+  `<audio>`-element bij *elke klik* vlak vóór het afspelen. Zonder knoppen tussen de beurten
+  is er nog maar één gesture in de hele sessie (de allereerste tik). Of die ene ontgrendeling
+  blijft gelden voor alle volgende AI-antwoorden, zonder nieuwe klik: **niet getest** —
+  direct het risico dat de net opgeloste Safari-bug terugkomt.
+- **Echo bij onderbreken (barge-in).** Als de microfoon openblijft terwijl `<audio>` de
+  AI-stem afspeelt (via de telefoonspeaker, niet een koptelefoon), kan de microfoon de eigen
+  AI-stem oppikken en transcriberen alsof de gebruiker het zei. `getUserMedia`'s
+  `echoCancellation: true` is ontworpen voor WebRTC-gesprekken tussen twee partijen, niet
+  expliciet voor "eigen `<audio>`-element speelt af terwijl eigen microfoon luistert" op
+  dezelfde pagina. Werkt dit op Safari/iPhone goed genoeg: **niet getest, niet aannemen**
+  gezien de eerdere Safari-verrassingen in deze spike. Veiligere eerste stap zonder dit
+  risico: microfoon uit zolang de AI spreekt (geen echte barge-in), knoppen wel weg.
+- Voice activity detection zelf kan **provider-side** (Deepgram's eigen
+  `speech_final`/`UtteranceEnd`-events, hergebruikt dezelfde WebSocket) of **client-side**
+  (zelf geluidsniveau meten via Web Audio API) — provider-side is minder eigen code.
+
 ## Niet onderzocht / open voor een vervolg-spike
 
-- **Live/streaming transcriptie** (tekst tonen terwijl je nog spreekt) is niet gebouwd,
-  wel uitgezocht: kan met zowel Deepgram (WebSocket naar `/v1/listen`, kortlevend token via
-  `/auth/grant`) als Azure (Speech SDK, `recognizing`/`recognized`-events, kortlevend token
-  via `issueToken`). Bij Deepgram bouw je de WebSocket zelf; bij Azure delegeer je aan hun
-  (forse) SDK. Dit is een aparte, substantiële klus — raakt de kern van de opname-flow in
-  `ChatApp.tsx`.
 - **Azure STT alsnog bruikbaar maken** zou vereisen: opnemen als WAV/PCM via Web Audio API
   (universelere fix, werkt voor elke provider die PCM verkiest) óf WebM naar Ogg remuxen
   (alleen container herverpakken, geen kant-en-klare browser-API hiervoor). Geen van beide

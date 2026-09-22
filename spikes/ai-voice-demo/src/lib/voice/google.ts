@@ -4,6 +4,14 @@ const STT_SAMPLE_RATE_HERTZ = 48000;
 // range 0.25-2.0, 1.0 is unadjusted pace
 const SPEAKING_RATE = 1;
 
+function getSttEncoding(mimeType: string): 'WEBM_OPUS' {
+  if (mimeType.startsWith('audio/webm')) {
+    return 'WEBM_OPUS';
+  }
+  // Safari records audio/mp4 (AAC), which Google STT v1 doesn't support
+  throw new Error(`Google STT can't read recordings of type "${mimeType || 'unknown'}"`);
+}
+
 function getApiKey(): string {
   const apiKey = process.env.GOOGLE_CLOUD_API_KEY;
   if (!apiKey) {
@@ -14,6 +22,7 @@ function getApiKey(): string {
 
 export async function transcribe(audio: Blob): Promise<string> {
   const apiKey = getApiKey();
+  const encoding = getSttEncoding(audio.type);
   const audioBuffer = Buffer.from(await audio.arrayBuffer());
 
   const response = await fetch(
@@ -23,7 +32,7 @@ export async function transcribe(audio: Blob): Promise<string> {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         config: {
-          encoding: 'WEBM_OPUS',
+          encoding,
           sampleRateHertz: STT_SAMPLE_RATE_HERTZ,
           languageCode: LANGUAGE_CODE,
         },

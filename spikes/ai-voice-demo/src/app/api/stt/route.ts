@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import * as deepgram from '@/lib/voice/deepgram';
 import * as elevenlabs from '@/lib/voice/elevenlabs';
 import * as google from '@/lib/voice/google';
+
+const sttProviders = { deepgram, elevenlabs, google };
 
 export async function POST(request: NextRequest) {
   const incomingForm = await request.formData();
@@ -10,7 +13,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Missing audio file' }, { status: 400 });
   }
 
-  const provider = process.env.VOICE_PROVIDER === 'google' ? google : elevenlabs;
+  const provider =
+    sttProviders[process.env.STT_PROVIDER as keyof typeof sttProviders] ?? elevenlabs;
 
   try {
     const text = await provider.transcribe(audio);

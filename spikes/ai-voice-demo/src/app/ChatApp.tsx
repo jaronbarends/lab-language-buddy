@@ -15,6 +15,19 @@ type Status =
 
 type ChatApiResponse = { interactionId: string; reply: string; correction: string | null };
 
+// Chrome records webm/opus by default, Safari mp4/aac (which Google STT can't read).
+// Ask for webm/opus explicitly; if the browser can't do it, fall back to its own default.
+const PREFERRED_RECORDING_MIME_TYPE = 'audio/webm;codecs=opus';
+
+function getFileExtension(mimeType: string): string {
+  // 'audio/webm;codecs=opus' -> 'webm'
+  return mimeType.split(';')[0].split('/')[1] ?? 'audio';
+}
+
+// ~2ms of silence; only used to unlock the shared audio element inside a user gesture
+const SILENT_AUDIO_SRC =
+  'data:audio/wav;base64,UklGRuwAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YcgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==';
+
 export default function ChatApp() {
   const [status, setStatus] = useState<Status>('idle');
   const [turns, setTurns] = useState<Turn[]>([]);
@@ -24,6 +37,24 @@ export default function ChatApp() {
   const previousInteractionIdRef = useRef<string | undefined>(undefined);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // iOS Safari only lets an audio element play if it was started inside a user gesture.
+  // The AI reply is played after several awaited fetches (gesture is gone by then), so we
+  // start one shared element with silence during the click and reuse it for every reply.
+  // Must be called synchronously from a click handler, before any await.
+  function unlockAudio() {
+    audioRef.current ??= new Audio();
+    audioRef.current.src = SILENT_AUDIO_SRC;
+    audioRef.current.play().catch(() => {
+      // unlocking is best-effort; speak() surfaces a real playback failure
+    });
+  }
+
+  function handleStartClick() {
+    unlockAudio();
+    void requestAiTurn();
+  }
 
   async function requestAiTurn(input?: string) {
     setStatus('aiThinking');
@@ -73,19 +104,32 @@ export default function ChatApp() {
     const audioBlob = await response.blob();
     const audioUrl = URL.createObjectURL(audioBlob);
 
-    await new Promise<void>((resolve) => {
-      const audio = new Audio(audioUrl);
+    const audio = audioRef.current;
+    if (!audio) {
+      throw new Error('Audio is not unlocked');
+    }
+
+    await new Promise<void>((resolve, reject) => {
       audio.onended = () => resolve();
-      void audio.play();
+      audio.onerror = () => reject(new Error('Audio playback failed'));
+      audio.src = audioUrl;
+      audio.play().catch(reject);
     });
   }
 
   async function startRecording() {
+    // this click is the gesture that precedes the next AI reply
+    unlockAudio();
     setErrorMessage(null);
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
+      const mediaRecorder = new MediaRecorder(
+        stream,
+        MediaRecorder.isTypeSupported(PREFERRED_RECORDING_MIME_TYPE)
+          ? { mimeType: PREFERRED_RECORDING_MIME_TYPE }
+          : undefined
+      );
       audioChunksRef.current = [];
 
       mediaRecorder.ondataavailable = (event) => {
@@ -115,9 +159,10 @@ export default function ChatApp() {
     setStatus('transcribing');
 
     try {
-      const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+      const mimeType = mediaRecorderRef.current?.mimeType ?? PREFERRED_RECORDING_MIME_TYPE;
+      const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
       const formData = new FormData();
-      formData.set('audio', audioBlob, 'speech.webm');
+      formData.set('audio', audioBlob, `speech.${getFileExtension(mimeType)}`);
 
       const response = await fetch('/api/stt', { method: 'POST', body: formData });
 
@@ -152,7 +197,7 @@ export default function ChatApp() {
         gesprek en de correctie.
       </p>
 
-      {status === 'idle' && <button onClick={() => requestAiTurn()}>Start gesprek</button>}
+      {status === 'idle' && <button style={{ display: 'block', margin: '10px auto', padding: '0.5em'}} onClick={handleStartClick}>Start gesprek</button>}
 
       <div style={{ margin: '1.5rem 0', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
         {turns.map((turn, index) => (
@@ -170,8 +215,8 @@ export default function ChatApp() {
         </p>
       )}
 
-      {status === 'readyToRecord' && <button onClick={startRecording}>Spreek</button>}
-      {status === 'recording' && <button onClick={stopRecording}>Stop met spreken</button>}
+      {status === 'readyToRecord' && <button onClick={startRecording} style={{ display: 'block', margin: '10px auto', padding: '0.5em'}}>Spreek</button>}
+      {status === 'recording' && <button onClick={stopRecording} style={{ display: 'block', margin: '10px auto', padding: '0.5em'}}>Stop met spreken</button>}
       {(status === 'aiThinking' || status === 'aiSpeaking' || status === 'transcribing') && (
         <p>Bezig… ({status})</p>
       )}

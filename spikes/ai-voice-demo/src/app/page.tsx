@@ -1,7 +1,8 @@
 import ChatApp from './ChatApp';
 
 export default function Page() {
-  const provider = process.env.VOICE_PROVIDER === 'google' ? 'google' : 'elevenlabs';
+  const sttProvider = process.env.STT_PROVIDER ?? 'elevenlabs';
+  const ttsProvider = process.env.TTS_PROVIDER ?? 'elevenlabs';
 
   return (
     <>
@@ -18,7 +19,7 @@ export default function Page() {
           fontSize: '0.85rem',
         }}
       >
-        provider: {provider}
+        stt: {sttProvider}<br />tts: {ttsProvider}
       </div>
       <ChatApp />
     </>

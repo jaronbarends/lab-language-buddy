@@ -141,14 +141,17 @@ woord valt. Per huidige/overwogen TTS-provider:
 | Provider | Woord-timing via REST? | Bevinding |
 |---|---|---|
 | **ElevenLabs** | ✅ Bevestigd | `/v1/text-to-speech/{voice_id}/with-timestamps` geeft per-karakter start/eind-tijden terug in dezelfde call — door ElevenLabs zelf genoemd als use-case ("word-highlighting, reading trainers"). |
-| **Google (Chirp3-HD)** | ⚠️ Onbevestigd | SSML `<mark>` + `SSML_MARK`-timepoints bestaan via REST, maar niet bevestigd of dit ook werkt met Chirp3-HD specifiek (documentatie gebruikte Neural2-voorbeelden). |
+| **Google Chirp3-HD** | ❌ Bevestigd: nee | Getest: `nb-NO-Chirp3-HD-Achernar` met `<mark>` + `enableTimePointing: ["SSML_MARK"]` geeft **HTTP 200, audio, maar een lege `timepoints`-array** — geen foutmelding, de tag wordt stil genegeerd. Klopt met de docs (Chirp3-HD ondersteunt SSML voor synchrone requests, maar alleen `<speak>`, `<say-as>`, `<p>`, `<s>`, `<phoneme>`, `<sub>`, `<break>`, `<audio>`, `<prosody>`, `<voice>` — `<mark>` zit er niet bij). |
+| **Google WaveNet** | ✅ Bevestigd | Getest: `nb-NO-Wavenet-E` met dezelfde SSML/`<mark>`-call geeft wél gevulde `timepoints` terug (4 marks, tijden tussen 0,20s–1,32s). Standard/WaveNet/Neural2-tiers ondersteunen `<mark>`, Chirp3-HD niet — dat is de knip. Stemkwaliteit is wel duidelijk ouder/minder natuurlijk dan Chirp3-HD. |
 | **Azure (huidige TTS-keuze)** | ❌ Nee | Word-boundary timing bestaat alleen als event in de Speech SDK, niet in de REST-call die we nu gebruiken. Zou de hele SDK erbij vereisen. |
 | **Deepgram** | n.v.t. | Geen Noorse TTS-stem, ongeacht streaming vs. batch — de taalbeperking zit aan het stemmodel (Aura) vast, niet aan de bezorgmethode. Bevestigd: streaming- en pre-recorded-TTS-endpoints gebruiken dezelfde modelnamen/taalondersteuning. |
 
-Dit is een openstaande providerkeuze, los van de knoppen-vs-continu-vraag: ElevenLabs
-terughalen specifiek voor highlighting (heropent de prijsafweging), Google's timepoints
-uittesten met Chirp3-HD, of een geschatte/benaderde highlight bouwen die met elke provider
-werkt maar minder precies is.
+**Beslissing nodig:** Chirp3-HD (beste stemkwaliteit, geen timing) staat nu haaks op
+WaveNet (wel timing, duidelijk oudere stem) — dit is geen kwestie van "Google uittesten",
+het zijn twee verschillende voices met een harde trade-off. Opties: WaveNet accepteren voor
+fase 1, ElevenLabs terughalen specifiek voor highlighting (heropent de prijsafweging), of een
+geschatte/benaderde highlight bouwen (audioduur verdelen over tekens/woorden, geen API-timing
+nodig) die met Chirp3-HD's stemkwaliteit werkt maar minder precies is.
 
 ### Continue microfoon: twee onbeproefde risico's, eerst apart te testen
 - **Audio-unlock over de hele sessie.** De huidige Safari-fix ontgrendelt het gedeelde

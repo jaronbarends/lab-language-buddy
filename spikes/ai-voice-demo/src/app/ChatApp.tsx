@@ -1,8 +1,9 @@
 'use client';
 
 import { useRef, useState } from 'react';
+import { countSpokenWords, estimateWordTimings, type WordTiming } from '@/lib/textHighlight';
 
-type Turn = { author: 'user' | 'ai'; text: string };
+type Turn = { id: string; author: 'user' | 'ai'; text: string };
 
 type Status =
   | 'idle'
@@ -24,6 +25,32 @@ function getFileExtension(mimeType: string): string {
   return mimeType.split(';')[0].split('/')[1] ?? 'audio';
 }
 
+// Keeps whitespace intact (capturing group) so the rendered text still
+// matches the original spacing/punctuation.
+function renderHighlightedText(text: string, spokenWordCount: number) {
+  const currentWordIndex = spokenWordCount - 1;
+  let wordIndex = 0;
+
+  return text.split(/(\s+)/).map((token, tokenIndex) => {
+    const tokenIsWhitespace = token.trim().length === 0;
+    if (tokenIsWhitespace) {
+      return token;
+    }
+
+    const wordIsCurrent = wordIndex === currentWordIndex;
+    wordIndex += 1;
+
+    return (
+      <span
+        key={tokenIndex}
+        style={{ backgroundColor: wordIsCurrent ? '#fff3cd' : 'transparent' }}
+      >
+        {token}
+      </span>
+    );
+  });
+}
+
 // ~2ms of silence; only used to unlock the shared audio element inside a user gesture
 const SILENT_AUDIO_SRC =
   'data:audio/wav;base64,UklGRuwAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YcgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==';
@@ -33,6 +60,8 @@ export default function ChatApp() {
   const [turns, setTurns] = useState<Turn[]>([]);
   const [correction, setCorrection] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [speakingTurnId, setSpeakingTurnId] = useState<string | null>(null);
+  const [spokenWordCount, setSpokenWordCount] = useState(0);
 
   const previousInteractionIdRef = useRef<string | undefined>(undefined);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -76,19 +105,20 @@ export default function ChatApp() {
       }
 
       const data: ChatApiResponse = await response.json();
+      const aiTurnId = crypto.randomUUID();
 
       previousInteractionIdRef.current = data.interactionId;
       setCorrection(data.correction);
-      setTurns((current) => [...current, { author: 'ai', text: data.reply }]);
+      setTurns((current) => [...current, { id: aiTurnId, author: 'ai', text: data.reply }]);
 
-      await speak(data.reply);
+      await speak(data.reply, aiTurnId);
       setStatus('readyToRecord');
     } catch (error) {
       handleError(error);
     }
   }
 
-  async function speak(text: string) {
+  async function speak(text: string, turnId: string) {
     setStatus('aiSpeaking');
 
     const response = await fetch('/api/tts', {
@@ -109,12 +139,29 @@ export default function ChatApp() {
       throw new Error('Audio is not unlocked');
     }
 
-    await new Promise<void>((resolve, reject) => {
-      audio.onended = () => resolve();
-      audio.onerror = () => reject(new Error('Audio playback failed'));
-      audio.src = audioUrl;
-      audio.play().catch(reject);
-    });
+    // Filled in once the audio's real duration is known (onloadedmetadata),
+    // then read from the ontimeupdate closure below on every tick.
+    let wordTimings: WordTiming[] = [];
+
+    setSpeakingTurnId(turnId);
+    setSpokenWordCount(0);
+
+    try {
+      await new Promise<void>((resolve, reject) => {
+        audio.onloadedmetadata = () => {
+          wordTimings = estimateWordTimings(text, audio.duration);
+        };
+        audio.ontimeupdate = () => {
+          setSpokenWordCount(countSpokenWords(wordTimings, audio.currentTime));
+        };
+        audio.onended = () => resolve();
+        audio.onerror = () => reject(new Error('Audio playback failed'));
+        audio.src = audioUrl;
+        audio.play().catch(reject);
+      });
+    } finally {
+      setSpeakingTurnId(null);
+    }
   }
 
   async function startRecording() {
@@ -177,7 +224,10 @@ export default function ChatApp() {
         return;
       }
 
-      setTurns((current) => [...current, { author: 'user', text: data.text }]);
+      setTurns((current) => [
+        ...current,
+        { id: crypto.randomUUID(), author: 'user', text: data.text },
+      ]);
       await requestAiTurn(data.text);
     } catch (error) {
       handleError(error);
@@ -189,6 +239,16 @@ export default function ChatApp() {
     setStatus('error');
   }
 
+  const buttonStyle = {
+    display: 'block',
+    margin: '10px auto',
+    padding: '0.5em 1em',
+    background: 'hotpink',
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: '1rem',
+  }
+
   return (
     <main style={{ maxWidth: 640, margin: '0 auto', padding: '2rem', fontFamily: 'sans-serif' }}>
       <h1>AI-stem spike</h1>
@@ -197,13 +257,15 @@ export default function ChatApp() {
         gesprek en de correctie.
       </p>
 
-      {status === 'idle' && <button style={{ display: 'block', margin: '10px auto', padding: '0.5em'}} onClick={handleStartClick}>Start gesprek</button>}
+      {status === 'idle' && <button style={buttonStyle} onClick={handleStartClick}>Start gesprek</button>}
 
       <div style={{ margin: '1.5rem 0', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-        {turns.map((turn, index) => (
-          <p key={index} style={{ margin: 0 }}>
+        {turns.map((turn) => (
+          <p key={turn.id} style={{ margin: 0 }}>
             <strong>{turn.author === 'ai' ? 'AI: ' : 'Jij: '}</strong>
-            {turn.text}
+            {turn.id === speakingTurnId
+              ? renderHighlightedText(turn.text, spokenWordCount)
+              : turn.text}
           </p>
         ))}
       </div>
@@ -215,8 +277,8 @@ export default function ChatApp() {
         </p>
       )}
 
-      {status === 'readyToRecord' && <button onClick={startRecording} style={{ display: 'block', margin: '10px auto', padding: '0.5em'}}>Spreek</button>}
-      {status === 'recording' && <button onClick={stopRecording} style={{ display: 'block', margin: '10px auto', padding: '0.5em'}}>Stop met spreken</button>}
+      {status === 'readyToRecord' && <button onClick={startRecording} style={buttonStyle}>Spreek</button>}
+      {status === 'recording' && <button onClick={stopRecording} style={buttonStyle}>Stop met spreken</button>}
       {(status === 'aiThinking' || status === 'aiSpeaking' || status === 'transcribing') && (
         <p>Bezig… ({status})</p>
       )}

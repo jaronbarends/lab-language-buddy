@@ -320,7 +320,7 @@ export default function ChatApp() {
     <main style={{ maxWidth: 640, margin: '0 auto', padding: '2rem', fontFamily: 'sans-serif' }}>
       <h1>AI-stem spike</h1>
       <p>
-        Gesprek in het Noors (B1) — Configureerbare providers voor spraak (luisteren en spreken), Gemini voor het
+        Gesprek in het Noors (B1) — Configureerbare providers voor TTS; Deepgram voor STT; Gemini voor het
         gesprek en de correctie.
       </p>
 

@@ -4,10 +4,20 @@ Doel van de spike: browser-based speech-to-text (STT) en text-to-speech (TTS) vo
 Noors (B1) oefengesprek, met als harde eis dat het werkt in **Safari op iPhone**, niet
 alleen desktop Chrome.
 
-Huidige config (`.env.local`): `STT_PROVIDER=deepgram`, `TTS_PROVIDER=azure`.
+Huidige config (`.env.local`): `TTS_PROVIDER=azure`. `STT_PROVIDER` staat er nog in maar
+heeft geen effect meer — zie "Live/interactieve variant" hieronder, STT loopt sinds de
+live-variant altijd via Deepgram, hardcoded.
+
 Providers zitten als losse modules in `src/lib/voice/`, elk met dezelfde vorm
-(`transcribe(audio: Blob): Promise<string>` en/of `synthesize(text: string): Promise<ArrayBuffer>`),
-gekozen via `STT_PROVIDER`/`TTS_PROVIDER` in de routes (`src/app/api/stt`, `src/app/api/tts`).
+(`synthesize(text: string): Promise<ArrayBuffer>` voor TTS, gekozen via `TTS_PROVIDER` in
+`src/app/api/tts`). De vergelijkbare STT-abstractie (`transcribe(audio: Blob): Promise<string>`
+per provider, gekozen via `STT_PROVIDER` in `src/app/api/stt`) is verwijderd toen STT op live
+streaming overstapte — de providervergelijkingstabel hieronder blijft staan als historisch
+overzicht van de batch-aanpak, maar is niet meer om te zetten via een env-var.
+
+**Branch-structuur:** dit document leeft op `spike-ai-voice-live-stt`. De highlighting
+("AI-tekst meelopend met TTS") zit ook op de onderliggende `spike-ai-voice-live`; live STT
+en de opruiming van de batch-STT-code zitten alleen op `spike-ai-voice-live-stt` erbovenop.
 
 ## Provider-geschiktheid
 
@@ -87,28 +97,31 @@ pricing-pagina's van Google/Azure dynamische calculators zijn die niet goed te s
 Behandel dit als eerste inschatting, niet als leverancierscontract — controleer bij een
 definitieve keuze de actuele officiële pricing.
 
-## Live/interactieve variant (uitgezocht, nog niet gebouwd)
+## Live/interactieve variant
 
-De huidige app is strikt stapsgewijs: AI spreekt volledige tekst uit, dan klik je op
-"Spreek", dan wordt je hele opname in één keer getranscribeerd. Uitgezocht wat een
-interactievere versie zou vergen — niet gebouwd, wel een aantal concrete conclusies.
+Uitgangspunt was: de app is strikt stapsgewijs (AI spreekt volledige tekst uit, dan klik je
+op "Spreek", dan wordt je hele opname in één keer getranscribeerd). Fase 1 hieronder is
+inmiddels **gebouwd**; fase 2 (continue microfoon) nog niet.
 
 ### UX-mogelijkheden, twee aparte richtingen
-1. **Live weergave** (tekst tonen terwijl er nog gesproken/geluisterd wordt), met
-   knoppen die blijven bestaan zoals nu:
-   - AI-tekst die meeloopt met de voorlezing (highlight of woord-voor-woord onthulling),
-     i.p.v. in één keer verschijnen vóór het geluid start.
-   - Live, doorlopend bijgewerkte transcriptie tijdens het inspreken, met een visueel
-     onderscheid tussen voorlopige tekst en vaststaande tekst (Deepgram's
-     `is_final: false/true`).
+1. **Live weergave** (tekst tonen terwijl er nog gesproken/geluisterd wordt), met knoppen
+   die blijven bestaan zoals nu — **gebouwd**:
+   - AI-tekst die meeloopt met de voorlezing: gekozen voor **highlight** (geel, alle
+     al-uitgesproken woorden blijven gemarkeerd — niet alleen het huidige woord), i.p.v.
+     woord-voor-woord onthulling. De volledige tekst blijft dus meteen zichtbaar. Timing is
+     een schatting, geen exacte data (zie "TTS-highlighting" hieronder).
+   - Live, doorlopend bijgewerkte transcriptie tijdens het inspreken: grijze tekst voor
+     voorlopige woorden (Deepgram's `is_final: false`), normale kleur zodra een stuk
+     definitief is (`is_final: true`).
 2. **Continue open microfoon** (geen "Spreek"/"Stop"-knoppen meer, mogelijk de AI kunnen
-   onderbreken) — een fundamenteel ander interactiemodel, bouwt voort op (1).
+   onderbreken) — een fundamenteel ander interactiemodel, bouwt voort op (1). **Nog niet
+   gebouwd**, risico's hieronder nog open.
 
-**Voorgestelde knip voor vervolg-spikes:** eerst alleen (1) bouwen, met de knoppen intact
-— dat vermijdt de twee onbeproefde risico's van (2) hieronder volledig, omdat elke beurt
-nog steeds door een klik wordt voorafgegaan. Spike naar (2) zou daarna een uitbreiding zijn
-van dezelfde WebSocket-infrastructuur (andere trigger: VAD-events i.p.v. een stopknop), geen
-nieuwe opzet — dus geen weggegooid werk.
+**Voorgestelde knip, gevolgd:** (1) is gebouwd met de knoppen intact, wat de twee
+onbeproefde risico's van (2) hieronder vermeed — elke beurt werd nog steeds door een klik
+voorafgegaan. Een spike naar (2) zou een uitbreiding zijn van dezelfde WebSocket-
+infrastructuur (andere trigger: VAD-events i.p.v. een stopknop), geen nieuwe opzet — dus
+geen weggegooid werk.
 
 ### Architectuur voor live STT: browser praat rechtstreeks met de provider
 Twee opties onderzocht voor hoe de browser authenticeert zonder de vaste API-key bloot te
@@ -175,12 +188,24 @@ woord valt. Per huidige/overwogen TTS-provider:
 | **Azure (huidige TTS-keuze)** | ❌ Nee | Word-boundary timing bestaat alleen als event in de Speech SDK, niet in de REST-call die we nu gebruiken. Zou de hele SDK erbij vereisen. |
 | **Deepgram** | n.v.t. | Geen Noorse TTS-stem, ongeacht streaming vs. batch — de taalbeperking zit aan het stemmodel (Aura) vast, niet aan de bezorgmethode. Bevestigd: streaming- en pre-recorded-TTS-endpoints gebruiken dezelfde modelnamen/taalondersteuning. |
 
-**Beslissing nodig:** Chirp3-HD (beste stemkwaliteit, geen timing) staat nu haaks op
-WaveNet (wel timing, duidelijk oudere stem) — dit is geen kwestie van "Google uittesten",
-het zijn twee verschillende voices met een harde trade-off. Opties: WaveNet accepteren voor
-fase 1, ElevenLabs terughalen specifiek voor highlighting (heropent de prijsafweging), of een
-geschatte/benaderde highlight bouwen (audioduur verdelen over tekens/woorden, geen API-timing
-nodig) die met Chirp3-HD's stemkwaliteit werkt maar minder precies is.
+**Beslissing gemaakt: benaderde/geschatte highlighting**, niet WaveNet of ElevenLabs. Reden:
+de huidige TTS-provider blijft ongemoeid — geen providerwissel puur voor deze feature.
+Geïmplementeerd in `src/lib/textHighlight.ts`: audioduur proportioneel verdeeld over de
+tekens per woord (`estimateWordTimings`), dan tijdens afspelen `audio.currentTime`
+vergeleken met die geschatte starttijden (`countSpokenWords`) om bij te houden hoeveel
+woorden "gehad" zijn. Geaccepteerde beperking: geen rekening met pauzes na leestekens of met
+de echte uitspraaklengte per woord — bij korte functiewoorden loopt de highlight merkbaar
+voor of achter op wat je hoort. Voor nu goed genoeg bevonden na handmatig testen; WaveNet/
+ElevenLabs blijven de opties mocht er ooit wél exacte timing nodig zijn.
+
+### Gevonden tijdens het bouwen: stale-closure bug bij turn-tracking
+Eerste versie van de highlighting trackte welke beurt sprak via een array-index
+(`turns.length` op het moment van aanroepen). Bij een AI-antwoord ná een user-beurt gaf dat
+een off-by-one: de highlight verscheen op de zojuist toegevoegde user-tekst in plaats van de
+nieuwe AI-tekst. Oorzaak: `turns` in de closure van `requestAiTurn` was nog de state van vóór
+de `setTurns`-call die de user-beurt toevoegde — React batcht die update, de closure zag hem
+nog niet. Fix: elke beurt een eigen `id` geven (`crypto.randomUUID()`) en daarop matchen
+i.p.v. op index — verwijdert de race volledig, ongeacht state-batching-timing.
 
 ### Continue microfoon: twee onbeproefde risico's, eerst apart te testen
 - **Audio-unlock over de hele sessie.** De huidige Safari-fix ontgrendelt het gedeelde

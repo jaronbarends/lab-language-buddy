@@ -1,7 +1,8 @@
 import ChatApp from './ChatApp';
 
 export default function Page() {
-  const sttProvider = process.env.STT_PROVIDER ?? 'elevenlabs';
+  // Not configurable via env: live STT always talks to Deepgram directly (see findings.md).
+  const sttProvider = 'deepgram (live)';
   const ttsProvider = process.env.TTS_PROVIDER ?? 'elevenlabs';
 
   return (

@@ -1,5 +1,3 @@
-const STT_URL = 'https://api.elevenlabs.io/v1/speech-to-text';
-const STT_MODEL_ID = 'scribe_v2';
 const TTS_MODEL_ID = 'eleven_flash_v2_5';
 
 function getApiKey(): string {
@@ -8,28 +6,6 @@ function getApiKey(): string {
     throw new Error('Missing ELEVENLABS_API_KEY');
   }
   return apiKey;
-}
-
-export async function transcribe(audio: Blob): Promise<string> {
-  const apiKey = getApiKey();
-
-  const form = new FormData();
-  form.set('model_id', STT_MODEL_ID);
-  form.set('language_code', 'no');
-  form.set('file', audio, 'speech.webm');
-
-  const response = await fetch(STT_URL, {
-    method: 'POST',
-    headers: { 'xi-api-key': apiKey },
-    body: form,
-  });
-
-  if (!response.ok) {
-    throw new Error(await response.text());
-  }
-
-  const data: { text: string } = await response.json();
-  return data.text;
 }
 
 export async function synthesize(text: string): Promise<ArrayBuffer> {

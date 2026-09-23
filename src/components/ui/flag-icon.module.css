@@ -1,0 +1,11 @@
+.flag {
+  display: block;
+  flex-shrink: 0;
+  /* The source SVGs are all 4:3, so height follows from width. */
+  aspect-ratio: 4 / 3;
+  border-radius: 2px;
+  /* Several of these flags have white at the edge (NL, IT, FR, ES); without a
+     hairline they bleed into the white card behind them. */
+  box-shadow: 0 0 0 1px rgb(30 36 48 / 0.16);
+  object-fit: cover;
+}

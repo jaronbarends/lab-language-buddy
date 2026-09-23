@@ -1,0 +1,95 @@
+.bubble {
+  /* Bubbles hug their content but stop well short of the full width, so the
+     left/right alignment stays legible as "who said this". */
+  max-width: 85%;
+  width: fit-content;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-raised);
+  /* Long recognised words with no spaces shouldn't widen the bubble past its max. */
+  overflow-wrap: break-word;
+}
+
+.ai {
+  align-self: flex-start;
+  background: var(--color-bubble-ai);
+}
+
+.user {
+  align-self: flex-end;
+  background: var(--color-bubble-user);
+  border-color: var(--color-bubble-user-border);
+}
+
+/* --- Progressive highlight during TTS playback --- */
+
+.spokenWord {
+  background: var(--color-highlight);
+  /* A hair of padding so consecutive highlighted words read as one continuous
+     band rather than striped blocks. */
+  padding: 1px 0;
+}
+
+/* --- Thinking indicator --- */
+
+.thinking {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: var(--space-4);
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-text-muted);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+.dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes pulse {
+  0%,
+  60%,
+  100% {
+    opacity: 0.3;
+    transform: translateY(0);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dot {
+    animation: none;
+    opacity: 0.6;
+  }
+}
+
+/* --- Live transcript --- */
+
+.listening {
+  /* Dashed while the words are still arriving — distinguishes "being captured"
+     from a settled turn without needing a label. */
+  border-style: dashed;
+  border-color: var(--color-bubble-user-border);
+}
+
+.interim {
+  color: var(--color-interim);
+}
+
+.placeholder {
+  color: var(--color-interim);
+  font-style: italic;
+}

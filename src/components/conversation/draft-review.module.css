@@ -1,0 +1,45 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.draft {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-bubble-user-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bubble-user);
+  overflow-wrap: break-word;
+}
+
+.marker {
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  margin-top: 8px;
+  border-radius: 50%;
+  background: var(--color-accent);
+}
+
+.editor {
+  width: 100%;
+  min-height: 96px;
+  padding: var(--space-3) var(--space-4);
+  border: 2px solid var(--color-bubble-user-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  /* Must stay at 16px or larger, or iOS Safari zooms the viewport on focus and
+     the fixed control bar ends up off-screen. */
+  font-size: 1rem;
+  line-height: 1.45;
+  resize: vertical;
+}
+
+.secondaryActions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}

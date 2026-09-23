@@ -1,0 +1,105 @@
+:root {
+  /* Surfaces */
+  --color-bg: #eef1fb;
+  --color-surface: #ffffff;
+  --color-border: #d7dded;
+  --color-border-strong: #b9c4dd;
+
+  /* Text */
+  --color-text: #1e2430;
+  --color-text-muted: #6a7488;
+  --color-label: #5d6b8a;
+
+  /* Accent — the magenta used for primary actions */
+  --color-accent: #a83d7d;
+  --color-accent-strong: #8c3167;
+  --color-accent-soft: #f9dcee;
+
+  /* Speech bubbles */
+  --color-bubble-user: #cfe3fb;
+  --color-bubble-user-border: #8dbcf0;
+  --color-bubble-ai: #ffffff;
+
+  /* Live transcript + TTS highlight */
+  --color-interim: #98a2b6;
+  --color-highlight: #fff1b8;
+
+  --color-neutral-button: #d9dde8;
+  --color-danger: #b3261e;
+
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-pill: 999px;
+
+  --shadow-raised: 0 1px 2px rgb(30 36 48 / 0.08);
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+
+  --layout-max-width: 680px;
+
+  /* Breathing room under the fixed control bar on notched iPhones. */
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  /* Older iOS Safari ignores dvh; -webkit-fill-available is the fallback that
+     accounts for the collapsing browser chrome. Order matters — the last value
+     the browser understands wins. */
+  height: 100%;
+  height: -webkit-fill-available;
+  height: 100dvh;
+}
+
+body {
+  min-height: 100%;
+  min-height: 100dvh;
+  /* The fixed control bar is positioned against the viewport, so the page itself
+     must never scroll sideways or the bar drifts out of alignment. */
+  overflow-x: hidden;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  /* iOS Safari zooms the page when a control smaller than 16px takes focus.
+     Everything focusable in this app stays at or above that. */
+  font-size: 16px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Stops the rubber-band overscroll from revealing the page background behind
+     the fixed bar during a flick-scroll of the thread. */
+  overscroll-behavior-y: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+/* Visible focus for keyboard users without putting a ring on every tap target
+   on touch devices. */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}

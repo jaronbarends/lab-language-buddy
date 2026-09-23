@@ -14,6 +14,12 @@ type ConversationThreadProps = {
   turnState: TurnState;
 };
 
+/**
+ * Breathing room left above a top-aligned bubble, so it doesn't sit flush against
+ * the edge. Matches the thread's own top padding (--space-4).
+ */
+const NEWEST_ITEM_TOP_GAP = 16;
+
 export function ConversationThread({
   turns,
   turnState,
@@ -33,7 +39,29 @@ export function ConversationThread({
     if (!thread) {
       return;
     }
-    thread.scrollTop = thread.scrollHeight;
+
+    const newestItem = thread.lastElementChild as HTMLElement | null;
+    const bottomScrollTop = Math.max(0, thread.scrollHeight - thread.clientHeight);
+
+    if (!newestItem) {
+      thread.scrollTop = bottomScrollTop;
+      return;
+    }
+
+    // Scrolling to the bottom is right for a bubble that fits, but it lands the
+    // user on the *last* line of one that doesn't — and the read-along highlight
+    // starts at the first word, which would then be off-screen and stay there,
+    // since nothing re-scrolls while the AI is speaking. So when the newest bubble
+    // is too tall to show whole, align its top instead and read from the start.
+    //
+    // `offsetTop < bottomScrollTop` is exactly the "its top would be clipped" test:
+    // it asks whether the item begins above where a bottom-scroll would put the
+    // viewport. Relies on .thread being a positioned ancestor.
+    const newestItemWouldBeClipped = newestItem.offsetTop < bottomScrollTop;
+
+    thread.scrollTop = newestItemWouldBeClipped
+      ? Math.max(0, newestItem.offsetTop - NEWEST_ITEM_TOP_GAP)
+      : bottomScrollTop;
   }, [turns.length, turnState.name]);
 
   return (

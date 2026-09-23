@@ -1,4 +1,5 @@
 const LISTEN_URL = 'https://api.deepgram.com/v1/listen';
+const AUTH_GRANT_URL = 'https://api.deepgram.com/v1/auth/grant';
 // Norwegian is only supported on the legacy nova-2/base/enhanced models, not nova-3/flux.
 const MODEL = 'nova-2';
 const LANGUAGE = 'no';
@@ -35,4 +36,32 @@ export async function transcribe(audio: Blob): Promise<string> {
   } = await response.json();
 
   return data.results?.channels[0]?.alternatives[0]?.transcript ?? '';
+}
+
+export type LiveToken = { accessToken: string; expiresIn: number };
+
+// Mints a short-lived token so the browser can talk to Deepgram's live
+// WebSocket directly, without exposing the permanent API key. The grant
+// endpoint requires a Member-role key (a viewer-role key gets 403
+// FORBIDDEN). On the WebSocket itself, this token needs the 'Bearer'
+// Sec-WebSocket-Protocol scheme, not 'token' (that scheme is for the
+// permanent API key only) — see findings.md, "Live STT".
+export async function mintLiveToken(): Promise<LiveToken> {
+  const apiKey = getApiKey();
+
+  const response = await fetch(AUTH_GRANT_URL, {
+    method: 'POST',
+    headers: {
+      Authorization: `Token ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({}),
+  });
+
+  if (!response.ok) {
+    throw new Error(await response.text());
+  }
+
+  const data: { access_token: string; expires_in: number } = await response.json();
+  return { accessToken: data.access_token, expiresIn: data.expires_in };
 }

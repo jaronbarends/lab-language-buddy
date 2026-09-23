@@ -134,6 +134,35 @@ Voor Deepgram specifiek geldt: STT via streaming werkt op **hetzelfde nova-2-mod
 dezelfde taalondersteuning als de pre-recorded variant die nu al werkt — geen verrassing
 daar te verwachten.
 
+**Getest (los scriptje, buiten de app om):** MP3-audio in 5 willekeurige brokjes over de
+WebSocket gestreamd naar `wss://api.deepgram.com/v1/listen?model=nova-2&language=no&interim_results=true`,
+zonder `encoding`/`sample_rate` mee te geven — Deepgram detecteert het containerformat zelf,
+precies zoals de batch-endpoint al doet, en levert correcte interim- (`is_final: false`) en
+finale (`is_final: true`) transcripten. Sterke aanwijzing dat WebM/Opus (het daadwerkelijke
+`MediaRecorder`-format) hetzelfde zal doen, maar dat is hier niet letterlijk getest — dit
+scriptje kon geen echte WebM/Opus-audio genereren zonder browser of ffmpeg (geen van beide
+beschikbaar in deze omgeving). Bij de browserintegratie alsnog met echte MediaRecorder-output
+verifiëren.
+
+**Blocker gevonden en opgelost: `DEEPGRAM_API_KEY` had geen "Member"-rechten.** Een
+`POST /v1/auth/grant` gaf `403 FORBIDDEN: Insufficient permissions` met de oorspronkelijke
+key — Deepgram vereist minimaal "Member"-rechten op de key voor deze endpoint. Opgelost door
+een nieuwe key met Member-rol aan te maken (nu in `.env.local`).
+
+**Tweede valkuil, stil-falend zoals eerdere bugs in deze spike: JWT-tokens hebben `Bearer` nodig, niet `Token`.**
+Met een geldig gemint token gaf `wss://api.deepgram.com/v1/listen` via
+`Sec-WebSocket-Protocol: ['token', <jwt>]` (het schema dat wél werkt voor de permanente
+API-key) een lege, contentloze `401 INVALID_AUTH` — en met het token als `access_token`
+query-param (Deepgram's eigen docs suggereren dit als alternatief) ook gewoon `401
+INVALID_AUTH`. De juiste vorm, bevestigd door Deepgram-staff op GitHub (discussion #1470) en
+hier getest: `Sec-WebSocket-Protocol: ['Bearer', <jwt>]`. Permanente API-key → `token`-schema,
+kortlevend JWT-token → `Bearer`-schema — twee verschillende schema's voor twee soorten
+credentials op dezelfde header.
+
+**Volledige flow end-to-end bevestigd** (los scriptje, `ws`-package, geen UI): nieuwe
+Member-key → `/v1/auth/grant` → WebSocket met `Bearer`-subprotocol → MP3-audio in brokjes
+zonder `encoding`/`sample_rate` → correcte interim- én finale transcripten terug.
+
 ### TTS-highlighting: provider bepaalt of dit via een simpele REST-call kan
 Om AI-tekst te laten meelopen met de voorlezing, moet je weten op welk audio-tijdstip elk
 woord valt. Per huidige/overwogen TTS-provider:

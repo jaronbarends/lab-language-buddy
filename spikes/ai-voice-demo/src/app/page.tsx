@@ -1,7 +1,9 @@
 import ChatApp from './ChatApp';
 
 export default function Page() {
-  const provider = process.env.VOICE_PROVIDER === 'google' ? 'google' : 'elevenlabs';
+  // Not configurable via env: live STT always talks to Deepgram directly (see findings.md).
+  const sttProvider = 'deepgram (live)';
+  const ttsProvider = process.env.TTS_PROVIDER ?? 'elevenlabs';
 
   return (
     <>
@@ -18,7 +20,7 @@ export default function Page() {
           fontSize: '0.85rem',
         }}
       >
-        provider: {provider}
+        stt: {sttProvider}<br />tts: {ttsProvider}
       </div>
       <ChatApp />
     </>

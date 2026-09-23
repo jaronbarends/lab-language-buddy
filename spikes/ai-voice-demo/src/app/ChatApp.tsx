@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { countSpokenWords, estimateWordTimings, type WordTiming } from '@/lib/textHighlight';
 
 type Turn = { id: string; author: 'user' | 'ai'; text: string };
@@ -65,7 +65,9 @@ export default function ChatApp() {
   const previousInteractionIdRef = useRef<string | undefined>(undefined);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const currentAudioUrlRef = useRef<string | null>(null);
   const liveSocketRef = useRef<WebSocket | null>(null);
+  const activeStreamRef = useRef<MediaStream | null>(null);
   // Mirrors liveTranscript so finishRecording() can read the latest value
   // synchronously once the socket closes, without waiting on React state.
   const finalTranscriptRef = useRef('');
@@ -82,6 +84,15 @@ export default function ChatApp() {
       // unlocking is best-effort; speak() surfaces a real playback failure
     });
   }
+
+  useEffect(() => {
+    return () => {
+      audioRef.current?.pause();
+      if (currentAudioUrlRef.current) {
+        URL.revokeObjectURL(currentAudioUrlRef.current);
+      }
+    };
+  }, []);
 
   function handleStartClick() {
     unlockAudio();
@@ -136,6 +147,7 @@ export default function ChatApp() {
 
     const audioBlob = await response.blob();
     const audioUrl = URL.createObjectURL(audioBlob);
+    currentAudioUrlRef.current = audioUrl;
 
     const audio = audioRef.current;
     if (!audio) {
@@ -164,6 +176,10 @@ export default function ChatApp() {
       });
     } finally {
       setSpeakingTurnId(null);
+      URL.revokeObjectURL(audioUrl);
+      if (currentAudioUrlRef.current === audioUrl) {
+        currentAudioUrlRef.current = null;
+      }
     }
   }
 
@@ -183,6 +199,7 @@ export default function ChatApp() {
       const { accessToken }: { accessToken: string } = await tokenResponse.json();
 
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      activeStreamRef.current = stream;
 
       // Browsers can't set an Authorization header on a WebSocket handshake,
       // so the token travels via the Sec-WebSocket-Protocol subprotocol
@@ -229,6 +246,7 @@ export default function ChatApp() {
       });
 
       socket.addEventListener('error', () => {
+        stopActiveRecording();
         handleError(new Error('Live transcriptie-verbinding is mislukt'));
       });
 
@@ -247,6 +265,7 @@ export default function ChatApp() {
 
       mediaRecorder.onstop = () => {
         stream.getTracks().forEach((track) => track.stop());
+        activeStreamRef.current = null;
         void finishRecording();
       };
 
@@ -254,12 +273,36 @@ export default function ChatApp() {
       mediaRecorder.start(250); // send a chunk to Deepgram every 250ms
       setStatus('recording');
     } catch (error) {
+      stopActiveRecording();
       handleError(error);
     }
   }
 
   function stopRecording() {
     mediaRecorderRef.current?.stop();
+  }
+
+  // Used on failure paths where we give up on the live-STT connection
+  // without going through the normal mediaRecorder.onstop -> finishRecording
+  // flow — releases the mic and closes the socket so nothing keeps running
+  // in the background after status flips to 'error'.
+  function stopActiveRecording() {
+    const mediaRecorder = mediaRecorderRef.current;
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+      mediaRecorder.ondataavailable = null;
+      mediaRecorder.onstop = null;
+      mediaRecorder.stop();
+    }
+    mediaRecorderRef.current = null;
+
+    activeStreamRef.current?.getTracks().forEach((track) => track.stop());
+    activeStreamRef.current = null;
+
+    const socket = liveSocketRef.current;
+    if (socket && socket.readyState !== WebSocket.CLOSED) {
+      socket.close();
+    }
+    liveSocketRef.current = null;
   }
 
   async function finishRecording() {

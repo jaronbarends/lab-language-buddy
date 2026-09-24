@@ -78,14 +78,13 @@
 
 /* --- Live transcript --- */
 
+/* Layout only. The listening state used to carry a dashed border as well, but
+   the indicator dot says the same thing and says it better, so the border now
+   matches the settled draft bubble exactly — nothing shifts when recording ends. */
 .listening {
   display: flex;
   align-items: flex-start;
   gap: var(--space-2);
-  /* Dashed while the words are still arriving — distinguishes "being captured"
-     from a settled turn without needing a label. */
-  border-style: dashed;
-  border-color: var(--color-bubble-user-border);
 }
 
 /*

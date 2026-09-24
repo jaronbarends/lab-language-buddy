@@ -9,14 +9,12 @@ import styles from "./draft-review.module.css";
  *
  * Deliberately styled to match the live transcript bubble it replaces — same width,
  * same alignment, same spot in the control bar — so stopping doesn't make the text
- * appear to jump. The solid border and the marker are the only difference.
+ * appear to jump. What does change is the listening indicator: the dot is gone,
+ * because the microphone is no longer on.
  */
 export function DraftBubble({ draft }: { draft: string }) {
   return (
-    <p className={styles.draft}>
-      <span className={styles.marker} aria-hidden="true" />
-      <span>{draft}</span>
-    </p>
+    <p className={styles.draft}>{draft}</p>
   );
 }
 

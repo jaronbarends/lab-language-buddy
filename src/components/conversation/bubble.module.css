@@ -79,10 +79,31 @@
 /* --- Live transcript --- */
 
 .listening {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
   /* Dashed while the words are still arriving — distinguishes "being captured"
      from a settled turn without needing a label. */
   border-style: dashed;
   border-color: var(--color-bubble-user-border);
+}
+
+/*
+ * Signals that the microphone is live. It appears only in the listening state and
+ * is gone the moment recording stops, so its presence is the answer to "is it still
+ * hearing me?" — which is why the settled draft bubble has no dot at all.
+ *
+ * Kept as its own element rather than a ::before so a pulse animation can be added
+ * here later without touching the bubble.
+ */
+.listeningIndicator {
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  /* Lines the dot up with the first line of text rather than the padding box. */
+  margin-top: 8px;
+  border-radius: 50%;
+  background: var(--color-accent);
 }
 
 .interim {

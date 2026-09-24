@@ -22,19 +22,22 @@ export function LiveTranscript({ transcript }: LiveTranscriptProps) {
       className={`${styles.bubble} ${styles.user} ${styles.listening}`}
       aria-live="polite"
     >
-      {nothingHeardYet ? (
-        <span className={styles.placeholder}>Listening…</span>
-      ) : (
-        <>
-          {transcript.finalized}
-          {transcript.interim && (
-            <span className={styles.interim}>
-              {transcript.finalized ? " " : ""}
-              {transcript.interim}
-            </span>
-          )}
-        </>
-      )}
+      <span className={styles.listeningIndicator} aria-hidden="true" />
+      <span>
+        {nothingHeardYet ? (
+          <span className={styles.placeholder}>Listening…</span>
+        ) : (
+          <>
+            {transcript.finalized}
+            {transcript.interim && (
+              <span className={styles.interim}>
+                {transcript.finalized ? " " : ""}
+                {transcript.interim}
+              </span>
+            )}
+          </>
+        )}
+      </span>
     </p>
   );
 }

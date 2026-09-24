@@ -17,8 +17,6 @@ So a few things are deliberate:
 - **This is a from-scratch rebuild.** No code is carried over from the existing Language
   Buddy app. The structure, state model, styling approach and component boundaries are
   the agent's own choices, not a port of decisions already made elsewhere.
-- **Advanced patterns aren't held back for teachability.** Learning the stack is
-  explicitly not a goal of this repo.
 - **The written brief and the review conversation are the real input.** Where a decision
   was made by the agent rather than specified, the code says so in a comment — including
   where it diverges from the visual reference on purpose.

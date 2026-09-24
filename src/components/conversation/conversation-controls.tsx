@@ -16,6 +16,8 @@ import styles from "./conversation-controls.module.css";
 
 type ConversationControlsProps = {
   turnState: TurnState;
+  /** No turns yet, so there is nothing to reply to — see the Reply label below. */
+  conversationIsEmpty: boolean;
   onReply: () => void;
   onDraftEdit: () => void;
   onDraftChange: (draft: string) => void;
@@ -33,6 +35,7 @@ type ConversationControlsProps = {
  */
 export function ConversationControls({
   turnState,
+  conversationIsEmpty,
   onReply,
   onDraftEdit,
   onDraftChange,
@@ -141,6 +144,12 @@ export function ConversationControls({
   // from the reference to be tidied up later.
   const replyIsAvailable = turnState.name === "awaitingUser";
 
+  // "Reply" is wrong before anyone has said anything, which is the case when the
+  // user was the one picked to open the conversation. Gated on the button actually
+  // being available too: with the AI opening, the turn list is briefly empty while
+  // it thinks, and the disabled button should not be inviting the user to start.
+  const replyWouldOpenTheConversation = conversationIsEmpty && replyIsAvailable;
+
   return (
     <div className={styles.controls}>
       <Button
@@ -149,7 +158,7 @@ export function ConversationControls({
         onClick={onReply}
         disabled={!replyIsAvailable}
       >
-        Reply
+        {replyWouldOpenTheConversation ? "Start conversation" : "Reply"}
       </Button>
       <Button variant="secondary" icon={<FinishIcon />} onClick={onEndSession}>
         End session

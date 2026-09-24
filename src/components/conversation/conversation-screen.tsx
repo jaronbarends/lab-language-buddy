@@ -56,6 +56,7 @@ export function ConversationScreen({
       <div className={styles.controlBar}>
         <ConversationControls
           turnState={turnState}
+          conversationIsEmpty={turns.length === 0}
           onReply={handleReply}
           onDraftEdit={() => dispatch({ type: "DRAFT_EDIT_STARTED" })}
           onDraftChange={(draft) => dispatch({ type: "DRAFT_CHANGED", draft })}

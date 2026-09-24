@@ -34,7 +34,19 @@ export type LiveTranscript = {
 export type TurnState =
   | { name: "awaitingUser" }
   | { name: "listening"; transcript: LiveTranscript }
-  | { name: "reviewing"; draft: string; draftIsEditable: boolean }
+  /** Recording has stopped and the text is settled, but it has not been sent. */
+  | { name: "reviewing"; draft: string }
+  | {
+      name: "editing";
+      draft: string;
+      /**
+       * The text as it stood when editing began, so "Cancel edit" can put it back.
+       *
+       * This is why editing is its own state rather than a flag on `reviewing`:
+       * the previous value has to live somewhere, and only this state has one.
+       */
+      draftBeforeEdit: string;
+    }
   | { name: "aiThinking" }
   | { name: "aiSpeaking"; turnId: string; spokenWordCount: number }
   | { name: "error"; message: string };
@@ -70,9 +82,9 @@ export type SessionAction =
   | { type: "START"; config: SessionConfig }
   | { type: "LISTENING_STARTED" }
   | { type: "TRANSCRIPT_UPDATED"; transcript: LiveTranscript }
-  | { type: "LISTENING_STOPPED"; draft: string }
   | { type: "DRAFT_EDIT_STARTED" }
   | { type: "DRAFT_CHANGED"; draft: string }
+  | { type: "DRAFT_EDIT_CANCELLED" }
   | { type: "DRAFT_DISCARDED" }
   | { type: "USER_TURN_SENT"; turn: Turn }
   | { type: "AI_TURN_RECEIVED"; turn: Turn }
@@ -166,45 +178,61 @@ export function sessionReducer(
         turnState: { name: "listening", transcript: action.transcript },
       };
 
-    case "LISTENING_STOPPED": {
-      if (turnState.name !== "listening") {
-        return state;
+    // Send, Edit and Cancel are all offered while the mic is still open, so each of
+    // them ends recording as a side effect. There is no separate Stop button: it
+    // would only ever be a step on the way to one of these three.
+    case "DRAFT_EDIT_STARTED": {
+      if (turnState.name === "listening") {
+        const draft = joinTranscript(turnState.transcript);
+        return {
+          ...state,
+          turnState: { name: "editing", draft, draftBeforeEdit: draft },
+        };
       }
-      // Nothing was said — drop straight back rather than showing an empty draft
-      // with a Send button that would post nothing.
-      if (!action.draft.trim()) {
-        return { ...state, turnState: { name: "awaitingUser" } };
+      if (turnState.name === "reviewing") {
+        return {
+          ...state,
+          turnState: {
+            name: "editing",
+            draft: turnState.draft,
+            draftBeforeEdit: turnState.draft,
+          },
+        };
       }
-      return {
-        ...state,
-        turnState: {
-          name: "reviewing",
-          draft: action.draft,
-          draftIsEditable: false,
-        },
-      };
+      return state;
     }
 
-    case "DRAFT_EDIT_STARTED":
-      if (turnState.name !== "reviewing") {
-        return state;
-      }
-      return { ...state, turnState: { ...turnState, draftIsEditable: true } };
-
     case "DRAFT_CHANGED":
-      if (turnState.name !== "reviewing") {
+      if (turnState.name !== "editing") {
         return state;
       }
       return { ...state, turnState: { ...turnState, draft: action.draft } };
 
+    // Backs out of the edit only, not the turn: the text reverts to what it was and
+    // the same three controls come back. The mic does not restart.
+    case "DRAFT_EDIT_CANCELLED":
+      if (turnState.name !== "editing") {
+        return state;
+      }
+      return {
+        ...state,
+        turnState: { name: "reviewing", draft: turnState.draftBeforeEdit },
+      };
+
+    // Backs out of the whole turn: the transcript is dropped and the user can start
+    // over. Not offered while editing — "Cancel edit" occupies that slot there.
     case "DRAFT_DISCARDED":
-      if (turnState.name !== "reviewing") {
+      if (turnState.name !== "listening" && turnState.name !== "reviewing") {
         return state;
       }
       return { ...state, turnState: { name: "awaitingUser" } };
 
     case "USER_TURN_SENT":
-      if (turnState.name !== "reviewing") {
+      if (
+        turnState.name !== "listening" &&
+        turnState.name !== "reviewing" &&
+        turnState.name !== "editing"
+      ) {
         return state;
       }
       return {

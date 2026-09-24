@@ -49,10 +49,14 @@ export function StateStepper({ config, turns, turnState }: StateStepperProps) {
     },
     {
       name: "reviewing",
+      state: { name: "reviewing", draft: sampleUserLine },
+    },
+    {
+      name: "editing",
       state: {
-        name: "reviewing",
+        name: "editing",
         draft: sampleUserLine,
-        draftIsEditable: false,
+        draftBeforeEdit: sampleUserLine,
       },
     },
     { name: "aiThinking", state: { name: "aiThinking" } },

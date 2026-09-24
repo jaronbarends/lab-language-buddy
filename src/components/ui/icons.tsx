@@ -34,14 +34,6 @@ export function MicIcon({ size = 18 }: IconProps) {
   );
 }
 
-export function StopIcon({ size = 18 }: IconProps) {
-  return (
-    <svg {...iconAttributes(size)}>
-      <rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor" />
-    </svg>
-  );
-}
-
 export function SendIcon({ size = 18 }: IconProps) {
   return (
     <svg {...iconAttributes(size)}>

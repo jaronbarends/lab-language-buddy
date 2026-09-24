@@ -1,20 +1,27 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { FinishIcon, MicIcon, StopIcon } from "@/components/ui/icons";
-import type { TurnState } from "@/lib/session-reducer";
+import {
+  CrossIcon,
+  FinishIcon,
+  MicIcon,
+  PencilIcon,
+  SendIcon,
+} from "@/components/ui/icons";
+import { joinTranscript, type TurnState } from "@/lib/session-reducer";
 
-import { DraftReview } from "./draft-review";
+import { DraftBubble, DraftEditor } from "./draft-review";
+import { LiveTranscript } from "./live-transcript";
 import styles from "./conversation-controls.module.css";
 
 type ConversationControlsProps = {
   turnState: TurnState;
   onReply: () => void;
-  onStopListening: () => void;
   onDraftEdit: () => void;
   onDraftChange: (draft: string) => void;
   onDraftSend: () => void;
   onDraftCancel: () => void;
+  onEditCancel: () => void;
   onDismissError: () => void;
   onEndSession: () => void;
 };
@@ -27,25 +34,76 @@ type ConversationControlsProps = {
 export function ConversationControls({
   turnState,
   onReply,
-  onStopListening,
   onDraftEdit,
   onDraftChange,
   onDraftSend,
   onDraftCancel,
+  onEditCancel,
   onDismissError,
   onEndSession,
 }: ConversationControlsProps) {
-  if (turnState.name === "reviewing") {
+  // Listening, reviewing and editing are one continuous act of composing a turn, so
+  // they share a single set of controls rather than swapping the bar out underneath
+  // the user. Only the text above them changes: live transcript, settled draft, or
+  // an editable field.
+  //
+  // There is no Stop: Send, Edit and Cancel each end recording on their way to
+  // somewhere useful, which leaves Stop with nothing of its own to do. End session
+  // is absent here too — a turn in progress has to be sent or cancelled first.
+  const composing =
+    turnState.name === "listening" ||
+    turnState.name === "reviewing" ||
+    turnState.name === "editing"
+      ? turnState
+      : null;
+
+  if (composing) {
+    const editIsInProgress = composing.name === "editing";
+    const text =
+      composing.name === "listening"
+        ? joinTranscript(composing.transcript)
+        : composing.draft;
+
     return (
       <div className={styles.controls}>
-        <DraftReview
-          draft={turnState.draft}
-          draftIsEditable={turnState.draftIsEditable}
-          onEdit={onDraftEdit}
-          onChange={onDraftChange}
-          onSend={onDraftSend}
-          onCancel={onDraftCancel}
-        />
+        {composing.name === "listening" && (
+          <LiveTranscript transcript={composing.transcript} />
+        )}
+        {composing.name === "reviewing" && (
+          <DraftBubble draft={composing.draft} />
+        )}
+        {composing.name === "editing" && (
+          <DraftEditor draft={composing.draft} onChange={onDraftChange} />
+        )}
+
+        <Button
+          icon={<SendIcon />}
+          onClick={onDraftSend}
+          disabled={!text.trim()}
+        >
+          Send
+        </Button>
+
+        <div className={styles.sideBySide}>
+          <Button
+            variant="secondary"
+            icon={<PencilIcon />}
+            onClick={onDraftEdit}
+            disabled={editIsInProgress}
+          >
+            Edit
+          </Button>
+          {/* Cancel means two different things depending on where you are: back out
+              of the edit, or back out of the whole turn. Labelled so the difference
+              is visible before tapping rather than after. */}
+          <Button
+            variant="secondary"
+            icon={<CrossIcon />}
+            onClick={editIsInProgress ? onEditCancel : onDraftCancel}
+          >
+            {editIsInProgress ? "Cancel edit" : "Cancel"}
+          </Button>
+        </div>
       </div>
     );
   }
@@ -69,23 +127,6 @@ export function ConversationControls({
             End session
           </Button>
         </div>
-      </div>
-    );
-  }
-
-  if (turnState.name === "listening") {
-    return (
-      <div className={styles.controls}>
-        <Button icon={<StopIcon />} onClick={onStopListening}>
-          Stop
-        </Button>
-        <Button
-          variant="secondary"
-          icon={<FinishIcon />}
-          onClick={onEndSession}
-        >
-          End session
-        </Button>
       </div>
     );
   }

@@ -1,17 +1,18 @@
-.panel {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-}
-
+/* Matches .bubble/.user in bubble.module.css on purpose. The live transcript sits
+   in this same spot while recording and becomes this draft the moment it stops, so
+   any difference in width or alignment would read as the bubble jumping. */
 .draft {
   display: flex;
+  align-self: flex-end;
   align-items: flex-start;
   gap: var(--space-2);
+  width: fit-content;
+  max-width: 85%;
   padding: var(--space-3) var(--space-4);
   border: 1px solid var(--color-bubble-user-border);
   border-radius: var(--radius-md);
   background: var(--color-bubble-user);
+  box-shadow: var(--shadow-raised);
   overflow-wrap: break-word;
 }
 
@@ -38,8 +39,3 @@
   resize: vertical;
 }
 
-.secondaryActions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-3);
-}

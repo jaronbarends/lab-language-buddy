@@ -4,7 +4,6 @@ import { useEffect, useRef } from "react";
 
 import type { Turn, TurnState } from "@/lib/session-reducer";
 
-import { LiveTranscript } from "./live-transcript";
 import { ThinkingBubble } from "./thinking-bubble";
 import { TurnBubble } from "./turn-bubble";
 import styles from "./conversation-thread.module.css";
@@ -75,10 +74,6 @@ export function ConversationThread({
       ))}
 
       {turnState.name === "aiThinking" && <ThinkingBubble />}
-
-      {turnState.name === "listening" && (
-        <LiveTranscript transcript={turnState.transcript} />
-      )}
     </div>
   );
 }

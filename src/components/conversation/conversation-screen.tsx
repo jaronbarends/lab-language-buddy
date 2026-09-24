@@ -28,23 +28,24 @@ export function ConversationScreen({
     dispatch({ type: "LISTENING_STARTED" });
   }
 
-  function handleStopListening() {
-    const draft =
-      turnState.name === "listening" ? joinTranscript(turnState.transcript) : "";
-    dispatch({ type: "LISTENING_STOPPED", draft });
-  }
-
+  // Send is offered from all three composing states, so the text comes from
+  // whichever one is active: still-arriving transcript, settled draft, or the
+  // field being edited.
   function handleDraftSend() {
-    if (turnState.name !== "reviewing") {
+    const text =
+      turnState.name === "listening"
+        ? joinTranscript(turnState.transcript)
+        : turnState.name === "reviewing" || turnState.name === "editing"
+          ? turnState.draft
+          : "";
+
+    if (!text.trim()) {
       return;
     }
+
     dispatch({
       type: "USER_TURN_SENT",
-      turn: {
-        id: crypto.randomUUID(),
-        author: "user",
-        text: turnState.draft.trim(),
-      },
+      turn: { id: crypto.randomUUID(), author: "user", text: text.trim() },
     });
   }
 
@@ -56,11 +57,11 @@ export function ConversationScreen({
         <ConversationControls
           turnState={turnState}
           onReply={handleReply}
-          onStopListening={handleStopListening}
           onDraftEdit={() => dispatch({ type: "DRAFT_EDIT_STARTED" })}
           onDraftChange={(draft) => dispatch({ type: "DRAFT_CHANGED", draft })}
           onDraftSend={handleDraftSend}
           onDraftCancel={() => dispatch({ type: "DRAFT_DISCARDED" })}
+          onEditCancel={() => dispatch({ type: "DRAFT_EDIT_CANCELLED" })}
           onDismissError={() => dispatch({ type: "ERROR_DISMISSED" })}
           onEndSession={() => dispatch({ type: "SESSION_ENDED" })}
         />

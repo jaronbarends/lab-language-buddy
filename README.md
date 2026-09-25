@@ -115,29 +115,20 @@ npm run build
 Built in reviewable stages, one branch each, with a check-in between.
 
 - [x] **1 — Static screens, mocked data.** Every screen and turn state reachable with no
-      network, API keys or microphone. A mock driver dispatches the same actions the real
-      ones will; a dev-only state stepper jumps to any turn state.
+      network, API keys or microphone.
 - [ ] **2 — Gemini conversation.** `/api/chat`, multi-turn via `previous_interaction_id`.
 - [ ] **3 — Deepgram live STT and TTS.** Live interim/final transcript, spoken replies,
       word highlighting synced to playback.
-- [ ] **4 — Evaluation.** Design undecided on purpose — see below.
+- [ ] **4 — Evaluation.** Design deliberately undecided — three options are still open.
 
-### Out of scope
+## Planning and decisions
 
-Continuous / open-microphone mode, with no push-to-talk and the ability to interrupt the
-AI mid-sentence. It exists as an unfinished idea in the spike with two unresolved risks
-(whether Safari's audio unlock survives a whole session without repeated gestures, and
-echo when the mic stays open while AI audio plays through the phone speaker). Not proven,
-not in scope.
+[`docs/plan.md`](docs/plan.md) is the living plan: the state model, the component layout,
+every design decision with its reasoning, what is out of scope, and a dated decision log
+of everything that changed after the original plan was approved. It is updated in the same
+commit as the code change that invalidates it, so the two never disagree for longer than
+one commit.
 
-### Open decision: when evaluation happens
-
-Deliberately not decided. Three options, with real consequences for the chat schema and
-the control bar:
-
-1. **After each user turn** — what the spike does.
-2. **On demand**, via an Evaluate button — what the reference screenshots show.
-3. **Once at the end of a session** — what the current production app does.
-
-Stage 2's chat response is `{ reply }` only, with no per-turn `correction` field,
-specifically so this stays open rather than being settled by accident.
+Read it before changing anything structural — several things that look arbitrary (no Stop
+button, `editing` as its own state, the live transcript living outside the thread) are
+deliberate and the reasoning is recorded there.

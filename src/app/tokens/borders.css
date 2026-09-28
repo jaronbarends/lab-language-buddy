@@ -1,0 +1,28 @@
+:root {
+  /* primitive variables - borders */
+  --border-width-2: 0.125rem;
+
+  /* primitive variables - radii */
+  --radius-4: 0.25rem;
+  --radius-8: 0.5rem;
+  --radius-12: 0.75rem;
+  --radius-16: 1rem;
+  --radius-pill: 999rem;
+  --radius-circle: 50%;
+
+  /* semantic variables */
+
+  --border-width-default: var(--border-width-2);
+  --border-default: var(--border-width-default) solid;
+
+  --focus-outline-width: var(--border-width-default);
+  --focus-outline-offset: var(--size-2);
+  --focus-outline: var(--focus-outline-width) solid var(--color-focus-outline);
+
+  --bevel-small: var(--size-2);
+  --bevel-large: var(--size-4);
+
+  /* component variables */
+  --radius-button: var(--radius-pill);
+  --radius-input: var(--radius-12);
+}

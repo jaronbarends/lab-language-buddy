@@ -44,7 +44,7 @@ Safari on iPhone as a hard requirement; no persistence.
 
 | Decision | Choice | Why |
 |---|---|---|
-| Styling | CSS Modules + design tokens in `globals.css` | The design is a small bespoke system (pill buttons, two bubble variants, one accent colour). Tailwind's payoff is class reuse across a large surface; here it would mostly add a build step and bury the iOS-specific CSS in arbitrary-value escapes. |
+| Styling | CSS Modules, over the design system ported from the existing app | Tailwind's payoff is class reuse across a large surface; here it would mostly add a build step and bury the iOS-specific CSS in arbitrary-value escapes. |
 | State | One `useReducer` session machine + a dispatch context, side effects in hooks | The whole app is one session. A store library buys nothing, and a reducer makes illegal states unrepresentable. State reaches screens as props from `LanguageBuddy`, which narrows on `phase`; only `dispatch` travels by context. |
 | Turn states | A discriminated union carrying per-state data | `listening` carries the transcript, `aiSpeaking` the turn id and word count, `editing` the pre-edit text. "Recording while the AI speaks" is not a bug you can write. |
 | Turn identity | `crypto.randomUUID()` per turn, never an array index | This is the stale-closure off-by-one from `findings.md`, made structurally impossible rather than patched. |
@@ -170,6 +170,7 @@ so a page reload starts from the defaults again.
 ├── spikes/ai-voice-demo/         reference spike, untouched
 └── src/
     ├── app/                      layout.tsx, page.tsx, globals.css
+    │   └── tokens/               the design system — see below
     ├── components/
     │   ├── language-buddy.tsx    owns the reducer, renders by phase
     │   ├── setup-screen/         setup-screen, language-picker, level-select, starter-toggle
@@ -197,6 +198,40 @@ Still to come: `src/app/api/{chat,tts,stt/token}/route.ts`, `src/lib/prompt.ts`,
 **The language registry holds only provider-neutral data** — `code`, `label`,
 `promptName`, `deepgram`. Flags live in `flag-icon.tsx` and voices in each TTS provider,
 because a language code is not a country code and not a voice name.
+
+---
+
+## Design system
+
+`src/app/tokens/` holds five files carried over from the existing Language Buddy app:
+`colors`, `type`, `sizes`, `borders`, `animation`. They are kept as close to verbatim
+as possible so they can be re-synced when that app's system moves; `globals.css` imports
+them and is where anything this app needs *beyond* the system lives
+(`--layout-max-width`, `--safe-bottom`).
+
+Three deliberate deltas, each commented in place:
+
+- **`--color-yellow-subtle`** added, plus semantic `--color-bg-highlight`. The system had
+  no yellow and the read-along highlight needs one. Same lightness as
+  `--color-red-subtle` so the two tints sit level; no strong `--color-yellow`, since
+  nothing needs one.
+- **`--radius-button`** moved from `sizes.css` to `borders.css`, with the other radii.
+- **`--font-baloo` / `--font-worksans` removed from `type.css`.** next/font defines them
+  instead. Declaring them in both places would leave the winner down to stylesheet
+  injection order, since a class on `<html>` and `:root` have equal specificity.
+  `fonts.css` — which held only `@font-face` — is dropped entirely.
+
+**Fonts** are Baloo 2 (buttons, language picker, headings) and Work Sans (everything
+else, including the AI/Me toggle), loaded through `next/font/google` with the `latin`
+subset only. Latin-1 covers Norwegian æ ø å and Spanish ñ, so nothing is lost.
+
+**The bevel** is the system's signature: a thicker bottom border that collapses to the
+normal width on press while the element slides down by exactly that difference, so the
+bottom edge holds and the top drops. Buttons use `--bevel-large`, picker cards
+`--bevel-small`. A disabled button keeps the extra bottom width but makes the border
+transparent — flat and plainly not pressable, at an unchanged height.
+
+**Type scale** is 18px body. Buttons are 18px bold, except "Start chat" at 20px.
 
 ---
 
@@ -378,7 +413,11 @@ Per stage, in this order:
    personas or scenario cards would be a different feature.
 4. **Spain's flag is 81 KB** (full coat of arms) against ~250 bytes for the other five —
    invisible detail at 24 px, and effectively the whole flag payload. Not acted on.
-5. **Ending a session is one tap and unrecoverable.** No confirmation, nothing persisted.
+5. **White on `--color-bg-primary` is 4.05:1**, below the 4.5:1 WCAG needs for 18px
+   bold text (the "large text" exemption starts at 18.66px bold). Knowingly accepted:
+   it is the brand colour, and 20px "Start chat" clears the 3:1 bar that applies there.
+   Every other pair in the palette passes, several comfortably.
+6. **Ending a session is one tap and unrecoverable.** No confirmation, nothing persisted.
    Consistent with the brief, but it sits next to Reply.
 
 ---
@@ -405,6 +444,11 @@ the original.
 | 09-25 | The dot is a microphone-active indicator, not draft decoration | Present exactly while the mic is live. A pulse animation is planned for it. |
 | 09-25 | Dashed border dropped from the listening bubble | The dot says the same thing; two signals for one state, and it diverged from the reference. |
 | 09-25 | First turn reads "Start conversation" when the user opens | "Reply" is wrong before anything has been said. Keyed on the turn list being empty *and* the button being enabled. |
+| 09-28 | Design system adopted from the existing app: five token files under `src/app/tokens/`, kept near-verbatim | The app's own palette was flat next to the real thing, and a re-skin is cheapest now — before stage 3 adds highlight rendering and stage 4 a whole new content type. |
+| 09-28 | Bevels replace `--shadow-raised` | The system marks depth with a thick bottom border that collapses on press, not with soft shadows. Keeping one shadow would have left an alien element. |
+| 09-28 | Language picker ported whole: native radio in a label, `fieldset`/`legend`, `:has()` column counts, style container query for label orientation | Real radio semantics and keyboard behaviour come free, and the layout logic lives in CSS rather than in props. Replaces the `role="radio"` buttons. |
+| 09-28 | White on the primary button stays at 4.05:1 | See open question 5. Brand colour over the audit threshold, decided deliberately. |
+| 09-28 | Base font size 18px | Also retires the 16px floor that existed to stop iOS focus-zoom — we are now well clear of it, so those guards are gone. |
 | 09-25 | This plan moved into the repo as `docs/plan.md` | Outside git it was not reviewable, did not travel with the branch, and its changes left no diff. |
 | 09-29 | State context, `useSession` and `useConversation` removed; state stays props, only dispatch is context | They were never used: `LanguageBuddy` already narrows on `phase` and passes `turns`/`turnState` down. **Open option:** re-add a state context plus a narrowing `useConversation()` (throws outside the `conversation` phase) if a deeper component or a stage 2/3 hook would otherwise need state prop-drilled — do it when that is practical, not before. |
 | 09-29 | Error flow reworked: `FAILED` only from `aiThinking`/`listening`, error state carries `from` and optional `detail`, dismiss retries a failed AI call; new `AI_SPEECH_FAILED` | Dismissing always went to `awaitingUser`, so a failed Gemini call was never retried, a failed first AI turn showed "Start conversation", and a late `FAILED` could overwrite a draft. TTS failure now degrades to text-only instead of showing an error. |

@@ -3,23 +3,22 @@
      left/right alignment stays legible as "who said this". */
   max-width: 85%;
   width: fit-content;
-  padding: var(--space-3) var(--space-4);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-raised);
+  padding: var(--size-12) var(--size-16);
+  border: var(--border-width-default) solid var(--color-border-neutral);
+  border-radius: var(--radius-16);
   /* Long recognised words with no spaces shouldn't widen the bubble past its max. */
   overflow-wrap: break-word;
 }
 
 .ai {
   align-self: flex-start;
-  background: var(--color-bubble-ai);
+  background: var(--color-bg-default);
 }
 
 .user {
   align-self: flex-end;
-  background: var(--color-bubble-user);
-  border-color: var(--color-bubble-user-border);
+  background: var(--color-bg-secondary-subtle);
+  border-color: var(--color-border-secondary);
 }
 
 /* Speaker label for screen readers: the left/right alignment and colour that
@@ -38,7 +37,7 @@
 /* --- Progressive highlight during TTS playback --- */
 
 .spokenWord {
-  background: var(--color-highlight);
+  background: var(--color-bg-highlight);
   /* A hair of padding so consecutive highlighted words read as one continuous
      band rather than striped blocks. */
   padding: 1px 0;
@@ -49,15 +48,16 @@
 .thinking {
   display: flex;
   align-items: center;
-  gap: 5px;
-  padding: var(--space-4);
+  gap: var(--loader-dot-gap);
+  min-height: var(--loader-height);
+  padding: var(--size-16);
 }
 
 .dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--color-text-muted);
+  width: var(--loader-dot-size);
+  height: var(--loader-dot-size);
+  border-radius: var(--radius-circle);
+  background: var(--color-text-neutral-subtle);
   animation: pulse 1.2s ease-in-out infinite;
 }
 
@@ -74,11 +74,11 @@
   60%,
   100% {
     opacity: 0.3;
-    transform: translateY(0);
+    translate: 0 0;
   }
   30% {
     opacity: 1;
-    transform: translateY(-3px);
+    translate: 0 -3px;
   }
 }
 
@@ -91,13 +91,12 @@
 
 /* --- Live transcript --- */
 
-/* Layout only. The listening state used to carry a dashed border as well, but
-   the indicator dot says the same thing and says it better, so the border now
-   matches the settled draft bubble exactly — nothing shifts when recording ends. */
+/* Layout only. The frame matches the settled draft bubble exactly, so nothing
+   shifts when recording ends — the indicator dot is the only difference. */
 .listening {
   display: flex;
   align-items: flex-start;
-  gap: var(--space-2);
+  gap: var(--size-8);
 }
 
 /*
@@ -110,19 +109,19 @@
  */
 .listeningIndicator {
   flex-shrink: 0;
-  width: 8px;
-  height: 8px;
+  width: var(--size-8);
+  height: var(--size-8);
   /* Lines the dot up with the first line of text rather than the padding box. */
-  margin-top: 8px;
-  border-radius: 50%;
-  background: var(--color-accent);
+  margin-top: var(--size-8);
+  border-radius: var(--radius-circle);
+  background: var(--color-bg-primary);
 }
 
 .interim {
-  color: var(--color-interim);
+  color: var(--color-text-neutral-subtle);
 }
 
 .placeholder {
-  color: var(--color-interim);
+  color: var(--color-text-neutral-subtle);
   font-style: italic;
 }

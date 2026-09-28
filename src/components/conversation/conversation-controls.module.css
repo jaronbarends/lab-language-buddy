@@ -1,31 +1,31 @@
 .controls {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--size-12);
 }
 
 .sideBySide {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--space-3);
+  gap: var(--size-12);
 }
 
 .error {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
-  padding: var(--space-3) var(--space-4);
-  border: 1px solid var(--color-danger);
-  border-radius: var(--radius-md);
-  background: #fdf0ef;
-  color: var(--color-danger);
+  gap: var(--size-8);
+  padding: var(--size-12) var(--size-16);
+  border: var(--border-width-default) solid var(--color-text-error);
+  border-radius: var(--radius-input);
+  background: var(--color-bg-error);
+  color: var(--color-text-error);
 }
 
 .errorTitle {
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 
 .errorMessage {
-  font-size: 0.875rem;
+  font-size: var(--font-size-minor);
   overflow-wrap: break-word;
 }

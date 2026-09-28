@@ -1,49 +1,21 @@
+/*
+ * The five files under tokens/ are the design system, carried over from the
+ * existing Language Buddy app. Keep them as close to verbatim as possible so they
+ * can be re-synced; the only deliberate deltas are marked with comments in place
+ * (the highlight yellow, --radius-button's home, and the two font primitives that
+ * next/font now owns). Anything this app needs beyond the system goes below,
+ * not in those files.
+ */
+@import "./tokens/colors.css";
+@import "./tokens/type.css";
+@import "./tokens/sizes.css";
+@import "./tokens/borders.css";
+@import "./tokens/animation.css";
+
 :root {
-  /* Surfaces */
-  --color-bg: #eef1fb;
-  --color-surface: #ffffff;
-  --color-border: #d7dded;
-  --color-border-strong: #b9c4dd;
-
-  /* Text */
-  --color-text: #1e2430;
-  --color-text-muted: #6a7488;
-  --color-label: #5d6b8a;
-
-  /* Accent — the magenta used for primary actions */
-  --color-accent: #a83d7d;
-  --color-accent-strong: #8c3167;
-  --color-accent-soft: #f9dcee;
-
-  /* Speech bubbles */
-  --color-bubble-user: #cfe3fb;
-  --color-bubble-user-border: #8dbcf0;
-  --color-bubble-ai: #ffffff;
-
-  /* Live transcript + TTS highlight */
-  --color-interim: #98a2b6;
-  --color-highlight: #fff1b8;
-
-  --color-neutral-button: #d9dde8;
-  --color-danger: #b3261e;
-
-  --radius-sm: 8px;
-  --radius-md: 14px;
-  --radius-pill: 999px;
-
-  --shadow-raised: 0 1px 2px rgb(30 36 48 / 0.08);
-
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 24px;
-  --space-6: 32px;
-
-  --layout-max-width: 680px;
-
-  /* Breathing room under the control bar (the last item in the conversation
-     screen's flex column) on notched iPhones. */
+  /* App-specific, outside the design system. */
+  --layout-max-width: 42.5rem;
+  /* Breathing room under the control bar on notched iPhones. */
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 
@@ -69,13 +41,12 @@ body {
   min-height: 100dvh;
   /* Clips horizontal overflow, so the page itself never scrolls sideways. */
   overflow-x: hidden;
-  background: var(--color-bg);
-  color: var(--color-text);
-  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
-  /* iOS Safari zooms the page when a control smaller than 16px takes focus.
-     Everything focusable in this app stays at or above that. */
-  font-size: 16px;
-  line-height: 1.45;
+  background: var(--color-bg-page);
+  color: var(--color-text-default);
+  font-family: var(--font-family-default);
+  font-size: var(--font-size-body-default);
+  font-weight: var(--font-weight-default);
+  line-height: var(--line-height-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   /* Turns off the rubber-band overscroll of the page itself on the vertical axis. */
@@ -96,9 +67,24 @@ button {
   background: none;
 }
 
-/* Visible focus for keyboard users without putting a ring on every tap target
-   on touch devices. */
 :focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
+  outline: var(--focus-outline);
+  outline-offset: var(--focus-outline-offset);
+}
+
+/*
+ * Hides a form control visually while leaving it focusable and operable, so a
+ * native radio can drive a styled label. Deliberately not display:none or
+ * visibility:hidden — both would take it out of the tab order and break the
+ * :has(:focus-visible) styling that depends on it.
+ */
+.u-hidden-form-control {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }

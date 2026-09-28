@@ -1,0 +1,27 @@
+:root {
+  /* primitive variables */
+
+  /* primitive variables - spacing */
+  --size-2: 0.125rem;
+  --size-4: 0.25rem;
+  --size-8: 0.5rem;
+  --size-12: 0.75rem;
+  --size-16: 1rem;
+  --size-24: 1.5rem;
+  --size-32: 2rem;
+  --size-36: 2.25rem;
+  --size-48: 3rem;
+  --size-54: 3.375rem;
+  --size-64: 4rem;
+
+  /* semantic variables */
+
+  /* component variables - radii */
+  --radius-button: var(--radius-pill);
+
+  --label-gap: var(--size-8);
+  --loader-dot-size: var(--size-8);
+  --loader-height: var(--size-24);
+  --loader-dot-gap: var(--size-4);
+  --loader-width: calc(3 * var(--loader-dot-size) + 2 * var(--loader-dot-gap));
+}

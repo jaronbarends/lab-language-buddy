@@ -23,7 +23,6 @@ type SetupScreenProps = {
   onStart: (config: SessionConfig) => void;
 };
 
-const LANGUAGE_LABEL_ID = "setup-language-label";
 const LEVEL_LABEL_ID = "setup-level-label";
 const STARTER_LABEL_ID = "setup-starter-label";
 
@@ -57,13 +56,10 @@ export function SetupScreen({ lastConfig, onStart }: SetupScreenProps) {
       </header>
 
       <div className={styles.field}>
-        <span id={LANGUAGE_LABEL_ID} className={styles.fieldLabel}>
-          Choose your practice language
-        </span>
         <LanguagePicker
           value={language}
           onChange={setLanguage}
-          labelledBy={LANGUAGE_LABEL_ID}
+          legend="Choose your practice language"
         />
       </div>
 
@@ -90,7 +86,11 @@ export function SetupScreen({ lastConfig, onStart }: SetupScreenProps) {
       </div>
 
       <div className={styles.submit}>
-        <Button onClick={handleStartClick} icon={<ChatIcon />}>
+        <Button
+          onClick={handleStartClick}
+          icon={<ChatIcon />}
+          fontSize="large"
+        >
           Start chat
         </Button>
       </div>

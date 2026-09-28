@@ -5,26 +5,22 @@
   align-self: flex-end;
   width: fit-content;
   max-width: 85%;
-  padding: var(--space-3) var(--space-4);
-  border: 1px solid var(--color-bubble-user-border);
-  border-radius: var(--radius-md);
-  background: var(--color-bubble-user);
-  box-shadow: var(--shadow-raised);
+  padding: var(--size-12) var(--size-16);
+  border: var(--border-width-default) solid var(--color-border-secondary);
+  border-radius: var(--radius-16);
+  background: var(--color-bg-secondary-subtle);
   overflow-wrap: break-word;
 }
 
-
 .editor {
   width: 100%;
-  min-height: 96px;
-  padding: var(--space-3) var(--space-4);
-  border: 2px solid var(--color-bubble-user-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
-  /* Must stay at 16px or larger, or iOS Safari zooms the viewport on focus and
-     the fixed control bar ends up off-screen. */
-  font-size: 1rem;
-  line-height: 1.45;
+  min-height: 6rem;
+  padding: var(--size-12) var(--size-16);
+  border: var(--border-width-default) solid var(--color-border-secondary);
+  border-radius: var(--radius-input);
+  background: var(--color-bg-input);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-body-default);
+  line-height: var(--line-height-body);
   resize: vertical;
 }
-

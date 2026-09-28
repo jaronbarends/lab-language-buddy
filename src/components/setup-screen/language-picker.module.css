@@ -1,48 +1,123 @@
-.grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-2);
+.fieldset {
+  /* A fieldset brings its own border and padding; the grid below does the work. */
+  border: none;
 }
 
-/* Three across is tight on a narrow phone once "Norwegian" has to fit next to a
-   flag, so drop to two. */
-@media (max-width: 420px) {
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
+.legend {
+  margin-bottom: var(--label-gap);
+  padding: 0;
+  font-family: var(--font-family-label);
+  font-size: var(--font-size-12);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-label);
+}
+
+.languageOptions {
+  --column-count: auto-fit;
+  /* Declared here so the labels can read it through a style container query. */
+  --label-layout: vertical;
+  --color-border-highlight: var(--color-border-primary-subtle);
+
+  display: grid;
+  grid-template-columns: repeat(var(--column-count), minmax(6rem, 1fr));
+  gap: var(--label-gap);
+  align-items: end;
+
+  /*
+  layout is adjusted depending on screen width and number of items (counted using :has) in 2 ways:
+  - number of columns
+  - orientation within label (horizontal vs vertical)
+  */
+  @media screen and (min-width: 21rem) {
+    &:has(.label:last-child:nth-child(2)),
+    &:has(.label:last-child:nth-child(4)) {
+      --column-count: 2;
+      --label-layout: horizontal;
+    }
+
+    &:has(.label:last-child:nth-child(3)),
+    &:has(.label:nth-child(5)) {
+      /* nth-child(5) also handles 6); if we should get more than 6 items, we probably want a different UI */
+      --column-count: 3;
+    }
+  }
+
+  @media screen and (min-width: 30rem) {
+    &:has(.label:last-child:nth-child(4)) {
+      /* make sure to redeclare all props from 21rem breakpoint */
+      --column-count: 4;
+      --label-layout: vertical;
+    }
+  }
+
+  @media screen and (min-width: 35rem) {
+    &:has(.label:last-child:nth-child(3)),
+    &:has(.label:nth-child(5)) {
+      --label-layout: horizontal;
+    }
   }
 }
 
-.option {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  min-height: 56px;
-  padding: var(--space-2) var(--space-3);
-  border: 2px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
-  box-shadow: var(--shadow-raised);
-  text-align: left;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.option:active {
-  background: var(--color-bg);
-}
-
-.selected {
-  border-color: var(--color-accent);
-  background: var(--color-accent-soft);
-}
-
-.selected:active {
-  background: var(--color-accent-soft);
-}
-
 .label {
-  font-weight: 600;
-  /* "Upper intermediate" aside, the longest label is Norwegian — but allow the
-     shrink rather than let a long word push the card wider than its grid cell. */
-  min-width: 0;
-  overflow-wrap: break-word;
+  --border-width: var(--border-width-default);
+  /* Smaller bevel than a button: these are lighter-weight controls. */
+  --bevel: var(--bevel-small);
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--size-4);
+  border: var(--border-width) solid var(--color-border-input);
+  border-bottom-width: calc(var(--border-width) + var(--bevel));
+  border-radius: var(--radius-input);
+  padding: var(--size-12) var(--size-16) var(--size-4);
+  background: var(--color-bg-input);
+  font-size: var(--font-size-16);
+  font-family: var(--font-family-display);
+  cursor: pointer;
+  transition-property: border-width, translate, background-color, border-color,
+    color;
+  transition-duration: var(--duration-instant);
+  -webkit-tap-highlight-color: transparent;
+
+  /* adjust styling for labels with horizontal layout */
+  @container style(--label-layout: horizontal) {
+    flex-direction: row;
+    padding-bottom: var(--size-12);
+    gap: var(--size-8);
+  }
+}
+
+.label:hover,
+.label:has(:focus-visible) {
+  border-color: var(--color-border-highlight);
+}
+
+.label:has(:focus-visible) {
+  outline: var(--focus-outline);
+  outline-offset: var(--focus-outline-offset);
+}
+
+.label:has(:checked) {
+  border-color: var(--color-border-highlight);
+  background-color: var(--color-bg-primary-subtle);
+  color: var(--color-text-primary);
+}
+
+.label:active {
+  border-bottom-width: var(--border-width);
+  translate: 0 var(--bevel);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .label {
+    transition-property: background-color, border-color, color;
+  }
+}
+
+.flagIcon {
+  display: grid;
 }

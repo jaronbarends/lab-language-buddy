@@ -204,8 +204,15 @@ because a language code is not a country code and not a voice name.
 ## Design system
 
 `src/app/tokens/` holds five files carried over from the existing Language Buddy app:
-`colors`, `type`, `sizes`, `borders`, `animation`. They are kept as close to verbatim
-as possible so they can be re-synced when that app's system moves; `globals.css` imports
+`colors`, `type`, `sizes`, `borders`, `animation`.
+
+**Source:** <https://github.com/jaronbarends/language-buddy>, `src/styles/settings/`, as of
+commit `663188fc` (2026-09-28, "reverse color scales"). That repo is the live system and
+stays the place to look; no copy of the originals is kept here, because a second copy
+would only drift from both it and from our working files. Compare against the source
+before assuming a token still matches.
+
+The files are kept as close to verbatim as possible so they can be re-synced; `globals.css` imports
 them and is where anything this app needs *beyond* the system lives
 (`--layout-max-width`, `--safe-bottom`).
 

@@ -478,23 +478,47 @@ have been argued over first.
 
 ## Keeping the experiment honest
 
-The reference app is legitimate input for some things and corrupting for others, and the
-line does not fall between build and correction phases — it falls between kinds of
-material.
+The existing app at <https://github.com/jaronbarends/language-buddy> is a reference, and
+this repo exists partly to see what an AI agent produces on its own. Those pull against
+each other, so the rule is deliberately blunt.
 
-- **Colour, typography, spacing, the bevel: free to use.** These are taste and brand.
-  They were never the agent's to invent, any more than the brief was.
-- **Architecture, state modelling, component boundaries, error handling: don't.**
-  Producing something resembling the existing app there measures nothing except past
-  decisions reflected back.
-- **Component implementations are the grey zone.** `LanguagePicker` was both at once:
-  its layout logic is design, its markup choice is engineering. Porting it whole lost the
-  independent answer the agent had already given.
+### The agent does not read the reference repo unless pointed at a specific file
+
+No browsing ahead, no listing the tree, no "just checking" — and this holds for parts of
+the app that already exist here, not only for unbuilt stages.
+
+The reason is not only contamination. In a correction round **Jaron leads**: he says what
+should change. An agent that goes and reads the reference implementation of something
+nobody asked about stops being corrected and starts overwriting, and the diff turns from
+"what was asked for" into "what the agent decided the other app did better". That is the
+control the rule protects.
+
+In practice: the change gets described, the agent implements it its own way, and what
+comes out wrong gets corrected. If the agent believes reading a particular file would
+genuinely save time, it asks first, and the answer may be no. Anything it does read gets
+named out loud as it happens.
+
+The agent cannot unsee something. So if it hits out-of-scope material by accident — an
+import leading somewhere, a file holding more than expected — it says so rather than
+using it quietly.
+
+*Already leaked, on the agent's own initiative before this rule existed:* two full
+repository tree listings, so the paths and filenames of ~35 stylesheets are known,
+including `Evaluation.module.css`. Names and existence only, no contents.
+
+### What the reference is legitimately for
+
+When a file *is* pointed at, what it settles still matters:
+
+- **Colour, typography, spacing, the bevel.** Taste and brand — never the agent's to
+  invent, any more than the brief was.
+- **Architecture, state modelling, component boundaries, error handling.** Resembling the
+  existing app here measures nothing except past decisions reflected back.
+- **Component implementations are the grey zone.** `LanguagePicker` was both at once: its
+  layout logic is design, its markup choice is engineering. Porting it whole discarded an
+  answer the agent had already given, and that row is marked `ported` above for exactly
+  that reason.
 
 Two mechanisms keep this measurable rather than a matter of impression: the Source column
 above, and keeping correction rounds on their own branches, so `git diff` between them is
-literally "what changed once the reference was visible".
-
-**Near-term:** the existing app's evaluation implementation stays off-limits until the
-stage 4 design discussion has happened. Reading it first would settle a question that is
-recorded here as deliberately open.
+literally "what changed once the reference was consulted".

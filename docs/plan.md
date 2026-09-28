@@ -434,32 +434,67 @@ Per stage, in this order:
 Changes made after the plan was approved on 2026-09-23. Each line contradicts or extends
 the original.
 
-| Date | Change | Why |
-|---|---|---|
-| 09-23 | App scaffolded at the repo root; UI copy in English | Answered during planning. |
-| 09-23 | Scaffolded via the scratchpad; repo's own `.gitignore` kept | The scaffold's version is root-anchored and would have started tracking the spike's `node_modules`. |
-| 09-24 | Auto-scroll aligns the **top** of a new bubble too tall to fit | Scrolling to the bottom landed the user on its last line, with the highlight starting off-screen and nothing re-scrolling during playback. |
-| 09-24 | `flag-icons` replaces emoji flags | Emoji flags render as bare country letters on Windows. Six SVGs imported, not the stylesheet. |
-| 09-24 | Session config line removed from the conversation screen | User's call. `config` dropped from `ConversationScreen`'s props with it. |
-| 09-24 | Button variants reduced to `primary` and `secondary`, each with its own disabled look | Grey fill is primary's *disabled* state, not a separate variant, and the label stays at full contrast — a blanket `opacity` was washing it out. |
-| 09-24 | Reply is a primary button, so magenta when tappable | Deliberate divergence from the reference, where Reply is grey in every state. Confirmed as intended. |
-| 09-24 | The `ended` phase removed; End session returns to setup | User's call. `RESTART` and the ended screen went with it. |
-| 09-24 | `lastConfig` carried into setup as the new defaults | Otherwise every repeat session meant re-picking the same language. |
-| 09-24 | Live transcript moved from the thread into the control bar | It is not part of the conversation yet, and it becomes the draft in place — rendering it in the thread moved it across the screen at that moment. Draft bubble restyled to match so nothing jumps. |
-| 09-24 | One shared set of controls across listening/reviewing/editing; **Stop removed** | Send, Edit and Cancel each end recording anyway. End session left those three states with it. |
-| 09-24 | `editing` became its own turn state with `draftBeforeEdit` | *Cancel edit* has to restore the pre-edit text, and only that state has somewhere to keep it. |
-| 09-25 | The dot is a microphone-active indicator, not draft decoration | Present exactly while the mic is live. A pulse animation is planned for it. |
-| 09-25 | Dashed border dropped from the listening bubble | The dot says the same thing; two signals for one state, and it diverged from the reference. |
-| 09-25 | First turn reads "Start conversation" when the user opens | "Reply" is wrong before anything has been said. Keyed on the turn list being empty *and* the button being enabled. |
-| 09-28 | Design system adopted from the existing app: five token files under `src/app/tokens/`, kept near-verbatim | The app's own palette was flat next to the real thing, and a re-skin is cheapest now — before stage 3 adds highlight rendering and stage 4 a whole new content type. |
-| 09-28 | Bevels replace `--shadow-raised` | The system marks depth with a thick bottom border that collapses on press, not with soft shadows. Keeping one shadow would have left an alien element. |
-| 09-28 | Language picker ported whole: native radio in a label, `fieldset`/`legend`, `:has()` column counts, style container query for label orientation | Real radio semantics and keyboard behaviour come free, and the layout logic lives in CSS rather than in props. Replaces the `role="radio"` buttons. |
-| 09-28 | White on the primary button stays at 4.05:1 | See open question 5. Brand colour over the audit threshold, decided deliberately. |
-| 09-28 | Base font size 18px | Also retires the 16px floor that existed to stop iOS focus-zoom — we are now well clear of it, so those guards are gone. |
-| 09-25 | This plan moved into the repo as `docs/plan.md` | Outside git it was not reviewable, did not travel with the branch, and its changes left no diff. |
-| 09-29 | State context, `useSession` and `useConversation` removed; state stays props, only dispatch is context | They were never used: `LanguageBuddy` already narrows on `phase` and passes `turns`/`turnState` down. **Open option:** re-add a state context plus a narrowing `useConversation()` (throws outside the `conversation` phase) if a deeper component or a stage 2/3 hook would otherwise need state prop-drilled — do it when that is practical, not before. |
-| 09-29 | Error flow reworked: `FAILED` only from `aiThinking`/`listening`, error state carries `from` and optional `detail`, dismiss retries a failed AI call; new `AI_SPEECH_FAILED` | Dismissing always went to `awaitingUser`, so a failed Gemini call was never retried, a failed first AI turn showed "Start conversation", and a late `FAILED` could overwrite a draft. TTS failure now degrades to text-only instead of showing an error. |
-| 09-29 | `AI_SPEECH_PROGRESSED`, `AI_SPEECH_FINISHED` and `AI_SPEECH_FAILED` carry a `turnId`; the reducer ignores them when it is not the turn being spoken | With one `<audio>` element reused across turns, a late `timeupdate` or `ended` from the previous turn's audio could otherwise land on the current one — contradicting the rule that anything pointing at a turn matches on its id. |
-| 09-29 | Reducer contract for the async drivers, stated in its doc comment | The reducer cannot tell a stale `AI_TURN_RECEIVED` or `TRANSCRIPT_UPDATED` from a current one; both only check the state name. Every async source must therefore cancel when the state that started it is left: abort fetches, detach handlers from and close sockets. A note for stages 2 and 3, nothing built yet. |
-| 09-29 | `USER_TURN_SENT` and `AI_TURN_RECEIVED` take `{ id, text }`, not a whole `Turn`; the reducer sets `author` | The caller no longer picks the author, and the "no empty user turn" rule (trimmed text) lives in the reducer instead of only in the component. |
-| 09-29 | The reducer's `default` branch is a compile-time exhaustiveness check (`action satisfies never`) | An action added to the union but not handled now fails `tsc` instead of being silently ignored. Verified with a temporary dummy action. |
+**Source** records who *originated* the decision, which is the point of the column:
+this repo exists partly to see what an AI agent produces, and that question is only
+answerable if it is visible which choices were the agent's own. Approving a proposal does
+not change its origin, and neither does rejecting one — a row marked `agent` may well
+have been argued over first.
+
+- `agent` — the agent proposed it, from the brief or from the code
+- `you` — Jaron decided it, whether unprompted or by picking from options offered
+- `ported` — taken from the existing app at <https://github.com/jaronbarends/language-buddy>
+
+| Date | Source | Change | Why |
+|---|---|---|---|
+| 09-23 | you | App scaffolded at the repo root; UI copy in English | Answered during planning. |
+| 09-23 | agent | Scaffolded via the scratchpad; repo's own `.gitignore` kept | The scaffold's version is root-anchored and would have started tracking the spike's `node_modules`. |
+| 09-24 | you | Auto-scroll aligns the **top** of a new bubble too tall to fit | Scrolling to the bottom landed the user on its last line, with the highlight starting off-screen and nothing re-scrolling during playback. Chosen over following the highlight during playback, which stays available. |
+| 09-24 | you | `flag-icons` replaces emoji flags | Emoji flags render as bare country letters on Windows. Six SVGs imported, not the stylesheet. |
+| 09-24 | you | Session config line removed from the conversation screen | `config` dropped from `ConversationScreen`'s props with it. |
+| 09-24 | you | Button variants reduced to `primary` and `secondary`, each with its own disabled look | Grey fill is primary's *disabled* state, not a separate variant. Corrected an agent misreading that had invented two extra variants and dimmed the label with `opacity`. |
+| 09-24 | agent | Reply is a primary button, so magenta when tappable | Deliberate divergence from the reference, where Reply is grey in every state. Confirmed as intended. |
+| 09-24 | you | The `ended` phase removed; End session returns to setup | `RESTART` and the ended screen went with it. |
+| 09-24 | you | `lastConfig` carried into setup as the new defaults | Otherwise every repeat session meant re-picking the same language. |
+| 09-24 | you | Live transcript moved from the thread into the control bar | It is not part of the conversation yet, and it becomes the draft in place — rendering it in the thread moved it across the screen at that moment. Draft bubble restyled to match so nothing jumps. |
+| 09-24 | you | One shared set of controls across listening/reviewing/editing; **Stop removed** | Send, Edit and Cancel each end recording anyway. End session left those three states with it. |
+| 09-24 | agent | `editing` became its own turn state with `draftBeforeEdit` | *Cancel edit* has to restore the pre-edit text, and only that state has somewhere to keep it. |
+| 09-25 | agent | This plan moved into the repo as `docs/plan.md` | Outside git it was not reviewable, did not travel with the branch, and its changes left no diff. |
+| 09-25 | you | The dot is a microphone-active indicator, not draft decoration | Present exactly while the mic is live. A pulse animation is planned for it. |
+| 09-25 | agent | Dashed border dropped from the listening bubble | The dot says the same thing; two signals for one state, and it diverged from the reference. |
+| 09-25 | you | First turn reads "Start conversation" when the user opens | "Reply" is wrong before anything has been said. Keyed on the turn list being empty *and* the button being enabled. |
+| 09-28 | you | Design system adopted from the existing app: five token files under `src/app/tokens/`, kept near-verbatim | The rebuild's own palette was flat next to the real thing, and a re-skin is cheapest now — before stage 3 adds highlight rendering and stage 4 a whole new content type. |
+| 09-28 | ported | Bevels replace `--shadow-raised` | The system marks depth with a thick bottom border that collapses on press, not with soft shadows. Keeping one shadow would have left an alien element. |
+| 09-28 | ported | Language picker ported whole: native radio in a label, `fieldset`/`legend`, `:has()` column counts, style container query for label orientation | Real radio semantics and keyboard behaviour come free, and the layout logic lives in CSS rather than in props. Replaces the agent's `role="radio"` buttons — the one place in this round where a *structural* choice was overwritten rather than a visual one. |
+| 09-28 | you | White on the primary button stays at 4.05:1 | See open question 5. Brand colour over the audit threshold, decided deliberately. |
+| 09-28 | you | Base font size 18px | Also retires the 16px floor that existed to stop iOS focus-zoom — we are now well clear of it, so those guards are gone. |
+| 09-28 | agent | `resources/css-reference/` dropped; provenance recorded instead | A third copy of files the source repo and `src/app/tokens/` both already hold would drift from both. |
+| 09-28 | you | This Source column added, filled retroactively | Makes "what did the agent actually decide" answerable by reading one table rather than re-reading the history. |
+| 09-29 | agent | State context, `useSession` and `useConversation` removed; state stays props, only dispatch is context | They were never used: `LanguageBuddy` already narrows on `phase` and passes `turns`/`turnState` down. **Open option:** re-add a state context plus a narrowing `useConversation()` (throws outside the `conversation` phase) if a deeper component or a stage 2/3 hook would otherwise need state prop-drilled — do it when that is practical, not before. |
+| 09-29 | agent | Error flow reworked: `FAILED` only from `aiThinking`/`listening`, error state carries `from` and optional `detail`, dismiss retries a failed AI call; new `AI_SPEECH_FAILED` | Dismissing always went to `awaitingUser`, so a failed Gemini call was never retried, a failed first AI turn showed "Start conversation", and a late `FAILED` could overwrite a draft. TTS failure now degrades to text-only instead of showing an error. |
+| 09-29 | agent | `AI_SPEECH_PROGRESSED`, `AI_SPEECH_FINISHED` and `AI_SPEECH_FAILED` carry a `turnId`; the reducer ignores them when it is not the turn being spoken | With one `<audio>` element reused across turns, a late `timeupdate` or `ended` from the previous turn's audio could otherwise land on the current one — contradicting the rule that anything pointing at a turn matches on its id. |
+| 09-29 | agent | Reducer contract for the async drivers, stated in its doc comment | The reducer cannot tell a stale `AI_TURN_RECEIVED` or `TRANSCRIPT_UPDATED` from a current one; both only check the state name. Every async source must therefore cancel when the state that started it is left: abort fetches, detach handlers from and close sockets. A note for stages 2 and 3, nothing built yet. |
+| 09-29 | agent | `USER_TURN_SENT` and `AI_TURN_RECEIVED` take `{ id, text }`, not a whole `Turn`; the reducer sets `author` | The caller no longer picks the author, and the "no empty user turn" rule (trimmed text) lives in the reducer instead of only in the component. |
+| 09-29 | agent | The reducer's `default` branch is a compile-time exhaustiveness check (`action satisfies never`) | An action added to the union but not handled now fails `tsc` instead of being silently ignored. Verified with a temporary dummy action. |
+
+## Keeping the experiment honest
+
+The reference app is legitimate input for some things and corrupting for others, and the
+line does not fall between build and correction phases — it falls between kinds of
+material.
+
+- **Colour, typography, spacing, the bevel: free to use.** These are taste and brand.
+  They were never the agent's to invent, any more than the brief was.
+- **Architecture, state modelling, component boundaries, error handling: don't.**
+  Producing something resembling the existing app there measures nothing except past
+  decisions reflected back.
+- **Component implementations are the grey zone.** `LanguagePicker` was both at once:
+  its layout logic is design, its markup choice is engineering. Porting it whole lost the
+  independent answer the agent had already given.
+
+Two mechanisms keep this measurable rather than a matter of impression: the Source column
+above, and keeping correction rounds on their own branches, so `git diff` between them is
+literally "what changed once the reference was visible".
+
+**Near-term:** the existing app's evaluation implementation stays off-limits until the
+stage 4 design discussion has happened. Reading it first would settle a question that is
+recorded here as deliberately open.

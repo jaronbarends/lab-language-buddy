@@ -15,6 +15,9 @@ export function TurnBubble({ turn, spokenWordCount }: TurnBubbleProps) {
 
   return (
     <p className={`${styles.bubble} ${authorStyle}`}>
+      <span className={styles.speakerLabel}>
+        {turn.author === "ai" ? "AI: " : "You: "}
+      </span>
       {turnIsBeingSpoken ? (
         <HighlightedText text={turn.text} spokenWordCount={spokenWordCount} />
       ) : (

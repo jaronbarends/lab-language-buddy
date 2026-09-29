@@ -44,11 +44,8 @@ export function useMockDriver(
       const aiTurnIndex = countTurnsBy(state, "ai");
       dispatch({
         type: "AI_TURN_RECEIVED",
-        turn: {
-          id: crypto.randomUUID(),
-          author: "ai",
-          text: mockAiLine(state.config.language, aiTurnIndex),
-        },
+        id: crypto.randomUUID(),
+        text: mockAiLine(state.config.language, aiTurnIndex),
       });
     }, AI_THINKING_MS);
 
@@ -83,11 +80,15 @@ export function useMockDriver(
 
       if (spokenWordCount > totalWords) {
         clearInterval(intervalId);
-        dispatch({ type: "AI_SPEECH_FINISHED" });
+        dispatch({ type: "AI_SPEECH_FINISHED", turnId: speakingTurnId });
         return;
       }
 
-      dispatch({ type: "AI_SPEECH_PROGRESSED", spokenWordCount });
+      dispatch({
+        type: "AI_SPEECH_PROGRESSED",
+        turnId: speakingTurnId,
+        spokenWordCount,
+      });
     }, SPOKEN_MS_PER_WORD);
 
     return () => clearInterval(intervalId);

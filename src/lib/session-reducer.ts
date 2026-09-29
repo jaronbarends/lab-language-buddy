@@ -19,6 +19,10 @@ export type Turn = {
    * a closure captured before the `setTurns` that appended the user's turn, so the
    * highlight landed one bubble too early. Matching on an id removes the race
    * regardless of how React batches the updates.
+   *
+   * The speech actions (`AI_SPEECH_PROGRESSED`, `AI_SPEECH_FINISHED`,
+   * `AI_SPEECH_FAILED`) match on it too: with one `<audio>` element reused across
+   * turns, a late event from the previous turn's audio must not land on the current one.
    */
   id: string;
   author: "ai" | "user";
@@ -100,11 +104,11 @@ export type SessionAction =
   | { type: "DRAFT_CHANGED"; draft: string }
   | { type: "DRAFT_EDIT_CANCELLED" }
   | { type: "DRAFT_DISCARDED" }
-  | { type: "USER_TURN_SENT"; turn: Turn }
-  | { type: "AI_TURN_RECEIVED"; turn: Turn }
-  | { type: "AI_SPEECH_PROGRESSED"; spokenWordCount: number }
-  | { type: "AI_SPEECH_FINISHED" }
-  | { type: "AI_SPEECH_FAILED" }
+  | { type: "USER_TURN_SENT"; id: string; text: string }
+  | { type: "AI_TURN_RECEIVED"; id: string; text: string }
+  | { type: "AI_SPEECH_PROGRESSED"; turnId: string; spokenWordCount: number }
+  | { type: "AI_SPEECH_FINISHED"; turnId: string }
+  | { type: "AI_SPEECH_FAILED"; turnId: string }
   | { type: "FAILED"; message: string; detail?: string }
   | { type: "ERROR_DISMISSED" }
   | { type: "SESSION_ENDED" }
@@ -125,6 +129,12 @@ export function joinTranscript({ finalized, interim }: LiveTranscript): string {
  * fetches — lives in a hook that dispatches into this. Transitions that don't apply
  * to the current state are ignored rather than throwing: a late `TRANSCRIPT_UPDATED`
  * arriving after the socket closed is normal, not a bug worth crashing over.
+ *
+ * Contract for the async drivers (stages 2 and 3): the speech actions are matched to
+ * their turn by id, but the reducer cannot tell a stale `AI_TURN_RECEIVED` or
+ * `TRANSCRIPT_UPDATED` from a current one — both only check the state name. So every
+ * async source must cancel when the state that started it is left: abort in-flight
+ * fetches, and detach handlers from and close sockets.
  */
 export function sessionReducer(
   state: SessionState,
@@ -268,9 +278,16 @@ export function sessionReducer(
       ) {
         return state;
       }
+      // An empty turn is never worth sending, whichever component dispatched it.
+      if (!action.text.trim()) {
+        return state;
+      }
       return {
         ...state,
-        turns: [...state.turns, action.turn],
+        turns: [
+          ...state.turns,
+          { id: action.id, author: "user", text: action.text.trim() },
+        ],
         turnState: { name: "aiThinking" },
       };
 
@@ -279,19 +296,25 @@ export function sessionReducer(
         return state;
       }
       // The turn and the "this one is speaking" pointer are set in the same
-      // transition, from the same object — there's no window in which they disagree.
+      // transition, from the same id — there's no window in which they disagree.
       return {
         ...state,
-        turns: [...state.turns, action.turn],
+        turns: [
+          ...state.turns,
+          { id: action.id, author: "ai", text: action.text },
+        ],
         turnState: {
           name: "aiSpeaking",
-          turnId: action.turn.id,
+          turnId: action.id,
           spokenWordCount: 0,
         },
       };
 
     case "AI_SPEECH_PROGRESSED":
-      if (turnState.name !== "aiSpeaking") {
+      if (
+        turnState.name !== "aiSpeaking" ||
+        action.turnId !== turnState.turnId
+      ) {
         return state;
       }
       if (turnState.spokenWordCount === action.spokenWordCount) {
@@ -306,7 +329,10 @@ export function sessionReducer(
       };
 
     case "AI_SPEECH_FINISHED":
-      if (turnState.name !== "aiSpeaking") {
+      if (
+        turnState.name !== "aiSpeaking" ||
+        action.turnId !== turnState.turnId
+      ) {
         return state;
       }
       return { ...state, turnState: { name: "awaitingUser" } };
@@ -316,7 +342,10 @@ export function sessionReducer(
     // `AI_SPEECH_FINISHED`, so the two stay distinguishable. The dispatching driver
     // is responsible for `console.error`; nothing here logs.
     case "AI_SPEECH_FAILED":
-      if (turnState.name !== "aiSpeaking") {
+      if (
+        turnState.name !== "aiSpeaking" ||
+        action.turnId !== turnState.turnId
+      ) {
         return state;
       }
       return { ...state, turnState: { name: "awaitingUser" } };
@@ -324,7 +353,10 @@ export function sessionReducer(
     case "DEV_FORCED_TURN_STATE":
       return { ...state, turnState: action.turnState };
 
+    // Compile-time exhaustiveness: adding an action to `SessionAction` without a case
+    // above makes this fail to type-check. Still returns `state` at runtime.
     default:
+      action satisfies never;
       return state;
   }
 }

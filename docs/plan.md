@@ -113,7 +113,8 @@ re-picking the same language. The turns are discarded.
   `awaitingUser` route only.
 - **TTS failure is not an error state.** `AI_SPEECH_FAILED` (only valid in `aiSpeaking`)
   goes to `awaitingUser` silently: the AI's text is already on screen, so it degrades to
-  text-only. The stage 3 caller does the `console.error`.
+  text-only. The stage 3 caller does the `console.error`. Like the other two speech
+  actions it carries the `turnId` and is ignored when that is not the turn being spoken.
 
 **Listening, reviewing and editing are one continuous act of composing a turn**, so they
 share a single set of controls: Send (primary), Edit (secondary), Cancel (secondary). Only
@@ -407,3 +408,7 @@ the original.
 | 09-25 | This plan moved into the repo as `docs/plan.md` | Outside git it was not reviewable, did not travel with the branch, and its changes left no diff. |
 | 09-29 | State context, `useSession` and `useConversation` removed; state stays props, only dispatch is context | They were never used: `LanguageBuddy` already narrows on `phase` and passes `turns`/`turnState` down. **Open option:** re-add a state context plus a narrowing `useConversation()` (throws outside the `conversation` phase) if a deeper component or a stage 2/3 hook would otherwise need state prop-drilled — do it when that is practical, not before. |
 | 09-29 | Error flow reworked: `FAILED` only from `aiThinking`/`listening`, error state carries `from` and optional `detail`, dismiss retries a failed AI call; new `AI_SPEECH_FAILED` | Dismissing always went to `awaitingUser`, so a failed Gemini call was never retried, a failed first AI turn showed "Start conversation", and a late `FAILED` could overwrite a draft. TTS failure now degrades to text-only instead of showing an error. |
+| 09-29 | `AI_SPEECH_PROGRESSED`, `AI_SPEECH_FINISHED` and `AI_SPEECH_FAILED` carry a `turnId`; the reducer ignores them when it is not the turn being spoken | With one `<audio>` element reused across turns, a late `timeupdate` or `ended` from the previous turn's audio could otherwise land on the current one — contradicting the rule that anything pointing at a turn matches on its id. |
+| 09-29 | Reducer contract for the async drivers, stated in its doc comment | The reducer cannot tell a stale `AI_TURN_RECEIVED` or `TRANSCRIPT_UPDATED` from a current one; both only check the state name. Every async source must therefore cancel when the state that started it is left: abort fetches, detach handlers from and close sockets. A note for stages 2 and 3, nothing built yet. |
+| 09-29 | `USER_TURN_SENT` and `AI_TURN_RECEIVED` take `{ id, text }`, not a whole `Turn`; the reducer sets `author` | The caller no longer picks the author, and the "no empty user turn" rule (trimmed text) lives in the reducer instead of only in the component. |
+| 09-29 | The reducer's `default` branch is a compile-time exhaustiveness check (`action satisfies never`) | An action added to the union but not handled now fails `tsc` instead of being silently ignored. Verified with a temporary dummy action. |

@@ -45,7 +45,8 @@ export function ConversationScreen({
 
     dispatch({
       type: "USER_TURN_SENT",
-      turn: { id: crypto.randomUUID(), author: "user", text: text.trim() },
+      id: crypto.randomUUID(),
+      text: text.trim(),
     });
   }
 

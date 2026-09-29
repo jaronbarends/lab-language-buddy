@@ -1,0 +1,19 @@
+.screen {
+  display: flex;
+  flex-direction: column;
+  /* A fixed-height flex column instead of position:fixed for the bar. On iOS the
+     visual viewport shifts when the keyboard opens and the URL bar collapses, and a
+     fixed element drifts; a column that owns the full height does not. */
+  height: 100dvh;
+  width: 100%;
+  max-width: var(--layout-max-width);
+  margin: 0 auto;
+}
+
+.controlBar {
+  flex-shrink: 0;
+  padding: var(--space-4) var(--space-4)
+    calc(var(--space-4) + var(--safe-bottom));
+  border-top: 1px solid var(--color-border);
+  background: var(--color-bg);
+}

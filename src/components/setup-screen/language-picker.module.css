@@ -1,0 +1,48 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
+}
+
+/* Three across is tight on a narrow phone once "Norwegian" has to fit next to a
+   flag, so drop to two. */
+@media (max-width: 420px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 56px;
+  padding: var(--space-2) var(--space-3);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-raised);
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.option:active {
+  background: var(--color-bg);
+}
+
+.selected {
+  border-color: var(--color-accent);
+  background: var(--color-accent-soft);
+}
+
+.selected:active {
+  background: var(--color-accent-soft);
+}
+
+.label {
+  font-weight: 600;
+  /* "Upper intermediate" aside, the longest label is Norwegian — but allow the
+     shrink rather than let a long word push the card wider than its grid cell. */
+  min-width: 0;
+  overflow-wrap: break-word;
+}

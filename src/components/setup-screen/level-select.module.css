@@ -1,0 +1,18 @@
+.select {
+  width: 100%;
+  min-height: 56px;
+  padding: var(--space-3) var(--space-4);
+  /* Room for the chevron, which sits on the right. */
+  padding-right: 44px;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-raised);
+  font-weight: 600;
+  /* iOS Safari gives selects its own rounded chrome and a dropdown arrow; strip it
+     so the control matches the language cards, then draw our own chevron. */
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%231e2430' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--space-4) center;
+}

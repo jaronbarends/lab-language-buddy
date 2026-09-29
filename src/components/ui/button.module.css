@@ -1,0 +1,71 @@
+/*
+ * Two variants, each with an enabled and a disabled look. The disabled states are
+ * not a faded version of the enabled ones — the label stays at full contrast and
+ * only the chrome changes, magenta giving way to neutral grey. Dimming the whole
+ * button (an opacity rule) makes the label hard to read and is not what the
+ * reference design does.
+ */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  min-height: 52px;
+  padding: var(--space-3) var(--space-5);
+  border: 2px solid transparent;
+  border-radius: var(--radius-pill);
+  font-weight: 600;
+  text-align: center;
+  transition:
+    background-color 120ms ease,
+    border-color 120ms ease,
+    color 120ms ease;
+  /* Kills the grey tap flash on iOS so the pressed state below is what shows. */
+  -webkit-tap-highlight-color: transparent;
+}
+
+.button:disabled {
+  cursor: not-allowed;
+}
+
+/* --- Primary: the main action in the bar --- */
+
+.primary {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #ffffff;
+  box-shadow: var(--shadow-raised);
+}
+
+.primary:not(:disabled):active {
+  background: var(--color-accent-strong);
+  border-color: var(--color-accent-strong);
+}
+
+.primary:disabled {
+  background: var(--color-neutral-button);
+  border-color: var(--color-neutral-button);
+  color: var(--color-text);
+  /* Flat — a raised shadow reads as "pressable". */
+  box-shadow: none;
+}
+
+/* --- Secondary: outlined, for actions alongside the primary one --- */
+
+.secondary {
+  background: var(--color-surface);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.secondary:not(:disabled):active {
+  background: var(--color-accent-soft);
+}
+
+.secondary:disabled {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}

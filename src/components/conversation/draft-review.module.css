@@ -1,0 +1,30 @@
+/* Matches .bubble/.user in bubble.module.css on purpose. The live transcript sits
+   in this same spot while recording and becomes this draft the moment it stops, so
+   any difference in width or alignment would read as the bubble jumping. */
+.draft {
+  align-self: flex-end;
+  width: fit-content;
+  max-width: 85%;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-bubble-user-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bubble-user);
+  box-shadow: var(--shadow-raised);
+  overflow-wrap: break-word;
+}
+
+
+.editor {
+  width: 100%;
+  min-height: 96px;
+  padding: var(--space-3) var(--space-4);
+  border: 2px solid var(--color-bubble-user-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  /* Must stay at 16px or larger, or iOS Safari zooms the viewport on focus and
+     the fixed control bar ends up off-screen. */
+  font-size: 1rem;
+  line-height: 1.45;
+  resize: vertical;
+}
+

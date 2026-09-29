@@ -5,7 +5,7 @@ import {
   type Turn,
   type TurnState,
 } from "@/lib/session-reducer";
-import { useSessionDispatch } from "@/hooks/use-session";
+import { useSessionDispatch } from "@/hooks/use-session-dispatch";
 
 import { ConversationControls } from "./conversation-controls";
 import { ConversationThread } from "./conversation-thread";

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { useSessionDispatch } from "@/hooks/use-session";
+import { useSessionDispatch } from "@/hooks/use-session-dispatch";
 import { mockTranscriptAt, mockUserLine } from "@/lib/mock-conversation";
 import type {
   SessionConfig,

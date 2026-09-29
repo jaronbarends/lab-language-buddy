@@ -45,7 +45,7 @@ Safari on iPhone as a hard requirement; no persistence.
 | Decision | Choice | Why |
 |---|---|---|
 | Styling | CSS Modules + design tokens in `globals.css` | The design is a small bespoke system (pill buttons, two bubble variants, one accent colour). Tailwind's payoff is class reuse across a large surface; here it would mostly add a build step and bury the iOS-specific CSS in arbitrary-value escapes. |
-| State | One `useReducer` session machine + a context, side effects in hooks | The whole app is one session. A store library buys nothing, and a reducer makes illegal states unrepresentable. |
+| State | One `useReducer` session machine + a dispatch context, side effects in hooks | The whole app is one session. A store library buys nothing, and a reducer makes illegal states unrepresentable. State reaches screens as props from `LanguageBuddy`, which narrows on `phase`; only `dispatch` travels by context. |
 | Turn states | A discriminated union carrying per-state data | `listening` carries the transcript, `aiSpeaking` the turn id and word count, `editing` the pre-edit text. "Recording while the AI speaks" is not a bug you can write. |
 | Turn identity | `crypto.randomUUID()` per turn, never an array index | This is the stale-closure off-by-one from `findings.md`, made structurally impossible rather than patched. |
 | Conversation history | Gemini `previous_interaction_id` chaining | History lives server-side at Google; we send only the new utterance. The client keeps its own array purely for rendering. |
@@ -169,7 +169,7 @@ so a page reload starts from the defaults again.
     │   ├── dev/state-stepper.tsx development-only turn-state jumper
     │   └── ui/                   button, icons, flag-icon
     ├── hooks/
-    │   ├── use-session.ts        context + narrowing helpers
+    │   ├── use-session-dispatch.ts dispatch context + `useSessionDispatch`
     │   └── use-mock-driver.ts    STAGE 1 ONLY — deleted in stage 3
     └── lib/
         ├── session-reducer.ts    the state machine
@@ -395,3 +395,4 @@ the original.
 | 09-25 | Dashed border dropped from the listening bubble | The dot says the same thing; two signals for one state, and it diverged from the reference. |
 | 09-25 | First turn reads "Start conversation" when the user opens | "Reply" is wrong before anything has been said. Keyed on the turn list being empty *and* the button being enabled. |
 | 09-25 | This plan moved into the repo as `docs/plan.md` | Outside git it was not reviewable, did not travel with the branch, and its changes left no diff. |
+| 09-29 | State context, `useSession` and `useConversation` removed; state stays props, only dispatch is context | They were never used: `LanguageBuddy` already narrows on `phase` and passes `turns`/`turnState` down. **Open option:** re-add a state context plus a narrowing `useConversation()` (throws outside the `conversation` phase) if a deeper component or a stage 2/3 hook would otherwise need state prop-drilled — do it when that is practical, not before. |

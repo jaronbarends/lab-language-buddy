@@ -113,7 +113,7 @@ export function useMockDriver(
 
       if (heardWordCount > totalWords) {
         // Real speech stops when the speaker stops; the mic stays open until the
-        // user taps Stop, so we just hold the finished transcript here.
+        // user sends, edits or cancels, so we just hold the finished transcript here.
         clearInterval(intervalId);
         return;
       }

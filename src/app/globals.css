@@ -42,7 +42,8 @@
 
   --layout-max-width: 680px;
 
-  /* Breathing room under the fixed control bar on notched iPhones. */
+  /* Breathing room under the control bar (the last item in the conversation
+     screen's flex column) on notched iPhones. */
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 
@@ -66,8 +67,7 @@ html {
 body {
   min-height: 100%;
   min-height: 100dvh;
-  /* The fixed control bar is positioned against the viewport, so the page itself
-     must never scroll sideways or the bar drifts out of alignment. */
+  /* Clips horizontal overflow, so the page itself never scrolls sideways. */
   overflow-x: hidden;
   background: var(--color-bg);
   color: var(--color-text);
@@ -78,8 +78,7 @@ body {
   line-height: 1.45;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* Stops the rubber-band overscroll from revealing the page background behind
-     the fixed bar during a flick-scroll of the thread. */
+  /* Turns off the rubber-band overscroll of the page itself on the vertical axis. */
   overscroll-behavior-y: none;
 }
 

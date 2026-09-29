@@ -50,7 +50,7 @@ export function ConversationScreen({
   }
 
   return (
-    <div className={styles.screen}>
+    <main className={styles.screen}>
       <ConversationThread turns={turns} turnState={turnState} />
 
       <div className={styles.controlBar}>
@@ -67,6 +67,6 @@ export function ConversationScreen({
           onEndSession={() => dispatch({ type: "SESSION_ENDED" })}
         />
       </div>
-    </div>
+    </main>
   );
 }

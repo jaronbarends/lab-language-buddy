@@ -64,7 +64,14 @@ export function ConversationThread({
   }, [turns.length, turnState.name]);
 
   return (
-    <div className={styles.thread} ref={threadRef}>
+    // role="log" is an implicit polite live region, so appended replies are
+    // announced while focus stays on the controls.
+    <div
+      className={styles.thread}
+      ref={threadRef}
+      role="log"
+      aria-label="Conversation"
+    >
       {turns.map((turn) => (
         <TurnBubble
           key={turn.id}

@@ -72,6 +72,8 @@ export function StateStepper({ config, turns, turnState }: StateStepperProps) {
       state: {
         name: "error",
         message: "Could not reach the transcription service.",
+        detail: "WebSocket closed with code 1006",
+        from: "listening",
       },
     },
   ];

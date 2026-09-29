@@ -49,9 +49,23 @@ export type TurnState =
     }
   | { name: "aiThinking" }
   | { name: "aiSpeaking"; turnId: string; spokenWordCount: number }
-  | { name: "error"; message: string };
+  | {
+      name: "error";
+      /** Fixed generic text, chosen by whoever dispatched `FAILED`. */
+      message: string;
+      /** The raw error, truncated. Shown below the message when present. */
+      detail?: string;
+      /**
+       * The turn state the failure came from. "Try again" needs it: a failed AI call
+       * is retried by re-entering `aiThinking`, anything else falls back to the user.
+       */
+      from: TurnStateName;
+    };
 
 export type TurnStateName = TurnState["name"];
+
+/** Raw errors can be arbitrarily long; the screen only needs enough to recognise one. */
+const MAX_ERROR_DETAIL_LENGTH = 300;
 
 export const DEFAULT_SESSION_CONFIG: SessionConfig = {
   language: "no",
@@ -90,7 +104,8 @@ export type SessionAction =
   | { type: "AI_TURN_RECEIVED"; turn: Turn }
   | { type: "AI_SPEECH_PROGRESSED"; spokenWordCount: number }
   | { type: "AI_SPEECH_FINISHED" }
-  | { type: "FAILED"; message: string }
+  | { type: "AI_SPEECH_FAILED" }
+  | { type: "FAILED"; message: string; detail?: string }
   | { type: "ERROR_DISMISSED" }
   | { type: "SESSION_ENDED" }
   /** Stage 1 only — the dev state stepper. Removed once the real drivers land. */
@@ -143,10 +158,21 @@ export function sessionReducer(
     case "SESSION_ENDED":
       return { phase: "setup", lastConfig: state.config };
 
+    // Only the two states with a request or a socket in flight can fail. Anywhere
+    // else a `FAILED` is a late arrival (say, the socket closing after recording
+    // stopped) and must not overwrite a draft the user is looking at.
     case "FAILED":
+      if (turnState.name !== "aiThinking" && turnState.name !== "listening") {
+        return state;
+      }
       return {
         ...state,
-        turnState: { name: "error", message: action.message },
+        turnState: {
+          name: "error",
+          message: action.message,
+          detail: action.detail?.slice(0, MAX_ERROR_DETAIL_LENGTH),
+          from: turnState.name,
+        },
       };
 
     case "ERROR_DISMISSED":
@@ -155,6 +181,13 @@ export function sessionReducer(
       }
       // Recoverable by design. The spike dead-ended here and told the user to
       // reload, which throws away the conversation for what is usually a blip.
+      //
+      // A failed AI call is retried by re-entering `aiThinking`: the driver effect
+      // re-runs on entering that state. Anything else goes back to the user; a
+      // transcript that was in progress when listening failed is discarded.
+      if (turnState.from === "aiThinking") {
+        return { ...state, turnState: { name: "aiThinking" } };
+      }
       return { ...state, turnState: { name: "awaitingUser" } };
 
     case "LISTENING_STARTED":
@@ -273,6 +306,16 @@ export function sessionReducer(
       };
 
     case "AI_SPEECH_FINISHED":
+      if (turnState.name !== "aiSpeaking") {
+        return state;
+      }
+      return { ...state, turnState: { name: "awaitingUser" } };
+
+    // Failed TTS degrades to text-only: the AI's text is already on screen, so this
+    // goes to `awaitingUser` without an error state. Deliberately not
+    // `AI_SPEECH_FINISHED`, so the two stay distinguishable. The dispatching driver
+    // is responsible for `console.error`; nothing here logs.
+    case "AI_SPEECH_FAILED":
       if (turnState.name !== "aiSpeaking") {
         return state;
       }

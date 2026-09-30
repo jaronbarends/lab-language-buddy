@@ -12,13 +12,27 @@
 
 .error {
   display: flex;
-  flex-direction: column;
-  gap: var(--size-8);
+  /* The icon sits at the top, level with the first line, not centred on the block. */
+  align-items: start;
+  /* Between the icon and the text. The lines of the text have no gap of their own. */
+  gap: var(--size-12);
   padding: var(--size-12) var(--size-16);
   border: var(--border-width-default) solid var(--color-text-error);
   border-radius: var(--radius-input);
   background: var(--color-bg-error);
   color: var(--color-text-error);
+}
+
+/* The icon keeps its size however long the message gets. */
+.error > svg {
+  flex-shrink: 0;
+}
+
+.errorText {
+  display: flex;
+  flex-direction: column;
+  /* Lets a long message wrap instead of pushing the box wider than its container. */
+  min-width: 0;
 }
 
 .errorTitle {

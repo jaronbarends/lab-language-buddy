@@ -296,7 +296,7 @@ transparent — flat and plainly not pressable, at an unchanged height.
 **Icons** are Font Awesome 6 Free, through `react-icons/fa6`. `ui/icons.tsx` is the only
 place they are imported; screens use the app's own names, so a different set is an edit to
 that one file. All are decorative (`aria-hidden`, beside a text label) and fill with
-`currentColor`. Tree-shaking holds: `fa6` exports about 2,000 icons and adding the eight
+`currentColor`. Tree-shaking holds: `fa6` exports about 2,000 icons and adding the first eight
 used grew the client bundle by 5.8 KB.
 
 | app name | Font Awesome | used for |
@@ -309,12 +309,12 @@ used grew the client bundle by 5.8 KB.
 | `ChatIcon` | `FaComment` | Start chat, logo |
 | `RobotIcon` | `FaRobot` | AI in the starter toggle |
 | `PersonIcon` | `FaCircleUser` | Me in the starter toggle |
+| `WarningIcon` | `FaTriangleExclamation` | The error box |
 
-The original app's list also named six icons this app has no place for yet:
+The original app's list also named five icons this app has no place for yet:
 `FaGraduationCap` (its Evaluate button — stage 4, undecided), `FaVolumeXmark` (a no-voice
 warning, not built), `FaCircleInfo` and `FaRegCircleQuestion` (info and tooltip, not built),
-and `FaCircleXmark` and `FaTriangleExclamation` (feedback and error messages; see open
-question 7).
+and `FaCircleXmark` (a harder failure; the error box uses the triangle instead).
 
 ---
 
@@ -519,9 +519,6 @@ Per stage, in this order:
    bubble (12.27:1), errors (5.33:1) and the captions (6.22:1) all pass.
 6. **Ending a session is one tap and unrecoverable.** No confirmation, nothing persisted.
    Consistent with the brief, but it sits next to Reply.
-7. **The error box has no icon.** The original's list includes `FaTriangleExclamation` and
-   `FaCircleXmark`, presumably for feedback messages. Ours is text only. Not added, since
-   nothing asked for it.
 
 ---
 
@@ -591,6 +588,7 @@ have been argued over first.
 | 09-30 | you | `--line-height-body-tight` back to 1.25, the original's value | The bubbles did not look right at 1.3. Buttons return to their earlier heights (Reply and End session 62.5px, "Start chat" 65px, measured), and the token is verbatim again, so the delta recorded two rows up is gone. |
 | 09-30 | you | The spoken-word highlight is a `linear-gradient` background-image with a 1px transparent strip at top and bottom, replacing both the plain background and the padding | Keeps bands on neighbouring lines apart at 1.25 without touching the line height. Measured: 21px element, 19px visible band, 22.5px line step, 3.5px clear between bands. The edges are hard because each colour stop's second position is 0, which the browser raises to the previous stop. The forced-colours caveat is open question 8. |
 | 09-30 | you | A `@media (forced-colors: active)` rule drops the highlight gradient | Forced-colours mode replaces `background-color` but, as far as is known, leaves `background-image` alone, so the yellow would stay behind recoloured text and could be unreadable. A plain background used to vanish there instead. The highlight is now simply not drawn in that mode. **Not tested in forced-colours mode**; the browser cannot be put in it from here, so only that the rule exists and leaves normal mode untouched is verified. Replaces open question 8. |
+| 09-30 | you | The error box gets `FaTriangleExclamation` (`WarningIcon`) to the left of the whole text block, top-aligned, 12px from the text, and the 8px gap between its lines is gone | Answers the open question about an error icon after the box was looked at in the dev panel. The icon sits beside the title, message and detail together, not beside the title alone; it is 24px with `align-items: start`, so it sits at the top of the block. The lines have no gap of their own now, so they sit at the text's line height: 27px for the title, 21px for the others. Verified with a very long message: it wraps, the icon keeps its size and the box stays inside its container. First built centred vertically with 8px to the text; changed to top-aligned and 12px on looking at it. |
 | 09-30 | you | Picker labels and the level select are semibold (`--font-weight-label`), the open option list regular | Reported as wrong. Cause: the original's Baloo was only ever available at 600 and 700, so its inherited 400 rendered as 600, while next/font gives a true 400. The select follows the original's `SelectBox`, which is semibold closed and regular in the list. The original's `:checked` colouring of that list was left out: weights were the question, and it would be a second white-on-`--color-bg-secondary`. |
 
 ## Keeping the experiment honest

@@ -19,6 +19,7 @@ import {
   FaPencil,
   FaRegPaperPlane,
   FaRobot,
+  FaTriangleExclamation,
   FaXmark,
 } from "react-icons/fa6";
 
@@ -60,4 +61,8 @@ export function RobotIcon({ size = 18 }: IconProps) {
 
 export function PersonIcon({ size = 18 }: IconProps) {
   return <FaCircleUser {...decorative(size)} />;
+}
+
+export function WarningIcon({ size = 18 }: IconProps) {
+  return <FaTriangleExclamation {...decorative(size)} />;
 }

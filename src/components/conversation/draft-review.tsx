@@ -12,11 +12,22 @@ import styles from "./draft-review.module.css";
  * jump. What does change is the listening indicator: the dot is gone, because the
  * microphone is no longer on.
  */
-export function DraftBubble({ draft }: { draft: string }) {
-  return <Bubble author="user">{draft}</Bubble>;
+export function DraftBubble({
+  draft,
+  conversationLang,
+}: {
+  draft: string;
+  conversationLang: string;
+}) {
+  return (
+    <Bubble author="user" lang={conversationLang}>
+      {draft}
+    </Bubble>
+  );
 }
 
 type DraftEditorProps = {
+  conversationLang: string;
   /** The text to start from. Later edits come back through `onChange`, not through here. */
   draft: string;
   onChange: (draft: string) => void;
@@ -39,7 +50,11 @@ type DraftEditorProps = {
  * to the start. That is safe here since this component only exists while the turn is in
  * its editing state, so nothing else can change the text while it is on the screen.
  */
-export function DraftEditor({ draft, onChange }: DraftEditorProps) {
+export function DraftEditor({
+  draft,
+  conversationLang,
+  onChange,
+}: DraftEditorProps) {
   const editorRef = useRef<HTMLDivElement | null>(null);
   // Captured once so the effect below runs once, however often the parent re-renders.
   const [initialDraft] = useState(draft);
@@ -76,6 +91,7 @@ export function DraftEditor({ draft, onChange }: DraftEditorProps) {
       <div
         ref={editorRef}
         className={styles.editor}
+        lang={conversationLang}
         contentEditable="plaintext-only"
         role="textbox"
         aria-multiline="true"

@@ -7,6 +7,7 @@ import { StateStepper } from "@/components/dev/state-stepper";
 import { SetupScreen } from "@/components/setup-screen/setup-screen";
 import { useMockDriver } from "@/hooks/use-mock-driver";
 import { SessionDispatchProvider } from "@/hooks/use-session-dispatch";
+import { LANGUAGES } from "@/lib/languages";
 import {
   initialSessionState,
   sessionReducer,
@@ -36,7 +37,11 @@ export function LanguageBuddy() {
 
       {state.phase === "conversation" && (
         <>
-          <ConversationScreen turns={state.turns} turnState={state.turnState} />
+          <ConversationScreen
+            turns={state.turns}
+            turnState={state.turnState}
+            conversationLang={LANGUAGES[state.config.language].htmlLang}
+          />
           <StateStepper
             config={state.config}
             turns={state.turns}

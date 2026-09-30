@@ -5,6 +5,7 @@ import styles from "./live-transcript.module.css";
 
 type LiveTranscriptProps = {
   transcript: LiveTranscriptValue;
+  conversationLang: string;
 };
 
 /**
@@ -15,15 +16,22 @@ type LiveTranscriptProps = {
  * `aria-live="polite"` rather than `assertive`: this updates several times a second
  * and should not interrupt.
  */
-export function LiveTranscript({ transcript }: LiveTranscriptProps) {
+export function LiveTranscript({
+  transcript,
+  conversationLang,
+}: LiveTranscriptProps) {
   const nothingHeardYet = !transcript.finalized && !transcript.interim;
 
   return (
     <Bubble author="user" className={styles.listening} aria-live="polite">
       <span className={styles.listeningIndicator} aria-hidden="true" />
-      <span>
+      <span lang={conversationLang}>
         {nothingHeardYet ? (
-          <span className={styles.placeholder}>Listening…</span>
+          // The placeholder is UI text, not recognised speech: back to the page's
+          // language (see <html lang> in layout.tsx).
+          <span className={styles.placeholder} lang="en">
+            Listening…
+          </span>
         ) : (
           <>
             {transcript.finalized}

@@ -11,6 +11,7 @@ import styles from "./conversation-thread.module.css";
 type ConversationThreadProps = {
   turns: Turn[];
   turnState: TurnState;
+  conversationLang: string;
 };
 
 /**
@@ -22,6 +23,7 @@ const NEWEST_ITEM_TOP_GAP = 16;
 export function ConversationThread({
   turns,
   turnState,
+  conversationLang,
 }: ConversationThreadProps) {
   const threadRef = useRef<HTMLDivElement | null>(null);
 
@@ -76,6 +78,7 @@ export function ConversationThread({
         <TurnBubble
           key={turn.id}
           turn={turn}
+          conversationLang={conversationLang}
           spokenWordCount={turn.id === speakingTurnId ? spokenWordCount : null}
         />
       ))}

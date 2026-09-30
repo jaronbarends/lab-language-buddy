@@ -17,6 +17,7 @@ import styles from "./conversation-controls.module.css";
 
 type ConversationControlsProps = {
   turnState: TurnState;
+  conversationLang: string;
   /** No turns yet, so there is nothing to reply to — see the Reply label below. */
   conversationIsEmpty: boolean;
   onReply: () => void;
@@ -36,6 +37,7 @@ type ConversationControlsProps = {
  */
 export function ConversationControls({
   turnState,
+  conversationLang,
   conversationIsEmpty,
   onReply,
   onDraftEdit,
@@ -71,13 +73,23 @@ export function ConversationControls({
     return (
       <div className={styles.controls}>
         {composing.name === "listening" && (
-          <LiveTranscript transcript={composing.transcript} />
+          <LiveTranscript
+            transcript={composing.transcript}
+            conversationLang={conversationLang}
+          />
         )}
         {composing.name === "reviewing" && (
-          <DraftBubble draft={composing.draft} />
+          <DraftBubble
+            draft={composing.draft}
+            conversationLang={conversationLang}
+          />
         )}
         {composing.name === "editing" && (
-          <DraftEditor draft={composing.draft} onChange={onDraftChange} />
+          <DraftEditor
+            draft={composing.draft}
+            conversationLang={conversationLang}
+            onChange={onDraftChange}
+          />
         )}
 
         <Button

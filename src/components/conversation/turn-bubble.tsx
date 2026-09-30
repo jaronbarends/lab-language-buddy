@@ -8,9 +8,14 @@ type TurnBubbleProps = {
   turn: Turn;
   /** Non-null only for the turn currently being read aloud. */
   spokenWordCount: number | null;
+  conversationLang: string;
 };
 
-export function TurnBubble({ turn, spokenWordCount }: TurnBubbleProps) {
+export function TurnBubble({
+  turn,
+  spokenWordCount,
+  conversationLang,
+}: TurnBubbleProps) {
   const turnIsBeingSpoken = spokenWordCount !== null;
 
   return (
@@ -18,11 +23,13 @@ export function TurnBubble({ turn, spokenWordCount }: TurnBubbleProps) {
       <span className={styles.speakerLabel}>
         {turn.author === "ai" ? "AI: " : "You: "}
       </span>
-      {turnIsBeingSpoken ? (
-        <HighlightedText text={turn.text} spokenWordCount={spokenWordCount} />
-      ) : (
-        turn.text
-      )}
+      <span lang={conversationLang}>
+        {turnIsBeingSpoken ? (
+          <HighlightedText text={turn.text} spokenWordCount={spokenWordCount} />
+        ) : (
+          turn.text
+        )}
+      </span>
     </Bubble>
   );
 }

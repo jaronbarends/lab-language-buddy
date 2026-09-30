@@ -1,12 +1,12 @@
 .wrapper {
   position: fixed;
-  right: var(--space-2);
-  bottom: calc(var(--space-2) + var(--safe-bottom));
+  right: var(--size-8);
+  bottom: calc(var(--size-8) + var(--safe-bottom));
   z-index: 50;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: var(--space-2);
+  gap: var(--size-8);
   /* The panel itself is interactive, but the empty space around it must not
      swallow taps meant for the control bar underneath. */
   pointer-events: none;
@@ -17,12 +17,12 @@
 }
 
 .toggle {
-  padding: 6px 10px;
-  border-radius: var(--radius-pill);
-  background: rgb(30 36 48 / 0.82);
-  color: #ffffff;
-  font-size: 0.6875rem;
-  font-weight: 700;
+  padding: var(--size-4) var(--size-8);
+  border-radius: var(--radius-button);
+  background: var(--color-bg-tooltip);
+  color: var(--color-text-on-dark);
+  font-size: var(--font-size-10);
+  font-weight: var(--font-weight-bold);
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
@@ -30,28 +30,27 @@
 .panel {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: var(--space-2);
-  border-radius: var(--radius-md);
-  background: rgb(30 36 48 / 0.92);
-  box-shadow: 0 6px 20px rgb(30 36 48 / 0.28);
+  gap: var(--size-2);
+  padding: var(--size-8);
+  border-radius: var(--radius-12);
+  background: var(--color-bg-tooltip);
 }
 
 .heading {
-  padding: 0 4px 2px;
-  color: #aeb7c8;
-  font-size: 0.625rem;
-  font-weight: 700;
+  padding: 0 var(--size-4) var(--size-2);
+  color: var(--color-gray-300);
+  font-size: var(--font-size-10);
+  font-weight: var(--font-weight-bold);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .option {
-  padding: 7px 10px;
-  border-radius: var(--radius-sm);
-  background: rgb(255 255 255 / 0.08);
-  color: #ffffff;
-  font-size: 0.75rem;
+  padding: var(--size-4) var(--size-8);
+  border-radius: var(--radius-8);
+  background: rgba(from var(--color-white) r g b / 0.08);
+  color: var(--color-text-on-dark);
+  font-size: var(--font-size-12);
   text-align: left;
 }
 
@@ -60,5 +59,5 @@
 }
 
 .active {
-  background: var(--color-accent);
+  background: var(--color-bg-primary);
 }

@@ -1,0 +1,34 @@
+/* Layout only. The frame is the shared Bubble's, the same as the settled draft, so
+   nothing shifts when recording ends — the indicator dot is the only difference. */
+.listening {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--size-8);
+}
+
+/*
+ * Signals that the microphone is live. It appears only in the listening state and
+ * is gone the moment recording stops, so its presence is the answer to "is it still
+ * hearing me?" — which is why the settled draft bubble has no dot at all.
+ *
+ * Kept as its own element rather than a ::before so a pulse animation can be added
+ * here later without touching the bubble.
+ */
+.listeningIndicator {
+  flex-shrink: 0;
+  width: var(--size-8);
+  height: var(--size-8);
+  /* Lines the dot up with the first line of text rather than the padding box. */
+  margin-top: var(--size-8);
+  border-radius: var(--radius-circle);
+  background: var(--color-bg-primary);
+}
+
+.interim {
+  color: var(--color-text-neutral-subtle);
+}
+
+.placeholder {
+  color: var(--color-text-neutral-subtle);
+  font-style: italic;
+}

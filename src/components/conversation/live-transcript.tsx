@@ -1,6 +1,7 @@
 import type { LiveTranscript as LiveTranscriptValue } from "@/lib/session-reducer";
 
-import styles from "./bubble.module.css";
+import { Bubble } from "./bubble";
+import styles from "./live-transcript.module.css";
 
 type LiveTranscriptProps = {
   transcript: LiveTranscriptValue;
@@ -18,10 +19,7 @@ export function LiveTranscript({ transcript }: LiveTranscriptProps) {
   const nothingHeardYet = !transcript.finalized && !transcript.interim;
 
   return (
-    <p
-      className={`${styles.bubble} ${styles.user} ${styles.listening}`}
-      aria-live="polite"
-    >
+    <Bubble author="user" className={styles.listening} aria-live="polite">
       <span className={styles.listeningIndicator} aria-hidden="true" />
       <span>
         {nothingHeardYet ? (
@@ -38,6 +36,6 @@ export function LiveTranscript({ transcript }: LiveTranscriptProps) {
           </>
         )}
       </span>
-    </p>
+    </Bubble>
   );
 }

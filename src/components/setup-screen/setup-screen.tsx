@@ -23,9 +23,8 @@ type SetupScreenProps = {
   onStart: (config: SessionConfig) => void;
 };
 
-const LANGUAGE_LABEL_ID = "setup-language-label";
-const LEVEL_LABEL_ID = "setup-level-label";
-const STARTER_LABEL_ID = "setup-starter-label";
+/** The select is labelled through this; the two radio groups are named by their fieldset. */
+const LEVEL_LEGEND_ID = "setup-level-legend";
 
 export function SetupScreen({ lastConfig, onStart }: SetupScreenProps) {
   // Seeded once, on mount. That's sufficient rather than sloppy: this screen only
@@ -37,10 +36,17 @@ export function SetupScreen({ lastConfig, onStart }: SetupScreenProps) {
   const [level, setLevel] = useState<CefrLevel>(initialConfig.level);
   const [starter, setStarter] = useState<Starter>(initialConfig.starter);
 
-  function handleStartClick() {
-    // Stage 3 note: the shared <audio> element gets unlocked here, synchronously,
-    // before anything awaits. When the AI starts, its first spoken reply is several
-    // fetches away and iOS will have forgotten this gesture by then.
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    // The state is React's, not the form's, so the browser's own submission — a
+    // page reload with the choices in the query string — must never happen.
+    event.preventDefault();
+
+    // Stage 3 note: unlocking the shared <audio> element does NOT belong here. It
+    // goes in the submit button's onClick, synchronously, before anything awaits.
+    // That click always fires before this submit, and pressing Enter makes the
+    // browser fire a click on the default button too, so both routes are covered by
+    // a handler that is certainly a user gesture. When the AI starts, its first
+    // spoken reply is several fetches away and iOS will have forgotten the gesture.
     onStart({ language, level, starter });
   }
 
@@ -51,49 +57,46 @@ export function SetupScreen({ lastConfig, onStart }: SetupScreenProps) {
           <ChatIcon size={22} />
         </span>
         <div>
-          <h1 className={styles.title}>Language buddy</h1>
+          <h1>Language buddy</h1>
           <p className={styles.tagline}>Practice speaking out loud</p>
         </div>
       </header>
 
-      <div className={styles.field}>
-        <span id={LANGUAGE_LABEL_ID} className={styles.fieldLabel}>
-          Choose your practice language
-        </span>
-        <LanguagePicker
-          value={language}
-          onChange={setLanguage}
-          labelledBy={LANGUAGE_LABEL_ID}
-        />
-      </div>
+      {/*
+        Every field is a fieldset with a legend, owned here rather than by the
+        controls, which render no caption of their own. Styling for <legend> lives at
+        element level in elements.css, so nothing below carries a caption class.
+      */}
+      <form className={styles.form} onSubmit={handleSubmit}>
+        <fieldset>
+          <legend className={styles.legend}>Choose your practice language</legend>
+          <LanguagePicker value={language} onChange={setLanguage} />
+        </fieldset>
 
-      <div className={styles.field}>
-        <label
-          id={LEVEL_LABEL_ID}
-          className={styles.fieldLabel}
-          htmlFor="setup-level"
-        >
-          What is your language level?
-        </label>
-        <LevelSelect id="setup-level" value={level} onChange={setLevel} />
-      </div>
+        <fieldset>
+          <legend id={LEVEL_LEGEND_ID} className={styles.legend}>
+            What is your language level?
+          </legend>
+          <LevelSelect
+            value={level}
+            onChange={setLevel}
+            labelledBy={LEVEL_LEGEND_ID}
+          />
+        </fieldset>
 
-      <div className={styles.field}>
-        <span id={STARTER_LABEL_ID} className={styles.fieldLabel}>
-          Who should start the conversation?
-        </span>
-        <StarterToggle
-          value={starter}
-          onChange={setStarter}
-          labelledBy={STARTER_LABEL_ID}
-        />
-      </div>
+        <fieldset>
+          <legend className={styles.legend}>
+            Who should start the conversation?
+          </legend>
+          <StarterToggle value={starter} onChange={setStarter} />
+        </fieldset>
 
-      <div className={styles.submit}>
-        <Button onClick={handleStartClick} icon={<ChatIcon />}>
-          Start chat
-        </Button>
-      </div>
+        <div className={styles.submit}>
+          <Button type="submit" icon={<ChatIcon />} fontSize="large">
+            Start chat
+          </Button>
+        </div>
+      </form>
     </main>
   );
 }

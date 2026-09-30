@@ -1,30 +1,129 @@
 .group {
+  --indicator-duration: var(--duration-near-instant);
+
+  position: relative;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--space-1);
-  padding: var(--space-1);
-  border: 2px solid var(--color-border);
-  border-radius: var(--radius-pill);
-  background: var(--color-surface);
-  box-shadow: var(--shadow-raised);
+  gap: var(--size-4);
+  padding: var(--size-4);
+  border: var(--border-default) var(--color-border-input);
+  border-radius: var(--radius-button);
+  background: var(--color-bg-input);
 }
 
 .option {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-2);
-  min-height: 48px;
-  border-radius: var(--radius-pill);
-  font-weight: 600;
-  color: var(--color-text);
+  gap: var(--size-8);
+  padding: var(--size-12);
+  border-radius: var(--radius-button);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-body-default);
+  font-weight: var(--font-weight-label);
+  color: var(--color-text-default);
+  cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transition:
-    background-color 120ms ease,
-    color 120ms ease;
+  transition-property: background-color, color;
+  transition-duration: var(--duration-near-instant);
 }
 
-.selected {
-  background: var(--color-bubble-user-border);
-  color: #ffffff;
+/*
+ * The baseline, which works everywhere: the selected option paints itself. Not a
+ * fallback bolted on afterwards — without it, a browser that cannot anchor the
+ * sliding indicator below would show white label text on a white background.
+ */
+.option:has(:checked) {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-on-secondary);
+}
+
+.option:not(:has(:checked)):hover {
+  background-color: var(--color-bg-secondary-subtle);
+}
+
+.option:has(:focus-visible) {
+  outline: var(--focus-outline);
+  outline-offset: var(--focus-outline-offset);
+}
+
+/*
+ * Where CSS anchor positioning exists, one indicator slides between the options
+ * instead of the selected option painting itself. The pill is a pseudo-element
+ * pinned to whichever label is checked; moving the choice moves the anchor, and
+ * `left` transitions between the two.
+ *
+ * Feature-tested on the two parts this relies on — the anchor-name property and the
+ * anchor() function — because Safari 26 ships anchor positioning only in part.
+ * Anything older, such as an iPhone that cannot update to iOS 26, stays on the
+ * baseline above.
+ */
+@supports (anchor-name: --selected-option) and (left: anchor(left)) {
+  .group::after {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    position-anchor: --selected-option;
+    left: anchor(left);
+    top: anchor(top);
+    width: anchor-size(--selected-option width);
+    height: anchor-size(--selected-option height);
+    border-radius: var(--radius-pill);
+    background-color: var(--color-bg-secondary);
+    transition: left var(--indicator-duration) ease-in-out;
+  }
+
+  .option:has(:checked) {
+    anchor-name: --selected-option;
+    /* The pill supplies the colour now. */
+    background-color: transparent;
+  }
+
+  /* Hold the label's colour change until the pill is about halfway there, so the
+     text does not turn white while it is still over the old background. */
+  .option {
+    transition-delay: 0s, calc(var(--indicator-duration) / 2);
+  }
+}
+
+/*
+ * Forced-colours mode swaps every author colour for a system one, so the blue fill
+ * and white label above would both collapse to Canvas/CanvasText and the selected
+ * option would look like the other. System colours survive the swap, so the selected
+ * option is Highlight/HighlightText: on the option itself in the baseline, on the
+ * sliding pill where anchor positioning exists.
+ *
+ * `forced-color-adjust: none` on the selected option, because otherwise the browser
+ * paints a Canvas-coloured backplate behind the label text, and HighlightText on
+ * that is white on white. The colours here are system colours already, so opting out
+ * of the adjustment loses nothing.
+ */
+@media (forced-colors: active) {
+  .option:has(:checked) {
+    forced-color-adjust: none;
+    background-color: Highlight;
+    color: HighlightText;
+  }
+
+  @supports (anchor-name: --selected-option) and (left: anchor(left)) {
+    .option:has(:checked) {
+      background-color: transparent;
+    }
+
+    .group::after {
+      background-color: Highlight;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .group::after {
+    transition: none;
+  }
+
+  .option {
+    transition: none;
+  }
 }

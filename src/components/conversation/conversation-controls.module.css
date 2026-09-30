@@ -1,31 +1,45 @@
 .controls {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--size-12);
 }
 
 .sideBySide {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--space-3);
+  gap: var(--size-12);
 }
 
 .error {
   display: flex;
+  /* The icon sits at the top, level with the first line, not centred on the block. */
+  align-items: start;
+  /* Between the icon and the text. The lines of the text have no gap of their own. */
+  gap: var(--size-12);
+  padding: var(--size-12) var(--size-16);
+  border: var(--border-width-default) solid var(--color-text-error);
+  border-radius: var(--radius-input);
+  background: var(--color-bg-error);
+  color: var(--color-text-error);
+}
+
+/* The icon keeps its size however long the message gets. */
+.error > svg {
+  flex-shrink: 0;
+}
+
+.errorText {
+  display: flex;
   flex-direction: column;
-  gap: var(--space-2);
-  padding: var(--space-3) var(--space-4);
-  border: 1px solid var(--color-danger);
-  border-radius: var(--radius-md);
-  background: #fdf0ef;
-  color: var(--color-danger);
+  /* Lets a long message wrap instead of pushing the box wider than its container. */
+  min-width: 0;
 }
 
 .errorTitle {
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 
 .errorMessage {
-  font-size: 0.875rem;
+  font-size: var(--font-size-minor);
   overflow-wrap: break-word;
 }

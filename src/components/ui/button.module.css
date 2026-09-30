@@ -1,71 +1,83 @@
 /*
- * Two variants, each with an enabled and a disabled look. The disabled states are
- * not a faded version of the enabled ones — the label stays at full contrast and
- * only the chrome changes, magenta giving way to neutral grey. Dimming the whole
- * button (an opacity rule) makes the label hard to read and is not what the
- * reference design does.
+ * The bevel: a thicker bottom border that collapses to the normal width on press
+ * while the element slides down by exactly that difference. The bottom edge stays
+ * put and the top edge drops, so the button reads as physically pushed in.
+ *
+ * Disabled keeps the extra bottom width but makes the border transparent — flat,
+ * plainly not pressable, and the same height as when enabled, so nothing shifts.
  */
-
 .button {
+  --border-width: var(--border-width-default);
+  --bevel: var(--bevel-large);
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-2);
+  gap: var(--size-8);
   width: 100%;
-  min-height: 52px;
-  padding: var(--space-3) var(--space-5);
-  border: 2px solid transparent;
-  border-radius: var(--radius-pill);
-  font-weight: 600;
+  /* 16 all round. At 32 a half-width button on a phone was too narrow for its own label
+     ("Cancel edit"), which wrapped onto two lines and made both buttons in the row taller. */
+  padding: var(--size-16);
+  border: var(--border-width) solid;
+  border-bottom-width: calc(var(--border-width) + var(--bevel));
+  border-radius: var(--radius-button);
+  font-family: var(--font-family-button);
+  font-size: var(--font-size-body-default);
+  font-weight: var(--font-weight-button);
+  line-height: var(--line-height-body-tight);
   text-align: center;
-  transition:
-    background-color 120ms ease,
-    border-color 120ms ease,
-    color 120ms ease;
-  /* Kills the grey tap flash on iOS so the pressed state below is what shows. */
+  transition-property: border-width, translate, background-color, border-color,
+    color;
+  transition-duration: var(--duration-instant);
+  /* Kills the grey tap flash on iOS so the press animation is what shows. */
   -webkit-tap-highlight-color: transparent;
 }
 
-.button:disabled {
-  cursor: not-allowed;
+.button:active:not(:disabled) {
+  border-bottom-width: var(--border-width);
+  translate: 0 var(--bevel);
 }
 
-/* --- Primary: the main action in the bar --- */
+@media (prefers-reduced-motion: reduce) {
+  .button {
+    transition-property: background-color, border-color, color;
+  }
+}
+
+/* Only "Start chat" uses this; every other primary action is body size. */
+.largeText {
+  font-size: var(--font-size-20);
+}
 
 .primary {
-  background: var(--color-accent);
-  border-color: var(--color-accent);
-  color: #ffffff;
-  box-shadow: var(--shadow-raised);
+  border-color: var(--color-border-primary);
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-on-primary);
 }
 
-.primary:not(:disabled):active {
-  background: var(--color-accent-strong);
-  border-color: var(--color-accent-strong);
+.primary:hover:not(:disabled),
+.primary:focus-visible:not(:disabled) {
+  background-color: var(--color-bg-primary-hover);
 }
 
 .primary:disabled {
-  background: var(--color-neutral-button);
-  border-color: var(--color-neutral-button);
-  color: var(--color-text);
-  /* Flat — a raised shadow reads as "pressable". */
-  box-shadow: none;
+  background-color: var(--color-bg-neutral);
+  border-color: transparent;
+  color: var(--color-text-neutral-subtle);
 }
-
-/* --- Secondary: outlined, for actions alongside the primary one --- */
 
 .secondary {
-  background: var(--color-surface);
-  border-color: var(--color-accent);
-  color: var(--color-accent);
+  border-color: var(--color-border-primary-subtle);
+  background-color: var(--color-bg-default);
+  color: var(--color-text-primary-subtle);
 }
 
-.secondary:not(:disabled):active {
-  background: var(--color-accent-soft);
+.secondary:hover:not(:disabled),
+.secondary:focus-visible:not(:disabled) {
+  background-color: var(--color-bg-primary-subtle-hover);
 }
 
 .secondary:disabled {
-  background: var(--color-surface);
-  border-color: var(--color-border);
-  color: var(--color-text);
+  border-color: var(--color-border-neutral);
+  color: var(--color-text-neutral-subtle);
 }

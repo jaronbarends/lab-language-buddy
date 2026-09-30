@@ -2,15 +2,20 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--size-12);
   min-height: 0;
-  /* Makes this the offsetParent for the bubbles, so the auto-scroll can read a
-     child's offsetTop as a position within the scroll container. */
-  position: relative;
-  padding: var(--space-4) var(--space-4) var(--space-5);
+  padding: var(--size-16) var(--size-16) var(--size-24);
   overflow-y: auto;
   /* Momentum scrolling on iOS, and keeps a flick inside the thread instead of
      chaining to the body behind it. */
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
+  /* Makes this the offsetParent for the bubbles, so the auto-scroll can read a
+     child's offsetTop as a position within the scroll container. */
+  position: relative;
+  scrollbar-color: var(--scrollbar-color);
+}
+
+.thread:hover {
+  scrollbar-color: var(--scrollbar-color-hover);
 }

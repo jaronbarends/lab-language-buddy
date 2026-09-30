@@ -1,97 +1,68 @@
-/**
- * Inline SVGs rather than an icon package: nine glyphs don't justify a dependency,
- * and inlining keeps them tintable with `currentColor`.
+/*
+ * The app's icons, from Font Awesome 6 Free by way of react-icons.
  *
- * All are decorative — they sit next to a text label in every usage — so they're
- * hidden from assistive tech and the label carries the meaning.
+ * Attribution: Font Awesome Free 6, https://fontawesome.com — the icons are licensed
+ * CC BY 4.0 (https://fontawesome.com/license/free); react-icons itself is MIT.
+ *
+ * Screens import these names rather than the Font Awesome components, so swapping the
+ * set later is an edit to this file alone.
+ *
+ * Every icon here is decorative: in every usage it sits beside a text label, so it is
+ * hidden from assistive tech and the label carries the meaning. react-icons fills with
+ * currentColor, which is what lets a button's text colour reach the icon.
  */
+import {
+  FaCircleUser,
+  FaComment,
+  FaFlagCheckered,
+  FaMicrophone,
+  FaPencil,
+  FaRegPaperPlane,
+  FaRobot,
+  FaTriangleExclamation,
+  FaXmark,
+} from "react-icons/fa6";
+
 type IconProps = {
   size?: number;
 };
 
-function iconAttributes(size: number) {
-  return {
-    width: size,
-    height: size,
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: 2,
-    strokeLinecap: "round" as const,
-    strokeLinejoin: "round" as const,
-    "aria-hidden": true,
-    focusable: false,
-  };
+function decorative(size: number) {
+  return { size, "aria-hidden": true, focusable: false } as const;
 }
 
 export function MicIcon({ size = 18 }: IconProps) {
-  return (
-    <svg {...iconAttributes(size)}>
-      <rect x="9" y="2" width="6" height="11" rx="3" />
-      <path d="M5 10a7 7 0 0 0 14 0" />
-      <path d="M12 17v4" />
-    </svg>
-  );
+  return <FaMicrophone {...decorative(size)} />;
 }
 
 export function SendIcon({ size = 18 }: IconProps) {
-  return (
-    <svg {...iconAttributes(size)}>
-      <path d="M4 12 20 4l-4 16-4-6-8-2Z" />
-    </svg>
-  );
+  return <FaRegPaperPlane {...decorative(size)} />;
 }
 
 export function PencilIcon({ size = 18 }: IconProps) {
-  return (
-    <svg {...iconAttributes(size)}>
-      <path d="M4 20h4l10-10-4-4L4 16v4Z" />
-      <path d="m14 6 4 4" />
-    </svg>
-  );
+  return <FaPencil {...decorative(size)} />;
 }
 
 export function CrossIcon({ size = 18 }: IconProps) {
-  return (
-    <svg {...iconAttributes(size)}>
-      <path d="M6 6l12 12M18 6 6 18" />
-    </svg>
-  );
+  return <FaXmark {...decorative(size)} />;
 }
 
 export function FinishIcon({ size = 18 }: IconProps) {
-  return (
-    <svg {...iconAttributes(size)}>
-      <path d="M5 21V4" />
-      <path d="M5 4h13l-2.5 4L18 12H5" />
-    </svg>
-  );
+  return <FaFlagCheckered {...decorative(size)} />;
 }
 
 export function ChatIcon({ size = 18 }: IconProps) {
-  return (
-    <svg {...iconAttributes(size)}>
-      <path d="M21 12a8 8 0 0 1-8 8H7l-4 3v-7a8 8 0 0 1 8-8h2a8 8 0 0 1 8 4Z" />
-    </svg>
-  );
+  return <FaComment {...decorative(size)} />;
 }
 
 export function RobotIcon({ size = 18 }: IconProps) {
-  return (
-    <svg {...iconAttributes(size)}>
-      <rect x="4" y="8" width="16" height="11" rx="3" />
-      <path d="M12 4v4" />
-      <circle cx="9" cy="13.5" r="1" fill="currentColor" stroke="none" />
-      <circle cx="15" cy="13.5" r="1" fill="currentColor" stroke="none" />
-    </svg>
-  );
+  return <FaRobot {...decorative(size)} />;
 }
 
 export function PersonIcon({ size = 18 }: IconProps) {
-  return (
-    <svg {...iconAttributes(size)}>
-      <circle cx="12" cy="8" r="4" />
-      <path d="M4.5 20a7.5 7.5 0 0 1 15 0" />
-    </svg>
-  );
+  return <FaCircleUser {...decorative(size)} />;
+}
+
+export function WarningIcon({ size = 18 }: IconProps) {
+  return <FaTriangleExclamation {...decorative(size)} />;
 }

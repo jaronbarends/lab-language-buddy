@@ -8,7 +8,6 @@ import styles from "./starter-toggle.module.css";
 type StarterToggleProps = {
   value: Starter;
   onChange: (starter: Starter) => void;
-  labelledBy: string;
 };
 
 const OPTIONS: { value: Starter; label: string; icon: React.ReactNode }[] = [
@@ -16,30 +15,28 @@ const OPTIONS: { value: Starter; label: string; icon: React.ReactNode }[] = [
   { value: "user", label: "Me", icon: <PersonIcon /> },
 ];
 
-export function StarterToggle({
-  value,
-  onChange,
-  labelledBy,
-}: StarterToggleProps) {
+/**
+ * A segmented control built on native radios, like the language picker: a visually
+ * hidden `<input type="radio">` inside each label. It renders no caption — the
+ * fieldset and legend that name the group belong to the caller.
+ */
+export function StarterToggle({ value, onChange }: StarterToggleProps) {
   return (
-    <div className={styles.group} role="radiogroup" aria-labelledby={labelledBy}>
-      {OPTIONS.map((option) => {
-        const optionIsSelected = option.value === value;
-
-        return (
-          <button
-            key={option.value}
-            type="button"
-            role="radio"
-            aria-checked={optionIsSelected}
-            className={`${styles.option} ${optionIsSelected ? styles.selected : ""}`}
-            onClick={() => onChange(option.value)}
-          >
-            {option.icon}
-            <span>{option.label}</span>
-          </button>
-        );
-      })}
+    <div className={styles.group}>
+      {OPTIONS.map((option) => (
+        <label key={option.value} className={styles.option}>
+          <input
+            type="radio"
+            name="starter"
+            value={option.value}
+            checked={option.value === value}
+            onChange={() => onChange(option.value)}
+            className="u-hidden-form-control"
+          />
+          {option.icon}
+          <span>{option.label}</span>
+        </label>
+      ))}
     </div>
   );
 }

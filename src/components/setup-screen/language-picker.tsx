@@ -8,35 +8,40 @@ import styles from "./language-picker.module.css";
 type LanguagePickerProps = {
   value: LanguageCode;
   onChange: (language: LanguageCode) => void;
-  labelledBy: string;
 };
 
-export function LanguagePicker({
-  value,
-  onChange,
-  labelledBy,
-}: LanguagePickerProps) {
+/**
+ * A real radio group: a visually hidden `<input type="radio">` inside each label.
+ * Arrow-key navigation, the checked state, form semantics and the announcement all
+ * come from the platform — none of it is reimplemented.
+ *
+ * It renders no caption. The fieldset and legend that name the group belong to the
+ * caller, the same as for every other field on the setup screen.
+ *
+ * The layout is driven from CSS rather than from props. `:has()` counts the options
+ * to pick a column count, and a style container query flips each label between
+ * flag-above-text and flag-beside-text. Adding a seventh language would want a
+ * different UI, not another breakpoint.
+ */
+export function LanguagePicker({ value, onChange }: LanguagePickerProps) {
   return (
-    // A radio group rather than a list of buttons: it's a single-choice control, and
-    // this gets arrow-key navigation and the right announcement for free.
-    <div className={styles.grid} role="radiogroup" aria-labelledby={labelledBy}>
-      {LANGUAGE_LIST.map((language) => {
-        const languageIsSelected = language.code === value;
-
-        return (
-          <button
-            key={language.code}
-            type="button"
-            role="radio"
-            aria-checked={languageIsSelected}
-            className={`${styles.option} ${languageIsSelected ? styles.selected : ""}`}
-            onClick={() => onChange(language.code)}
-          >
-            <FlagIcon code={language.code} width={26} />
-            <span className={styles.label}>{language.label}</span>
-          </button>
-        );
-      })}
+    <div className={styles.languageOptions}>
+      {LANGUAGE_LIST.map((language) => (
+        <label key={language.code} className={styles.label}>
+          <input
+            type="radio"
+            name="language"
+            value={language.code}
+            checked={language.code === value}
+            onChange={() => onChange(language.code)}
+            className="u-hidden-form-control"
+          />
+          <span className={styles.flagIcon}>
+            <FlagIcon code={language.code} width={32} />
+          </span>
+          {language.label}
+        </label>
+      ))}
     </div>
   );
 }

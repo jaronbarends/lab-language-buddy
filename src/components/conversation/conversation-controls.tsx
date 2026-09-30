@@ -7,6 +7,7 @@ import {
   MicIcon,
   PencilIcon,
   SendIcon,
+  WarningIcon,
 } from "@/components/ui/icons";
 import { joinTranscript, type TurnState } from "@/lib/session-reducer";
 
@@ -115,11 +116,14 @@ export function ConversationControls({
     return (
       <div className={styles.controls}>
         <div className={styles.error} role="alert">
-          <span className={styles.errorTitle}>Something went wrong</span>
-          <span className={styles.errorMessage}>{turnState.message}</span>
-          {turnState.detail && (
-            <span className={styles.errorMessage}>{turnState.detail}</span>
-          )}
+          <WarningIcon size={24} />
+          <div className={styles.errorText}>
+            <span className={styles.errorTitle}>Something went wrong</span>
+            <span className={styles.errorMessage}>{turnState.message}</span>
+            {turnState.detail && (
+              <span className={styles.errorMessage}>{turnState.detail}</span>
+            )}
+          </div>
         </div>
         <div className={styles.sideBySide}>
           <Button variant="secondary" onClick={onDismissError}>

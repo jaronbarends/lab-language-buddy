@@ -2,55 +2,68 @@
   width: 100%;
   max-width: var(--layout-max-width);
   margin: 0 auto;
-  /* 16px side gutter, and the bottom pad clears the home indicator. */
-  padding: var(--space-5) var(--space-4)
-    calc(var(--space-6) + var(--safe-bottom));
+  /* Side gutter, and the bottom pad clears the home indicator. */
+  padding: var(--size-24) var(--size-16)
+    calc(var(--size-32) + var(--safe-bottom));
 }
 
 .header {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
-  margin-bottom: var(--space-6);
+  gap: var(--size-12);
+  margin-bottom: var(--size-32);
 }
 
 .logo {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: var(--size-48);
+  height: var(--size-48);
   flex-shrink: 0;
-  border-radius: var(--radius-sm);
-  background: var(--color-accent);
-  color: #ffffff;
-}
-
-.title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  line-height: 1.2;
+  border-radius: var(--radius-12);
+  background: var(--color-bg-primary);
+  color: var(--color-text-on-primary);
 }
 
 .tagline {
-  font-size: 0.875rem;
-  color: var(--color-text-muted);
+  font-size: var(--font-size-minor);
+  color: var(--color-text-neutral-subtle);
 }
 
-.field {
-  margin-bottom: var(--space-5);
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-24);
 }
 
-.fieldLabel {
-  display: block;
-  margin-bottom: var(--space-2);
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--color-label);
+/* The caption's look is element-level (elements.css); only the gap to its control
+   is this form's own business. */
+.legend {
+  margin-bottom: var(--label-gap);
 }
 
+/*
+ * "Start chat" is not full width: half of the form on a wide screen, four fifths on a
+ * narrow one, centred. The width is one variable so the breakpoint only has to say
+ * what changes. flex-basis wins over the Button's own width: 100%.
+ *
+ * The margin is 8 on top of the form's 24 gap: the same 32 the button always sat
+ * below the fields.
+ */
 .submit {
-  margin-top: var(--space-6);
+  --flex-basis: 50%;
+
+  display: flex;
+  justify-content: center;
+  margin-top: var(--size-8);
+
+  & > * {
+    flex: 0 0 var(--flex-basis);
+  }
+
+  /* Exactly the complement of the picker's min-width: 30rem breakpoint. */
+  @media (width < 30rem) {
+    --flex-basis: 80%;
+  }
 }

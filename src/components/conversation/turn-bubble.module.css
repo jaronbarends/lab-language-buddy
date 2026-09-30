@@ -1,0 +1,12 @@
+/* Speaker label for screen readers: the left/right alignment and colour that
+   say "who spoke" visually carry no meaning in the accessibility tree. */
+.speakerLabel {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

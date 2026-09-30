@@ -137,18 +137,18 @@ export function joinTranscript({ finalized, interim }: LiveTranscript): string {
 
 /**
  * The text of the user's turn as it currently stands, wherever the state keeps it: the
- * joined transcript while listening, the draft while reviewing or editing. Empty in
- * every other state. The only place that knows where the text lives.
+ * joined transcript while listening, the draft while reviewing or editing. Accepts only
+ * the composing states, so adding one to `ComposingTurnState` without a case here is a
+ * compile error (the function would not return on every path) rather than silently
+ * empty text. The only place that knows where the text lives.
  */
-export function composedTextOf(turnState: TurnState): string {
+export function composedTextOf(turnState: ComposingTurnState): string {
   switch (turnState.name) {
     case "listening":
       return joinTranscript(turnState.transcript);
     case "reviewing":
     case "editing":
       return turnState.draft;
-    default:
-      return "";
   }
 }
 

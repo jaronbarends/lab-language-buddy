@@ -88,6 +88,36 @@
   }
 }
 
+/*
+ * Forced-colours mode swaps every author colour for a system one, so the blue fill
+ * and white label above would both collapse to Canvas/CanvasText and the selected
+ * option would look like the other. System colours survive the swap, so the selected
+ * option is Highlight/HighlightText: on the option itself in the baseline, on the
+ * sliding pill where anchor positioning exists.
+ *
+ * `forced-color-adjust: none` on the selected option, because otherwise the browser
+ * paints a Canvas-coloured backplate behind the label text, and HighlightText on
+ * that is white on white. The colours here are system colours already, so opting out
+ * of the adjustment loses nothing.
+ */
+@media (forced-colors: active) {
+  .option:has(:checked) {
+    forced-color-adjust: none;
+    background-color: Highlight;
+    color: HighlightText;
+  }
+
+  @supports (anchor-name: --selected-option) and (left: anchor(left)) {
+    .option:has(:checked) {
+      background-color: transparent;
+    }
+
+    .group::after {
+      background-color: Highlight;
+    }
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .group::after {
     transition: none;

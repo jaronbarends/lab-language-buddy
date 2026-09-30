@@ -95,6 +95,20 @@
   color: var(--color-text-primary);
 }
 
+/* Forced-colours mode replaces the tint, border and text colour above with Canvas
+   and CanvasText, leaving the checked card identical to the others. System colours
+   are kept, so the checked card is Highlight/HighlightText. The adjustment is switched
+   off for it because the browser would otherwise paint a Canvas backplate behind the
+   label text, making HighlightText invisible. */
+@media (forced-colors: active) {
+  .label:has(:checked) {
+    forced-color-adjust: none;
+    border-color: Highlight;
+    background-color: Highlight;
+    color: HighlightText;
+  }
+}
+
 .label:active {
   border-bottom-width: var(--border-width);
   translate: 0 var(--bevel);

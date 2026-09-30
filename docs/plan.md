@@ -252,10 +252,6 @@ Deliberate deltas, each commented where it sits:
   than the primitives behind them (`--color-text-neutral-subtle`,
   `--font-weight-semibold`). Same values today, but those tokens exist for this role, so a
   change to them now reaches the captions.
-- **`--line-height-body-tight` is 1.3 here, 1.25 in the original.** Set for the speech
-  bubbles, but it is a token, so it moves everything that uses it: the buttons too, which
-  grew by 0.9px (Reply and End session 62.5 to 63.4px) and 1px ("Start chat" 65 to 66px).
-  A re-sync from the original app would quietly put it back to 1.25.
 
 Deliberately *not* added: a `min-inline-size: 0` for `fieldset`, which defaults to
 `min-content`. Tested by constraining the container to 288, 304 and 328px, the inner
@@ -592,6 +588,9 @@ have been argued over first.
 | 09-30 | you | Speech bubbles use `--line-height-body-tight` and `--font-weight-medium` | Applies to every bubble: turns, the live transcript and the thinking bubble through `.bubble`, and the draft bubble through `.draft`, which has to match the live transcript or the text changes the moment recording stops. The two rules carry the values separately, so both must be edited together. The editing textarea and the error box are not bubbles and are unchanged. A side effect on the highlight bands was settled straight after, in the next two rows. |
 | 09-30 | you | `--line-height-body-tight` changed from 1.25 to 1.3, in the token itself | Raised after seeing the bubbles at 1.25, where the highlight bands touched. Being a token it also moves the buttons, by under 1px; both consequences are in the design system deltas. A delta from the original app's tokens. |
 | 09-30 | you | The spoken-word highlight loses its `padding: 1px 0` | The agent's own addition: it made the bands 23px tall, which at 1.25 overlapped neighbouring lines by 0.5px. Measured now at 1.3 without it: 21px bands, 23.4px line step, 2.4px clear between lines. The comment that explained the padding was also wrong, as it only added height. |
+| 09-30 | you | `--line-height-body-tight` back to 1.25, the original's value | The bubbles did not look right at 1.3. Buttons return to their earlier heights (Reply and End session 62.5px, "Start chat" 65px, measured), and the token is verbatim again, so the delta recorded two rows up is gone. |
+| 09-30 | you | The spoken-word highlight is a `linear-gradient` background-image with a 1px transparent strip at top and bottom, replacing both the plain background and the padding | Keeps bands on neighbouring lines apart at 1.25 without touching the line height. Measured: 21px element, 19px visible band, 22.5px line step, 3.5px clear between bands. The edges are hard because each colour stop's second position is 0, which the browser raises to the previous stop. The forced-colours caveat is open question 8. |
+| 09-30 | you | A `@media (forced-colors: active)` rule drops the highlight gradient | Forced-colours mode replaces `background-color` but, as far as is known, leaves `background-image` alone, so the yellow would stay behind recoloured text and could be unreadable. A plain background used to vanish there instead. The highlight is now simply not drawn in that mode. **Not tested in forced-colours mode**; the browser cannot be put in it from here, so only that the rule exists and leaves normal mode untouched is verified. Replaces open question 8. |
 | 09-30 | you | Picker labels and the level select are semibold (`--font-weight-label`), the open option list regular | Reported as wrong. Cause: the original's Baloo was only ever available at 600 and 700, so its inherited 400 rendered as 600, while next/font gives a true 400. The select follows the original's `SelectBox`, which is semibold closed and regular in the list. The original's `:checked` colouring of that list was left out: weights were the question, and it would be a second white-on-`--color-bg-secondary`. |
 
 ## Keeping the experiment honest

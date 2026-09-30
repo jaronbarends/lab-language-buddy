@@ -96,6 +96,11 @@ export function DraftEditor({
         role="textbox"
         aria-multiline="true"
         aria-label="Edit what you said"
+        // The text is in the practice language, not the keyboard's, so correction,
+        // auto-capitalisation and spell-checking would work against the user.
+        spellCheck={false}
+        autoCorrect="off"
+        autoCapitalize="off"
         onInput={handleInput}
       />
     </Bubble>

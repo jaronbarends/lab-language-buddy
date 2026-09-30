@@ -293,6 +293,29 @@ transparent — flat and plainly not pressable, at an unchanged height.
 
 **Type scale** is 18px body. Buttons are 18px bold, except "Start chat" at 20px.
 
+**Icons** are Font Awesome 6 Free, through `react-icons/fa6`. `ui/icons.tsx` is the only
+place they are imported; screens use the app's own names, so a different set is an edit to
+that one file. All are decorative (`aria-hidden`, beside a text label) and fill with
+`currentColor`. Tree-shaking holds: `fa6` exports about 2,000 icons and adding the eight
+used grew the client bundle by 5.8 KB.
+
+| app name | Font Awesome | used for |
+|---|---|---|
+| `MicIcon` | `FaMicrophone` | Reply, Start conversation |
+| `SendIcon` | `FaRegPaperPlane` | Send |
+| `PencilIcon` | `FaPencil` | Edit |
+| `CrossIcon` | `FaXmark` | Cancel |
+| `FinishIcon` | `FaFlagCheckered` | End session |
+| `ChatIcon` | `FaComment` | Start chat, logo |
+| `RobotIcon` | `FaRobot` | AI in the starter toggle |
+| `PersonIcon` | `FaCircleUser` | Me in the starter toggle |
+
+The original app's list also named six icons this app has no place for yet:
+`FaGraduationCap` (its Evaluate button — stage 4, undecided), `FaVolumeXmark` (a no-voice
+warning, not built), `FaCircleInfo` and `FaRegCircleQuestion` (info and tooltip, not built),
+and `FaCircleXmark` and `FaTriangleExclamation` (feedback and error messages; see open
+question 7).
+
 ---
 
 ## Reused from the spike (adapted, not copied)
@@ -496,6 +519,9 @@ Per stage, in this order:
    bubble (12.27:1), errors (5.33:1) and the captions (6.22:1) all pass.
 6. **Ending a session is one tap and unrecoverable.** No confirmation, nothing persisted.
    Consistent with the brief, but it sits next to Reply.
+7. **The error box has no icon.** The original's list includes `FaTriangleExclamation` and
+   `FaCircleXmark`, presumably for feedback messages. Ours is text only. Not added, since
+   nothing asked for it.
 
 ---
 
@@ -558,6 +584,7 @@ have been argued over first.
 | 09-30 | agent | Found: white on `--color-bg-secondary` is 3.16:1 | See open question 5. A correction of an unmeasured claim made earlier, not a design change. |
 | 09-30 | you | White on `--color-bg-secondary` stays at 3.16:1 | Decided with the options in front of it (see open question 5): the pair comes from the existing app's tokens and is left as it is, the same way the primary button's 4.05:1 was. |
 | 09-30 | ported | "Start chat" is half the form wide, four fifths below 30rem, centred — one `--flex-basis` variable that the breakpoint changes | It had been full width: the port left the original's `.actions` rule out. Measured in iframes from 320 to 700px; the switch falls exactly between 479 and 480px, the complement of the picker's own `min-width: 30rem`, written as `(width < 30rem)` rather than the original's `29.99rem`. The original centres with `space-around`; with a single item `center` is identical and says what it means. |
+| 09-30 | you | Icons are Font Awesome 6 Free via `react-icons/fa6`, replacing the hand-drawn SVGs | The originals were disliked. Jaron named the icons by their `Fa…` names; the agent inferred `react-icons` from that naming, since `@fortawesome` uses `faCircleInfo`-style names, and checked that all 14 names exist in `fa6`. Eight are used; six have no place yet. The mapping and the attribution (CC BY 4.0) are in `ui/icons.tsx`. |
 | 09-30 | you | Picker labels and the level select are semibold (`--font-weight-label`), the open option list regular | Reported as wrong. Cause: the original's Baloo was only ever available at 600 and 700, so its inherited 400 rendered as 600, while next/font gives a true 400. The select follows the original's `SelectBox`, which is semibold closed and regular in the list. The original's `:checked` colouring of that list was left out: weights were the question, and it would be a second white-on-`--color-bg-secondary`. |
 
 ## Keeping the experiment honest

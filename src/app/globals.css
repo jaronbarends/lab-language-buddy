@@ -1,30 +1,29 @@
 /*
- * The five files under tokens/ are the design system, carried over from the
- * existing Language Buddy app. Keep them as close to verbatim as possible so they
- * can be re-synced; the only deliberate deltas are marked with comments in place
- * (the highlight yellow, --radius-button's home, and the two font primitives that
- * next/font now owns). Anything this app needs beyond the system goes below,
- * not in those files.
+ * Three layers carried over from the existing Language Buddy app, kept as close to
+ * verbatim as possible so they can be re-synced:
+ *
+ *   tokens/     the design system's values
+ *   reset.css   what browsers get wrong by default
+ *   elements.css  how plain elements look
+ *
+ * Each notes its own deliberate deltas in place. This file is everything this app
+ * needs *beyond* them: layout that only makes sense here, and the iOS-specific
+ * handling. Import order matters — element rules must come after the reset, since
+ * they have equal specificity and the later one wins.
  */
 @import "./tokens/colors.css";
 @import "./tokens/type.css";
 @import "./tokens/sizes.css";
 @import "./tokens/borders.css";
 @import "./tokens/animation.css";
+@import "./reset.css";
+@import "./elements.css";
 
 :root {
   /* App-specific, outside the design system. */
   --layout-max-width: 42.5rem;
   /* Breathing room under the control bar on notched iPhones. */
   --safe-bottom: env(safe-area-inset-bottom, 0px);
-}
-
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
 }
 
 html {
@@ -41,35 +40,10 @@ body {
   min-height: 100dvh;
   /* Clips horizontal overflow, so the page itself never scrolls sideways. */
   overflow-x: hidden;
-  background: var(--color-bg-page);
-  color: var(--color-text-default);
-  font-family: var(--font-family-default);
-  font-size: var(--font-size-body-default);
-  font-weight: var(--font-weight-default);
-  line-height: var(--line-height-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   /* Turns off the rubber-band overscroll of the page itself on the vertical axis. */
   overscroll-behavior-y: none;
-}
-
-button,
-input,
-select,
-textarea {
-  font: inherit;
-  color: inherit;
-}
-
-button {
-  cursor: pointer;
-  border: none;
-  background: none;
-}
-
-:focus-visible {
-  outline: var(--focus-outline);
-  outline-offset: var(--focus-outline-offset);
 }
 
 /*

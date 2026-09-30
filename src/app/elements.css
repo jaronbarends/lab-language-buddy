@@ -1,0 +1,56 @@
+/*
+ * Carried over from the existing Language Buddy app:
+ * src/styles/elements.css, last touched in commit 77ed5aff (2026-08-26).
+ *
+ * How plain elements look, defined once at element level instead of per component.
+ * This is also where the three declarations moved out of reset.css now live.
+ *
+ * Deltas from the original, each marked where it sits:
+ *  - body gains the line-height that used to sit in reset.css
+ *  - h1–h4 already had the heading line-height; it is simply no longer duplicated
+ *  - :focus-visible arrives from reset.css
+ *  - legend uses the label tokens (--color-text-label, --font-weight-label), which
+ *    exist for exactly this role, instead of the two primitives behind them
+ *  - the `main { padding-bottom }` rule is not taken over: it ignores the iOS safe
+ *    area, and the screens own their own padding
+ */
+body {
+  background-color: var(--color-bg-page);
+  font-family: var(--font-family-default);
+  font-weight: var(--font-weight-default);
+  font-size: var(--font-size-body-default);
+  line-height: var(--line-height-body); /* moved from reset.css */
+  color: var(--color-text-default);
+}
+
+legend {
+  color: var(--color-text-label); /* was --color-text-neutral-subtle; same value */
+  font-size: var(--font-size-minor);
+  font-weight: var(--font-weight-label); /* was --font-weight-semibold; same value */
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-family-heading);
+  font-weight: var(--font-weight-heading);
+  line-height: var(--line-height-heading);
+}
+
+h1 {
+  font-size: var(--font-size-22);
+}
+
+input,
+textarea,
+select {
+  color: inherit;
+}
+
+/* moved from reset.css */
+:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: var(--focus-outline-offset);
+}

@@ -170,6 +170,8 @@ so a page reload starts from the defaults again.
 ├── spikes/ai-voice-demo/         reference spike, untouched
 └── src/
     ├── app/                      layout.tsx, page.tsx, globals.css
+    │   ├── reset.css             carried over from the existing app — see below
+    │   ├── elements.css          carried over from the existing app — see below
     │   └── tokens/               the design system — see below
     ├── components/
     │   ├── language-buddy.tsx    owns the reducer, renders by phase
@@ -212,11 +214,21 @@ stays the place to look; no copy of the originals is kept here, because a second
 would only drift from both it and from our working files. Compare against the source
 before assuming a token still matches.
 
-The files are kept as close to verbatim as possible so they can be re-synced; `globals.css` imports
-them and is where anything this app needs *beyond* the system lives
-(`--layout-max-width`, `--safe-bottom`).
+**Three layers**, all carried over from the existing app and kept as close to verbatim as
+possible so they can be re-synced:
 
-Three deliberate deltas, each commented in place:
+- `tokens/` — the values
+- `reset.css` — what browsers get wrong by default (`src/styles/reset.css`, as of commit
+  `4afc5d07`, 2026-08-18)
+- `elements.css` — how plain elements look, defined once at element level instead of per
+  component (`src/styles/elements.css`, as of commit `77ed5aff`, 2026-08-26)
+
+`globals.css` imports them in that order — element rules and reset rules have equal
+specificity, so the later one wins — and is otherwise only what this app needs *beyond*
+them: `--layout-max-width`, `--safe-bottom`, the `html`/`body` layout and iOS handling,
+and `.u-hidden-form-control`.
+
+Deliberate deltas, each commented where it sits:
 
 - **`--color-yellow-subtle`** added, plus semantic `--color-bg-highlight`. The system had
   no yellow and the read-along highlight needs one. Same lightness as
@@ -227,6 +239,30 @@ Three deliberate deltas, each commented in place:
   instead. Declaring them in both places would leave the winner down to stylesheet
   injection order, since a class on `<html>` and `:root` have equal specificity.
   `fonts.css` — which held only `@font-face` — is dropped entirely.
+- **Body line-height, heading line-height and `:focus-visible` live in `elements.css`,
+  not `reset.css`.** They define how things should look, which is not a reset. The
+  heading line-height was already in `elements.css` for `h1`–`h4`, so moving it only
+  removes a duplicate.
+- **`legend { padding: 0 }` added to the reset.** Measured on a bare legend: 2px of inline
+  padding each side. The original reset zeroes fieldsets, headings and `p` but not
+  `legend`, so captions would sit 2px inside the edge of the controls beneath them.
+- **`main { padding-bottom }` from `elements.css` not taken over.** It ignores the iOS
+  safe area, and the screens pad themselves.
+- **`legend` uses the label tokens** (`--color-text-label`, `--font-weight-label`) rather
+  than the primitives behind them (`--color-text-neutral-subtle`,
+  `--font-weight-semibold`). Same values today, but those tokens exist for this role, so a
+  change to them now reaches the captions.
+
+Deliberately *not* added: a `min-inline-size: 0` for `fieldset`, which defaults to
+`min-content`. Tested by constraining the container to 288, 304 and 328px, the inner
+widths of 320, 336 (21rem) and 360px viewports: no overflow at any of them. The picker's
+21rem breakpoint is exactly where three 6rem columns fit. A real narrow viewport could
+not be tested here, since the browser window would not resize.
+
+**Captions are not yet on the element-level `legend` rule.** Component classes
+(`.fieldLabel`, the picker's `.legend`) still override it and will until they are removed;
+until then the captions keep the old agent values (12px bold, 0.06em tracking) rather
+than the original's 14px semibold without tracking.
 
 **Fonts** are Baloo 2 (buttons, language picker, headings) and Work Sans (everything
 else, including the AI/Me toggle), loaded through `next/font/google` with the `latin`
@@ -475,6 +511,11 @@ have been argued over first.
 | 09-29 | agent | Reducer contract for the async drivers, stated in its doc comment | The reducer cannot tell a stale `AI_TURN_RECEIVED` or `TRANSCRIPT_UPDATED` from a current one; both only check the state name. Every async source must therefore cancel when the state that started it is left: abort fetches, detach handlers from and close sockets. A note for stages 2 and 3, nothing built yet. |
 | 09-29 | agent | `USER_TURN_SENT` and `AI_TURN_RECEIVED` take `{ id, text }`, not a whole `Turn`; the reducer sets `author` | The caller no longer picks the author, and the "no empty user turn" rule (trimmed text) lives in the reducer instead of only in the component. |
 | 09-29 | agent | The reducer's `default` branch is a compile-time exhaustiveness check (`action satisfies never`) | An action added to the union but not handled now fails `tsc` instead of being silently ignored. Verified with a temporary dummy action. |
+| 09-30 | ported | `reset.css` and `elements.css` adopted between the tokens and `globals.css` | Replaces the agent's blanket `*{margin:0;padding:0}` and the element rules that lived in `globals.css` with the existing app's, so both apps share one definition of a plain element. Captions will become 14px semibold without tracking — the agent's 12px bold with 0.06em was estimated from a screenshot — once the component classes overriding them are removed. |
+| 09-30 | you | Body line-height, heading line-height and `:focus-visible` moved from `reset.css` to `elements.css` | They define how things should look, which is not a reset. |
+| 09-30 | agent | `legend { padding: 0 }` added to the reset | Measured at 2px each side on a bare legend; the original reset lacks it. One line, flagged in place, easy to drop. |
+| 09-30 | agent | `main { padding-bottom }` not taken over; no `fieldset` `min-inline-size` reset | The first ignores the iOS safe area. The second proved unnecessary when tested at 288, 304 and 328px container widths. |
+| 09-30 | you | `legend` in `elements.css` uses `--color-text-label` and `--font-weight-label` | In line with the tiered tokens: the label tokens exist for this role, and the original reached past them to the primitives. Identical values today. |
 
 ## Keeping the experiment honest
 
@@ -505,6 +546,16 @@ using it quietly.
 *Already leaked, on the agent's own initiative before this rule existed:* two full
 repository tree listings, so the paths and filenames of ~35 stylesheets are known,
 including `Evaluation.module.css`. Names and existence only, no contents.
+
+*Read because Jaron pointed at it:* `src/styles/settings/` (the tokens),
+`components/button/Button.*`, `chatSetup/components/` (`LanguagePicker`, `SetupForm`,
+`SegmentedControl`, `SelectBox`), `styles/elements.css` and `styles/reset.css`.
+
+*Seen incidentally in `SetupForm.tsx`, not used:* a browser speech-recognition support
+check that disables Start, per-language voice-support props, and a scenario concept
+(`freeformScenarios`). Jaron judged the speech part not a concern, since it concerns native
+browser functionality this version does not use. The scenario concept touches the open
+persona question for stage 2.
 
 ### What the reference is legitimately for
 

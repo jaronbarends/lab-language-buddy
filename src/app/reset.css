@@ -1,0 +1,95 @@
+/*
+ * Carried over from the existing Language Buddy app:
+ * src/styles/reset.css, last touched in commit 4afc5d07 (2026-08-18).
+ *
+ * Kept verbatim except for:
+ *  - three declarations moved out to elements.css, because they are not resets —
+ *    they define how things should look: the body line-height, the heading
+ *    line-height, and the :focus-visible rule
+ *  - one ADDITION, marked below: the legend padding reset
+ */
+:root {
+  interpolate-size: allow-keywords;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  font-size: 1em;
+  font-weight: normal;
+}
+
+p {
+  margin: 0;
+}
+
+fieldset {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+/*
+ * Not in the original. Browsers give <legend> 2px of inline padding, and this reset
+ * touched every sibling (fieldset, headings, p) but not it. Measured on a bare
+ * legend: 2px each side. Left alone, every caption sits 2px inside the edge of the
+ * controls beneath it.
+ */
+legend {
+  padding: 0;
+}
+
+input,
+textarea,
+select,
+button {
+  font: inherit;
+}
+
+ul,
+ol,
+dl {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+dd,
+dt {
+  margin: 0;
+  padding: 0;
+}
+
+button {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+
+  &[disabled] {
+    cursor: not-allowed;
+  }
+}

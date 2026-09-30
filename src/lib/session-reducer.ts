@@ -68,6 +68,17 @@ export type TurnState =
 
 export type TurnStateName = TurnState["name"];
 
+// The three groups the control bar tells apart, each narrowed to just its variants.
+export type ComposingTurnState = Extract<
+  TurnState,
+  { name: "listening" | "reviewing" | "editing" }
+>;
+export type ErrorTurnState = Extract<TurnState, { name: "error" }>;
+export type IdleTurnState = Extract<
+  TurnState,
+  { name: "awaitingUser" | "aiThinking" | "aiSpeaking" }
+>;
+
 /** Raw errors can be arbitrarily long; the screen only needs enough to recognise one. */
 const MAX_ERROR_DETAIL_LENGTH = 300;
 
@@ -122,6 +133,23 @@ export const initialSessionState: SessionState = {
 
 export function joinTranscript({ finalized, interim }: LiveTranscript): string {
   return `${finalized} ${interim}`.trim();
+}
+
+/**
+ * The text of the user's turn as it currently stands, wherever the state keeps it: the
+ * joined transcript while listening, the draft while reviewing or editing. Empty in
+ * every other state. The only place that knows where the text lives.
+ */
+export function composedTextOf(turnState: TurnState): string {
+  switch (turnState.name) {
+    case "listening":
+      return joinTranscript(turnState.transcript);
+    case "reviewing":
+    case "editing":
+      return turnState.draft;
+    default:
+      return "";
+  }
 }
 
 /**

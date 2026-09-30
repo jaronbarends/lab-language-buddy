@@ -179,7 +179,9 @@ so a page reload starts from the defaults again.
     │   ├── conversation/         conversation-screen, conversation-thread, turn-bubble,
     │   │                         highlighted-text, live-transcript, thinking-bubble,
     │   │                         draft-review (DraftBubble + DraftEditor),
-    │   │                         conversation-controls; bubble (the shared frame) and
+    │   │                         conversation-controls (a switch over composing-controls,
+    │   │                         error-controls and idle-controls, which dispatch for
+    │   │                         themselves); bubble (the shared frame) and
     │   │                         a module css beside each component for its own styles
     │   ├── dev/state-stepper.tsx development-only turn-state jumper
     │   └── ui/                   button, icons, flag-icon
@@ -199,7 +201,7 @@ Still to come: `src/app/api/{chat,tts,stt/token}/route.ts`, `src/lib/prompt.ts`,
 `src/hooks/{use-audio-playback,use-live-transcription}.ts`, and `.env.local` at the root.
 
 **The language registry holds only provider-neutral data** — `code`, `label`,
-`promptName`, `deepgram`. Flags live in `flag-icon.tsx` and voices in each TTS provider,
+`promptName`, `deepgram`, `htmlLang` (the BCP 47 tag for the `lang` attribute). Flags live in `flag-icon.tsx` and voices in each TTS provider,
 because a language code is not a country code and not a voice name.
 
 ---
@@ -607,6 +609,10 @@ have been argued over first.
 | 09-30 | you | Buttons' horizontal padding is 16px, down from 32px (`padding: var(--size-16)`) | On an iPhone, "Cancel edit" did not fit its half-width button: the label wrapped onto two lines and, since the two buttons in a row are always the same height, both grew from 62.5px to 85px. The same happened to Edit, and to Try again and End session in the error row. Reproduced before changing anything, by loading the app in iframes of iPhone widths: 85px at 320, 375 and 390px, 62.5px only at 430px. After: 62.5px at 360, 375, 390 and 430px. The room left in "Cancel edit" is 14.3px at 375px and 6.8px at 360px, 21.8px at 390px. The buttons' width comes from the layout, not from their content, so the tap area is unchanged. **Still wraps at 320px**, short by 2.2px; see open question 7. |
 | 09-30 | you | Picker labels and the level select are semibold (`--font-weight-label`), the open option list regular | Reported as wrong. Cause: the original's Baloo was only ever available at 600 and 700, so its inherited 400 rendered as 600, while next/font gives a true 400. The select follows the original's `SelectBox`, which is semibold closed and regular in the list. The original's `:checked` colouring of that list was left out: weights were the question, and it would be a second white-on-`--color-bg-secondary`. |
 | 09-30 | agent | In forced-colours mode the selected AI/Me option and the selected language card are `Highlight`/`HighlightText` | Found in review, answering the question the forced-colours row above left open. The forced-colours mode swaps the blue fill, tint and border for Canvas and CanvasText, so a selected option looked like the others once focus left the group. System colours are not swapped, so both use them; on the AI/Me toggle the sliding pill is `Highlight` too, and the option paints itself only in the baseline without anchor positioning. **First version was wrong, seen in Jaron's screenshot:** the fill was right but the label sat in a white box, white text on white. The browser paints a Canvas backplate behind text in forced-colours mode; `forced-color-adjust: none` on the two selected elements removes it. **Then checked again by Jaron in forced-colours mode: white text on the dark purple fill, on both controls.** The mode cannot be entered from the tooling, so that check was his. |
+| 09-30 | you | Conversation text carries `lang` from `LANGUAGES[…].htmlLang` (Norwegian is `nb`), resolved once in `LanguageBuddy` and passed down as `conversationLang` | Screen readers pick the voice from `lang`, and `<html lang="en">` made a Norwegian bubble read with an English voice. It sits on the text itself, not on the thread, so the speaker label and the "Listening…" placeholder (`lang="en"`) stay English. Passed as a prop, not context, since the state context was removed on purpose. The `lang="en"` on the placeholder is Jaron's refinement of the agent's proposal. |
+| 09-30 | you | The draft editor turns off `spellCheck`, `autoCorrect` and `autoCapitalize` | The text is in the practice language, not the keyboard's, so iOS corrections and red underlines work against the user. Not checked on a device yet. |
+| 09-30 | you | `ConversationControls` split into `ComposingControls`, `ErrorControls` and `IdleControls`, each using `useSessionDispatch()`; it stays as a switch that takes no callbacks | Nine callback props made one component of three, and every new concern had to be threaded through all of them. `ConversationScreen` no longer touches dispatch. The `Extract` types for the three groups live in `session-reducer.ts` (Jaron's choice over local types, so the list of composing states is defined next to the union). The `.error*` styles moved to `error-controls.module.css`. |
+| 09-30 | agent | `composedTextOf(turnState)` in the reducer file is the one definition of "the text being composed" | It was worked out twice, in `ConversationScreen` for Send and in the controls for the button's `disabled`. The reducer's own blank check on `USER_TURN_SENT` stays; so does the one in `ComposingControls`. |
 
 ## Keeping the experiment honest
 

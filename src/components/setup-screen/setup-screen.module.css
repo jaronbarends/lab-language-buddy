@@ -43,7 +43,27 @@
   margin-bottom: var(--label-gap);
 }
 
-/* 8 on top of the form's 24 gap: the same 32 the button always sat below the fields. */
+/*
+ * "Start chat" is not full width: half of the form on a wide screen, four fifths on a
+ * narrow one, centred. The width is one variable so the breakpoint only has to say
+ * what changes. flex-basis wins over the Button's own width: 100%.
+ *
+ * The margin is 8 on top of the form's 24 gap: the same 32 the button always sat
+ * below the fields.
+ */
 .submit {
+  --flex-basis: 50%;
+
+  display: flex;
+  justify-content: center;
   margin-top: var(--size-8);
+
+  & > * {
+    flex: 0 0 var(--flex-basis);
+  }
+
+  /* Exactly the complement of the picker's min-width: 30rem breakpoint. */
+  @media (width < 30rem) {
+    --flex-basis: 80%;
+  }
 }

@@ -256,8 +256,14 @@ Deliberate deltas, each commented where it sits:
 Deliberately *not* added: a `min-inline-size: 0` for `fieldset`, which defaults to
 `min-content`. Tested by constraining the container to 288, 304 and 328px, the inner
 widths of 320, 336 (21rem) and 360px viewports: no overflow at any of them. The picker's
-21rem breakpoint is exactly where three 6rem columns fit. A real narrow viewport could
-not be tested here, since the browser window would not resize.
+21rem breakpoint is exactly where three 6rem columns fit.
+
+That test was first done by constraining a container, because the browser window would
+not resize. It has since been repeated in genuine narrow viewports by loading the app in
+iframes of 320 to 700px, which works because an iframe's width is the viewport its media
+queries see. Result: the picker goes from two to three columns between 335 and 336px, no
+fieldset is ever wider than its form, and the page never scrolls sideways at any width
+tried. That is Chrome, not Safari — iOS is still for a real device.
 
 **Captions are on the element-level `legend` rule.** The component classes that used to
 override it (`.fieldLabel`, the picker's `.legend`) are gone, so the setup screen's
@@ -551,6 +557,7 @@ have been argued over first.
 | 09-30 | ported | The select's arrow is a `mask` filled with `currentcolor`, replacing a background image with a hardcoded stroke colour | It follows the text colour instead of repeating a hex. The hardcoded one also contradicted an earlier claim that no hex remained outside the tokens; the check had skipped that line. |
 | 09-30 | agent | Found: white on `--color-bg-secondary` is 3.16:1 | See open question 5. A correction of an unmeasured claim made earlier, not a design change. |
 | 09-30 | you | White on `--color-bg-secondary` stays at 3.16:1 | Decided with the options in front of it (see open question 5): the pair comes from the existing app's tokens and is left as it is, the same way the primary button's 4.05:1 was. |
+| 09-30 | ported | "Start chat" is half the form wide, four fifths below 30rem, centred — one `--flex-basis` variable that the breakpoint changes | It had been full width: the port left the original's `.actions` rule out. Measured in iframes from 320 to 700px; the switch falls exactly between 479 and 480px, the complement of the picker's own `min-width: 30rem`, written as `(width < 30rem)` rather than the original's `29.99rem`. The original centres with `space-around`; with a single item `center` is identical and says what it means. |
 | 09-30 | you | Picker labels and the level select are semibold (`--font-weight-label`), the open option list regular | Reported as wrong. Cause: the original's Baloo was only ever available at 600 and 700, so its inherited 400 rendered as 600, while next/font gives a true 400. The select follows the original's `SelectBox`, which is semibold closed and regular in the list. The original's `:checked` colouring of that list was left out: weights were the question, and it would be a second white-on-`--color-bg-secondary`. |
 
 ## Keeping the experiment honest

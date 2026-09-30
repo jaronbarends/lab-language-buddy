@@ -15,7 +15,9 @@
   justify-content: center;
   gap: var(--size-8);
   width: 100%;
-  padding: var(--size-16) var(--size-32);
+  /* 16 all round. At 32 a half-width button on a phone was too narrow for its own label
+     ("Cancel edit"), which wrapped onto two lines and made both buttons in the row taller. */
+  padding: var(--size-16);
   border: var(--border-width) solid;
   border-bottom-width: calc(var(--border-width) + var(--bevel));
   border-radius: var(--radius-button);

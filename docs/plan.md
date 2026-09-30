@@ -526,6 +526,10 @@ Per stage, in this order:
    bubble (12.27:1), errors (5.33:1) and the captions (6.22:1) all pass.
 6. **Ending a session is one tap and unrecoverable.** No confirmation, nothing persisted.
    Consistent with the brief, but it sits next to Reply.
+7. **"Cancel edit" still wraps at a 320px viewport**, by 2.2px, and so do the other buttons in
+   its row. 320px is the original iPhone SE and iPhones in Display Zoom; iOS 26 devices are
+   375px or wider otherwise. Not fixed: closing 2.2px means changing a gap, a font size or
+   the screen's side padding, and none of those was asked for.
 
 ---
 
@@ -601,6 +605,7 @@ have been argued over first.
 ` in a text node with no `<br>` or `<div>`, pasted formatting arrives as plain text, Send sends exactly what was typed, Cancel edit restores the pre-edit text, and an emptied editor keeps a visible bubble with Send disabled. **Then checked on an iPhone, where the first attempt had failed, and it behaves.** That covers Enter, the keyboard and autocorrect, which were the open risks. The accessibility attributes a textarea supplies (`role`, `aria-multiline`, `aria-label`) are now set by hand. |
 | 09-30 | you | A bubble containing an editable region goes white, with the focus ring on the bubble | The white-on-edit idea is Jaron's. The condition `:has([contenteditable])`, not focus, is the agent's refinement, which he accepted: the editor only exists in the editing state, whereas clicking elsewhere drops focus while still editing. Tested: after clicking away the editor is unfocused, the bubble stays white with no ring, "Cancel edit" is still shown and Edit is still disabled. The ring needs real window focus; with only programmatic focus in an automated tab `:focus-visible` does not match, which looked like a bug and was not. |
 | 09-30 | you | Bubbles use `white-space: pre-line` | A line break typed in the editor was kept in the sent text as `
+| 09-30 | you | Buttons' horizontal padding is 16px, down from 32px (`padding: var(--size-16)`) | On an iPhone, "Cancel edit" did not fit its half-width button: the label wrapped onto two lines and, since the two buttons in a row are always the same height, both grew from 62.5px to 85px. The same happened to Edit, and to Try again and End session in the error row. Reproduced before changing anything, by loading the app in iframes of iPhone widths: 85px at 320, 375 and 390px, 62.5px only at 430px. After: 62.5px at 360, 375, 390 and 430px. The room left in "Cancel edit" is 14.3px at 375px and 6.8px at 360px, 21.8px at 390px. The buttons' width comes from the layout, not from their content, so the tap area is unchanged. **Still wraps at 320px**, short by 2.2px; see open question 7. |
 ` but shown as a space, because `.bubble` used the default. Tested before changing it: a three-line message showed as one line, 50.5px tall. `pre-line` keeps line breaks and still collapses runs of spaces, which `pre-wrap` would keep. It applies to every bubble, so an AI reply with line breaks is shown with them too. The editor stays `pre-wrap`, since typed spaces must survive while typing. Answers open question 7. |
 | 09-30 | you | Picker labels and the level select are semibold (`--font-weight-label`), the open option list regular | Reported as wrong. Cause: the original's Baloo was only ever available at 600 and 700, so its inherited 400 rendered as 600, while next/font gives a true 400. The select follows the original's `SelectBox`, which is semibold closed and regular in the list. The original's `:checked` colouring of that list was left out: weights were the question, and it would be a second white-on-`--color-bg-secondary`. |
 

@@ -23,12 +23,14 @@
 .ai {
   align-self: flex-start;
   background: var(--color-bg-default);
+  border-top-left-radius: var(--radius-4);
 }
 
 .user {
   align-self: flex-end;
   background: var(--color-bg-secondary-subtle);
   border-color: var(--color-border-secondary);
+  border-bottom-right-radius: var(--radius-4);
 }
 
 /*

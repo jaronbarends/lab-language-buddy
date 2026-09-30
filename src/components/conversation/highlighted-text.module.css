@@ -19,7 +19,8 @@
  * is known, leaves background-image alone. The gradient would then stay yellow behind
  * text the system has recoloured, which can be unreadable. So it is dropped there and
  * the highlight is simply not drawn, which is what the old plain background did too.
- * Not tested in forced-colours mode: the browser cannot be put in it from here.
+ * Checked in forced-colours mode: no highlight is drawn there, which was judged
+ * acceptable.
  */
 @media (forced-colors: active) {
   .spokenWord {

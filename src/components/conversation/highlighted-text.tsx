@@ -1,6 +1,6 @@
 import { tokenizeText, type TextToken } from "@/lib/word-timing";
 
-import styles from "./bubble.module.css";
+import styles from "./highlighted-text.module.css";
 
 type HighlightedTextProps = {
   text: string;

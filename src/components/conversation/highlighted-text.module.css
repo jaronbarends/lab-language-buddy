@@ -1,0 +1,28 @@
+.spokenWord {
+  /* A gradient rather than a plain background, so the band can be trimmed without
+     padding or a different line height. The two hard stops leave the first and last
+     pixel of the font's content area (about 21px at this size) transparent, which
+     keeps the bands on neighbouring lines apart at the bubbles' tight line height.
+     The second position of each stop is 0, which the browser raises to the previous
+     stop's position: that is what makes the edges hard instead of fading. */
+  background-image: linear-gradient(
+    to bottom,
+    transparent 1px,
+    var(--color-bg-highlight) 0,
+    var(--color-bg-highlight) calc(100% - 1px),
+    transparent 0
+  );
+}
+
+/*
+ * Forced-colours mode (Windows High Contrast) replaces background-color but, as far as
+ * is known, leaves background-image alone. The gradient would then stay yellow behind
+ * text the system has recoloured, which can be unreadable. So it is dropped there and
+ * the highlight is simply not drawn, which is what the old plain background did too.
+ * Not tested in forced-colours mode: the browser cannot be put in it from here.
+ */
+@media (forced-colors: active) {
+  .spokenWord {
+    background-image: none;
+  }
+}

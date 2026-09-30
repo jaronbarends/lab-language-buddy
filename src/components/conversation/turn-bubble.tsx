@@ -1,7 +1,8 @@
 import type { Turn } from "@/lib/session-reducer";
 
+import { Bubble } from "./bubble";
 import { HighlightedText } from "./highlighted-text";
-import styles from "./bubble.module.css";
+import styles from "./turn-bubble.module.css";
 
 type TurnBubbleProps = {
   turn: Turn;
@@ -10,11 +11,10 @@ type TurnBubbleProps = {
 };
 
 export function TurnBubble({ turn, spokenWordCount }: TurnBubbleProps) {
-  const authorStyle = turn.author === "ai" ? styles.ai : styles.user;
   const turnIsBeingSpoken = spokenWordCount !== null;
 
   return (
-    <p className={`${styles.bubble} ${authorStyle}`}>
+    <Bubble author={turn.author}>
       <span className={styles.speakerLabel}>
         {turn.author === "ai" ? "AI: " : "You: "}
       </span>
@@ -23,6 +23,6 @@ export function TurnBubble({ turn, spokenWordCount }: TurnBubbleProps) {
       ) : (
         turn.text
       )}
-    </p>
+    </Bubble>
   );
 }

@@ -1,29 +1,13 @@
-/* Matches .bubble/.user in bubble.module.css on purpose. The live transcript sits
-   in this same spot while recording and becomes this draft the moment it stops, so
-   any difference in width or alignment would read as the bubble jumping. */
-.draft {
-  align-self: flex-end;
-  width: fit-content;
-  max-width: 85%;
-  padding: var(--size-12) var(--size-16);
-  border: var(--border-width-default) solid var(--color-border-secondary);
-  border-radius: var(--radius-16);
-  background: var(--color-bg-secondary-subtle);
-  /* Same as .bubble, for the same reason as everything else in this rule. */
-  line-height: var(--line-height-body-tight);
-  font-weight: var(--font-weight-medium);
-  overflow-wrap: break-word;
+.editor {
+  /* Typed line breaks stay line breaks. The wrapping of long words is the bubble's. */
+  white-space: pre-wrap;
+  /* An empty editable block would have no height and almost no width, so the bubble
+     would collapse to its padding and the caret would have nowhere to be. */
+  min-width: 4ch;
+  min-height: 1lh;
 }
 
-.editor {
-  width: 100%;
-  min-height: 6rem;
-  padding: var(--size-12) var(--size-16);
-  border: var(--border-width-default) solid var(--color-border-secondary);
-  border-radius: var(--radius-input);
-  background: var(--color-bg-input);
-  font-family: var(--font-family-body);
-  font-size: var(--font-size-body-default);
-  line-height: var(--line-height-body);
-  resize: vertical;
+/* The ring is drawn round the bubble instead, by Bubble. */
+.editor:focus-visible {
+  outline: none;
 }

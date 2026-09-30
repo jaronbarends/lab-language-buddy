@@ -252,6 +252,10 @@ Deliberate deltas, each commented where it sits:
   than the primitives behind them (`--color-text-neutral-subtle`,
   `--font-weight-semibold`). Same values today, but those tokens exist for this role, so a
   change to them now reaches the captions.
+- **`--line-height-body-tight` is 1.3 here, 1.25 in the original.** Set for the speech
+  bubbles, but it is a token, so it moves everything that uses it: the buttons too, which
+  grew by 0.9px (Reply and End session 62.5 to 63.4px) and 1px ("Start chat" 65 to 66px).
+  A re-sync from the original app would quietly put it back to 1.25.
 
 Deliberately *not* added: a `min-inline-size: 0` for `fieldset`, which defaults to
 `min-content`. Tested by constraining the container to 288, 304 and 328px, the inner
@@ -585,6 +589,9 @@ have been argued over first.
 | 09-30 | you | White on `--color-bg-secondary` stays at 3.16:1 | Decided with the options in front of it (see open question 5): the pair comes from the existing app's tokens and is left as it is, the same way the primary button's 4.05:1 was. |
 | 09-30 | ported | "Start chat" is half the form wide, four fifths below 30rem, centred — one `--flex-basis` variable that the breakpoint changes | It had been full width: the port left the original's `.actions` rule out. Measured in iframes from 320 to 700px; the switch falls exactly between 479 and 480px, the complement of the picker's own `min-width: 30rem`, written as `(width < 30rem)` rather than the original's `29.99rem`. The original centres with `space-around`; with a single item `center` is identical and says what it means. |
 | 09-30 | you | Icons are Font Awesome 6 Free via `react-icons/fa6`, replacing the hand-drawn SVGs | The originals were disliked. Jaron named the icons by their `Fa…` names; the agent inferred `react-icons` from that naming, since `@fortawesome` uses `faCircleInfo`-style names, and checked that all 14 names exist in `fa6`. Eight are used; six have no place yet. The mapping and the attribution (CC BY 4.0) are in `ui/icons.tsx`. |
+| 09-30 | you | Speech bubbles use `--line-height-body-tight` and `--font-weight-medium` | Applies to every bubble: turns, the live transcript and the thinking bubble through `.bubble`, and the draft bubble through `.draft`, which has to match the live transcript or the text changes the moment recording stops. The two rules carry the values separately, so both must be edited together. The editing textarea and the error box are not bubbles and are unchanged. A side effect on the highlight bands was settled straight after, in the next two rows. |
+| 09-30 | you | `--line-height-body-tight` changed from 1.25 to 1.3, in the token itself | Raised after seeing the bubbles at 1.25, where the highlight bands touched. Being a token it also moves the buttons, by under 1px; both consequences are in the design system deltas. A delta from the original app's tokens. |
+| 09-30 | you | The spoken-word highlight loses its `padding: 1px 0` | The agent's own addition: it made the bands 23px tall, which at 1.25 overlapped neighbouring lines by 0.5px. Measured now at 1.3 without it: 21px bands, 23.4px line step, 2.4px clear between lines. The comment that explained the padding was also wrong, as it only added height. |
 | 09-30 | you | Picker labels and the level select are semibold (`--font-weight-label`), the open option list regular | Reported as wrong. Cause: the original's Baloo was only ever available at 600 and 700, so its inherited 400 rendered as 600, while next/font gives a true 400. The select follows the original's `SelectBox`, which is semibold closed and regular in the list. The original's `:checked` colouring of that list was left out: weights were the question, and it would be a second white-on-`--color-bg-secondary`. |
 
 ## Keeping the experiment honest

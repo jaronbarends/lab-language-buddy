@@ -9,6 +9,9 @@
   border: var(--border-width-default) solid var(--color-border-secondary);
   border-radius: var(--radius-16);
   background: var(--color-bg-secondary-subtle);
+  /* Same as .bubble, for the same reason as everything else in this rule. */
+  line-height: var(--line-height-body-tight);
+  font-weight: var(--font-weight-medium);
   overflow-wrap: break-word;
 }
 

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { useSessionDispatch } from "@/hooks/use-session";
+import { useSessionDispatch } from "@/hooks/use-session-dispatch";
 import { mockTranscriptAt, mockUserLine } from "@/lib/mock-conversation";
 import type {
   SessionConfig,
@@ -72,6 +72,8 @@ export function StateStepper({ config, turns, turnState }: StateStepperProps) {
       state: {
         name: "error",
         message: "Could not reach the transcription service.",
+        detail: "WebSocket closed with code 1006",
+        from: "listening",
       },
     },
   ];

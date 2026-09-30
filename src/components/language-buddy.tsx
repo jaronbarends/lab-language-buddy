@@ -6,10 +6,7 @@ import { ConversationScreen } from "@/components/conversation/conversation-scree
 import { StateStepper } from "@/components/dev/state-stepper";
 import { SetupScreen } from "@/components/setup-screen/setup-screen";
 import { useMockDriver } from "@/hooks/use-mock-driver";
-import {
-  SessionDispatchProvider,
-  SessionStateProvider,
-} from "@/hooks/use-session";
+import { SessionDispatchProvider } from "@/hooks/use-session-dispatch";
 import {
   initialSessionState,
   sessionReducer,
@@ -32,26 +29,21 @@ export function LanguageBuddy() {
   }
 
   return (
-    <SessionStateProvider value={state}>
-      <SessionDispatchProvider value={dispatch}>
-        {state.phase === "setup" && (
-          <SetupScreen lastConfig={state.lastConfig} onStart={handleStart} />
-        )}
+    <SessionDispatchProvider value={dispatch}>
+      {state.phase === "setup" && (
+        <SetupScreen lastConfig={state.lastConfig} onStart={handleStart} />
+      )}
 
-        {state.phase === "conversation" && (
-          <>
-            <ConversationScreen
-              turns={state.turns}
-              turnState={state.turnState}
-            />
-            <StateStepper
-              config={state.config}
-              turns={state.turns}
-              turnState={state.turnState}
-            />
-          </>
-        )}
-      </SessionDispatchProvider>
-    </SessionStateProvider>
+      {state.phase === "conversation" && (
+        <>
+          <ConversationScreen turns={state.turns} turnState={state.turnState} />
+          <StateStepper
+            config={state.config}
+            turns={state.turns}
+            turnState={state.turnState}
+          />
+        </>
+      )}
+    </SessionDispatchProvider>
   );
 }

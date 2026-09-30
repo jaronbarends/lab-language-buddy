@@ -5,7 +5,7 @@ import {
   type Turn,
   type TurnState,
 } from "@/lib/session-reducer";
-import { useSessionDispatch } from "@/hooks/use-session";
+import { useSessionDispatch } from "@/hooks/use-session-dispatch";
 
 import { ConversationControls } from "./conversation-controls";
 import { ConversationThread } from "./conversation-thread";
@@ -45,12 +45,13 @@ export function ConversationScreen({
 
     dispatch({
       type: "USER_TURN_SENT",
-      turn: { id: crypto.randomUUID(), author: "user", text: text.trim() },
+      id: crypto.randomUUID(),
+      text: text.trim(),
     });
   }
 
   return (
-    <div className={styles.screen}>
+    <main className={styles.screen}>
       <ConversationThread turns={turns} turnState={turnState} />
 
       <div className={styles.controlBar}>
@@ -67,6 +68,6 @@ export function ConversationScreen({
           onEndSession={() => dispatch({ type: "SESSION_ENDED" })}
         />
       </div>
-    </div>
+    </main>
   );
 }

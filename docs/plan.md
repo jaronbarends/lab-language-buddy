@@ -45,7 +45,7 @@ Safari on iPhone as a hard requirement; no persistence.
 | Decision | Choice | Why |
 |---|---|---|
 | Styling | CSS Modules + design tokens in `globals.css` | The design is a small bespoke system (pill buttons, two bubble variants, one accent colour). Tailwind's payoff is class reuse across a large surface; here it would mostly add a build step and bury the iOS-specific CSS in arbitrary-value escapes. |
-| State | One `useReducer` session machine + a context, side effects in hooks | The whole app is one session. A store library buys nothing, and a reducer makes illegal states unrepresentable. |
+| State | One `useReducer` session machine + a dispatch context, side effects in hooks | The whole app is one session. A store library buys nothing, and a reducer makes illegal states unrepresentable. State reaches screens as props from `LanguageBuddy`, which narrows on `phase`; only `dispatch` travels by context. |
 | Turn states | A discriminated union carrying per-state data | `listening` carries the transcript, `aiSpeaking` the turn id and word count, `editing` the pre-edit text. "Recording while the AI speaks" is not a bug you can write. |
 | Turn identity | `crypto.randomUUID()` per turn, never an array index | This is the stale-closure off-by-one from `findings.md`, made structurally impossible rather than patched. |
 | Conversation history | Gemini `previous_interaction_id` chaining | History lives server-side at Google; we send only the new utterance. The client keeps its own array purely for rendering. |
@@ -54,7 +54,7 @@ Safari on iPhone as a hard requirement; no persistence.
 | Provider interface | `synthesize(text, language)` | The spike hardcoded `nb-NO`. Language has to cross the boundary, and each provider resolves it differently. |
 | Voice tables | Inside each provider module, not in the shared language registry | Azure and Google each need a per-language voice name; ElevenLabs' `eleven_flash_v2_5` is multilingual and takes none. A shared column would put two providers' private config in a table the client imports, with nowhere sensible for the third case. |
 | Flags | `flag-icons`, importing only the six SVGs needed | Emoji flags render as bare country letters on Windows. Importing the package stylesheet would pull in all ~260 flags. |
-| Errors | Recoverable — back to `awaitingUser` | The spike dead-ended and told the user to reload, throwing away the conversation over what is usually a blip. |
+| Errors | Recoverable, and the way back depends on where it failed: a failed AI call is retried, a failed recording returns to the user | The spike dead-ended and told the user to reload, throwing away the conversation over what is usually a blip. The error state carries `from`, because "Try again" after a failed AI call must retry it — the user's turn is already sent. |
 | No test suite | Manual verification only | Nothing in the brief asks for tests, and the risky behaviour is device-specific. See open questions. |
 
 ---
@@ -103,7 +103,18 @@ re-picking the same language. The turns are discarded.
   can restore it; that is why it is its own state rather than a flag on `reviewing`.
 - **`aiThinking`** — `/api/chat` in flight; typing-dots bubble.
 - **`aiSpeaking`** — TTS audio playing, words progressively highlighted in the AI bubble.
-- **`error`** — recoverable; returns to `awaitingUser`.
+- **`error`** — recoverable. Carries `message` (fixed generic text chosen by the caller),
+  an optional `detail` (the raw error, truncated to `MAX_ERROR_DETAIL_LENGTH`) and `from`
+  (the turn state it came from). `FAILED` is only accepted from `aiThinking` and
+  `listening`; anywhere else it is a late arrival and is ignored, so it can't overwrite a
+  draft. Dismissing goes back to `aiThinking` when `from` is `aiThinking` (the driver
+  effect re-runs on entering it, which is the retry), otherwise to `awaitingUser`; a
+  transcript in progress when listening failed is discarded. The diagram above shows the
+  `awaitingUser` route only.
+- **TTS failure is not an error state.** `AI_SPEECH_FAILED` (only valid in `aiSpeaking`)
+  goes to `awaitingUser` silently: the AI's text is already on screen, so it degrades to
+  text-only. The stage 3 caller does the `console.error`. Like the other two speech
+  actions it carries the `turnId` and is ignored when that is not the turn being spoken.
 
 **Listening, reviewing and editing are one continuous act of composing a turn**, so they
 share a single set of controls: Send (primary), Edit (secondary), Cancel (secondary). Only
@@ -169,7 +180,7 @@ so a page reload starts from the defaults again.
     │   ├── dev/state-stepper.tsx development-only turn-state jumper
     │   └── ui/                   button, icons, flag-icon
     ├── hooks/
-    │   ├── use-session.ts        context + narrowing helpers
+    │   ├── use-session-dispatch.ts dispatch context + `useSessionDispatch`
     │   └── use-mock-driver.ts    STAGE 1 ONLY — deleted in stage 3
     └── lib/
         ├── session-reducer.ts    the state machine
@@ -395,3 +406,9 @@ the original.
 | 09-25 | Dashed border dropped from the listening bubble | The dot says the same thing; two signals for one state, and it diverged from the reference. |
 | 09-25 | First turn reads "Start conversation" when the user opens | "Reply" is wrong before anything has been said. Keyed on the turn list being empty *and* the button being enabled. |
 | 09-25 | This plan moved into the repo as `docs/plan.md` | Outside git it was not reviewable, did not travel with the branch, and its changes left no diff. |
+| 09-29 | State context, `useSession` and `useConversation` removed; state stays props, only dispatch is context | They were never used: `LanguageBuddy` already narrows on `phase` and passes `turns`/`turnState` down. **Open option:** re-add a state context plus a narrowing `useConversation()` (throws outside the `conversation` phase) if a deeper component or a stage 2/3 hook would otherwise need state prop-drilled — do it when that is practical, not before. |
+| 09-29 | Error flow reworked: `FAILED` only from `aiThinking`/`listening`, error state carries `from` and optional `detail`, dismiss retries a failed AI call; new `AI_SPEECH_FAILED` | Dismissing always went to `awaitingUser`, so a failed Gemini call was never retried, a failed first AI turn showed "Start conversation", and a late `FAILED` could overwrite a draft. TTS failure now degrades to text-only instead of showing an error. |
+| 09-29 | `AI_SPEECH_PROGRESSED`, `AI_SPEECH_FINISHED` and `AI_SPEECH_FAILED` carry a `turnId`; the reducer ignores them when it is not the turn being spoken | With one `<audio>` element reused across turns, a late `timeupdate` or `ended` from the previous turn's audio could otherwise land on the current one — contradicting the rule that anything pointing at a turn matches on its id. |
+| 09-29 | Reducer contract for the async drivers, stated in its doc comment | The reducer cannot tell a stale `AI_TURN_RECEIVED` or `TRANSCRIPT_UPDATED` from a current one; both only check the state name. Every async source must therefore cancel when the state that started it is left: abort fetches, detach handlers from and close sockets. A note for stages 2 and 3, nothing built yet. |
+| 09-29 | `USER_TURN_SENT` and `AI_TURN_RECEIVED` take `{ id, text }`, not a whole `Turn`; the reducer sets `author` | The caller no longer picks the author, and the "no empty user turn" rule (trimmed text) lives in the reducer instead of only in the component. |
+| 09-29 | The reducer's `default` branch is a compile-time exhaustiveness check (`action satisfies never`) | An action added to the union but not handled now fails `tsc` instead of being silently ignored. Verified with a temporary dummy action. |

@@ -3,6 +3,29 @@ export type WordTiming = {
   startTime: number;
 };
 
+export type TextToken = { text: string; tokenIsWord: boolean };
+
+/**
+ * The one definition of "what is a word": a maximal run of non-whitespace. Everything
+ * that counts, times or highlights words goes through here, so they can't drift apart.
+ *
+ * The capturing group in the split keeps the whitespace as tokens, so the original
+ * spacing and punctuation survive reassembly untouched. Empty strings from leading or
+ * trailing whitespace are dropped.
+ */
+export function tokenizeText(text: string): TextToken[] {
+  return text
+    .split(/(\s+)/)
+    .filter((token) => token.length > 0)
+    .map((token) => ({ text: token, tokenIsWord: token.trim().length > 0 }));
+}
+
+export function splitWords(text: string): string[] {
+  return tokenizeText(text)
+    .filter((token) => token.tokenIsWord)
+    .map((token) => token.text);
+}
+
 /**
  * Spreads an audio clip's duration across its words in proportion to their character
  * length.
@@ -17,12 +40,25 @@ export type WordTiming = {
  * Known limitation, accepted: no allowance for pauses after punctuation or for how
  * long a word actually takes to say, so short function words drift noticeably ahead
  * of or behind the audio. Judged good enough by ear.
+ *
+ * Precondition: `durationSeconds` must be finite and not negative. Safari can report
+ * `NaN` or `Infinity` for `audio.duration` before the metadata has loaded, and that
+ * would turn every start time into `NaN` — `countSpokenWords` would then stop at the
+ * first word and the highlight would silently never advance. So this throws instead:
+ * the caller has to wait for `loadedmetadata` before calling.
  */
 export function estimateWordTimings(
   text: string,
   durationSeconds: number,
 ): WordTiming[] {
-  const words = text.split(/\s+/).filter((word) => word.length > 0);
+  if (!Number.isFinite(durationSeconds) || durationSeconds < 0) {
+    throw new RangeError(
+      `estimateWordTimings needs a finite, non-negative duration, got ${durationSeconds}. ` +
+        "Wait for the audio's loadedmetadata event before calling.",
+    );
+  }
+
+  const words = splitWords(text);
 
   if (words.length === 0) {
     return [];
@@ -58,7 +94,10 @@ export function countSpokenWords(
   return spokenWordCount;
 }
 
-/** Word count used to drive the highlight; must agree with `estimateWordTimings`. */
+/**
+ * Word count used to drive the highlight. Agrees with `estimateWordTimings` and
+ * `HighlightedText` by construction: all three build on `tokenizeText`.
+ */
 export function countWords(text: string): number {
-  return text.split(/\s+/).filter((word) => word.length > 0).length;
+  return splitWords(text).length;
 }

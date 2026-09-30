@@ -117,6 +117,9 @@ export function ConversationControls({
         <div className={styles.error} role="alert">
           <span className={styles.errorTitle}>Something went wrong</span>
           <span className={styles.errorMessage}>{turnState.message}</span>
+          {turnState.detail && (
+            <span className={styles.errorMessage}>{turnState.detail}</span>
+          )}
         </div>
         <div className={styles.sideBySide}>
           <Button variant="secondary" onClick={onDismissError}>

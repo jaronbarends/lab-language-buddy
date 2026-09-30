@@ -36,10 +36,6 @@
   translate: 0 var(--bevel);
 }
 
-.button:disabled {
-  cursor: not-allowed;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .button {
     transition-property: background-color, border-color, color;

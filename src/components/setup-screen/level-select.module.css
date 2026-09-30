@@ -1,19 +1,48 @@
+.selectBox {
+  --padding-inline: var(--size-16);
+  --arrow-size: var(--size-16);
+  /* The shape is all that matters here: a mask keeps only its alpha, so the colour
+     comes from currentcolor below and follows the text. No hex to keep in sync. */
+  --chevron: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+
+  position: relative;
+
+  &::after {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 50%;
+    right: var(--padding-inline);
+    width: var(--arrow-size);
+    height: var(--arrow-size);
+    background-color: currentcolor;
+    mask: var(--chevron) center / contain no-repeat;
+    translate: 0 -50%;
+    /* Clicks have to reach the select underneath. */
+    pointer-events: none;
+  }
+}
+
 .select {
+  appearance: none;
+  display: block;
   width: 100%;
   padding: var(--size-16);
-  /* Room for the chevron, which sits on the right. */
-  padding-right: var(--size-48);
-  border: var(--border-width-default) solid var(--color-border-input);
+  /* Room for the arrow, which sits on the right. */
+  padding-right: calc(2 * var(--padding-inline) + var(--arrow-size));
+  border: var(--border-default) var(--color-border-input);
   border-radius: var(--radius-input);
-  background-color: var(--color-bg-input);
+  background: var(--color-bg-input);
   font-family: var(--font-family-body);
   font-size: var(--font-size-body-default);
-  /* iOS Safari gives selects its own rounded chrome and a dropdown arrow; strip it
-     so the control matches the language cards, then draw our own chevron. */
-  appearance: none;
-  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%231a1e21' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right var(--size-16) center;
+  font-weight: var(--font-weight-label);
+}
+
+/* The open list is regular weight even though the closed select is not. Without this
+   the options inherit the select's weight. Only some platforms draw the list at all —
+   iOS shows its own wheel picker and ignores this. */
+.select option {
+  font-weight: var(--font-weight-regular);
 }
 
 .select:hover,

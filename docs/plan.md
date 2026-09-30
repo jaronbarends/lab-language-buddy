@@ -259,14 +259,25 @@ widths of 320, 336 (21rem) and 360px viewports: no overflow at any of them. The 
 21rem breakpoint is exactly where three 6rem columns fit. A real narrow viewport could
 not be tested here, since the browser window would not resize.
 
-**Captions are not yet on the element-level `legend` rule.** Component classes
-(`.fieldLabel`, the picker's `.legend`) still override it and will until they are removed;
-until then the captions keep the old agent values (12px bold, 0.06em tracking) rather
-than the original's 14px semibold without tracking.
+**Captions are on the element-level `legend` rule.** The component classes that used to
+override it (`.fieldLabel`, the picker's `.legend`) are gone, so the setup screen's
+captions are now the original's 14px semibold without tracking, where the agent's own
+were 12px bold with 0.06em. The only caption class left is `.legend` in
+`setup-screen.module.css`, which sets the gap to the control and nothing else.
 
 **Fonts** are Baloo 2 (buttons, language picker, headings) and Work Sans (everything
 else, including the AI/Me toggle), loaded through `next/font/google` with the `latin`
 subset only. Latin-1 covers Norwegian æ ø å and Spanish ñ, so nothing is lost.
+
+**A weight restriction was lost in the swap to next/font.** The original app's
+`@font-face` blocks declared Baloo at 600 and 700 only. Anything that inherited the
+default 400 while using Baloo was therefore never rendered at 400: the browser picked the
+nearest weight it had, 600. next/font loads the whole variable range, so the same CSS
+renders a true 400. The language picker's labels were the one place that relied on this,
+and came out lighter than the original. Wherever Baloo is used the weight is now stated:
+buttons and headings already had tokens, and the picker labels now use
+`--font-weight-label`. Any future Baloo text without an explicit weight will have the
+same problem.
 
 **The bevel** is the system's signature: a thicker bottom border that collapses to the
 normal width on press while the element slides down by exactly that difference, so the
@@ -309,6 +320,10 @@ Built in, not retrofitted.
    ~2 ms silent WAV data-URI and `.play()`ed **synchronously before any `await`** in each
    click handler that can lead to playback: *Start chat*, *Send*, and any replay control.
    The AI reply plays several awaited fetches later, by which time the gesture has expired.
+   *Start chat* is now a form's submit button, so the unlock belongs in that button's
+   `onClick`, not in the form's `onSubmit`: the click always fires first, and pressing
+   Enter makes the browser fire a click on the default button too. **Not yet verified on an
+   iPhone**; it comes up with the audio in stage 3.
 3. **Layout for iOS chrome.** A flex column at `100dvh` rather than a `position: fixed`
    bar — a fixed element drifts when the keyboard opens and the URL bar collapses — plus
    `viewport-fit=cover` and `env(safe-area-inset-bottom)`.
@@ -456,10 +471,23 @@ Per stage, in this order:
    personas or scenario cards would be a different feature.
 4. **Spain's flag is 81 KB** (full coat of arms) against ~250 bytes for the other five —
    invisible detail at 24 px, and effectively the whole flag payload. Not acted on.
-5. **White on `--color-bg-primary` is 4.05:1**, below the 4.5:1 WCAG needs for 18px
-   bold text (the "large text" exemption starts at 18.66px bold). Knowingly accepted:
-   it is the brand colour, and 20px "Start chat" clears the 3:1 bar that applies there.
-   Every other pair in the palette passes, several comfortably.
+5. **Two text/background pairs fall below 4.5:1**, the bar WCAG sets for text under 24px,
+   or under 18.66px bold ("large text" is 24px, or 18.66px *bold* — 700, so semibold
+   does not qualify):
+   - **White on `--color-bg-primary`: 4.05:1**, the primary button at 18px bold. Knowingly
+     accepted: it is the brand colour, and 20px "Start chat" clears the 3:1 bar that
+     applies to large text.
+   - **White on `--color-bg-secondary`: 3.16:1**, the selected AI/Me option at 18px
+     semibold. **Found 2026-09-30, knowingly accepted the same day.** It is the existing
+     app's own pair of tokens, and unlike the button it has no large-text exemption to
+     lean on. Alternatives were measured first: a darker fill (4.37:1 at blue-600, 6.15:1
+     at blue-700), dark text on the current blue (5.33:1), or 18.66px bold, which would
+     bring the 3:1 bar into play and pass it narrowly.
+
+   An earlier version of this entry said every other pair passed. That had been
+   asserted, not measured; the blue pair had never been computed. Measured since: the
+   selected language card (8.00:1), the secondary button (7.75:1), body text on the user
+   bubble (12.27:1), errors (5.33:1) and the captions (6.22:1) all pass.
 6. **Ending a session is one tap and unrecoverable.** No confirmation, nothing persisted.
    Consistent with the brief, but it sits next to Reply.
 
@@ -516,6 +544,14 @@ have been argued over first.
 | 09-30 | agent | `legend { padding: 0 }` added to the reset | Measured at 2px each side on a bare legend; the original reset lacks it. One line, flagged in place, easy to drop. |
 | 09-30 | agent | `main { padding-bottom }` not taken over; no `fieldset` `min-inline-size` reset | The first ignores the iOS safe area. The second proved unnecessary when tested at 288, 304 and 328px container widths. |
 | 09-30 | you | `legend` in `elements.css` uses `--color-text-label` and `--font-weight-label` | In line with the tiered tokens: the label tokens exist for this role, and the original reached past them to the primitives. Identical values today. |
+| 09-30 | ported | The setup screen is one `<form>`; each field is a `fieldset` with a `legend` owned by the screen, and the controls render no caption of their own | The three fields used three mechanisms — a fieldset, a label, a bare span — and the picker owned its legend while the others did not. Replaces the agent's per-field wrappers and caption classes, and makes Enter submit. |
+| 09-30 | agent | The level select gets `aria-labelledby` pointing at its legend | A legend names the fieldset, not the control inside it, so the select had no accessible name of its own. Chosen over using a `label` for this one field, because the element-level legend style would not have reached a label. |
+| 09-30 | ported | The starter toggle is native radios with a sliding indicator (CSS anchor positioning) and a hover state on the unselected option | It was the last `role="radio"` control, leftover from before the picker changed. The hover state is a small addition that came with the component and was not separately requested. |
+| 09-30 | agent | The indicator is feature-tested and falls back to painting the selected option itself | Safari 26 ships anchor positioning only in part, and without a fallback a browser lacking it would show white label text on a white background. Verified by rule structure, not on such a browser. |
+| 09-30 | ported | The select's arrow is a `mask` filled with `currentcolor`, replacing a background image with a hardcoded stroke colour | It follows the text colour instead of repeating a hex. The hardcoded one also contradicted an earlier claim that no hex remained outside the tokens; the check had skipped that line. |
+| 09-30 | agent | Found: white on `--color-bg-secondary` is 3.16:1 | See open question 5. A correction of an unmeasured claim made earlier, not a design change. |
+| 09-30 | you | White on `--color-bg-secondary` stays at 3.16:1 | Decided with the options in front of it (see open question 5): the pair comes from the existing app's tokens and is left as it is, the same way the primary button's 4.05:1 was. |
+| 09-30 | you | Picker labels and the level select are semibold (`--font-weight-label`), the open option list regular | Reported as wrong. Cause: the original's Baloo was only ever available at 600 and 700, so its inherited 400 rendered as 600, while next/font gives a true 400. The select follows the original's `SelectBox`, which is semibold closed and regular in the list. The original's `:checked` colouring of that list was left out: weights were the question, and it would be a second white-on-`--color-bg-secondary`. |
 
 ## Keeping the experiment honest
 

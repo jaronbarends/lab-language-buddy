@@ -26,33 +26,24 @@
   color: var(--color-text-on-primary);
 }
 
-.title {
-  font-family: var(--font-family-heading);
-  font-weight: var(--font-weight-heading);
-  font-size: var(--font-size-22);
-  line-height: var(--line-height-heading);
-}
-
 .tagline {
   font-size: var(--font-size-minor);
   color: var(--color-text-neutral-subtle);
 }
 
-.field {
-  margin-bottom: var(--size-24);
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-24);
 }
 
-.fieldLabel {
-  display: block;
+/* The caption's look is element-level (elements.css); only the gap to its control
+   is this form's own business. */
+.legend {
   margin-bottom: var(--label-gap);
-  font-family: var(--font-family-label);
-  font-size: var(--font-size-12);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--color-text-label);
 }
 
+/* 8 on top of the form's 24 gap: the same 32 the button always sat below the fields. */
 .submit {
-  margin-top: var(--size-32);
+  margin-top: var(--size-8);
 }

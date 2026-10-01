@@ -50,3 +50,10 @@
   outline: var(--focus-outline);
   outline-offset: var(--focus-outline-offset);
 }
+
+/* Block, because max-height does not apply to a plain inline span. */
+.text {
+  display: block;
+  max-height: 40vh;
+  overflow-y: auto;
+}

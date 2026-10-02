@@ -21,7 +21,7 @@
 
 :root {
   /* App-specific, outside the design system. */
-  --layout-max-width: 42.5rem;
+  --layout-max-width: 40rem;
   /* Breathing room under the control bar on notched iPhones. */
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   /* Keeps content out from under the status bar, notch or Dynamic Island: with

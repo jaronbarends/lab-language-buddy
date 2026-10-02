@@ -24,6 +24,9 @@
   --layout-max-width: 42.5rem;
   /* Breathing room under the control bar on notched iPhones. */
   --safe-bottom: env(safe-area-inset-bottom, 0px);
+  /* Keeps content out from under the status bar, notch or Dynamic Island: with
+     viewport-fit=cover the page runs underneath them. */
+  --safe-top: env(safe-area-inset-top, 0px);
 }
 
 html {

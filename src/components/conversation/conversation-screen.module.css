@@ -10,6 +10,10 @@
   width: 100%;
   max-width: var(--layout-max-width);
   margin: 0 auto;
+  /* On the screen rather than in the thread, so the thread's scroll area starts below
+     the status bar and scrolled text never passes under it. Counts inside the 100dvh,
+     as the box is border-box. */
+  padding-top: var(--safe-top);
 }
 
 .controlBar {

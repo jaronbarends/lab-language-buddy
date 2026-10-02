@@ -357,8 +357,10 @@ Built in, not retrofitted.
    Enter makes the browser fire a click on the default button too. **Not yet verified on an
    iPhone**; it comes up with the audio in stage 3.
 3. **Layout for iOS chrome.** A flex column at `100dvh` rather than a `position: fixed`
-   bar — a fixed element drifts when the keyboard opens and the URL bar collapses — plus
-   `viewport-fit=cover` and `env(safe-area-inset-bottom)`.
+   bar — a fixed element is expected to drift when the keyboard opens and the URL bar
+   collapses (the intent; not verified) — plus `viewport-fit=cover` and
+   `env(safe-area-inset-bottom)`. The column does not keep the controls above the keyboard in
+   home-screen mode: see the 10-02 row and open question 8.
 4. **A 16px floor on every focusable control**, or iOS zooms the viewport on focus.
 5. **Device testing is part of each stage, not a final pass.** `next dev` + an ngrok tunnel
    (HTTPS is required for `getUserMedia` at all).
@@ -433,7 +435,9 @@ Verified on desktop Chrome and, by the user, on iPhone Safari (iOS 26): layout a
 language grid at phone width; the control bar clears the home indicator; the bar stays put
 while the thread scrolls and the URL bar collapses; overscroll is contained; the thread
 auto-scrolls to new bubbles; the editor does not trigger focus-zoom and Send stays
-reachable with the keyboard open.
+reachable with the keyboard open. **That last claim does not hold in `editing`:** as a
+home-screen app Edit, Cancel edit and Send end up under or partly under the keyboard, and in
+a Safari tab Send is partly covered. See the 10-02 row and open question 8.
 
 ### Stage 2 — Gemini conversation
 
@@ -535,6 +539,21 @@ Per stage, in this order:
    its row. 320px is the original iPhone SE and iPhones in Display Zoom; iOS 26 devices are
    375px or wider otherwise. Not fixed: closing 2.2px means changing a gap, a font size or
    the screen's side padding, and none of those was asked for.
+8. **Edit, Cancel edit and Send are partly or fully covered by the keyboard while editing.**
+   Observed by the user on an iPhone with a long draft, with the app added to the home
+   screen: with the keyboard open in the `editing` state, Edit and Cancel edit end up under
+   the keyboard and Send is partly covered by the keyboard's accessory bar (the chevrons and
+   the checkmark). With very short drafts a smaller part is covered; that was reported, not
+   measured. In a Safari tab the buttons sit above the keyboard but are covered by Safari's
+   address bar and the accessory bar. The checkmark on the accessory bar closes the
+   keyboard and frees the buttons. The cause is the `100dvh` column, which the keyboard does
+   not shrink; the 40vh text cap makes it worse but is not the whole cause. **Accepted for
+   now and to be reconsidered at a later stage**, see the 10-02 row in the decision log. It
+   relaxes the brief's requirement that Send, Edit and Cancel stay usable with the keyboard
+   open. Directions, all unverified ideas and not decisions: the screen height following
+   `window.visualViewport`, as a spike first; the controls moving above the editor while
+   editing; and the `interactive-widget` viewport setting, whose behaviour in iOS Safari
+   has not been checked.
 
 ---
 
@@ -621,6 +640,7 @@ have been argued over first.
 | 10-01 | agent | While `listening`, the live transcript follows its newest words, for as long as the user has not scrolled away from the bottom; scrolling back to the bottom resumes following | Proposed in review and approved by Jaron. With the text capped, the newest words would otherwise fall below the edge. "At the bottom" is within 4px of it, an agent's reading of the decision, as scroll positions are fractional on high-density screens. The flag changes only on scroll events and the scroll runs in a layout effect keyed on the transcript's words, so a re-render without new words does not scroll. **Logic only, not exercised:** the dev stepper's transcript never grows, so neither following, stopping nor resuming has been seen to work. Not tested on an iPhone. |
 | 10-01 | agent | The settled draft and the editor start scrolled to the end of their text | Proposed in review and approved by Jaron. The draft replaces a live transcript the user was reading at the end of, and must not jump when recording stops; the editor puts the caret at the end, which for a long draft is below the fold of the capped text. Both are set in a layout effect on mount, so neither is seen at the top for a frame, and neither follows anything afterwards. Caret-while-typing in a long editor was tested with real typing by Jaron in desktop Chrome, where it works. The scroll-on-entry itself has not been seen with a long draft, as the dev stepper's draft is one line. Not tested on an iPhone. |
 | 10-01 | you | Landscape phones are not supported, so the capped text has no minimum height | At 40vh the text region can shrink to nothing on a short viewport: the composing bar's other parts (padding, Send, the Edit/Cancel row, gaps) come to roughly 180–215px, so below about 450–540px of viewport height little or no room is left for text. Estimated from the layout, not measured on a device. Decided as not worth handling rather than left open. |
+| 10-02 | you | With the keyboard open in `editing`, Edit, Cancel edit and Send being covered on an iPhone is accepted for now, to be reconsidered at a later stage | Observed by the user on an iPhone with a long draft, as a home-screen app and in a Safari tab. As a home-screen app, Edit and Cancel edit end up under the keyboard and Send is partly covered by the keyboard's accessory bar; with very short drafts a smaller part is covered (reported, not measured). In a Safari tab the buttons are above the keyboard but covered by Safari's address bar and the accessory bar. The cause is the `100dvh` column, which the keyboard does not shrink, not only the 40vh text cap; the checkmark on the accessory bar closes the keyboard and frees the buttons. Options put to the user in review: a `visualViewport`-based height as a spike, the buttons above the editor while editing, or accepting it. The user chose to accept. This **relaxes the brief's requirement** that Send, Edit and Cancel stay usable with the keyboard open, and contradicts the Stage 1 line saying Send stays reachable with the keyboard open. Open question 8 lists the directions to revisit. |
 
 ## Keeping the experiment honest
 

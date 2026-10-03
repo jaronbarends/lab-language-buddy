@@ -15,7 +15,7 @@ did not write this code and you have no history with it. Judge it only by what y
 
 ## What to review
 
-The stage diff. In the worktree:
+The stage diff. Run this from the root of the worktree:
 
     {{DIFF_CMD}}
 
@@ -28,7 +28,10 @@ change any code, and do not commit.
 
 ## What to deliver
 
-Write ONE file: `{{RESULTS_DIR}}/review-results.md`. Do not create or edit any other file.
+Write ONE file: `{{RESULTS_DIR}}/review-results.md`. Do not create or edit any other file,
+except what the verification commands themselves generate (build output, generated types,
+`next-env.d.ts`, tsbuildinfo files): those are ignored by git and not part of the review.
+The ban is on editing source files and on writing results anywhere else.
 
 Write in {{REPORT_LANGUAGE}}. Lead with the direct answer: one paragraph on whether this
 stage leaves the code in a state that is easy to change, and the two or three things that

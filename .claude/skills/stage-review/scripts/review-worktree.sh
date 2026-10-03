@@ -48,12 +48,25 @@ load_conf() {
   # shellcheck disable=SC1090
   source <(tr -d '\r' <"$conf")
   : "${STRIP:?project.conf: STRIP is not set}"
-  : "${DIFF_PATHS:?project.conf: DIFF_PATHS is not set}"
   : "${BASE_REF:?project.conf: BASE_REF is not set}"
   : "${RESULTS_ROOT:?project.conf: RESULTS_ROOT is not set}"
   : "${VERIFY:?project.conf: VERIFY is not set}"
   : "${REPORT_LANGUAGE:?project.conf: REPORT_LANGUAGE is not set}"
   LINK_NODE_MODULES="${LINK_NODE_MODULES:-no}"
+  EXCLUDE_PATHS="${EXCLUDE_PATHS:-}"
+}
+
+# Fills PATHSPEC (for running git) and PATHSPEC_TEXT (for the prompt) with the whole stage
+# diff minus the STRIP items and EXCLUDE_PATHS. The STRIP items must be excluded: a changed
+# docs/plan.md in the diff would show the reviewer the plan it is not meant to see.
+build_pathspec() {
+  PATHSPEC=(".")
+  PATHSPEC_TEXT="."
+  local path
+  for path in $STRIP $EXCLUDE_PATHS; do
+    PATHSPEC+=(":(exclude)$path")
+    PATHSPEC_TEXT="$PATHSPEC_TEXT ':(exclude)$path'"
+  done
 }
 
 # Sets WT, BRANCH, RES (and RESULTS_ABS) for a review name.
@@ -173,7 +186,8 @@ setup() {
   mkdir -p "$RES"
   cp "$REPO_ROOT/.claude/stage-review/criteria.md" "$RES/criteria.md"
 
-  local diff_cmd="git diff $base $tip -- $DIFF_PATHS"
+  build_pathspec
+  local diff_cmd="git diff $base $tip -- $PATHSPEC_TEXT"
   render_prompt "$stripped_list" "$diff_cmd" "$tip" "$base" "$name"
 
   cat <<EOF
@@ -185,7 +199,7 @@ BASE=$base
 RESULTS_DIR=$(mixed_path "$RES")
 PROMPT_FILE=$(mixed_path "$RES")/review-prompt.md
 DIFF_CMD=$diff_cmd
-DIFF_SHORTSTAT=$(git diff --shortstat "$base" "$tip" -- $DIFF_PATHS)
+DIFF_SHORTSTAT=$(git diff --shortstat "$base" "$tip" -- "${PATHSPEC[@]}")
 STRIPPED=$stripped_list
 NODE_MODULES_LINKED=$linked
 EOF

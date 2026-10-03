@@ -4,7 +4,8 @@ import type { LiveTranscript } from "@/lib/session-reducer";
 /**
  * Canned content so every screen and turn state is reachable with no network, no API
  * keys and no microphone. The AI lines are served by the mock chat route; the user
- * lines feed the mock recognition and go in stage 3, when the real STT lands.
+ * lines are sample transcripts for the dev state stepper, since recognition itself is
+ * real since stage 3 and no longer mocked.
  *
  * There's a set per language purely so the mock doesn't show Norwegian to someone who
  * picked Spanish — it's throwaway text, not a translation effort. The Norwegian lines
@@ -119,8 +120,4 @@ export function mockTranscriptAt(
     finalized: heard.slice(0, finalizedCount).join(" "),
     interim: heard.slice(finalizedCount).join(" "),
   };
-}
-
-export function wordCountOf(sentence: string): number {
-  return sentence.split(" ").length;
 }

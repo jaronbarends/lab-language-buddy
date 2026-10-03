@@ -193,9 +193,9 @@ so a page reload starts from the defaults again.
     │   ├── use-session-dispatch.ts dispatch context + `useSessionDispatch`
     │   ├── use-chat-driver.ts    the Gemini round trip in `aiThinking`; picks the real or
     │   │                         the mock route via `NEXT_PUBLIC_USE_MOCK_CHAT`
-    │   └── use-mock-driver.ts    fakes TTS playback and live recognition; the recognition
-    │                             effect is deleted in stage 3, the TTS one stays behind
-    │                             its own mock flag
+    │   ├── use-live-transcription.ts  mic + Deepgram socket while `listening`
+    │   └── use-mock-driver.ts    fakes TTS playback; stays behind its own mock flag once the
+    │                             real driver lands
     └── lib/
         ├── session-reducer.ts    the state machine
         ├── languages.ts          provider-neutral language registry
@@ -205,8 +205,8 @@ so a page reload starts from the defaults again.
         │                         error body
         ├── chat-request.ts       `readChatRequest` and `errorResponse`, shared by both chat routes
         ├── prompt.ts             `buildChatSystemInstruction`, assembled from named sections
-        └── mock-conversation.ts  canned AI lines (mock chat route) and user lines (mock
-                                  recognition, deleted in stage 3)
+        └── mock-conversation.ts  canned AI lines (mock chat route) and sample user lines
+                                  (the dev state stepper)
 ```
 
 `src/app/api/chat/route.ts` and `src/app/api/mock/chat/route.ts` exist since stage 2;
@@ -214,9 +214,12 @@ so a page reload starts from the defaults again.
 the model name and Gemini's `{ reply }` schema, and is server only. `.env.example`
 documents the variables; `.env.local` (not committed) holds the values.
 
-Still to come: `src/app/api/{tts,stt/token}/route.ts`,
+`src/app/api/stt/token/route.ts` and `src/hooks/use-live-transcription.ts` exist since
+stage 3, step 1; the token mint (`mintLiveToken`) sits in the route file.
+
+Still to come: `src/app/api/tts/route.ts`,
 `src/lib/tts/{types,index,azure,google,elevenlabs}.ts` and
-`src/hooks/{use-audio-playback,use-live-transcription}.ts`.
+`src/hooks/use-audio-playback.ts`.
 
 **The language registry holds only provider-neutral data** — `code`, `label`,
 `promptName`, `deepgram`, `htmlLang` (the BCP 47 tag for the `lang` attribute). Flags live in `flag-icon.tsx` and voices in each TTS provider,
@@ -490,6 +493,9 @@ device-specific), and that Try again succeeds once the key is right again.
 
 ### Stage 3 — Deepgram live STT + TTS + highlighting
 
+Branch `stage/3-voice`, built in three steps with a check-in after each: (1) live STT,
+(2) TTS, (3) highlighting and the `findings.md` note. Step 1 is the first item below.
+
 1. `/api/stt/token`, `use-live-transcription`, interim/final rendering wired to the real
    transcript.
 2. `/api/tts` with the provider registry and all three implementations, voice resolved per
@@ -728,6 +734,11 @@ have been argued over first.
 | 10-03 | agent | The mock route says why it answers 404, and `.env.example` notes that the flag only works under `next dev` | An empty 404 gave no hint that the mock was switched off by the mode, not by a missing route. |
 | 10-03 | agent | The dev stepper forcing `aiThinking` on an AI turn now ends in `FAILED` instead of sending a request | There is no user turn to answer, and the request that used to be sent had no input. |
 | 10-03 | you | A request the browser aborts stays in the server log as "Chat request failed"; aborts get no special case | Passing `request.signal` to the Gemini call (see that row) makes every abort throw in `askGemini`: leaving `aiThinking`, the client deadline, and in dev Strict Mode's double effect. The server cannot tell these apart or why the client left. Skipping the log for `request.signal.aborted` was offered and is not worth doing now. |
+| 10-03 | you | Stage 3 is built in three steps, each with its own commit and check-in: live STT, then TTS, then highlighting plus the `findings.md` note | STT is the riskiest on a phone and replaces the mock recognition, so it shows the iPhone problems first. |
+| 10-03 | agent | `mintLiveToken` lives in `api/stt/token/route.ts` itself, and the route reuses `errorResponse` from `chat-request.ts` | Unlike the Gemini call there is nothing to replace when testing, so a second file would only be indirection. The error body shape is the same for every route. |
+| 10-03 | agent | `use-live-transcription` refuses a recording format that is not webm or ogg, with an error, instead of streaming it | The plan says to read back the real `mimeType`. Deepgram accepts mp4/aac without an error and returns nothing, which would look like a silent user. |
+| 10-03 | agent | Leaving `listening` drops whatever Deepgram has not flushed; no `CloseStream` | The interim words on screen already go into the draft, and a clean flush would need the state to wait for the socket, which Send, Edit and Cancel should not do. |
+| 10-03 | agent | `mockUserLine` and `mockTranscriptAt` stay in `mock-conversation.ts` as sample text for the dev stepper; `wordCountOf` goes | The plan said the user lines went with the mock recognition, but the stepper still uses them. |
 
 ## Keeping the experiment honest
 

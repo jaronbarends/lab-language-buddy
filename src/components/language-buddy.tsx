@@ -6,6 +6,7 @@ import { ConversationScreen } from "@/components/conversation/conversation-scree
 import { StateStepper } from "@/components/dev/state-stepper";
 import { SetupScreen } from "@/components/setup-screen/setup-screen";
 import { useChatDriver } from "@/hooks/use-chat-driver";
+import { useLiveTranscription } from "@/hooks/use-live-transcription";
 import { useMockDriver } from "@/hooks/use-mock-driver";
 import { SessionDispatchProvider } from "@/hooks/use-session-dispatch";
 import { LANGUAGES } from "@/lib/languages";
@@ -24,8 +25,10 @@ export function LanguageBuddy() {
 
   useChatDriver(state, dispatch);
 
-  // Still fakes two of the effect sources (TTS playback, live recognition) so the states
-  // below are all reachable without a network or a mic; both go real in stage 3.
+  useLiveTranscription(state, dispatch);
+
+  // Still fakes TTS playback so `aiSpeaking` is reachable without audio; it goes real
+  // later in stage 3.
   useMockDriver(state, dispatch);
 
   function handleStart(config: SessionConfig) {

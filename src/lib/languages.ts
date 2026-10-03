@@ -70,9 +70,3 @@ export const LANGUAGES: Record<LanguageCode, Language> = {
 };
 
 export const LANGUAGE_LIST = LANGUAGE_CODES.map((code) => LANGUAGES[code]);
-
-export function isLanguageCode(value: unknown): value is LanguageCode {
-  return (
-    typeof value === "string" && LANGUAGE_CODES.includes(value as LanguageCode)
-  );
-}

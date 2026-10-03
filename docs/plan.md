@@ -48,8 +48,8 @@ Safari on iPhone as a hard requirement; no persistence.
 | State | One `useReducer` session machine + a dispatch context, side effects in hooks | The whole app is one session. A store library buys nothing, and a reducer makes illegal states unrepresentable. State reaches screens as props from `LanguageBuddy`, which narrows on `phase`; only `dispatch` travels by context. |
 | Turn states | A discriminated union carrying per-state data | `listening` carries the transcript, `aiSpeaking` the turn id and word count, `editing` the pre-edit text. "Recording while the AI speaks" is not a bug you can write. |
 | Turn identity | `crypto.randomUUID()` per turn, never an array index | This is the stale-closure off-by-one from `findings.md`, made structurally impossible rather than patched. |
-| Conversation history | Gemini `previous_interaction_id` chaining | History lives server-side at Google; we send only the new utterance. The client keeps its own array purely for rendering. |
-| Chat response shape in stage 2 | `{ reply }` only — no per-turn `correction` | Whether feedback is per-turn is exactly the stage 4 question. Shipping stage 2 without it keeps that open instead of defaulting by accident. |
+| Conversation history | Gemini `previous_interaction_id` chaining | History lives server-side at Google; we send only the new utterance, plus the model, system instruction and response format, which go with every call. The client keeps its own array for rendering, and the chain id is read from it: each AI turn carries its `interactionId`. |
+| Chat response shape in stage 2 | `{ interactionId, reply }` — no per-turn `correction` | Whether feedback is per-turn is exactly the stage 4 question. Shipping stage 2 without it keeps that open instead of defaulting by accident. |
 | TTS providers | All three from the spike: Azure (default), Google, ElevenLabs | Three implementations stress the interface in a way two don't — see the voice-table row. |
 | Provider interface | `synthesize(text, language)` | The spike hardcoded `nb-NO`. Language has to cross the boundary, and each provider resolves it differently. |
 | Voice tables | Inside each provider module, not in the shared language registry | Azure and Google each need a per-language voice name; ElevenLabs' `eleven_flash_v2_5` is multilingual and takes none. A shared column would put two providers' private config in a table the client imports, with nowhere sensible for the third case. |
@@ -191,18 +191,32 @@ so a page reload starts from the defaults again.
     │   └── ui/                   button, icons, flag-icon
     ├── hooks/
     │   ├── use-session-dispatch.ts dispatch context + `useSessionDispatch`
-    │   └── use-mock-driver.ts    STAGE 1 ONLY — deleted in stage 3
+    │   ├── use-chat-driver.ts    the Gemini round trip in `aiThinking`; picks the real or
+    │   │                         the mock route via `NEXT_PUBLIC_USE_MOCK_CHAT`
+    │   └── use-mock-driver.ts    fakes TTS playback and live recognition; the recognition
+    │                             effect is deleted in stage 3, the TTS one stays behind
+    │                             its own mock flag
     └── lib/
         ├── session-reducer.ts    the state machine
         ├── languages.ts          provider-neutral language registry
         ├── cefr.ts               A1–C2 + labels
         ├── word-timing.ts        estimateWordTimings / countSpokenWords
-        └── mock-conversation.ts  STAGE 1 ONLY — canned content per language
+        ├── chat-schema.ts        zod: the chat request (a union on `kind`), the response, the
+        │                         error body
+        ├── chat-request.ts       `readChatRequest` and `errorResponse`, shared by both chat routes
+        ├── prompt.ts             `buildChatSystemInstruction`, assembled from named sections
+        └── mock-conversation.ts  canned AI lines (mock chat route) and user lines (mock
+                                  recognition, deleted in stage 3)
 ```
 
-Still to come: `src/app/api/{chat,tts,stt/token}/route.ts`, `src/lib/prompt.ts`,
-`src/lib/chat-schema.ts`, `src/lib/tts/{types,index,azure,google,elevenlabs}.ts`,
-`src/hooks/{use-audio-playback,use-live-transcription}.ts`, and `.env.local` at the root.
+`src/app/api/chat/route.ts` and `src/app/api/mock/chat/route.ts` exist since stage 2;
+`src/app/api/chat/gemini-chat.ts` beside the first holds the Gemini call (`askGemini`),
+the model name and Gemini's `{ reply }` schema, and is server only. `.env.example`
+documents the variables; `.env.local` (not committed) holds the values.
+
+Still to come: `src/app/api/{tts,stt/token}/route.ts`,
+`src/lib/tts/{types,index,azure,google,elevenlabs}.ts` and
+`src/hooks/{use-audio-playback,use-live-transcription}.ts`.
 
 **The language registry holds only provider-neutral data** — `code`, `label`,
 `promptName`, `deepgram`, `htmlLang` (the BCP 47 tag for the `lang` attribute). Flags live in `flag-icon.tsx` and voices in each TTS provider,
@@ -443,12 +457,36 @@ reachable with the keyboard open. **That last claim does not hold in `editing`:*
 home-screen app Edit, Cancel edit and Send end up under or partly under the keyboard, and in
 a Safari tab Send is partly covered. See the 10-02 row and open question 8.
 
-### Stage 2 — Gemini conversation
+### Stage 2 — Gemini conversation — **done**
 
-`/api/chat` with `@google/genai` `ai.interactions.create`, `previous_interaction_id`
+Branch `stage/2-chat-api`. `/api/chat` with `@google/genai` `ai.interactions.create`, `previous_interaction_id`
 chaining, a zod-validated JSON response, and a system instruction built from
-`{ language, level }`. Text in, text out — Reply temporarily writes into a text input so
-the loop is testable before STT lands. Needs `.env.local` with `GEMINI_API_KEY`.
+`{ language, level }`. Needs `.env.local` with `GEMINI_API_KEY`.
+
+A request is one of two kinds, derived from `turns`. `aiStarts` (no turns yet, the AI
+speaks first) carries `{ language, level }` and neither input nor id. `userTurn` carries
+`{ language, level, input, previousInteractionId? }`: `input` is the user's last turn, 1 to
+5000 characters, and `previousInteractionId` the `interactionId` of the last AI turn, at
+most 200 characters, absent only when the user spoke first. The route validates
+`language` and `level` against the registries, builds the system instruction on every
+call (the model, system instruction and response format are sent each time; only the
+history is chained), and answers `{ interactionId, reply }`. An empty or whitespace-only
+reply is a failure, not an answer.
+
+**Mock or real, per concern.** `NEXT_PUBLIC_USE_MOCK_CHAT=true` makes `use-chat-driver.ts`
+call `/api/mock/chat` instead: same contract, canned lines, 404 outside `next dev`. The
+mock keeps no state; its interaction ids are `mock-<n>`, so the next request's
+`previousInteractionId` tells it which line comes next. A `NEXT_PUBLIC_` value is inlined
+at build time, so changing it needs a restart. TTS gets the same treatment in stage 3
+(`NEXT_PUBLIC_USE_MOCK_TTS`), and its mock must stay client-side because it has no audio.
+Mock STT is not kept: Edit covers typed input.
+
+Verified: `npm run lint` and `tsc --noEmit` clean; both routes called directly (the mock
+chain `mock-0` → `mock-1`, a retry getting the same line, a bad `level` giving 400); and,
+by the user in the desktop browser, a full conversation with `NEXT_PUBLIC_USE_MOCK_CHAT=true`
+and with the real Gemini call; and, with a deliberately wrong `GEMINI_API_KEY`, the `error`
+state with its Try again button. **Not verified:** iPhone Safari (this stage adds nothing
+device-specific), and that Try again succeeds once the key is right again.
 
 ### Stage 3 — Deepgram live STT + TTS + highlighting
 
@@ -478,6 +516,16 @@ the two originally posed:
 
 It has knock-on effects on the chat schema, the control bar, and whether feedback
 interrupts the conversational illusion.
+
+**Left out of the stage 2 chat prompt, to be reconsidered here.** The spike's system
+instruction had a *Correction* section: pick the single most instructive mistake in the
+user's last message and put it in a `correction` field, never in `reply`. Stage 2 drops
+it, because the schema is `{ reply }` only and a prompt asking for a field the schema lacks
+would contradict it. If this stage chooses per-turn correction (option 1), bring the
+section back together with the `correction` field, **and** the hint that was inside it:
+illogical words in the user's message may be speech-to-text errors rather than language
+mistakes, so the AI should not correct them. That hint is irrelevant while input is typed
+(stage 2) and becomes relevant with real STT (stage 3).
 
 ### Out of scope
 
@@ -515,10 +563,14 @@ Per stage, in this order:
 
 1. **Evaluation design** — stage 4, above. Untouched by design.
 2. **Tests.** There are none, so review is currently the only quality gate.
-   `word-timing.ts` and the reducer are pure and would suit Vitest.
-3. **The AI persona and scenario.** Carrying over the spike's approach: a generic friendly
-   acquaintance, freeform topic, 2–4 sentences per turn, at most one question. Named
-   personas or scenario cards would be a different feature.
+   `word-timing.ts` and the reducer are pure and would suit Vitest. The Gemini call now
+   lives in `askGemini`, so the route's failure paths can be tested with it replaced.
+3. **The AI persona and scenario — decided for stage 2.** Carried over from the spike,
+   written in English: a generic friendly acquaintance, freeform topic, 2–4 sentences per
+   turn, at most one question. Named personas or scenario cards would be a different
+   feature. Later personas (at least one that evaluates a conversation) may share parts
+   such as the tone of voice, which is why the prompt is assembled from named sections in
+   `prompt.ts`; nothing shared is built yet.
 4. **Spain's flag is 81 KB** (full coat of arms) against ~250 bytes for the other five —
    invisible detail at 24 px, and effectively the whole flag payload. Not acted on.
 5. **Two text/background pairs fall below 4.5:1**, the bar WCAG sets for text under 24px,
@@ -565,6 +617,11 @@ Per stage, in this order:
    `window.visualViewport`, as a spike first; the controls moving above the editor while
    editing; and the `interactive-widget` viewport setting, whose behaviour in iOS Safari
    has not been checked.
+9. **Public deployment.** A `previousInteractionId` is trusted as a secret held by the
+   conversation's owner: nothing binds it to a caller or session, and all calls share one
+   API key, so conversation isolation is an unverified assumption. There is no
+   authentication or rate limit; the only bounds are 5000 characters of input and 200 of
+   id. Decide the protection before the first public deployment.
 
 ---
 
@@ -656,6 +713,21 @@ have been argued over first.
 | 10-02 | agent | The top safe-area inset is handled: `--safe-top` (`env(safe-area-inset-top, 0px)`) in `globals.css`, applied as top padding of the setup screen and of the conversation screen | Found in review: `viewport-fit=cover` is set but only the bottom inset existed, so in the home-screen app on an iPhone the page runs under the status bar (the user's screenshot shows thread text passing under it, and the setup header, 24px from the top, would very likely sit under a notch or Dynamic Island; an estimate, not seen). Proposed in review and approved by Jaron. The setup screen's top padding is `calc(var(--size-24) + var(--safe-top))`. The conversation screen gets `padding-top: var(--safe-top)` on `.screen` itself, not in the thread, so the thread's scroll area starts below the status bar and scrolled text never passes under it; it counts inside the 100dvh. The thread's own padding and its auto-scroll are untouched. Landscape is not supported, so there are no side insets. Checked in desktop Chrome, where the inset is 0 and nothing moved; with a temporary `--safe-top: 47px` set in the console, the setup header moved from 24px to 71px and the conversation thread started 47px lower, with the control bar unchanged. **Checked by Jaron on an iPhone with a low status bar (not a notched one), no problem reported; not tested on a notched iPhone or a Dynamic Island device.** It is not known whether that was the home-screen app or a Safari tab. |
 | 10-02 | you | The contrast of control borders is knowingly accepted: language cards, level select and starter toggle use `--color-border-input` at about 1.48:1 on white | Found in review: WCAG 1.4.11 asks 3:1 for the boundary of a control, and `--color-border-input` (`--color-gray-100`) on white is about 1.48:1, or about 1.36:1 against the page colour `--color-gray-50`. Computed from the oklch token values with the standard sRGB conversion, not measured on a screen. The values come from the existing Language Buddy design system (decision 09-28), the same way the 4.05:1 and 3.16:1 text pairs in open question 5 do. The selected states pass: the pink border at 4.05:1 and the blue pill at 3.16:1. Open question 5, which covers text pairs, now mentions this. |
 | 10-03 | you | Reply is enabled in `aiSpeaking`; tapping it stops the speech and goes to `listening` | Waiting for a long reply to finish was too slow. `LISTENING_STARTED` is now valid from `aiSpeaking` as well as `awaitingUser`; leaving `aiSpeaking` is the interruption, so the bubble drops its highlight and shows the full text as after a normal finish. Reply stays disabled in `aiThinking`. Not the open-mic mode: it needs an explicit tap, so the echo and Safari-unlock risks listed under "Out of scope" do not apply, except that stage 3 must stop the `<audio>` in the playback effect's cleanup and start the mic from the same tap. The mock driver already stops its ticker on leaving the state. **Checked with `tsc` and eslint only; not exercised in the browser.** |
+| 10-03 | you | The AI turn carries Gemini's `interactionId`, and `previous_interaction_id` is read from the last AI turn instead of being kept as a separate field | `Turn` becomes a union on `author`; `AI_TURN_RECEIVED` takes `interactionId`. One source of truth, ending a session resets the chain with the turns, and a retry after an error resends the same request because a failure adds no turn. |
+| 10-03 | you | Chat can be mocked via `NEXT_PUBLIC_USE_MOCK_CHAT`, which selects the route (`/api/mock/chat` or `/api/chat`), as in the earlier app; the mock route 404s outside development | Keeps development possible without a key or quota while the real fetch path stays in use. The flag is client-side because the client picks the URL; a server-side `if` inside one route was the alternative. TTS gets its own flag in stage 3. |
+| 10-03 | agent | The mock route encodes its script position in the interaction id (`mock-<n>`) | Proposed to avoid a turn-count field in the request; approved by Jaron. Deterministic and ordered, and a retry gets the same line. |
+| 10-03 | you | The system instruction is built on the server from `{ language, level }` on every call; the client sends only those two validated values | A client-supplied instruction would let any caller write the prompt on a public endpoint holding the API key. The build is a template string, so caching it saves nothing. The persona is the spike's, in English, without its Correction section (see stage 4). |
+| 10-03 | you | The temporary text input for stage 2 is dropped | The mock recognition provides text and Edit lets the user type. |
+| 10-03 | you | `.env.example` is committed, with `!.env.example` added to `.gitignore` | Documents `GEMINI_API_KEY` and the mock flag. The `.env*` pattern would otherwise have ignored it. |
+| 10-03 | agent | The chat request is a discriminated union on `kind` (`aiStarts`, `userTurn`); `input` must be non-empty and the id is capped at 200 characters | A request with no input but an id sent the starting prompt in the middle of a chain, and the dev stepper could produce one. |
+| 10-03 | agent | An empty or whitespace-only reply is a failure, and a Gemini response without `output_text` is an error | Neither used to be caught: `?? "{}"` and a bare `z.string()` let an empty bubble through as an answer. |
+| 10-03 | agent | The route's `request.signal` is passed to the Gemini call; the server has no deadline of its own | A client abort should stop the paid call. The client's 30 second deadline already ends every request someone is waiting on. |
+| 10-03 | agent | The error body has a schema (`ChatErrorSchema`), and reading the request is shared by both routes in `chat-request.ts` | The client's hand-written check of `{ error }` and the two copies of the JSON and validation steps could drift apart. |
+| 10-03 | agent | A missing API key is logged server side and the client gets the generic "The chat request failed"; Zod text at 400 and the status codes are unchanged | The client gains nothing from knowing the key is missing. Whether a failure is retryable is left until the client has a use for it. |
+| 10-03 | agent | The Gemini schema and call moved to `api/chat/gemini-chat.ts` (`askGemini`) | The route is left with request, response and errors, and the call can be replaced when testing the failure paths. |
+| 10-03 | agent | The mock route says why it answers 404, and `.env.example` notes that the flag only works under `next dev` | An empty 404 gave no hint that the mock was switched off by the mode, not by a missing route. |
+| 10-03 | agent | The dev stepper forcing `aiThinking` on an AI turn now ends in `FAILED` instead of sending a request | There is no user turn to answer, and the request that used to be sent had no input. |
+| 10-03 | you | A request the browser aborts stays in the server log as "Chat request failed"; aborts get no special case | Passing `request.signal` to the Gemini call (see that row) makes every abort throw in `askGemini`: leaving `aiThinking`, the client deadline, and in dev Strict Mode's double effect. The server cannot tell these apart or why the client left. Skipping the log for `request.signal.aborted` was offered and is not worth doing now. |
 
 ## Keeping the experiment honest
 

@@ -9,7 +9,7 @@ export type SessionConfig = {
   starter: Starter;
 };
 
-export type Turn = {
+type TurnBase = {
   /**
    * Stable identity, assigned once when the turn is created.
    *
@@ -25,9 +25,21 @@ export type Turn = {
    * turns, a late event from the previous turn's audio must not land on the current one.
    */
   id: string;
-  author: "ai" | "user";
   text: string;
 };
+
+export type Turn =
+  | (TurnBase & { author: "user" })
+  | (TurnBase & {
+      author: "ai";
+      /**
+       * Gemini's id for the interaction that produced this turn. The next request sends
+       * the last AI turn's id as `previous_interaction_id`, which is how the conversation
+       * history is chained without being resent. Derived from `turns` rather than kept as
+       * a separate field, so ending the session (which drops the turns) resets the chain.
+       */
+      interactionId: string;
+    });
 
 /** What Deepgram gives us mid-utterance: settled text plus a volatile tail. */
 export type LiveTranscript = {
@@ -116,7 +128,7 @@ export type SessionAction =
   | { type: "DRAFT_EDIT_CANCELLED" }
   | { type: "DRAFT_DISCARDED" }
   | { type: "USER_TURN_SENT"; id: string; text: string }
-  | { type: "AI_TURN_RECEIVED"; id: string; text: string }
+  | { type: "AI_TURN_RECEIVED"; id: string; text: string; interactionId: string }
   | { type: "AI_SPEECH_PROGRESSED"; turnId: string; spokenWordCount: number }
   | { type: "AI_SPEECH_FINISHED"; turnId: string }
   | { type: "AI_SPEECH_FAILED"; turnId: string }
@@ -334,7 +346,12 @@ export function sessionReducer(
         ...state,
         turns: [
           ...state.turns,
-          { id: action.id, author: "ai", text: action.text },
+          {
+            id: action.id,
+            author: "ai",
+            text: action.text,
+            interactionId: action.interactionId,
+          },
         ],
         turnState: {
           name: "aiSpeaking",

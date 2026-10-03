@@ -5,6 +5,7 @@ import { useReducer } from "react";
 import { ConversationScreen } from "@/components/conversation/conversation-screen";
 import { StateStepper } from "@/components/dev/state-stepper";
 import { SetupScreen } from "@/components/setup-screen/setup-screen";
+import { useChatDriver } from "@/hooks/use-chat-driver";
 import { useMockDriver } from "@/hooks/use-mock-driver";
 import { SessionDispatchProvider } from "@/hooks/use-session-dispatch";
 import { LANGUAGES } from "@/lib/languages";
@@ -21,8 +22,10 @@ import {
 export function LanguageBuddy() {
   const [state, dispatch] = useReducer(sessionReducer, initialSessionState);
 
-  // Stage 1 only: fakes the three effect sources (chat fetch, TTS playback, live
-  // recognition) so the states below are all reachable without a network or a mic.
+  useChatDriver(state, dispatch);
+
+  // Still fakes two of the effect sources (TTS playback, live recognition) so the states
+  // below are all reachable without a network or a mic; both go real in stage 3.
   useMockDriver(state, dispatch);
 
   function handleStart(config: SessionConfig) {

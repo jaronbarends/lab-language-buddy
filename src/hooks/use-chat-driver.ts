@@ -19,6 +19,9 @@ type ConversationState = Extract<SessionState, { phase: "conversation" }>;
 
 const CHAT_FAILED_MESSAGE = "The AI couldn't come up with a reply.";
 
+/** Generous for a Gemini round trip; only there so a stalled response can't hang `aiThinking`. */
+const CHAT_TIMEOUT_MS = 30_000;
+
 /**
  * The Gemini round trip: while the turn state is `aiThinking`, one request to the chat
  * route, answered with `AI_TURN_RECEIVED` or `FAILED`.
@@ -45,6 +48,14 @@ export function useChatDriver(
     // would be accepted by whatever state the reducer is in now, so it must not arrive.
     const abortController = new AbortController();
 
+    // An abort from the cleanup below means the state was left and nobody is waiting;
+    // an abort from this deadline means the user is, so it has to end in `FAILED`.
+    let requestHasTimedOut = false;
+    const timeoutId = setTimeout(() => {
+      requestHasTimedOut = true;
+      abortController.abort();
+    }, CHAT_TIMEOUT_MS);
+
     fetchChatReply(chatRequestFrom(state), abortController.signal)
       .then(({ interactionId, reply }) => {
         dispatch({
@@ -55,18 +66,26 @@ export function useChatDriver(
         });
       })
       .catch((error: unknown) => {
-        if (abortController.signal.aborted) {
+        if (abortController.signal.aborted && !requestHasTimedOut) {
           return;
         }
         console.error(error);
         dispatch({
           type: "FAILED",
           message: CHAT_FAILED_MESSAGE,
-          detail: error instanceof Error ? error.message : String(error),
+          detail: requestHasTimedOut
+            ? "The request timed out"
+            : error instanceof Error
+              ? error.message
+              : String(error),
         });
-      });
+      })
+      .finally(() => clearTimeout(timeoutId));
 
-    return () => abortController.abort();
+    return () => {
+      clearTimeout(timeoutId);
+      abortController.abort();
+    };
     // `state` is deliberately absent: re-running on every turns change would abort and
     // resend the request. Entering the state is the trigger, and the request is built
     // from the state as it is at that moment.

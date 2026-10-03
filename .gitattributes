@@ -1,0 +1,4 @@
+# Shell scripts and their config must keep LF endings: with core.autocrlf=true a checkout
+# would otherwise turn them into CRLF, and bash fails on the stray \r.
+*.sh text eol=lf
+.claude/stage-review/project.conf text eol=lf

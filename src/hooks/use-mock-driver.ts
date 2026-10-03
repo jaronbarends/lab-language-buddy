@@ -18,7 +18,7 @@ import type { SessionAction, SessionState } from "@/lib/session-reducer";
  * It dispatches exactly the actions those drivers will dispatch, on roughly the
  * timings they'll have, so the UI and the reducer are being exercised for real —
  * only the source of the events is fake. The recognition effect is deleted in stage 3;
- * the TTS effect stays behind its own mock flag.
+ * the TTS effect gets its own mock flag then.
  */
 
 /** Rough pace of synthesised speech; only has to look plausible. */
@@ -82,7 +82,7 @@ export function useMockDriver(
       return;
     }
 
-    const userTurnIndex = countTurnsBy(state, "user");
+    const userTurnIndex = countUserTurns(state);
     const sentence = mockUserLine(state.config.language, userTurnIndex);
     const totalWords = wordCountOf(sentence);
     let heardWordCount = 0;
@@ -108,11 +108,11 @@ export function useMockDriver(
   }, [phase, turnStateName, dispatch]);
 }
 
-function countTurnsBy(state: SessionState, author: "ai" | "user"): number {
+function countUserTurns(state: SessionState): number {
   if (state.phase !== "conversation") {
     return 0;
   }
-  return state.turns.filter((turn) => turn.author === author).length;
+  return state.turns.filter((turn) => turn.author === "user").length;
 }
 
 function findTurn(state: SessionState, turnId: string) {

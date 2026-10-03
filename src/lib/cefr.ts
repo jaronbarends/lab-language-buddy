@@ -13,7 +13,3 @@ export const CEFR_LABELS: Record<CefrLevel, string> = {
 };
 
 export const DEFAULT_CEFR_LEVEL: CefrLevel = "B1";
-
-export function isCefrLevel(value: unknown): value is CefrLevel {
-  return typeof value === "string" && CEFR_LEVELS.includes(value as CefrLevel);
-}

@@ -59,7 +59,8 @@ export async function POST(request: Request) {
 
     return Response.json(chatResponse);
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    return errorResponse(message, 500);
+    // Provider errors can carry request details; they stay in the server log.
+    console.error("Chat request failed:", error);
+    return errorResponse("The chat request failed", 500);
   }
 }

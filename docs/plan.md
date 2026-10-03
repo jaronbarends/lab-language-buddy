@@ -51,7 +51,7 @@ Safari on iPhone as a hard requirement; no persistence.
 | Conversation history | Gemini `previous_interaction_id` chaining | History lives server-side at Google; we send only the new utterance, plus the model, system instruction and response format, which go with every call. The client keeps its own array for rendering, and the chain id is read from it: each AI turn carries its `interactionId`. |
 | Chat response shape in stage 2 | `{ interactionId, reply }` — no per-turn `correction` | Whether feedback is per-turn is exactly the stage 4 question. Shipping stage 2 without it keeps that open instead of defaulting by accident. |
 | TTS providers | All three from the spike: Azure (default), Google, ElevenLabs | Three implementations stress the interface in a way two don't — see the voice-table row. |
-| Provider interface | `synthesize(text, language)` | The spike hardcoded `nb-NO`. Language has to cross the boundary, and each provider resolves it differently. |
+| Provider interface | `synthesize({ text, language, gender }, signal)` | The spike hardcoded `nb-NO`. Language has to cross the boundary, and each provider resolves it differently. Gender joined it on 10-03, see the log. |
 | Voice tables | Inside each provider module, not in the shared language registry | Azure and Google each need a per-language voice name; ElevenLabs' `eleven_flash_v2_5` is multilingual and takes none. A shared column would put two providers' private config in a table the client imports, with nowhere sensible for the third case. |
 | Flags | `flag-icons`, importing only the six SVGs needed | Emoji flags render as bare country letters on Windows. Importing the package stylesheet would pull in all ~260 flags. |
 | Errors | Recoverable, and the way back depends on where it failed: a failed AI call is retried, a failed recording returns to the user | The spike dead-ended and told the user to reload, throwing away the conversation over what is usually a blip. The error state carries `from`, because "Try again" after a failed AI call must retry it — the user's turn is already sent. |
@@ -194,8 +194,9 @@ so a page reload starts from the defaults again.
     │   ├── use-chat-driver.ts    the Gemini round trip in `aiThinking`; picks the real or
     │   │                         the mock route via `NEXT_PUBLIC_USE_MOCK_CHAT`
     │   ├── use-live-transcription.ts  mic + Deepgram socket while `listening`
-    │   └── use-mock-driver.ts    fakes TTS playback; stays behind its own mock flag once the
-    │                             real driver lands
+    │   ├── use-audio-playback.ts  `/api/tts` + the shared `<audio>` element in `aiSpeaking`,
+    │   │                         and `unlockAudio()` for the click handlers
+    │   └── use-mock-driver.ts    fakes TTS playback; on when `NEXT_PUBLIC_USE_MOCK_TTS=true`
     └── lib/
         ├── session-reducer.ts    the state machine
         ├── languages.ts          provider-neutral language registry
@@ -217,9 +218,10 @@ documents the variables; `.env.local` (not committed) holds the values.
 `src/app/api/stt/token/route.ts` and `src/hooks/use-live-transcription.ts` exist since
 stage 3, step 1; the token mint (`mintLiveToken`) sits in the route file.
 
-Still to come: `src/app/api/tts/route.ts`,
-`src/lib/tts/{types,index,azure,google,elevenlabs}.ts` and
-`src/hooks/use-audio-playback.ts`.
+Stage 3, step 2 adds `src/app/api/tts/route.ts`, `src/lib/tts/{types,index,azure,google,elevenlabs}.ts`
+(`index.ts` holds `getTtsProvider()` and `VOICE_GENDER`, the one switch between female and
+male voices) and `src/hooks/use-audio-playback.ts` (the playback effect plus `unlockAudio()`,
+called from the Start chat, Send and Reply clicks).
 
 **The language registry holds only provider-neutral data** — `code`, `label`,
 `promptName`, `deepgram`, `htmlLang` (the BCP 47 tag for the `lang` attribute). Flags live in `flag-icon.tsx` and voices in each TTS provider,
@@ -496,6 +498,11 @@ device-specific), and that Try again succeeds once the key is right again.
 Branch `stage/3-voice`, built in three steps with a check-in after each: (1) live STT,
 (2) TTS, (3) highlighting and the `findings.md` note. Step 1 is the first item below.
 
+Verified by the user, on desktop and on an iPhone: step 1, and step 2 with all three TTS
+providers and with both voice genders; on the iPhone the audio plays without a second tap.
+With a deliberately wrong `AZURE_SPEECH_API_KEY` the AI's text stays on screen, nothing is
+spoken, and the error shows only in the console: the text-only fallback works.
+
 1. `/api/stt/token`, `use-live-transcription`, interim/final rendering wired to the real
    transcript.
 2. `/api/tts` with the provider registry and all three implementations, voice resolved per
@@ -739,6 +746,12 @@ have been argued over first.
 | 10-03 | agent | `use-live-transcription` refuses a recording format that is not webm or ogg, with an error, instead of streaming it | The plan says to read back the real `mimeType`. Deepgram accepts mp4/aac without an error and returns nothing, which would look like a silent user. |
 | 10-03 | agent | Leaving `listening` drops whatever Deepgram has not flushed; no `CloseStream` | The interim words on screen already go into the draft, and a clean flush would need the state to wait for the socket, which Send, Edit and Cancel should not do. |
 | 10-03 | agent | `mockUserLine` and `mockTranscriptAt` stay in `mock-conversation.ts` as sample text for the dev stepper; `wordCountOf` goes | The plan said the user lines went with the mock recognition, but the stepper still uses them. |
+| 10-03 | you | Every provider takes a `gender` and the app has one switch, `VOICE_GENDER` in `lib/tts/index.ts`, set to `"female"` | Jaron wants one gender across all languages and to test both. The route passes it on, so a per-user option later is a field in the request, not a change in the providers. |
+| 10-03 | agent | `synthesize` takes one object `{ text, language, gender }` plus the request's `AbortSignal`, instead of positional arguments | ElevenLabs ignores `language`, which would have left an unused parameter. The signal stops a paid call when the client leaves, as in the chat route. |
+| 10-03 | you | Voices: one per language and gender, GA Neural for Azure, Chirp3-HD `Aoede` (female) and `Charon` (male) for Google | Names checked against both providers' list endpoints on 10-03, not from memory. Azure's Dragon HD voices don't exist for every language and its MAI voices are in preview. Norwegian is `nb-NO` at both providers. |
+| 10-03 | you | `ELEVENLABS_VOICE_ID` is a constant in `elevenlabs.ts`, not an environment variable | A voice ID is not a secret, and the voice belongs with the other voice tables. Female is Bella and male is Chris, both default voices that the free plan can use. |
+| 10-03 | agent | `NEXT_PUBLIC_USE_MOCK_TTS` is read once in `LanguageBuddy` and passed as `enabled` to both `useAudioPlayback` and `useMockDriver` | Exactly one of the two plays the AI's turn, and the two flags can't disagree. It is not dev-only like the chat mock, since it needs no route. |
+| 10-03 | agent | A TTS failure (fetch, playback, or audio never unlocked) is logged in the browser and degrades to text-only via `AI_SPEECH_FAILED` | As the state model already said. The server logs the provider's error and answers with a generic 500, and a bad `TTS_PROVIDER` is in that log with the valid names. |
 
 ## Keeping the experiment honest
 

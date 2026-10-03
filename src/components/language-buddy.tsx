@@ -6,6 +6,7 @@ import { ConversationScreen } from "@/components/conversation/conversation-scree
 import { StateStepper } from "@/components/dev/state-stepper";
 import { SetupScreen } from "@/components/setup-screen/setup-screen";
 import { useChatDriver } from "@/hooks/use-chat-driver";
+import { useAudioPlayback } from "@/hooks/use-audio-playback";
 import { useLiveTranscription } from "@/hooks/use-live-transcription";
 import { useMockDriver } from "@/hooks/use-mock-driver";
 import { SessionDispatchProvider } from "@/hooks/use-session-dispatch";
@@ -27,9 +28,11 @@ export function LanguageBuddy() {
 
   useLiveTranscription(state, dispatch);
 
-  // Still fakes TTS playback so `aiSpeaking` is reachable without audio; it goes real
-  // later in stage 3.
-  useMockDriver(state, dispatch);
+  // Exactly one of these two plays the AI's turn. Read as a literal property so Next can
+  // inline it at build time; the TTS mock is client-side because it has no audio.
+  const ttsIsMocked = process.env.NEXT_PUBLIC_USE_MOCK_TTS === "true";
+  useAudioPlayback(state, dispatch, !ttsIsMocked);
+  useMockDriver(state, dispatch, ttsIsMocked);
 
   function handleStart(config: SessionConfig) {
     dispatch({ type: "START", config });

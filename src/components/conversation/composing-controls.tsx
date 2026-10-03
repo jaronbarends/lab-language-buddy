@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { CrossIcon, PencilIcon, SendIcon } from "@/components/ui/icons";
+import { unlockAudio } from "@/hooks/use-audio-playback";
 import { useSessionDispatch } from "@/hooks/use-session-dispatch";
 import { composedTextOf, type ComposingTurnState } from "@/lib/session-reducer";
 
@@ -40,6 +41,10 @@ export function ComposingControls({
     if (!text.trim()) {
       return;
     }
+
+    // Sending is the gesture that precedes the AI's spoken reply, which plays several
+    // awaited fetches later.
+    unlockAudio();
 
     dispatch({
       type: "USER_TURN_SENT",

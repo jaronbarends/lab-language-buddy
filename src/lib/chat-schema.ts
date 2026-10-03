@@ -14,10 +14,16 @@ import { LANGUAGE_CODES } from "@/lib/languages";
  * user's latest text. Both are absent on the very first request when the AI speaks
  * first, and `previousInteractionId` is absent on the first request when the user does.
  */
+/**
+ * Characters, not words. About 800 words of speech, far beyond a single turn; it is only
+ * there so the public endpoint can't be fed unbounded text on the API key's tab.
+ */
+const MAX_INPUT_LENGTH = 5000;
+
 export const ChatRequestSchema = z.object({
   language: z.enum(LANGUAGE_CODES),
   level: z.enum(CEFR_LEVELS),
-  input: z.string().optional(),
+  input: z.string().max(MAX_INPUT_LENGTH).optional(),
   previousInteractionId: z.string().optional(),
 });
 

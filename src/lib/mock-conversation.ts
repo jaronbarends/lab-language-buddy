@@ -2,9 +2,9 @@ import type { LanguageCode } from "@/lib/languages";
 import type { LiveTranscript } from "@/lib/session-reducer";
 
 /**
- * Stage 1 only. Canned content so every screen and turn state is reachable with no
- * network, no API keys and no microphone. Deleted once the real drivers land in
- * stages 2 and 3.
+ * Canned content so every screen and turn state is reachable with no network, no API
+ * keys and no microphone. The AI lines are served by the mock chat route; the user
+ * lines feed the mock recognition and go in stage 3, when the real STT lands.
  *
  * There's a set per language purely so the mock doesn't show Norwegian to someone who
  * picked Spanish — it's throwaway text, not a translation effort. The Norwegian lines

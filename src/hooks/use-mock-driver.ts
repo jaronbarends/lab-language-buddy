@@ -3,7 +3,6 @@
 import { useEffect, type Dispatch } from "react";
 
 import {
-  mockAiLine,
   mockTranscriptAt,
   mockUserLine,
   wordCountOf,
@@ -12,19 +11,20 @@ import { countWords } from "@/lib/word-timing";
 import type { SessionAction, SessionState } from "@/lib/session-reducer";
 
 /**
- * Stage 1 stand-in for the three real drivers that arrive later: the Gemini fetch
- * (stage 2), the TTS playback ticker and the Deepgram socket (stage 3).
+ * Stand-in for the two real drivers still to come: the TTS playback ticker and the
+ * Deepgram socket (stage 3). The Gemini round trip is real since stage 2 — see
+ * `use-chat-driver.ts`, which can be pointed at a mock route.
  *
  * It dispatches exactly the actions those drivers will dispatch, on roughly the
  * timings they'll have, so the UI and the reducer are being exercised for real —
- * only the source of the events is fake. Whole file is deleted in stage 3.
+ * only the source of the events is fake. The recognition effect is deleted in stage 3;
+ * the TTS effect stays behind its own mock flag.
  */
 
 /** Rough pace of synthesised speech; only has to look plausible. */
 const SPOKEN_MS_PER_WORD = 240;
 /** Recognition lags speech slightly, so this is a touch slower. */
 const RECOGNISED_MS_PER_WORD = 300;
-const AI_THINKING_MS = 1300;
 
 export function useMockDriver(
   state: SessionState,
@@ -33,28 +33,6 @@ export function useMockDriver(
   const phase = state.phase;
   const turnStateName =
     state.phase === "conversation" ? state.turnState.name : null;
-
-  // --- The AI "thinking", i.e. the /api/chat round trip -------------------------
-  useEffect(() => {
-    if (phase !== "conversation" || turnStateName !== "aiThinking") {
-      return;
-    }
-
-    const timeoutId = setTimeout(() => {
-      const aiTurnIndex = countTurnsBy(state, "ai");
-      dispatch({
-        type: "AI_TURN_RECEIVED",
-        id: crypto.randomUUID(),
-        text: mockAiLine(state.config.language, aiTurnIndex),
-      });
-    }, AI_THINKING_MS);
-
-    return () => clearTimeout(timeoutId);
-    // `state` is deliberately absent: re-running on every turns change would restart
-    // the timer. Entering the state is the trigger, and the values read inside the
-    // callback are correct as of the moment it fires.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [phase, turnStateName, dispatch]);
 
   // --- TTS playback, i.e. the audio element's ontimeupdate ----------------------
   const speakingTurnId =

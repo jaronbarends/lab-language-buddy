@@ -228,8 +228,13 @@ export function sessionReducer(
       }
       return { ...state, turnState: { name: "awaitingUser" } };
 
+    // Also accepted from `aiSpeaking`: Reply cuts the AI off. Leaving that state is the
+    // whole interruption — the turn's text is already complete in `turns`, so the bubble
+    // simply stops being highlighted and shows as it does after the audio ends. The
+    // stage 3 playback driver must stop the `<audio>` in the cleanup of its effect,
+    // which runs on leaving `aiSpeaking`; a late `AI_SPEECH_FINISHED` is ignored here.
     case "LISTENING_STARTED":
-      if (turnState.name !== "awaitingUser") {
+      if (turnState.name !== "awaitingUser" && turnState.name !== "aiSpeaking") {
         return state;
       }
       return {

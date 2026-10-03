@@ -14,9 +14,10 @@ type IdleControlsProps = {
 };
 
 /**
- * awaitingUser / aiThinking / aiSpeaking. Reply stays visible while the AI has the
- * floor so the bar doesn't reflow mid-conversation, but it's disabled: talking over
- * the AI is the continuous-mic model, which is explicitly out of scope here.
+ * awaitingUser / aiThinking / aiSpeaking. Reply is disabled only while the AI is
+ * thinking. While it speaks, Reply is enabled and cuts the speech off (see
+ * `LISTENING_STARTED` in the reducer): an explicit tap, not the continuous-mic model,
+ * which stays out of scope.
  */
 export function IdleControls({
   turnState,
@@ -32,9 +33,10 @@ export function IdleControls({
 
   // Deliberate difference from resources/screenshots-reference/, where Reply is grey
   // in every state: here it's a primary button, so it goes magenta once it's actually
-  // tappable and grey while the AI is talking. Confirmed as intended — not a drift
+  // tappable and grey while the AI is thinking. Confirmed as intended — not a drift
   // from the reference to be tidied up later.
-  const replyIsAvailable = turnState.name === "awaitingUser";
+  const replyIsAvailable =
+    turnState.name === "awaitingUser" || turnState.name === "aiSpeaking";
 
   // "Reply" is wrong before anyone has said anything, which is the case when the
   // user was the one picked to open the conversation. Gated on the button actually

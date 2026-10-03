@@ -88,7 +88,8 @@ re-picking the same language. The turns are discarded.
        │        ┌──── SEND (from any of the three) ──┘
        │        ▼
        │   aiThinking ──▶ aiSpeaking ──(audio ended)──┐
-       │        │                                     │
+       │        │            │                        │
+       │        │            └─ REPLY ─▶ listening    │
        │     (network)                                │
        │        ▼                                     │
        └──── error ──(dismiss)──▶ awaitingUser ◀──────┘
@@ -103,6 +104,9 @@ re-picking the same language. The turns are discarded.
   can restore it; that is why it is its own state rather than a flag on `reviewing`.
 - **`aiThinking`** — `/api/chat` in flight; typing-dots bubble.
 - **`aiSpeaking`** — TTS audio playing, words progressively highlighted in the AI bubble.
+  Reply is enabled here: `LISTENING_STARTED` is accepted from `aiSpeaking` as well as
+  `awaitingUser`, which cuts the speech off and moves to `listening`. The bubble then
+  shows its full text without highlight, as after the audio ends.
 - **`error`** — recoverable. Carries `message` (fixed generic text chosen by the caller),
   an optional `detail` (the raw error, truncated to `MAX_ERROR_DETAIL_LENGTH`) and `from`
   (the turn state it came from). `FAILED` is only accepted from `aiThinking` and
@@ -478,7 +482,8 @@ interrupts the conversational illusion.
 ### Out of scope
 
 Continuous / open-microphone mode, with no push-to-talk and the ability to interrupt the
-AI mid-sentence. Two unresolved risks in the spike: whether Safari's audio unlock survives
+AI mid-sentence by speaking over it. (Tapping Reply while the AI speaks is in scope: see
+the 10-03 row in the decision log.) Two unresolved risks in the spike: whether Safari's audio unlock survives
 a whole session without repeated gestures, and echo when the mic stays open while AI audio
 plays through the phone speaker. Not proven, not in scope.
 
@@ -650,6 +655,7 @@ have been argued over first.
 | 10-02 | you | The whitespace between two spoken words gets the read-along highlight too, so the band is continuous; a `HIGHLIGHT_SPACES` constant in `highlighted-text.tsx` stays as the switch | Found in review: the highlight left a gap between spoken words, which had never been a deliberate choice, since only word tokens were marked. Jaron asked for a version with the spaces highlighted, compared both by flipping `HIGHLIGHT_SPACES`, and chose `true`. The constant stays on purpose so this can be reconsidered; `false` gives the earlier behaviour, words only. A whitespace token is marked when the words before and after it are both spoken, so the whitespace after the last spoken word stays unmarked until the next word is spoken. The existing `spokenWord` style is reused. Verified in desktop Chrome by element geometry, not screenshots: 4 spoken words give 7 highlighted spans, and a space at a line end has zero width, so it leaves no stub. **Not checked:** a whitespace token containing a newline, and iOS. |
 | 10-02 | agent | The top safe-area inset is handled: `--safe-top` (`env(safe-area-inset-top, 0px)`) in `globals.css`, applied as top padding of the setup screen and of the conversation screen | Found in review: `viewport-fit=cover` is set but only the bottom inset existed, so in the home-screen app on an iPhone the page runs under the status bar (the user's screenshot shows thread text passing under it, and the setup header, 24px from the top, would very likely sit under a notch or Dynamic Island; an estimate, not seen). Proposed in review and approved by Jaron. The setup screen's top padding is `calc(var(--size-24) + var(--safe-top))`. The conversation screen gets `padding-top: var(--safe-top)` on `.screen` itself, not in the thread, so the thread's scroll area starts below the status bar and scrolled text never passes under it; it counts inside the 100dvh. The thread's own padding and its auto-scroll are untouched. Landscape is not supported, so there are no side insets. Checked in desktop Chrome, where the inset is 0 and nothing moved; with a temporary `--safe-top: 47px` set in the console, the setup header moved from 24px to 71px and the conversation thread started 47px lower, with the control bar unchanged. **Checked by Jaron on an iPhone with a low status bar (not a notched one), no problem reported; not tested on a notched iPhone or a Dynamic Island device.** It is not known whether that was the home-screen app or a Safari tab. |
 | 10-02 | you | The contrast of control borders is knowingly accepted: language cards, level select and starter toggle use `--color-border-input` at about 1.48:1 on white | Found in review: WCAG 1.4.11 asks 3:1 for the boundary of a control, and `--color-border-input` (`--color-gray-100`) on white is about 1.48:1, or about 1.36:1 against the page colour `--color-gray-50`. Computed from the oklch token values with the standard sRGB conversion, not measured on a screen. The values come from the existing Language Buddy design system (decision 09-28), the same way the 4.05:1 and 3.16:1 text pairs in open question 5 do. The selected states pass: the pink border at 4.05:1 and the blue pill at 3.16:1. Open question 5, which covers text pairs, now mentions this. |
+| 10-03 | you | Reply is enabled in `aiSpeaking`; tapping it stops the speech and goes to `listening` | Waiting for a long reply to finish was too slow. `LISTENING_STARTED` is now valid from `aiSpeaking` as well as `awaitingUser`; leaving `aiSpeaking` is the interruption, so the bubble drops its highlight and shows the full text as after a normal finish. Reply stays disabled in `aiThinking`. Not the open-mic mode: it needs an explicit tap, so the echo and Safari-unlock risks listed under "Out of scope" do not apply, except that stage 3 must stop the `<audio>` in the playback effect's cleanup and start the mic from the same tap. The mock driver already stops its ticker on leaving the state. **Checked with `tsc` and eslint only; not exercised in the browser.** |
 
 ## Keeping the experiment honest
 

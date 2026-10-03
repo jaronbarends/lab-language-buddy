@@ -201,14 +201,18 @@ so a page reload starts from the defaults again.
         ├── languages.ts          provider-neutral language registry
         ├── cefr.ts               A1–C2 + labels
         ├── word-timing.ts        estimateWordTimings / countSpokenWords
-        ├── chat-schema.ts        zod: the chat request, Gemini's `{ reply }`, the response
+        ├── chat-schema.ts        zod: the chat request (a union on `kind`), the response, the
+        │                         error body
+        ├── chat-request.ts       `readChatRequest` and `errorResponse`, shared by both chat routes
         ├── prompt.ts             `buildChatSystemInstruction`, assembled from named sections
         └── mock-conversation.ts  canned AI lines (mock chat route) and user lines (mock
                                   recognition, deleted in stage 3)
 ```
 
-`src/app/api/chat/route.ts` and `src/app/api/mock/chat/route.ts` exist since stage 2, and
-`.env.example` documents the variables; `.env.local` (not committed) holds the values.
+`src/app/api/chat/route.ts` and `src/app/api/mock/chat/route.ts` exist since stage 2;
+`src/app/api/chat/gemini-chat.ts` beside the first holds the Gemini call (`askGemini`),
+the model name and Gemini's `{ reply }` schema, and is server only. `.env.example`
+documents the variables; `.env.local` (not committed) holds the values.
 
 Still to come: `src/app/api/{tts,stt/token}/route.ts`,
 `src/lib/tts/{types,index,azure,google,elevenlabs}.ts` and
@@ -459,12 +463,15 @@ Branch `stage/2-chat-api`. `/api/chat` with `@google/genai` `ai.interactions.cre
 chaining, a zod-validated JSON response, and a system instruction built from
 `{ language, level }`. Needs `.env.local` with `GEMINI_API_KEY`.
 
-Each request carries `{ language, level, input?, previousInteractionId? }`. The input and
-the id are derived from `turns`: `input` is the last turn when it is the user's,
-`previousInteractionId` the `interactionId` of the last AI turn. The route validates
+A request is one of two kinds, derived from `turns`. `aiStarts` (no turns yet, the AI
+speaks first) carries `{ language, level }` and neither input nor id. `userTurn` carries
+`{ language, level, input, previousInteractionId? }`: `input` is the user's last turn, 1 to
+5000 characters, and `previousInteractionId` the `interactionId` of the last AI turn, at
+most 200 characters, absent only when the user spoke first. The route validates
 `language` and `level` against the registries, builds the system instruction on every
 call (the model, system instruction and response format are sent each time; only the
-history is chained), and answers `{ interactionId, reply }`.
+history is chained), and answers `{ interactionId, reply }`. An empty or whitespace-only
+reply is a failure, not an answer.
 
 **Mock or real, per concern.** `NEXT_PUBLIC_USE_MOCK_CHAT=true` makes `use-chat-driver.ts`
 call `/api/mock/chat` instead: same contract, canned lines, 404 outside `next dev`. The
@@ -556,7 +563,8 @@ Per stage, in this order:
 
 1. **Evaluation design** — stage 4, above. Untouched by design.
 2. **Tests.** There are none, so review is currently the only quality gate.
-   `word-timing.ts` and the reducer are pure and would suit Vitest.
+   `word-timing.ts` and the reducer are pure and would suit Vitest. The Gemini call now
+   lives in `askGemini`, so the route's failure paths can be tested with it replaced.
 3. **The AI persona and scenario — decided for stage 2.** Carried over from the spike,
    written in English: a generic friendly acquaintance, freeform topic, 2–4 sentences per
    turn, at most one question. Named personas or scenario cards would be a different
@@ -609,6 +617,11 @@ Per stage, in this order:
    `window.visualViewport`, as a spike first; the controls moving above the editor while
    editing; and the `interactive-widget` viewport setting, whose behaviour in iOS Safari
    has not been checked.
+9. **Public deployment.** A `previousInteractionId` is trusted as a secret held by the
+   conversation's owner: nothing binds it to a caller or session, and all calls share one
+   API key, so conversation isolation is an unverified assumption. There is no
+   authentication or rate limit; the only bounds are 5000 characters of input and 200 of
+   id. Decide the protection before the first public deployment.
 
 ---
 
@@ -706,6 +719,14 @@ have been argued over first.
 | 10-03 | you | The system instruction is built on the server from `{ language, level }` on every call; the client sends only those two validated values | A client-supplied instruction would let any caller write the prompt on a public endpoint holding the API key. The build is a template string, so caching it saves nothing. The persona is the spike's, in English, without its Correction section (see stage 4). |
 | 10-03 | you | The temporary text input for stage 2 is dropped | The mock recognition provides text and Edit lets the user type. |
 | 10-03 | you | `.env.example` is committed, with `!.env.example` added to `.gitignore` | Documents `GEMINI_API_KEY` and the mock flag. The `.env*` pattern would otherwise have ignored it. |
+| 10-03 | agent | The chat request is a discriminated union on `kind` (`aiStarts`, `userTurn`); `input` must be non-empty and the id is capped at 200 characters | A request with no input but an id sent the starting prompt in the middle of a chain, and the dev stepper could produce one. |
+| 10-03 | agent | An empty or whitespace-only reply is a failure, and a Gemini response without `output_text` is an error | Neither used to be caught: `?? "{}"` and a bare `z.string()` let an empty bubble through as an answer. |
+| 10-03 | agent | The route's `request.signal` is passed to the Gemini call; the server has no deadline of its own | A client abort should stop the paid call. The client's 30 second deadline already ends every request someone is waiting on. |
+| 10-03 | agent | The error body has a schema (`ChatErrorSchema`), and reading the request is shared by both routes in `chat-request.ts` | The client's hand-written check of `{ error }` and the two copies of the JSON and validation steps could drift apart. |
+| 10-03 | agent | A missing API key is logged server side and the client gets the generic "The chat request failed"; Zod text at 400 and the status codes are unchanged | The client gains nothing from knowing the key is missing. Whether a failure is retryable is left until the client has a use for it. |
+| 10-03 | agent | The Gemini schema and call moved to `api/chat/gemini-chat.ts` (`askGemini`) | The route is left with request, response and errors, and the call can be replaced when testing the failure paths. |
+| 10-03 | agent | The mock route says why it answers 404, and `.env.example` notes that the flag only works under `next dev` | An empty 404 gave no hint that the mock was switched off by the mode, not by a missing route. |
+| 10-03 | agent | The dev stepper forcing `aiThinking` on an AI turn now ends in `FAILED` instead of sending a request | There is no user turn to answer, and the request that used to be sent had no input. |
 
 ## Keeping the experiment honest
 

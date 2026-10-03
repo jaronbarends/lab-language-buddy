@@ -1,6 +1,5 @@
-import { z } from "zod";
-
-import { ChatRequestSchema, type ChatResponse } from "@/lib/chat-schema";
+import { errorResponse, readChatRequest } from "@/lib/chat-request";
+import type { ChatResponse } from "@/lib/chat-schema";
 import { mockAiLine } from "@/lib/mock-conversation";
 
 /** Roughly what a Gemini round trip takes, so the thinking bubble is visible. */
@@ -30,31 +29,25 @@ function aiTurnIndexAfter(previousInteractionId: string | undefined): number {
 export async function POST(request: Request) {
   // It has no business existing outside development.
   if (process.env.NODE_ENV !== "development") {
-    return new Response(null, { status: 404 });
+    return errorResponse("Mock chat is only available in development", 404);
   }
 
-  let body: unknown;
-  try {
-    body = await request.json();
-  } catch {
-    return Response.json({ error: "Request body is not valid JSON" }, { status: 400 });
+  const parsed = await readChatRequest(request);
+  if (!parsed.ok) {
+    return parsed.response;
   }
-
-  const parsedRequest = ChatRequestSchema.safeParse(body);
-  if (!parsedRequest.success) {
-    return Response.json(
-      { error: z.prettifyError(parsedRequest.error) },
-      { status: 400 },
-    );
-  }
-  const { language, previousInteractionId } = parsedRequest.data;
+  const chatRequest = parsed.request;
+  const previousInteractionId =
+    chatRequest.kind === "userTurn"
+      ? chatRequest.previousInteractionId
+      : undefined;
 
   await new Promise((resolve) => setTimeout(resolve, MOCK_LATENCY_MS));
 
   const aiTurnIndex = aiTurnIndexAfter(previousInteractionId);
   const chatResponse: ChatResponse = {
     interactionId: `${MOCK_ID_PREFIX}${aiTurnIndex}`,
-    reply: mockAiLine(language, aiTurnIndex),
+    reply: mockAiLine(chatRequest.language, aiTurnIndex),
   };
 
   return Response.json(chatResponse);

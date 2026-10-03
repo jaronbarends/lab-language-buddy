@@ -3,6 +3,7 @@
 import { useEffect, type Dispatch } from "react";
 
 import {
+  ChatErrorSchema,
   ChatResponseSchema,
   type ChatRequest,
 } from "@/lib/chat-schema";
@@ -26,10 +27,11 @@ const CHAT_TIMEOUT_MS = 30_000;
  * The Gemini round trip: while the turn state is `aiThinking`, one request to the chat
  * route, answered with `AI_TURN_RECEIVED` or `FAILED`.
  *
- * Everything the request needs is derived from `turns`: the user's latest text is the
- * last turn when it is theirs, and the conversation chain is the last AI turn's
- * `interactionId`. That is also why retrying after an error needs no bookkeeping: a
- * failed request adds no turn, so entering `aiThinking` again sends the same request.
+ * Everything the request needs is derived from `turns`: no turns yet means the AI
+ * speaks first (`aiStarts`); a last turn that is the user's is a `userTurn` carrying its
+ * text, chained to the last AI turn's `interactionId` when there is one. That is also
+ * why retrying after an error needs no bookkeeping: a failed request adds no turn, so
+ * entering `aiThinking` again sends the same request.
  */
 export function useChatDriver(
   state: SessionState,
@@ -41,6 +43,16 @@ export function useChatDriver(
 
   useEffect(() => {
     if (state.phase !== "conversation" || turnStateName !== "aiThinking") {
+      return;
+    }
+
+    const chatRequest = chatRequestFrom(state);
+    if (!chatRequest) {
+      dispatch({
+        type: "FAILED",
+        message: CHAT_FAILED_MESSAGE,
+        detail: "There is no user turn to answer",
+      });
       return;
     }
 
@@ -56,7 +68,7 @@ export function useChatDriver(
       abortController.abort();
     }, CHAT_TIMEOUT_MS);
 
-    fetchChatReply(chatRequestFrom(state), abortController.signal)
+    fetchChatReply(chatRequest, abortController.signal)
       .then(({ interactionId, reply }) => {
         dispatch({
           type: "AI_TURN_RECEIVED",
@@ -93,15 +105,29 @@ export function useChatDriver(
   }, [phase, turnStateName, dispatch]);
 }
 
-function chatRequestFrom(state: ConversationState): ChatRequest {
+/**
+ * `null` when the last turn is the AI's: there is nothing to answer. Only reachable by
+ * forcing `aiThinking` from the dev state stepper.
+ */
+function chatRequestFrom(state: ConversationState): ChatRequest | null {
   const { config, turns } = state;
+  const { language, level } = config;
   const lastTurn = turns.at(-1);
+
+  if (!lastTurn) {
+    return { kind: "aiStarts", language, level };
+  }
+  if (lastTurn.author === "ai") {
+    return null;
+  }
+
   const lastAiTurn = turns.findLast((turn) => turn.author === "ai");
 
   return {
-    language: config.language,
-    level: config.level,
-    input: lastTurn?.author === "user" ? lastTurn.text : undefined,
+    kind: "userTurn",
+    language,
+    level,
+    input: lastTurn.text,
     previousInteractionId:
       lastAiTurn?.author === "ai" ? lastAiTurn.interactionId : undefined,
   };
@@ -127,13 +153,9 @@ async function errorTextOf(response: Response): Promise<string> {
   const fallback = `Request failed with status ${response.status}`;
   try {
     const body: unknown = await response.json();
-    if (
-      typeof body === "object" &&
-      body !== null &&
-      "error" in body &&
-      typeof body.error === "string"
-    ) {
-      return body.error;
+    const parsedError = ChatErrorSchema.safeParse(body);
+    if (parsedError.success) {
+      return parsedError.data.error;
     }
   } catch {
     // Not JSON — the status is all there is.

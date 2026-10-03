@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 
 import type { Turn, TurnState } from "@/lib/session-reducer";
 
@@ -11,6 +11,7 @@ import styles from "./conversation-thread.module.css";
 type ConversationThreadProps = {
   turns: Turn[];
   turnState: TurnState;
+  conversationLang: string;
 };
 
 /**
@@ -22,6 +23,7 @@ const NEWEST_ITEM_TOP_GAP = 16;
 export function ConversationThread({
   turns,
   turnState,
+  conversationLang,
 }: ConversationThreadProps) {
   const threadRef = useRef<HTMLDivElement | null>(null);
 
@@ -33,7 +35,10 @@ export function ConversationThread({
   // Keep the newest content in view. Keyed on the turn count and the state name
   // rather than on the whole state, so the highlight ticking forward several times
   // a second doesn't trigger a scroll on every word.
-  useEffect(() => {
+  //
+  // Before paint, so a turn that arrives from a timer or the network is never painted
+  // once at the old scroll position and then jumped.
+  useLayoutEffect(() => {
     const thread = threadRef.current;
     if (!thread) {
       return;
@@ -76,6 +81,7 @@ export function ConversationThread({
         <TurnBubble
           key={turn.id}
           turn={turn}
+          conversationLang={conversationLang}
           spokenWordCount={turn.id === speakingTurnId ? spokenWordCount : null}
         />
       ))}

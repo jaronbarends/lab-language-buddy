@@ -2,8 +2,9 @@
   width: 100%;
   max-width: var(--layout-max-width);
   margin: 0 auto;
-  /* Side gutter, and the bottom pad clears the home indicator. */
-  padding: var(--size-24) var(--size-16)
+  /* Side gutter; the top pad clears the status bar and the bottom pad the home
+     indicator. */
+  padding: calc(var(--size-24) + var(--safe-top)) var(--size-16)
     calc(var(--size-32) + var(--safe-bottom));
 }
 

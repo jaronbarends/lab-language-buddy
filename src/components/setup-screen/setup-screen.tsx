@@ -36,7 +36,7 @@ export function SetupScreen({ lastConfig, onStart }: SetupScreenProps) {
   const [level, setLevel] = useState<CefrLevel>(initialConfig.level);
   const [starter, setStarter] = useState<Starter>(initialConfig.starter);
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     // The state is React's, not the form's, so the browser's own submission — a
     // page reload with the choices in the query string — must never happen.
     event.preventDefault();

@@ -1,32 +1,15 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import {
-  CrossIcon,
-  FinishIcon,
-  MicIcon,
-  PencilIcon,
-  SendIcon,
-  WarningIcon,
-} from "@/components/ui/icons";
-import { joinTranscript, type TurnState } from "@/lib/session-reducer";
+import type { TurnState } from "@/lib/session-reducer";
 
-import { DraftBubble, DraftEditor } from "./draft-review";
-import { LiveTranscript } from "./live-transcript";
-import styles from "./conversation-controls.module.css";
+import { ComposingControls } from "./composing-controls";
+import { ErrorControls } from "./error-controls";
+import { IdleControls } from "./idle-controls";
 
 type ConversationControlsProps = {
   turnState: TurnState;
-  /** No turns yet, so there is nothing to reply to — see the Reply label below. */
+  conversationLang: string;
   conversationIsEmpty: boolean;
-  onReply: () => void;
-  onDraftEdit: () => void;
-  onDraftChange: (draft: string) => void;
-  onDraftSend: () => void;
-  onDraftCancel: () => void;
-  onEditCancel: () => void;
-  onDismissError: () => void;
-  onEndSession: () => void;
 };
 
 /**
@@ -36,140 +19,37 @@ type ConversationControlsProps = {
  */
 export function ConversationControls({
   turnState,
+  conversationLang,
   conversationIsEmpty,
-  onReply,
-  onDraftEdit,
-  onDraftChange,
-  onDraftSend,
-  onDraftCancel,
-  onEditCancel,
-  onDismissError,
-  onEndSession,
 }: ConversationControlsProps) {
-  // Listening, reviewing and editing are one continuous act of composing a turn, so
-  // they share a single set of controls rather than swapping the bar out underneath
-  // the user. Only the text above them changes: live transcript, settled draft, or
-  // an editable field.
-  //
-  // There is no Stop: Send, Edit and Cancel each end recording on their way to
-  // somewhere useful, which leaves Stop with nothing of its own to do. End session
-  // is absent here too — a turn in progress has to be sent or cancelled first.
-  const composing =
-    turnState.name === "listening" ||
-    turnState.name === "reviewing" ||
-    turnState.name === "editing"
-      ? turnState
-      : null;
+  switch (turnState.name) {
+    // One set of controls for all three: see ComposingControls for why there is no
+    // Stop and no End session here.
+    case "listening":
+    case "reviewing":
+    case "editing":
+      return (
+        <ComposingControls
+          turnState={turnState}
+          conversationLang={conversationLang}
+        />
+      );
 
-  if (composing) {
-    const editIsInProgress = composing.name === "editing";
-    const text =
-      composing.name === "listening"
-        ? joinTranscript(composing.transcript)
-        : composing.draft;
+    case "error":
+      return <ErrorControls turnState={turnState} />;
 
-    return (
-      <div className={styles.controls}>
-        {composing.name === "listening" && (
-          <LiveTranscript transcript={composing.transcript} />
-        )}
-        {composing.name === "reviewing" && (
-          <DraftBubble draft={composing.draft} />
-        )}
-        {composing.name === "editing" && (
-          <DraftEditor draft={composing.draft} onChange={onDraftChange} />
-        )}
+    case "awaitingUser":
+    case "aiThinking":
+    case "aiSpeaking":
+      return (
+        <IdleControls
+          turnState={turnState}
+          conversationIsEmpty={conversationIsEmpty}
+        />
+      );
 
-        <Button
-          icon={<SendIcon />}
-          onClick={onDraftSend}
-          disabled={!text.trim()}
-        >
-          Send
-        </Button>
-
-        <div className={styles.sideBySide}>
-          <Button
-            variant="secondary"
-            icon={<PencilIcon />}
-            onClick={onDraftEdit}
-            disabled={editIsInProgress}
-          >
-            Edit
-          </Button>
-          {/* Cancel means two different things depending on where you are: back out
-              of the edit, or back out of the whole turn. Labelled so the difference
-              is visible before tapping rather than after. */}
-          <Button
-            variant="secondary"
-            icon={<CrossIcon />}
-            onClick={editIsInProgress ? onEditCancel : onDraftCancel}
-          >
-            {editIsInProgress ? "Cancel edit" : "Cancel"}
-          </Button>
-        </div>
-      </div>
-    );
+    default:
+      turnState satisfies never;
+      return null;
   }
-
-  if (turnState.name === "error") {
-    return (
-      <div className={styles.controls}>
-        <div className={styles.error} role="alert">
-          <WarningIcon size={24} />
-          <div className={styles.errorText}>
-            <span className={styles.errorTitle}>Something went wrong</span>
-            <span className={styles.errorMessage}>{turnState.message}</span>
-            {turnState.detail && (
-              <span className={styles.errorMessage}>{turnState.detail}</span>
-            )}
-          </div>
-        </div>
-        <div className={styles.sideBySide}>
-          <Button variant="secondary" onClick={onDismissError}>
-            Try again
-          </Button>
-          <Button
-            variant="secondary"
-            icon={<FinishIcon />}
-            onClick={onEndSession}
-          >
-            End session
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
-  // awaitingUser / aiThinking / aiSpeaking. Reply stays visible while the AI has the
-  // floor so the bar doesn't reflow mid-conversation, but it's disabled: talking over
-  // the AI is the continuous-mic model, which is explicitly out of scope here.
-  //
-  // Deliberate difference from resources/screenshots-reference/, where Reply is grey
-  // in every state: here it's a primary button, so it goes magenta once it's actually
-  // tappable and grey while the AI is talking. Confirmed as intended — not a drift
-  // from the reference to be tidied up later.
-  const replyIsAvailable = turnState.name === "awaitingUser";
-
-  // "Reply" is wrong before anyone has said anything, which is the case when the
-  // user was the one picked to open the conversation. Gated on the button actually
-  // being available too: with the AI opening, the turn list is briefly empty while
-  // it thinks, and the disabled button should not be inviting the user to start.
-  const replyWouldOpenTheConversation = conversationIsEmpty && replyIsAvailable;
-
-  return (
-    <div className={styles.controls}>
-      <Button
-        variant="primary"
-        icon={<MicIcon />}
-        onClick={onReply}
-        disabled={!replyIsAvailable}
-      >
-        {replyWouldOpenTheConversation ? "Start conversation" : "Reply"}
-      </Button>
-      <Button variant="secondary" icon={<FinishIcon />} onClick={onEndSession}>
-        End session
-      </Button>
-    </div>
-  );
 }

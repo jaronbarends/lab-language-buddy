@@ -1,4 +1,4 @@
-import type { HTMLAttributes } from "react";
+import type { HTMLAttributes, Ref } from "react";
 
 import styles from "./bubble.module.css";
 
@@ -39,5 +39,32 @@ export function Bubble({
     <Element className={classNames} {...rest}>
       {children}
     </Element>
+  );
+}
+
+type BubbleTextProps = HTMLAttributes<HTMLSpanElement> & {
+  ref?: Ref<HTMLSpanElement>;
+};
+
+/**
+ * The text inside a bubble, for the three bubbles that hold the user's own words: live
+ * transcript, settled draft and editor. It caps the text at 40% of the viewport and
+ * scrolls beyond that, so a long utterance cannot push the buttons below it and the
+ * thread above it off the screen.
+ *
+ * The cap is on the text rather than on the bubble so that the frame — padding, corner,
+ * focus ring — stays outside the scrolling region and is never clipped by it. The same
+ * cap on all three keeps them the same size when they swap places. `vh`, not `dvh`: the
+ * cap does not follow the keyboard or the collapsing URL bar.
+ *
+ * Always a span made block by CSS, because it sits inside the transcript and draft
+ * bubbles, which are paragraphs and may not contain a div.
+ */
+export function BubbleText({ className, ...rest }: BubbleTextProps) {
+  return (
+    <span
+      className={[styles.text, className].filter(Boolean).join(" ")}
+      {...rest}
+    />
   );
 }

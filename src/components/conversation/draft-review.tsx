@@ -2,7 +2,7 @@
 
 import { useLayoutEffect, useRef, useState } from "react";
 
-import { Bubble } from "./bubble";
+import { Bubble, BubbleText } from "./bubble";
 import styles from "./draft-review.module.css";
 
 /**
@@ -11,12 +11,39 @@ import styles from "./draft-review.module.css";
  * The same Bubble as the live transcript it replaces, so stopping cannot make the text
  * jump. What does change is the listening indicator: the dot is gone, because the
  * microphone is no longer on.
+ *
+ * A draft longer than the text's maximum height starts scrolled to its end, as the live
+ * transcript it replaces was: stopping must not make the text jump, and the end is what
+ * the user was just reading. Only on mount — nothing follows after that.
  */
-export function DraftBubble({ draft }: { draft: string }) {
-  return <Bubble author="user">{draft}</Bubble>;
+export function DraftBubble({
+  draft,
+  conversationLang,
+}: {
+  draft: string;
+  conversationLang: string;
+}) {
+  const textRef = useRef<HTMLSpanElement | null>(null);
+
+  // Before the first paint, so the draft is never seen at the top for a frame.
+  useLayoutEffect(() => {
+    const text = textRef.current;
+    if (!text) {
+      return;
+    }
+
+    text.scrollTop = text.scrollHeight;
+  }, []);
+
+  return (
+    <Bubble author="user" lang={conversationLang}>
+      <BubbleText ref={textRef}>{draft}</BubbleText>
+    </Bubble>
+  );
 }
 
 type DraftEditorProps = {
+  conversationLang: string;
   /** The text to start from. Later edits come back through `onChange`, not through here. */
   draft: string;
   onChange: (draft: string) => void;
@@ -39,8 +66,12 @@ type DraftEditorProps = {
  * to the start. That is safe here since this component only exists while the turn is in
  * its editing state, so nothing else can change the text while it is on the screen.
  */
-export function DraftEditor({ draft, onChange }: DraftEditorProps) {
-  const editorRef = useRef<HTMLDivElement | null>(null);
+export function DraftEditor({
+  draft,
+  conversationLang,
+  onChange,
+}: DraftEditorProps) {
+  const editorRef = useRef<HTMLSpanElement | null>(null);
   // Captured once so the effect below runs once, however often the parent re-renders.
   const [initialDraft] = useState(draft);
 
@@ -55,6 +86,9 @@ export function DraftEditor({ draft, onChange }: DraftEditorProps) {
 
     editor.textContent = initialDraft;
     editor.focus();
+    // The caret goes to the end below, which for a draft longer than the editor's
+    // maximum height is out of sight. Focusing does not reliably scroll to it.
+    editor.scrollTop = editor.scrollHeight;
 
     const selection = window.getSelection();
     if (!selection) {
@@ -67,19 +101,25 @@ export function DraftEditor({ draft, onChange }: DraftEditorProps) {
     selection.addRange(caretAtEnd);
   }, [initialDraft]);
 
-  function handleInput(event: React.FormEvent<HTMLDivElement>) {
+  function handleInput(event: React.InputEvent<HTMLSpanElement>) {
     onChange(event.currentTarget.innerText);
   }
 
   return (
     <Bubble author="user" as="div">
-      <div
+      <BubbleText
         ref={editorRef}
         className={styles.editor}
+        lang={conversationLang}
         contentEditable="plaintext-only"
         role="textbox"
         aria-multiline="true"
         aria-label="Edit what you said"
+        // The text is in the practice language, not the keyboard's, so correction,
+        // auto-capitalisation and spell-checking would work against the user.
+        spellCheck={false}
+        autoCorrect="off"
+        autoCapitalize="off"
         onInput={handleInput}
       />
     </Bubble>

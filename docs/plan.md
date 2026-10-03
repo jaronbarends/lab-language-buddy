@@ -179,7 +179,9 @@ so a page reload starts from the defaults again.
     │   ├── conversation/         conversation-screen, conversation-thread, turn-bubble,
     │   │                         highlighted-text, live-transcript, thinking-bubble,
     │   │                         draft-review (DraftBubble + DraftEditor),
-    │   │                         conversation-controls; bubble (the shared frame) and
+    │   │                         conversation-controls (a switch over composing-controls,
+    │   │                         error-controls and idle-controls, which dispatch for
+    │   │                         themselves); bubble (the shared frame) and
     │   │                         a module css beside each component for its own styles
     │   ├── dev/state-stepper.tsx development-only turn-state jumper
     │   └── ui/                   button, icons, flag-icon
@@ -199,7 +201,7 @@ Still to come: `src/app/api/{chat,tts,stt/token}/route.ts`, `src/lib/prompt.ts`,
 `src/hooks/{use-audio-playback,use-live-transcription}.ts`, and `.env.local` at the root.
 
 **The language registry holds only provider-neutral data** — `code`, `label`,
-`promptName`, `deepgram`. Flags live in `flag-icon.tsx` and voices in each TTS provider,
+`promptName`, `deepgram`, `htmlLang` (the BCP 47 tag for the `lang` attribute). Flags live in `flag-icon.tsx` and voices in each TTS provider,
 because a language code is not a country code and not a voice name.
 
 ---
@@ -355,8 +357,10 @@ Built in, not retrofitted.
    Enter makes the browser fire a click on the default button too. **Not yet verified on an
    iPhone**; it comes up with the audio in stage 3.
 3. **Layout for iOS chrome.** A flex column at `100dvh` rather than a `position: fixed`
-   bar — a fixed element drifts when the keyboard opens and the URL bar collapses — plus
-   `viewport-fit=cover` and `env(safe-area-inset-bottom)`.
+   bar — a fixed element is expected to drift when the keyboard opens and the URL bar
+   collapses (the intent; not verified) — plus `viewport-fit=cover` and
+   `env(safe-area-inset-top)` and `env(safe-area-inset-bottom)`. The column does not keep the controls above the keyboard in
+   home-screen mode: see the 10-02 row and open question 8.
 4. **A 16px floor on every focusable control**, or iOS zooms the viewport on focus.
 5. **Device testing is part of each stage, not a final pass.** `next dev` + an ngrok tunnel
    (HTTPS is required for `getUserMedia` at all).
@@ -431,7 +435,9 @@ Verified on desktop Chrome and, by the user, on iPhone Safari (iOS 26): layout a
 language grid at phone width; the control bar clears the home indicator; the bar stays put
 while the thread scrolls and the URL bar collapses; overscroll is contained; the thread
 auto-scrolls to new bubbles; the editor does not trigger focus-zoom and Send stays
-reachable with the keyboard open.
+reachable with the keyboard open. **That last claim does not hold in `editing`:** as a
+home-screen app Edit, Cancel edit and Send end up under or partly under the keyboard, and in
+a Safari tab Send is partly covered. See the 10-02 row and open question 8.
 
 ### Stage 2 — Gemini conversation
 
@@ -475,6 +481,9 @@ Continuous / open-microphone mode, with no push-to-talk and the ability to inter
 AI mid-sentence. Two unresolved risks in the spike: whether Safari's audio unlock survives
 a whole session without repeated gestures, and echo when the mic stays open while AI audio
 plays through the phone speaker. Not proven, not in scope.
+
+Landscape phones: no minimum height is set for the capped text in the control bar, so on a
+short viewport it can shrink to nothing. See the 10-01 row in the decision log.
 
 ---
 
@@ -524,12 +533,33 @@ Per stage, in this order:
    asserted, not measured; the blue pair had never been computed. Measured since: the
    selected language card (8.00:1), the secondary button (7.75:1), body text on the user
    bubble (12.27:1), errors (5.33:1) and the captions (6.22:1) all pass.
+
+   Non-text contrast of control borders is a separate matter, also knowingly accepted: the
+   border of the language cards, the level select and the starter toggle is
+   `--color-border-input` on white, about 1.48:1 (about 1.36:1 against the page colour),
+   under the 3:1 WCAG 1.4.11 asks for. Computed from the token values, not measured on a
+   screen; see the 10-02 row in the decision log.
 6. **Ending a session is one tap and unrecoverable.** No confirmation, nothing persisted.
    Consistent with the brief, but it sits next to Reply.
 7. **"Cancel edit" still wraps at a 320px viewport**, by 2.2px, and so do the other buttons in
    its row. 320px is the original iPhone SE and iPhones in Display Zoom; iOS 26 devices are
    375px or wider otherwise. Not fixed: closing 2.2px means changing a gap, a font size or
    the screen's side padding, and none of those was asked for.
+8. **Edit, Cancel edit and Send are partly or fully covered by the keyboard while editing.**
+   Observed by the user on an iPhone with a long draft, with the app added to the home
+   screen: with the keyboard open in the `editing` state, Edit and Cancel edit end up under
+   the keyboard and Send is partly covered by the keyboard's accessory bar (the chevrons and
+   the checkmark). With very short drafts a smaller part is covered; that was reported, not
+   measured. In a Safari tab the buttons sit above the keyboard but are covered by Safari's
+   address bar and the accessory bar. The checkmark on the accessory bar closes the
+   keyboard and frees the buttons. The cause is the `100dvh` column, which the keyboard does
+   not shrink; the 40vh text cap makes it worse but is not the whole cause. **Accepted for
+   now and to be reconsidered at a later stage**, see the 10-02 row in the decision log. It
+   relaxes the brief's requirement that Send, Edit and Cancel stay usable with the keyboard
+   open. Directions, all unverified ideas and not decisions: the screen height following
+   `window.visualViewport`, as a spike first; the controls moving above the editor while
+   editing; and the `interactive-widget` viewport setting, whose behaviour in iOS Safari
+   has not been checked.
 
 ---
 
@@ -607,6 +637,19 @@ have been argued over first.
 | 09-30 | you | Buttons' horizontal padding is 16px, down from 32px (`padding: var(--size-16)`) | On an iPhone, "Cancel edit" did not fit its half-width button: the label wrapped onto two lines and, since the two buttons in a row are always the same height, both grew from 62.5px to 85px. The same happened to Edit, and to Try again and End session in the error row. Reproduced before changing anything, by loading the app in iframes of iPhone widths: 85px at 320, 375 and 390px, 62.5px only at 430px. After: 62.5px at 360, 375, 390 and 430px. The room left in "Cancel edit" is 14.3px at 375px and 6.8px at 360px, 21.8px at 390px. The buttons' width comes from the layout, not from their content, so the tap area is unchanged. **Still wraps at 320px**, short by 2.2px; see open question 7. |
 | 09-30 | you | Picker labels and the level select are semibold (`--font-weight-label`), the open option list regular | Reported as wrong. Cause: the original's Baloo was only ever available at 600 and 700, so its inherited 400 rendered as 600, while next/font gives a true 400. The select follows the original's `SelectBox`, which is semibold closed and regular in the list. The original's `:checked` colouring of that list was left out: weights were the question, and it would be a second white-on-`--color-bg-secondary`. |
 | 09-30 | agent | In forced-colours mode the selected AI/Me option and the selected language card are `Highlight`/`HighlightText` | Found in review, answering the question the forced-colours row above left open. The forced-colours mode swaps the blue fill, tint and border for Canvas and CanvasText, so a selected option looked like the others once focus left the group. System colours are not swapped, so both use them; on the AI/Me toggle the sliding pill is `Highlight` too, and the option paints itself only in the baseline without anchor positioning. **First version was wrong, seen in Jaron's screenshot:** the fill was right but the label sat in a white box, white text on white. The browser paints a Canvas backplate behind text in forced-colours mode; `forced-color-adjust: none` on the two selected elements removes it. **Then checked again by Jaron in forced-colours mode: white text on the dark purple fill, on both controls.** The mode cannot be entered from the tooling, so that check was his. |
+| 09-30 | you | Conversation text carries `lang` from `LANGUAGES[…].htmlLang` (Norwegian is `nb`), resolved once in `LanguageBuddy` and passed down as `conversationLang` | Screen readers pick the voice from `lang`, and `<html lang="en">` made a Norwegian bubble read with an English voice. It sits on the text itself, not on the thread, so the speaker label and the "Listening…" placeholder (`lang="en"`) stay English. Passed as a prop, not context, since the state context was removed on purpose. The `lang="en"` on the placeholder is Jaron's refinement of the agent's proposal. |
+| 09-30 | you | The draft editor turns off `spellCheck`, `autoCorrect` and `autoCapitalize` | The text is in the practice language, not the keyboard's, so iOS corrections and red underlines work against the user. Not checked on a device yet. |
+| 09-30 | you | `ConversationControls` split into `ComposingControls`, `ErrorControls` and `IdleControls`, each using `useSessionDispatch()`; it stays as a switch that takes no callbacks | Nine callback props made one component of three, and every new concern had to be threaded through all of them. `ConversationScreen` no longer touches dispatch. The `Extract` types for the three groups live in `session-reducer.ts` (Jaron's choice over local types, so the list of composing states is defined next to the union). The `.error*` styles moved to `error-controls.module.css`. |
+| 09-30 | agent | `composedTextOf(turnState)` in the reducer file is the one definition of "the text being composed" | It was worked out twice, in `ConversationScreen` for Send and in the controls for the button's `disabled`. The reducer's own blank check on `USER_TURN_SENT` stays; so does the one in `ComposingControls`. |
+| 09-30 | agent | `composedTextOf` takes a `ComposingTurnState` and has no `default` branch | On the reviewer's suggestion. It took any `TurnState` and returned `""` for the rest, so a fourth composing state would have silently given empty text and a permanently disabled Send. With the narrowed parameter, a state added to `ComposingTurnState` without a case fails `tsc` (the function no longer returns on every path). Verified by deleting a case. |
+| 10-01 | agent | The text of the live transcript, the settled draft and the editor is capped at `max-height: 40vh` and scrolls inside its bubble; the control bar itself has no cap | Found in review: a long transcript, draft or edit grew the bar until the buttons and the thread were pushed off the screen. The cap itself was the agent's proposal, first as a cap on the whole control bar; **Jaron changed that to a cap on the text only and chose the 40vh.** The cap sits on the text, not the bar, so the frame (padding, corner, focus ring) is never inside the scrolling region and the buttons stay in view; the bar grows with the capped text plus the buttons. All three share the cap because they swap places without the text being allowed to jump. `vh`, not `dvh`, deliberately: the cap does not follow the keyboard or the collapsing URL bar. Built as one `BubbleText` span (made block by CSS) in `bubble.tsx`. Measured in desktop Chrome at a 911px viewport, with a long draft inserted programmatically: text 364px, bar 575px, thread 336px. Not tested on an iPhone. |
+| 10-01 | agent | While `listening`, the live transcript follows its newest words, for as long as the user has not scrolled away from the bottom; scrolling back to the bottom resumes following | Proposed in review and approved by Jaron. With the text capped, the newest words would otherwise fall below the edge. "At the bottom" is within 4px of it, an agent's reading of the decision, as scroll positions are fractional on high-density screens. The flag changes only on scroll events and the scroll runs in a layout effect keyed on the transcript's words, so a re-render without new words does not scroll. **Logic only, not exercised:** the dev stepper's transcript never grows, so neither following, stopping nor resuming has been seen to work. Not tested on an iPhone. |
+| 10-01 | agent | The settled draft and the editor start scrolled to the end of their text | Proposed in review and approved by Jaron. The draft replaces a live transcript the user was reading at the end of, and must not jump when recording stops; the editor puts the caret at the end, which for a long draft is below the fold of the capped text. Both are set in a layout effect on mount, so neither is seen at the top for a frame, and neither follows anything afterwards. Caret-while-typing in a long editor was tested with real typing by Jaron in desktop Chrome, where it works. The scroll-on-entry itself has not been seen with a long draft, as the dev stepper's draft is one line. Not tested on an iPhone. |
+| 10-01 | you | Landscape phones are not supported, so the capped text has no minimum height | At 40vh the text region can shrink to nothing on a short viewport: the composing bar's other parts (padding, Send, the Edit/Cancel row, gaps) come to roughly 180–215px, so below about 450–540px of viewport height little or no room is left for text. Estimated from the layout, not measured on a device. Decided as not worth handling rather than left open. |
+| 10-02 | you | With the keyboard open in `editing`, Edit, Cancel edit and Send being covered on an iPhone is accepted for now, to be reconsidered at a later stage | Observed by the user on an iPhone with a long draft, as a home-screen app and in a Safari tab. As a home-screen app, Edit and Cancel edit end up under the keyboard and Send is partly covered by the keyboard's accessory bar; with very short drafts a smaller part is covered (reported, not measured). In a Safari tab the buttons are above the keyboard but covered by Safari's address bar and the accessory bar. The cause is the `100dvh` column, which the keyboard does not shrink, not only the 40vh text cap; the checkmark on the accessory bar closes the keyboard and frees the buttons. Options put to the user in review: a `visualViewport`-based height as a spike, the buttons above the editor while editing, or accepting it. The user chose to accept. This **relaxes the brief's requirement** that Send, Edit and Cancel stay usable with the keyboard open, and contradicts the Stage 1 line saying Send stays reachable with the keyboard open. Open question 8 lists the directions to revisit. |
+| 10-02 | you | The whitespace between two spoken words gets the read-along highlight too, so the band is continuous; a `HIGHLIGHT_SPACES` constant in `highlighted-text.tsx` stays as the switch | Found in review: the highlight left a gap between spoken words, which had never been a deliberate choice, since only word tokens were marked. Jaron asked for a version with the spaces highlighted, compared both by flipping `HIGHLIGHT_SPACES`, and chose `true`. The constant stays on purpose so this can be reconsidered; `false` gives the earlier behaviour, words only. A whitespace token is marked when the words before and after it are both spoken, so the whitespace after the last spoken word stays unmarked until the next word is spoken. The existing `spokenWord` style is reused. Verified in desktop Chrome by element geometry, not screenshots: 4 spoken words give 7 highlighted spans, and a space at a line end has zero width, so it leaves no stub. **Not checked:** a whitespace token containing a newline, and iOS. |
+| 10-02 | agent | The top safe-area inset is handled: `--safe-top` (`env(safe-area-inset-top, 0px)`) in `globals.css`, applied as top padding of the setup screen and of the conversation screen | Found in review: `viewport-fit=cover` is set but only the bottom inset existed, so in the home-screen app on an iPhone the page runs under the status bar (the user's screenshot shows thread text passing under it, and the setup header, 24px from the top, would very likely sit under a notch or Dynamic Island; an estimate, not seen). Proposed in review and approved by Jaron. The setup screen's top padding is `calc(var(--size-24) + var(--safe-top))`. The conversation screen gets `padding-top: var(--safe-top)` on `.screen` itself, not in the thread, so the thread's scroll area starts below the status bar and scrolled text never passes under it; it counts inside the 100dvh. The thread's own padding and its auto-scroll are untouched. Landscape is not supported, so there are no side insets. Checked in desktop Chrome, where the inset is 0 and nothing moved; with a temporary `--safe-top: 47px` set in the console, the setup header moved from 24px to 71px and the conversation thread started 47px lower, with the control bar unchanged. **Checked by Jaron on an iPhone with a low status bar (not a notched one), no problem reported; not tested on a notched iPhone or a Dynamic Island device.** It is not known whether that was the home-screen app or a Safari tab. |
+| 10-02 | you | The contrast of control borders is knowingly accepted: language cards, level select and starter toggle use `--color-border-input` at about 1.48:1 on white | Found in review: WCAG 1.4.11 asks 3:1 for the boundary of a control, and `--color-border-input` (`--color-gray-100`) on white is about 1.48:1, or about 1.36:1 against the page colour `--color-gray-50`. Computed from the oklch token values with the standard sRGB conversion, not measured on a screen. The values come from the existing Language Buddy design system (decision 09-28), the same way the 4.05:1 and 3.16:1 text pairs in open question 5 do. The selected states pass: the pink border at 4.05:1 and the blue pill at 3.16:1. Open question 5, which covers text pairs, now mentions this. |
 
 ## Keeping the experiment honest
 

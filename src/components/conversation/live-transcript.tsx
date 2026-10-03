@@ -1,10 +1,22 @@
+"use client";
+
+import { useLayoutEffect, useRef } from "react";
+
 import type { LiveTranscript as LiveTranscriptValue } from "@/lib/session-reducer";
 
-import { Bubble } from "./bubble";
+import { Bubble, BubbleText } from "./bubble";
 import styles from "./live-transcript.module.css";
+
+/**
+ * How far from the bottom the text can be and still count as "at the bottom". Scroll
+ * positions are fractional on high-density screens, so an exact comparison would stop
+ * following for no reason the user can see.
+ */
+const FOLLOW_TOLERANCE_PX = 4;
 
 type LiveTranscriptProps = {
   transcript: LiveTranscriptValue;
+  conversationLang: string;
 };
 
 /**
@@ -14,16 +26,55 @@ type LiveTranscriptProps = {
  *
  * `aria-live="polite"` rather than `assertive`: this updates several times a second
  * and should not interrupt.
+ *
+ * The text is capped in height (see BubbleText), so a long transcript scrolls. It
+ * follows the newest words for as long as the user has not scrolled away from the
+ * bottom; scrolling up stops that, and scrolling back down resumes it.
  */
-export function LiveTranscript({ transcript }: LiveTranscriptProps) {
+export function LiveTranscript({
+  transcript,
+  conversationLang,
+}: LiveTranscriptProps) {
   const nothingHeardYet = !transcript.finalized && !transcript.interim;
+
+  const textRef = useRef<HTMLSpanElement | null>(null);
+  const followingTheNewestWordsRef = useRef(true);
+
+  function handleScroll() {
+    const text = textRef.current;
+    if (!text) {
+      return;
+    }
+
+    const distanceFromBottom =
+      text.scrollHeight - text.clientHeight - text.scrollTop;
+    followingTheNewestWordsRef.current =
+      distanceFromBottom <= FOLLOW_TOLERANCE_PX;
+  }
+
+  // Keyed on the words themselves, not on the transcript object, so a re-render that
+  // brings no new words does not scroll. Before paint, so the newest words are never
+  // seen below the edge for a frame. Growth does not fire a scroll event, so the flag
+  // above only changes when the user (or this effect) actually moves the text.
+  useLayoutEffect(() => {
+    const text = textRef.current;
+    if (!text || !followingTheNewestWordsRef.current) {
+      return;
+    }
+
+    text.scrollTop = text.scrollHeight;
+  }, [transcript.finalized, transcript.interim]);
 
   return (
     <Bubble author="user" className={styles.listening} aria-live="polite">
       <span className={styles.listeningIndicator} aria-hidden="true" />
-      <span>
+      <BubbleText ref={textRef} lang={conversationLang} onScroll={handleScroll}>
         {nothingHeardYet ? (
-          <span className={styles.placeholder}>Listening…</span>
+          // The placeholder is UI text, not recognised speech: back to the page's
+          // language (see <html lang> in layout.tsx).
+          <span className={styles.placeholder} lang="en">
+            Listening…
+          </span>
         ) : (
           <>
             {transcript.finalized}
@@ -35,7 +86,7 @@ export function LiveTranscript({ transcript }: LiveTranscriptProps) {
             )}
           </>
         )}
-      </span>
+      </BubbleText>
     </Bubble>
   );
 }

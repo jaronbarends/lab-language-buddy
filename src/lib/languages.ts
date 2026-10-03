@@ -10,6 +10,8 @@ type Language = {
   promptName: string;
   /** Deepgram's `language` query param for the nova-2 model. */
   deepgram: string;
+  /** BCP 47 tag for the `lang` attribute; separate from `deepgram`, which is a vendor param. */
+  htmlLang: string;
 };
 
 // Flags deliberately aren't here — see src/components/ui/flag-icon.tsx. They're a
@@ -28,36 +30,42 @@ export const LANGUAGES: Record<LanguageCode, Language> = {
     label: "Dutch",
     promptName: "Dutch",
     deepgram: "nl",
+    htmlLang: "nl",
   },
   fr: {
     code: "fr",
     label: "French",
     promptName: "French",
     deepgram: "fr",
+    htmlLang: "fr",
   },
   de: {
     code: "de",
     label: "German",
     promptName: "German",
     deepgram: "de",
+    htmlLang: "de",
   },
   it: {
     code: "it",
     label: "Italian",
     promptName: "Italian",
     deepgram: "it",
+    htmlLang: "it",
   },
   no: {
     code: "no",
     label: "Norwegian",
     promptName: "Norwegian (Bokmål)",
     deepgram: "no",
+    htmlLang: "nb",
   },
   es: {
     code: "es",
     label: "Spanish",
     promptName: "Spanish",
     deepgram: "es",
+    htmlLang: "es",
   },
 };
 

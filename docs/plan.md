@@ -727,6 +727,7 @@ have been argued over first.
 | 10-03 | agent | The Gemini schema and call moved to `api/chat/gemini-chat.ts` (`askGemini`) | The route is left with request, response and errors, and the call can be replaced when testing the failure paths. |
 | 10-03 | agent | The mock route says why it answers 404, and `.env.example` notes that the flag only works under `next dev` | An empty 404 gave no hint that the mock was switched off by the mode, not by a missing route. |
 | 10-03 | agent | The dev stepper forcing `aiThinking` on an AI turn now ends in `FAILED` instead of sending a request | There is no user turn to answer, and the request that used to be sent had no input. |
+| 10-03 | you | A request the browser aborts stays in the server log as "Chat request failed"; aborts get no special case | Passing `request.signal` to the Gemini call (see that row) makes every abort throw in `askGemini`: leaving `aiThinking`, the client deadline, and in dev Strict Mode's double effect. The server cannot tell these apart or why the client left. Skipping the log for `request.signal.aborted` was offered and is not worth doing now. |
 
 ## Keeping the experiment honest
 

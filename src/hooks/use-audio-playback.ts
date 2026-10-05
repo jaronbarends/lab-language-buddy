@@ -3,6 +3,11 @@
 import { useEffect, type Dispatch } from "react";
 
 import type { SessionAction, SessionState } from "@/lib/session-reducer";
+import {
+  countSpokenWords,
+  estimateWordTimings,
+  type WordTiming,
+} from "@/lib/word-timing";
 
 // ~2 ms of silence; only used to unlock the shared audio element inside a user gesture.
 const SILENT_AUDIO_SRC =
@@ -33,8 +38,8 @@ export function unlockAudio(): void {
 
 /**
  * The spoken half of the AI's turn: while the turn state is `aiSpeaking`, fetch the
- * audio for that turn, play it, and answer with `AI_SPEECH_FINISHED` or
- * `AI_SPEECH_FAILED`. A failure is not an error state: the text is already on screen,
+ * audio for that turn, play it, report how many words have been spoken as it goes
+ * (`AI_SPEECH_PROGRESSED`), and answer with `AI_SPEECH_FINISHED` or `AI_SPEECH_FAILED`. A failure is not an error state: the text is already on screen,
  * so the reducer degrades to text-only and this logs it.
  *
  * Leaving `aiSpeaking` (Reply cuts the AI off) ends everything in the effect cleanup:
@@ -84,6 +89,27 @@ export function useAudioPlayback(
         }
 
         objectUrl = URL.createObjectURL(speech);
+
+        // The highlight follows `currentTime` against estimated word start times (see
+        // `estimateWordTimings` for why they are estimates). The timings are made on
+        // the first tick instead of on `loadedmetadata`, because Safari can report an
+        // `Infinity` duration until later and `estimateWordTimings` refuses that: until
+        // the duration is known there is simply no highlight yet.
+        let wordTimings: WordTiming[] | null = null;
+        audio.ontimeupdate = () => {
+          if (!wordTimings) {
+            if (!Number.isFinite(audio.duration)) {
+              return;
+            }
+            wordTimings = estimateWordTimings(speakingText, audio.duration);
+          }
+
+          dispatch({
+            type: "AI_SPEECH_PROGRESSED",
+            turnId,
+            spokenWordCount: countSpokenWords(wordTimings, audio.currentTime),
+          });
+        };
         audio.onended = () => dispatch({ type: "AI_SPEECH_FINISHED", turnId });
         audio.onerror = () => fail(new Error("Audio playback failed"));
         audio.src = objectUrl;
@@ -98,6 +124,7 @@ export function useAudioPlayback(
 
     return () => {
       abortController.abort();
+      audio.ontimeupdate = null;
       audio.onended = null;
       audio.onerror = null;
       audio.pause();

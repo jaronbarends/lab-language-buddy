@@ -171,7 +171,7 @@ so a page reload starts from the defaults again.
 ├── tsconfig.json                 exclude: ["node_modules", "spikes"]
 ├── eslint.config.mjs             globalIgnores(["spikes/**"])
 ├── resources/screenshots-reference/
-├── spikes/ai-voice-demo/         reference spike, untouched
+├── spikes/ai-voice-demo/         reference spike, untouched apart from one added note in findings.md
 └── src/
     ├── app/                      layout.tsx, page.tsx, globals.css
     │   ├── reset.css             carried over from the existing app — see below
@@ -377,8 +377,8 @@ Built in, not retrofitted.
    The AI reply plays several awaited fetches later, by which time the gesture has expired.
    *Start chat* is now a form's submit button, so the unlock belongs in that button's
    `onClick`, not in the form's `onSubmit`: the click always fires first, and pressing
-   Enter makes the browser fire a click on the default button too. **Not yet verified on an
-   iPhone**; it comes up with the audio in stage 3.
+   Enter makes the browser fire a click on the default button too. Verified on an iPhone in
+   stage 3: the AI's audio plays without a second tap.
 3. **Layout for iOS chrome.** A flex column at `100dvh` rather than a `position: fixed`
    bar — a fixed element is expected to drift when the keyboard opens and the URL bar
    collapses (the intent; not verified) — plus `viewport-fit=cover` and
@@ -501,7 +501,10 @@ Branch `stage/3-voice`, built in three steps with a check-in after each: (1) liv
 Verified by the user, on desktop and on an iPhone: step 1, and step 2 with all three TTS
 providers and with both voice genders; on the iPhone the audio plays without a second tap.
 With a deliberately wrong `AZURE_SPEECH_API_KEY` the AI's text stays on screen, nothing is
-spoken, and the error shows only in the console: the text-only fallback works.
+spoken, and the error shows only in the console: the text-only fallback works. Step 3: the
+highlight follows the audio on desktop and on an iPhone, and stops when Reply cuts the AI
+off. A live transcription of more than 20 seconds comes out right. **Not tried on a device:**
+denying the microphone on an iPhone (on desktop it lands in the recoverable error).
 
 1. `/api/stt/token`, `use-live-transcription`, interim/final rendering wired to the real
    transcript.
@@ -752,6 +755,8 @@ have been argued over first.
 | 10-03 | you | `ELEVENLABS_VOICE_ID` is a constant in `elevenlabs.ts`, not an environment variable | A voice ID is not a secret, and the voice belongs with the other voice tables. Female is Bella and male is Chris, both default voices that the free plan can use. |
 | 10-03 | agent | `NEXT_PUBLIC_USE_MOCK_TTS` is read once in `LanguageBuddy` and passed as `enabled` to both `useAudioPlayback` and `useMockDriver` | Exactly one of the two plays the AI's turn, and the two flags can't disagree. It is not dev-only like the chat mock, since it needs no route. |
 | 10-03 | agent | A TTS failure (fetch, playback, or audio never unlocked) is logged in the browser and degrades to text-only via `AI_SPEECH_FAILED` | As the state model already said. The server logs the provider's error and answers with a generic 500, and a bad `TTS_PROVIDER` is in that log with the valid names. |
+| 10-05 | agent | The word timings are made on the first `timeupdate` with a finite `audio.duration`, not on `loadedmetadata` as in the spike | Safari can report `Infinity` until later and `estimateWordTimings` throws on it. Until the duration is known there is no highlight, instead of an error. |
+| 10-05 | you | `spikes/ai-voice-demo/findings.md` gets one added note saying live STT was verified on iPhone Safari / iOS 26, and why; nothing else in the spike changes | Planned in stage 3 item 4. As written it read as though only the Node script ever proved it, which cost a wrong risk assessment in this plan. |
 
 ## Keeping the experiment honest
 

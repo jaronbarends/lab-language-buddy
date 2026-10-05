@@ -23,7 +23,7 @@ import {
 /** Rough pace of synthesised speech; only has to look plausible. */
 const SPOKEN_MS_PER_WORD = 240;
 
-export function useMockDriver(
+export function useMockTts(
   state: SessionState,
   dispatch: Dispatch<SessionAction>,
   enabled: boolean,

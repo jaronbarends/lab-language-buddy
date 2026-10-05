@@ -8,7 +8,7 @@ import { SetupScreen } from "@/components/setup-screen/setup-screen";
 import { useChatDriver } from "@/hooks/use-chat-driver";
 import { useAudioPlayback } from "@/hooks/use-audio-playback";
 import { useLiveTranscription } from "@/hooks/use-live-transcription";
-import { useMockDriver } from "@/hooks/use-mock-driver";
+import { useMockTts } from "@/hooks/use-mock-tts";
 import { SessionDispatchProvider } from "@/hooks/use-session-dispatch";
 import { LANGUAGES } from "@/lib/languages";
 import {
@@ -32,7 +32,7 @@ export function LanguageBuddy() {
   // inline it at build time; the TTS mock is client-side because it has no audio.
   const ttsIsMocked = process.env.NEXT_PUBLIC_USE_MOCK_TTS === "true";
   useAudioPlayback(state, dispatch, !ttsIsMocked);
-  useMockDriver(state, dispatch, ttsIsMocked);
+  useMockTts(state, dispatch, ttsIsMocked);
 
   function handleStart(config: SessionConfig) {
     dispatch({ type: "START", config });

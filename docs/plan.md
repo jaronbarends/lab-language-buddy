@@ -196,7 +196,7 @@ so a page reload starts from the defaults again.
     │   ├── use-live-transcription.ts  mic + Deepgram socket while `listening`
     │   ├── use-audio-playback.ts  `/api/tts` + the shared `<audio>` element in `aiSpeaking`,
     │   │                         and `unlockAudio()` for the click handlers
-    │   └── use-mock-driver.ts    fakes TTS playback; on when `NEXT_PUBLIC_USE_MOCK_TTS=true`
+    │   └── use-mock-tts.ts       fakes TTS playback; on when `NEXT_PUBLIC_USE_MOCK_TTS=true`
     └── lib/
         ├── session-reducer.ts    the state machine
         ├── languages.ts          provider-neutral language registry
@@ -450,7 +450,7 @@ One git branch per stage, off the previous one, with a check-in between.
 
 ### Stage 1 — Static screens, mocked data — **done**
 
-Branch `stage/1-static-ui`. No network calls at all; `use-mock-driver.ts` dispatches the
+Branch `stage/1-static-ui`. No network calls at all; `use-mock-driver.ts` (since renamed `use-mock-tts.ts`) dispatches the
 same actions the real Gemini, TTS and Deepgram drivers will, on roughly the same timings,
 so the UI and the reducer are exercised for real and only the source of events is fake.
 
@@ -761,6 +761,7 @@ have been argued over first.
 | 10-03 | agent | A TTS failure (fetch, playback, or audio never unlocked) is logged in the browser and degrades to text-only via `AI_SPEECH_FAILED` | As the state model already said. The server logs the provider's error and answers with a generic 500, and a bad `TTS_PROVIDER` is in that log with the valid names. |
 | 10-05 | agent | The word timings are made on the first `timeupdate` with a finite `audio.duration`, not on `loadedmetadata` as in the spike | Safari can report `Infinity` until later and `estimateWordTimings` throws on it. Until the duration is known there is no highlight, instead of an error. |
 | 10-05 | you | `spikes/ai-voice-demo/findings.md` gets one added note saying live STT was verified on iPhone Safari / iOS 26, and why; nothing else in the spike changes | Planned in stage 3 item 4. As written it read as though only the Node script ever proved it, which cost a wrong risk assessment in this plan. |
+| 10-05 | you | `use-mock-driver.ts` and `useMockDriver` renamed to `use-mock-tts.ts` and `useMockTts` | The hook only fakes TTS playback since stage 3; recognition and chat have their own real drivers. |
 
 ## Keeping the experiment honest
 

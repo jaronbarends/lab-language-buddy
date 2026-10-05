@@ -26,15 +26,15 @@ type HighlightedTextProps = {
  * fair complaint even when the map happens to be synchronous. Here the counter is local
  * to the loop and nothing captures it.
  */
-function markSpokenWords(
+function annotateSpokenTokens(
   text: string,
   spokenWordCount: number,
-): (TextToken & { tokenIsSpokenWord: boolean })[] {
+): (TextToken & { tokenIsSpoken: boolean })[] {
   let wordIndex = 0;
   const tokens = tokenizeText(text);
   const wordCount = tokens.filter((token) => token.tokenIsWord).length;
 
-  const markedTokens: (TextToken & { tokenIsSpokenWord: boolean })[] = [];
+  const annotatedTokens: (TextToken & { tokenIsSpoken: boolean })[] = [];
 
   for (const token of tokens) {
     // For whitespace, `wordIndex` is the index of the word after it: spoken means the
@@ -44,7 +44,7 @@ function markSpokenWords(
       !token.tokenIsWord &&
       wordIndex >= 1 &&
       wordIndex < Math.min(spokenWordCount, wordCount);
-    const tokenIsSpokenWord =
+    const tokenIsSpoken =
       whitespaceIsBetweenSpokenWords ||
       (token.tokenIsWord && wordIndex < spokenWordCount);
 
@@ -52,10 +52,10 @@ function markSpokenWords(
       wordIndex += 1;
     }
 
-    markedTokens.push({ ...token, tokenIsSpokenWord });
+    annotatedTokens.push({ ...token, tokenIsSpoken });
   }
 
-  return markedTokens;
+  return annotatedTokens;
 }
 
 /**
@@ -71,8 +71,8 @@ export function HighlightedText({
 }: HighlightedTextProps) {
   return (
     <>
-      {markSpokenWords(text, spokenWordCount).map((token, tokenIndex) => {
-        if (!token.tokenIsSpokenWord) {
+      {annotateSpokenTokens(text, spokenWordCount).map((token, tokenIndex) => {
+        if (!token.tokenIsSpoken) {
           return token.text;
         }
 

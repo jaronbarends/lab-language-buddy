@@ -51,7 +51,7 @@ Safari on iPhone as a hard requirement; no persistence.
 | Conversation history | Gemini `previous_interaction_id` chaining | History lives server-side at Google; we send only the new utterance, plus the model, system instruction and response format, which go with every call. The client keeps its own array for rendering, and the chain id is read from it: each AI turn carries its `interactionId`. |
 | Chat response shape in stage 2 | `{ interactionId, reply }` — no per-turn `correction` | Whether feedback is per-turn is exactly the stage 4 question. Shipping stage 2 without it keeps that open instead of defaulting by accident. |
 | TTS providers | All three from the spike: Azure (default), Google, ElevenLabs | Three implementations stress the interface in a way two don't — see the voice-table row. |
-| Provider interface | `synthesize(text, language)` | The spike hardcoded `nb-NO`. Language has to cross the boundary, and each provider resolves it differently. |
+| Provider interface | `synthesize({ text, language, gender }, signal)` | The spike hardcoded `nb-NO`. Language has to cross the boundary, and each provider resolves it differently. Gender joined it on 10-03, see the log. |
 | Voice tables | Inside each provider module, not in the shared language registry | Azure and Google each need a per-language voice name; ElevenLabs' `eleven_flash_v2_5` is multilingual and takes none. A shared column would put two providers' private config in a table the client imports, with nowhere sensible for the third case. |
 | Flags | `flag-icons`, importing only the six SVGs needed | Emoji flags render as bare country letters on Windows. Importing the package stylesheet would pull in all ~260 flags. |
 | Errors | Recoverable, and the way back depends on where it failed: a failed AI call is retried, a failed recording returns to the user | The spike dead-ended and told the user to reload, throwing away the conversation over what is usually a blip. The error state carries `from`, because "Try again" after a failed AI call must retry it — the user's turn is already sent. |
@@ -97,8 +97,12 @@ re-picking the same language. The turns are discarded.
 
 - **`awaitingUser`** — one button, enabled. Labelled *Start conversation* when there are
   no turns yet, *Reply* otherwise.
-- **`listening`** — mic open, live transcript rendering `{ finalized, interim }`, with a
-  dot marking that the microphone is live.
+- **`listening`** — live transcript rendering `{ finalized, interim }`. Carries
+  `microphoneIsLive`, false on entry and set by `MICROPHONE_STARTED` once the recorder is
+  running and audio goes to Deepgram; until then the bubble says "Preparing mic…" and has
+  no dot, because anything said before that is not heard. The dot marks that the
+  microphone is live. If it is not live within `LIVE_CONNECT_TIMEOUT_MS` (10 s, counted
+  from the moment the permission is granted) the turn ends in `error`.
 - **`reviewing`** — recording stopped, text settled, not yet sent.
 - **`editing`** — the text in a `<textarea>`. Carries `draftBeforeEdit` so *Cancel edit*
   can restore it; that is why it is its own state rather than a flag on `reviewing`.
@@ -171,7 +175,7 @@ so a page reload starts from the defaults again.
 ├── tsconfig.json                 exclude: ["node_modules", "spikes"]
 ├── eslint.config.mjs             globalIgnores(["spikes/**"])
 ├── resources/screenshots-reference/
-├── spikes/ai-voice-demo/         reference spike, untouched
+├── spikes/ai-voice-demo/         reference spike, untouched apart from one added note in findings.md
 └── src/
     ├── app/                      layout.tsx, page.tsx, globals.css
     │   ├── reset.css             carried over from the existing app — see below
@@ -193,9 +197,10 @@ so a page reload starts from the defaults again.
     │   ├── use-session-dispatch.ts dispatch context + `useSessionDispatch`
     │   ├── use-chat-driver.ts    the Gemini round trip in `aiThinking`; picks the real or
     │   │                         the mock route via `NEXT_PUBLIC_USE_MOCK_CHAT`
-    │   └── use-mock-driver.ts    fakes TTS playback and live recognition; the recognition
-    │                             effect is deleted in stage 3, the TTS one stays behind
-    │                             its own mock flag
+    │   ├── use-live-transcription.ts  mic + Deepgram socket while `listening`
+    │   ├── use-audio-playback.ts  `/api/tts` + the shared `<audio>` element in `aiSpeaking`,
+    │   │                         and `unlockAudio()` for the click handlers
+    │   └── use-mock-tts.ts       fakes TTS playback; on when `NEXT_PUBLIC_USE_MOCK_TTS=true`
     └── lib/
         ├── session-reducer.ts    the state machine
         ├── languages.ts          provider-neutral language registry
@@ -205,8 +210,8 @@ so a page reload starts from the defaults again.
         │                         error body
         ├── chat-request.ts       `readChatRequest` and `errorResponse`, shared by both chat routes
         ├── prompt.ts             `buildChatSystemInstruction`, assembled from named sections
-        └── mock-conversation.ts  canned AI lines (mock chat route) and user lines (mock
-                                  recognition, deleted in stage 3)
+        └── mock-conversation.ts  canned AI lines (mock chat route) and sample user lines
+                                  (the dev state stepper)
 ```
 
 `src/app/api/chat/route.ts` and `src/app/api/mock/chat/route.ts` exist since stage 2;
@@ -214,9 +219,13 @@ so a page reload starts from the defaults again.
 the model name and Gemini's `{ reply }` schema, and is server only. `.env.example`
 documents the variables; `.env.local` (not committed) holds the values.
 
-Still to come: `src/app/api/{tts,stt/token}/route.ts`,
-`src/lib/tts/{types,index,azure,google,elevenlabs}.ts` and
-`src/hooks/{use-audio-playback,use-live-transcription}.ts`.
+`src/app/api/stt/token/route.ts` and `src/hooks/use-live-transcription.ts` exist since
+stage 3, step 1; the token mint (`mintLiveToken`) sits in the route file.
+
+Stage 3, step 2 adds `src/app/api/tts/route.ts`, `src/lib/tts/{types,index,azure,google,elevenlabs}.ts`
+(`index.ts` holds `getTtsProvider()` and `VOICE_GENDER`, the one switch between female and
+male voices) and `src/hooks/use-audio-playback.ts` (the playback effect plus `unlockAudio()`,
+called from the Start chat, Send and Reply clicks).
 
 **The language registry holds only provider-neutral data** — `code`, `label`,
 `promptName`, `deepgram`, `htmlLang` (the BCP 47 tag for the `lang` attribute). Flags live in `flag-icon.tsx` and voices in each TTS provider,
@@ -372,8 +381,8 @@ Built in, not retrofitted.
    The AI reply plays several awaited fetches later, by which time the gesture has expired.
    *Start chat* is now a form's submit button, so the unlock belongs in that button's
    `onClick`, not in the form's `onSubmit`: the click always fires first, and pressing
-   Enter makes the browser fire a click on the default button too. **Not yet verified on an
-   iPhone**; it comes up with the audio in stage 3.
+   Enter makes the browser fire a click on the default button too. Verified on an iPhone in
+   stage 3: the AI's audio plays without a second tap.
 3. **Layout for iOS chrome.** A flex column at `100dvh` rather than a `position: fixed`
    bar — a fixed element is expected to drift when the keyboard opens and the URL bar
    collapses (the intent; not verified) — plus `viewport-fit=cover` and
@@ -445,7 +454,7 @@ One git branch per stage, off the previous one, with a check-in between.
 
 ### Stage 1 — Static screens, mocked data — **done**
 
-Branch `stage/1-static-ui`. No network calls at all; `use-mock-driver.ts` dispatches the
+Branch `stage/1-static-ui`. No network calls at all; `use-mock-driver.ts` (since renamed `use-mock-tts.ts`) dispatches the
 same actions the real Gemini, TTS and Deepgram drivers will, on roughly the same timings,
 so the UI and the reducer are exercised for real and only the source of events is fake.
 
@@ -489,6 +498,21 @@ state with its Try again button. **Not verified:** iPhone Safari (this stage add
 device-specific), and that Try again succeeds once the key is right again.
 
 ### Stage 3 — Deepgram live STT + TTS + highlighting
+
+Branch `stage/3-voice`, built in three steps with a check-in after each: (1) live STT,
+(2) TTS, (3) highlighting and the `findings.md` note. Step 1 is the first item below.
+
+Verified by the user, on desktop and on an iPhone: step 1, and step 2 with all three TTS
+providers and with both voice genders; on the iPhone the audio plays without a second tap.
+With a deliberately wrong `AZURE_SPEECH_API_KEY` the AI's text stays on screen, nothing is
+spoken, and the error shows only in the console: the text-only fallback works. Step 3: the
+highlight follows the audio on desktop and on an iPhone, and stops when Reply cuts the AI
+off. A live transcription of more than 20 seconds comes out right. Denying the microphone
+lands in the recoverable error with its message, on desktop and on an iPhone (tried in a
+private Safari tab, since the denial is remembered per origin and would otherwise have to
+be undone in the settings). **Not tried on a device:** the microphone stopping during a
+recording (a call or another interruption that ends its track). Disconnecting a headset
+does not do it: iOS then switches to the phone's own microphone and the track continues.
 
 1. `/api/stt/token`, `use-live-transcription`, interim/final rendering wired to the real
    transcript.
@@ -621,7 +645,21 @@ Per stage, in this order:
    conversation's owner: nothing binds it to a caller or session, and all calls share one
    API key, so conversation isolation is an unverified assumption. There is no
    authentication or rate limit; the only bounds are 5000 characters of input and 200 of
-   id. Decide the protection before the first public deployment.
+   id. Since stage 3 the same holds for two more endpoints, each spending on a paid
+   account: `/api/stt/token` hands anyone a Deepgram token (short-lived, but a new one on
+   every call, and it opens a live-transcription socket on our account), and `/api/tts`
+   synthesises up to 1500 characters per call with whichever provider `TTS_PROVIDER`
+   names. Decide the protection before the first public deployment.
+10. **Buffering the audio while the Deepgram socket opens.** Raised in the stage 3 review
+    (the "Preparing mic…" point). The recorder starts only once the socket is open, so
+    nothing said before then is recorded, and the screen shows "Preparing mic…" until it
+    does. The alternative is to start `MediaRecorder` right after `getUserMedia`, keep the
+    chunks in order (the first one carries the WebM header) and send them as soon as the
+    socket opens: no words lost and no wait before speaking. It costs code for the
+    ordering and for flushing faster than real time, and the first transcript arrives in
+    a burst. Not built yet. Measured on an iPhone after the stage 3 review: setting up the
+    microphone connection takes about 1.5 seconds, which Jaron finds too long, so this is
+    to be built at a later moment.
 
 ---
 
@@ -728,6 +766,31 @@ have been argued over first.
 | 10-03 | agent | The mock route says why it answers 404, and `.env.example` notes that the flag only works under `next dev` | An empty 404 gave no hint that the mock was switched off by the mode, not by a missing route. |
 | 10-03 | agent | The dev stepper forcing `aiThinking` on an AI turn now ends in `FAILED` instead of sending a request | There is no user turn to answer, and the request that used to be sent had no input. |
 | 10-03 | you | A request the browser aborts stays in the server log as "Chat request failed"; aborts get no special case | Passing `request.signal` to the Gemini call (see that row) makes every abort throw in `askGemini`: leaving `aiThinking`, the client deadline, and in dev Strict Mode's double effect. The server cannot tell these apart or why the client left. Skipping the log for `request.signal.aborted` was offered and is not worth doing now. |
+| 10-03 | you | Stage 3 is built in three steps, each with its own commit and check-in: live STT, then TTS, then highlighting plus the `findings.md` note | STT is the riskiest on a phone and replaces the mock recognition, so it shows the iPhone problems first. |
+| 10-03 | agent | `mintLiveToken` lives in `api/stt/token/route.ts` itself, and the route reuses `errorResponse` from `chat-request.ts` | Unlike the Gemini call there is nothing to replace when testing, so a second file would only be indirection. The error body shape is the same for every route. |
+| 10-03 | agent | `use-live-transcription` refuses a recording format that is not webm or ogg, with an error, instead of streaming it | The plan says to read back the real `mimeType`. Deepgram accepts mp4/aac without an error and returns nothing, which would look like a silent user. |
+| 10-03 | agent | Leaving `listening` drops whatever Deepgram has not flushed; no `CloseStream` | The interim words on screen already go into the draft, and a clean flush would need the state to wait for the socket, which Send, Edit and Cancel should not do. |
+| 10-03 | agent | `mockUserLine` and `mockTranscriptAt` stay in `mock-conversation.ts` as sample text for the dev stepper; `wordCountOf` goes | The plan said the user lines went with the mock recognition, but the stepper still uses them. |
+| 10-03 | you | Every provider takes a `gender` and the app has one switch, `VOICE_GENDER` in `lib/tts/index.ts`, set to `"female"` | Jaron wants one gender across all languages and to test both. The route passes it on, so a per-user option later is a field in the request, not a change in the providers. |
+| 10-03 | agent | `synthesize` takes one object `{ text, language, gender }` plus the request's `AbortSignal`, instead of positional arguments | ElevenLabs ignores `language`, which would have left an unused parameter. The signal stops a paid call when the client leaves, as in the chat route. |
+| 10-03 | you | Voices: one per language and gender, GA Neural for Azure, Chirp3-HD `Aoede` (female) and `Charon` (male) for Google | Names checked against both providers' list endpoints on 10-03, not from memory. Azure's Dragon HD voices don't exist for every language and its MAI voices are in preview. Norwegian is `nb-NO` at both providers. |
+| 10-03 | you | The ElevenLabs voices are constants in `elevenlabs.ts` (`VOICE_IDS`, one per gender), not an environment variable | A voice ID is not a secret, and the voice belongs with the other voice tables. Female is Bella and male is Chris, both default voices that the free plan can use. |
+| 10-03 | agent | `NEXT_PUBLIC_USE_MOCK_TTS` is read once in `LanguageBuddy` and passed as `enabled` to both `useAudioPlayback` and `useMockDriver` | Exactly one of the two plays the AI's turn, and the two flags can't disagree. It is not dev-only like the chat mock, since it needs no route. |
+| 10-03 | agent | A TTS failure (fetch, playback, or audio never unlocked) is logged in the browser and degrades to text-only via `AI_SPEECH_FAILED` | As the state model already said. The server logs the provider's error and answers with a generic 500, and a bad `TTS_PROVIDER` is in that log with the valid names. |
+| 10-05 | agent | The word timings are made on the first `timeupdate` with a finite `audio.duration`, not on `loadedmetadata` as in the spike | Safari can report `Infinity` until later and `estimateWordTimings` throws on it. Until the duration is known there is no highlight, instead of an error. |
+| 10-05 | you | `spikes/ai-voice-demo/findings.md` gets one added note saying live STT was verified on iPhone Safari / iOS 26, and why; nothing else in the spike changes | Planned in stage 3 item 4. As written it read as though only the Node script ever proved it, which cost a wrong risk assessment in this plan. |
+| 10-05 | you | `use-mock-driver.ts` and `useMockDriver` renamed to `use-mock-tts.ts` and `useMockTts` | The hook only fakes TTS playback since stage 3; recognition and chat have their own real drivers. |
+| 10-05 | agent | `listening` carries `microphoneIsLive`; `MICROPHONE_STARTED` sets it once the recorder has started, and until then the bubble shows "Preparing mic…" without the dot | Found in the stage 3 review. The recorder starts only in the socket's `onopen`, so words said while the token and the socket were still being set up were lost, while the screen already said "Listening…" with a live dot, against the 09-25 definition of the dot. The wording is Jaron's; the flag and the action were proposed by the agent. |
+| 10-05 | you | Buffering the audio while the socket opens is not built; it is open question 10 | The alternative to the flag. Look at how long the gap is on a device first. |
+| 10-05 | agent | `LIVE_CONNECT_TIMEOUT_MS` (10 s) ends a connect that has not produced a live microphone with `FAILED` and the existing connection message; the clock starts after `getUserMedia` has resolved. No deadline on the TTS fetch | Found in the stage 3 review: token fetch and socket open could hang with no sign. The permission dialog must not count, since the user may sit on it. TTS is left alone because the text is already on screen and Reply works. Jaron chose the 10 s and the TTS omission. |
+| 10-05 | agent | An exception when the recorder starts now ends in `FAILED` like every other failure of the hook | Found in the stage 3 review: it threw inside the socket's `onopen` handler, outside every `try`, and left `listening` open without a message. |
+| 10-05 | agent | Try again calls `unlockAudio()` | Found in the stage 3 review. Retrying a failed AI call ends in the AI speaking, and this click is the gesture. Whether iOS keeps the element unlocked for good is still unknown; harmless either way. |
+| 10-05 | agent | `TTS_PROVIDER` is checked with a type guard on `Object.hasOwn`; Google's response is validated with zod; `TTS_CONTENT_TYPE` is the one definition of the audio type and ElevenLabs asks for `output_format=mp3_44100_128` explicitly; the client types its `/api/tts` body with `TtsRequest` | Found in the stage 3 review. `in` also accepts names like `constructor`, the cast hid that, and the audio type used to live in a comment. The ElevenLabs value is also its documented default, so nothing changes in behaviour. |
+| 10-05 | agent | The dev state stepper gets a "listening (mic not live)" entry and a "speech fails" entry that dispatches `AI_SPEECH_FAILED` | The text-only fallback could only be seen with a real, failing provider. Jaron asked for the first entry. |
+| 10-05 | agent | Comments that named stages or an outside file were rewritten to describe the code as it is | Found in the stage 3 review: they would mislead someone without the plan, the worst being `loadedmetadata` where the code waits for `timeupdate`. |
+| 10-05 | agent | The text of a `/api/tts` request is capped at 1500 characters, down from 2000 | Raised by CodeRabbit on the PR. Google limits a request to 5,000 bytes (its quota page; no separate limit for Chirp 3 HD), and a typographic mark is three bytes in UTF-8, so 2000 characters could exceed it. 1500 stays under it for every provider. A real AI turn is far shorter. |
+| 10-05 | agent | Constructing the Deepgram WebSocket is inside a `try` that ends in `FAILED`, like the recorder start | Raised by CodeRabbit on the PR. The comment on `void connect()` said `connect` handles its own errors, which was untrue for this step. |
+| 10-05 | agent | The recording format is checked, and `MICROPHONE_STARTED` sent, at the recorder's `start` event instead of right after `start()`; the recorder's `error` and an unexpected `stop` end in `FAILED` with "The microphone stopped." | Raised by CodeRabbit on the PR. Without a requested type `mimeType` can be empty until the `start` event, so the early check could reject a browser whose default format works. A recorder also stops by itself when its tracks end (a headset unplugged, an iOS interruption), and nothing noticed. The connect deadline now runs until the `start` event. The wording of the message is Jaron's. |
 
 ## Keeping the experiment honest
 

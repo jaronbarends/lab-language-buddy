@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { ChatIcon } from "@/components/ui/icons";
+import { unlockAudio } from "@/hooks/use-audio-playback";
 import type { CefrLevel } from "@/lib/cefr";
 import type { LanguageCode } from "@/lib/languages";
 import {
@@ -41,12 +42,11 @@ export function SetupScreen({ lastConfig, onStart }: SetupScreenProps) {
     // page reload with the choices in the query string — must never happen.
     event.preventDefault();
 
-    // Stage 3 note: unlocking the shared <audio> element does NOT belong here. It
-    // goes in the submit button's onClick, synchronously, before anything awaits.
-    // That click always fires before this submit, and pressing Enter makes the
-    // browser fire a click on the default button too, so both routes are covered by
-    // a handler that is certainly a user gesture. When the AI starts, its first
-    // spoken reply is several fetches away and iOS will have forgotten the gesture.
+    // Unlocking the shared <audio> element does NOT belong here but in the submit
+    // button's onClick below: that click always fires before this submit, and pressing
+    // Enter makes the browser fire a click on the default button too, so both routes
+    // are covered by a handler that is certainly a user gesture. When the AI starts,
+    // its first spoken reply is several fetches away and iOS will have forgotten it.
     onStart({ language, level, starter });
   }
 
@@ -92,7 +92,12 @@ export function SetupScreen({ lastConfig, onStart }: SetupScreenProps) {
         </fieldset>
 
         <div className={styles.submit}>
-          <Button type="submit" icon={<ChatIcon />} fontSize="large">
+          <Button
+            type="submit"
+            icon={<ChatIcon />}
+            fontSize="large"
+            onClick={unlockAudio}
+          >
             Start chat
           </Button>
         </div>

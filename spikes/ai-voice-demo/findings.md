@@ -157,6 +157,18 @@ scriptje kon geen echte WebM/Opus-audio genereren zonder browser of ffmpeg (geen
 beschikbaar in deze omgeving). Bij de browserintegratie alsnog met echte MediaRecorder-output
 verifiëren.
 
+**Aanvulling (2026-10): live STT is wél op de iPhone geverifieerd — iOS 26, Safari.** Het
+scriptje hierboven bewees alleen de WebSocket-flow; de browserkant is daarna in de spike zelf
+gedraaid en het transcript verscheen progressief. Dat de zin hierboven ("niet letterlijk
+getest") dit niet vermeldt, is een gat in de documentatie, geen gat in het testen. Waarom het
+werkt: Safari 18.4 (maart 2025) voegde WebM/Opus toe aan `MediaRecorder`, dus
+`isTypeSupported('audio/webm;codecs=opus')` is `true` en Safari neemt dezelfde route als
+Chrome. Deepgram herkent die container zelf, dus `encoding` en `sample_rate` blijven weg. Het
+fMP4-pad (MP4/AAC) wordt op deze telefoon dus nooit uitgevoerd. Onder iOS 18.4 zou dat wél
+gebeuren, en MP4/AAC is geen gedocumenteerde Deepgram-streamingcontainer, dus dat faalt dan
+waarschijnlijk stil. Uitweg als dat ooit nodig is: Web Audio `AudioWorklet` naar 16 kHz
+`linear16`, met `&encoding=linear16&sample_rate=16000` — dat is onafhankelijk van de container.
+
 **Blocker gevonden en opgelost: `DEEPGRAM_API_KEY` had geen "Member"-rechten.** Een
 `POST /v1/auth/grant` gaf `403 FORBIDDEN: Insufficient permissions` met de oorspronkelijke
 key — Deepgram vereist minimaal "Member"-rechten op de key voor deze endpoint. Opgelost door

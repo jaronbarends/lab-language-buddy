@@ -42,10 +42,10 @@ export function splitWords(text: string): string[] {
  * of or behind the audio. Judged good enough by ear.
  *
  * Precondition: `durationSeconds` must be finite and not negative. Safari can report
- * `NaN` or `Infinity` for `audio.duration` before the metadata has loaded, and that
+ * `NaN` or `Infinity` for `audio.duration` until the duration is known, and that
  * would turn every start time into `NaN` — `countSpokenWords` would then stop at the
  * first word and the highlight would silently never advance. So this throws instead:
- * the caller has to wait for `loadedmetadata` before calling.
+ * the caller has to wait until the audio's duration is known (finite) before calling.
  */
 export function estimateWordTimings(
   text: string,
@@ -54,7 +54,7 @@ export function estimateWordTimings(
   if (!Number.isFinite(durationSeconds) || durationSeconds < 0) {
     throw new RangeError(
       `estimateWordTimings needs a finite, non-negative duration, got ${durationSeconds}. ` +
-        "Wait for the audio's loadedmetadata event before calling.",
+        "Wait until the audio's duration is known before calling.",
     );
   }
 

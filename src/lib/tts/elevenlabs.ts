@@ -1,0 +1,51 @@
+import type { SynthesisInput, VoiceGender } from "./types";
+
+// Multilingual, so `language` doesn't pick anything: one voice speaks every language.
+const TTS_MODEL_ID = "eleven_flash_v2_5";
+
+// Stated even though it is the API's own default, so the MP3 content type the route
+// answers with doesn't depend on the provider's default.
+const OUTPUT_FORMAT = "mp3_44100_128";
+
+// when picking voices: default voices can be used with free plan.
+// see all default voices here https://elevenlabs.io/app/voice-lab?voiceCategory=premade
+const VOICE_IDS: Record<VoiceGender, string> = {
+  female: "hpp4J3VqNfWAUOO0d1Us", // Bella
+  male: "iP95p4xoKVk53GoZ742B", // Chris
+};
+
+function getApiKey(): string {
+  const apiKey = process.env.ELEVENLABS_API_KEY;
+  if (!apiKey) {
+    throw new Error("Missing ELEVENLABS_API_KEY");
+  }
+  return apiKey;
+}
+
+export async function synthesize(
+  { text, gender }: SynthesisInput,
+  signal: AbortSignal,
+): Promise<ArrayBuffer> {
+  const apiKey = getApiKey();
+
+  const url = new URL(
+    `https://api.elevenlabs.io/v1/text-to-speech/${VOICE_IDS[gender]}`,
+  );
+  url.searchParams.set("output_format", OUTPUT_FORMAT);
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "xi-api-key": apiKey,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ text, model_id: TTS_MODEL_ID }),
+    signal,
+  });
+
+  if (!response.ok) {
+    throw new Error(`ElevenLabs TTS failed (${response.status}): ${await response.text()}`);
+  }
+
+  return response.arrayBuffer();
+}

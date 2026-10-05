@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { FinishIcon, WarningIcon } from "@/components/ui/icons";
+import { unlockAudio } from "@/hooks/use-audio-playback";
 import { useSessionDispatch } from "@/hooks/use-session-dispatch";
 import type { ErrorTurnState } from "@/lib/session-reducer";
 
@@ -14,6 +15,13 @@ type ErrorControlsProps = {
 
 export function ErrorControls({ turnState }: ErrorControlsProps) {
   const dispatch = useSessionDispatch();
+
+  function handleTryAgain() {
+    // Trying again after a failed AI call ends in the AI speaking, and this click is the
+    // gesture that has to unlock the audio, as in Start chat, Send and Reply.
+    unlockAudio();
+    dispatch({ type: "ERROR_DISMISSED" });
+  }
 
   return (
     <div className={styles.controls}>
@@ -28,10 +36,7 @@ export function ErrorControls({ turnState }: ErrorControlsProps) {
         </div>
       </div>
       <div className={styles.sideBySide}>
-        <Button
-          variant="secondary"
-          onClick={() => dispatch({ type: "ERROR_DISMISSED" })}
-        >
+        <Button variant="secondary" onClick={handleTryAgain}>
           Try again
         </Button>
         <Button

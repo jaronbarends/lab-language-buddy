@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { FinishIcon, MicIcon } from "@/components/ui/icons";
+import { unlockAudio } from "@/hooks/use-audio-playback";
 import { useSessionDispatch } from "@/hooks/use-session-dispatch";
 import type { IdleTurnState } from "@/lib/session-reducer";
 
@@ -26,8 +27,8 @@ export function IdleControls({
   const dispatch = useSessionDispatch();
 
   function handleReply() {
-    // Stage 3: the audio unlock goes here too — this click is the gesture that
-    // precedes the AI's next spoken reply.
+    // This click is a gesture that can precede the AI's next spoken reply.
+    unlockAudio();
     dispatch({ type: "LISTENING_STARTED" });
   }
 

@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useSessionDispatch } from "@/hooks/use-session-dispatch";
 import { mockTranscriptAt, mockUserLine } from "@/lib/mock-conversation";
 import type {
+  SessionAction,
   SessionConfig,
   Turn,
   TurnState,
@@ -18,6 +19,18 @@ type StateStepperProps = {
   turns: Turn[];
   turnState: TurnState;
 };
+
+type StepperOption = {
+  key: string;
+  label: string;
+  /** Null disables the button. */
+  action: SessionAction | null;
+  isActive: boolean;
+};
+
+function forcedTurnState(turnState: TurnState): SessionAction {
+  return { type: "DEV_FORCED_TURN_STATE", turnState };
+}
 
 /**
  * Development-only. Jumps straight to any turn state so layouts can be checked on a
@@ -38,43 +51,95 @@ export function StateStepper({ config, turns, turnState }: StateStepperProps) {
   const lastAiTurn = [...turns].reverse().find((turn) => turn.author === "ai");
   const sampleUserLine = mockUserLine(config.language, 0);
 
-  const options: { name: TurnStateName; state: TurnState | null }[] = [
-    { name: "awaitingUser", state: { name: "awaitingUser" } },
+  function turnStateNameIs(name: TurnStateName) {
+    return turnState.name === name;
+  }
+
+  const microphoneIsLive =
+    turnState.name === "listening" && turnState.microphoneIsLive;
+
+  const options: StepperOption[] = [
     {
-      name: "listening",
-      state: {
+      key: "awaitingUser",
+      label: "awaitingUser",
+      action: forcedTurnState({ name: "awaitingUser" }),
+      isActive: turnStateNameIs("awaitingUser"),
+    },
+    {
+      key: "listening",
+      label: "listening",
+      action: forcedTurnState({
         name: "listening",
         transcript: mockTranscriptAt(sampleUserLine, 6),
-      },
+        microphoneIsLive: true,
+      }),
+      isActive: microphoneIsLive,
     },
     {
-      name: "reviewing",
-      state: { name: "reviewing", draft: sampleUserLine },
+      key: "listening-not-live",
+      label: "listening (mic not live)",
+      action: forcedTurnState({
+        name: "listening",
+        transcript: { finalized: "", interim: "" },
+        microphoneIsLive: false,
+      }),
+      isActive: turnStateNameIs("listening") && !microphoneIsLive,
     },
     {
-      name: "editing",
-      state: {
+      key: "reviewing",
+      label: "reviewing",
+      action: forcedTurnState({ name: "reviewing", draft: sampleUserLine }),
+      isActive: turnStateNameIs("reviewing"),
+    },
+    {
+      key: "editing",
+      label: "editing",
+      action: forcedTurnState({
         name: "editing",
         draft: sampleUserLine,
         draftBeforeEdit: sampleUserLine,
-      },
+      }),
+      isActive: turnStateNameIs("editing"),
     },
-    { name: "aiThinking", state: { name: "aiThinking" } },
     {
-      name: "aiSpeaking",
+      key: "aiThinking",
+      label: "aiThinking",
+      action: forcedTurnState({ name: "aiThinking" }),
+      isActive: turnStateNameIs("aiThinking"),
+    },
+    {
+      key: "aiSpeaking",
+      label: "aiSpeaking",
       // Needs a real turn to highlight; unavailable until the AI has said something.
-      state: lastAiTurn
-        ? { name: "aiSpeaking", turnId: lastAiTurn.id, spokenWordCount: 4 }
+      action: lastAiTurn
+        ? forcedTurnState({
+            name: "aiSpeaking",
+            turnId: lastAiTurn.id,
+            spokenWordCount: 4,
+          })
         : null,
+      isActive: turnStateNameIs("aiSpeaking"),
     },
     {
-      name: "error",
-      state: {
+      // Not a state but an action: only meaningful while the AI is speaking.
+      key: "speechFails",
+      label: "speech fails",
+      action:
+        turnState.name === "aiSpeaking"
+          ? { type: "AI_SPEECH_FAILED", turnId: turnState.turnId }
+          : null,
+      isActive: false,
+    },
+    {
+      key: "error",
+      label: "error",
+      action: forcedTurnState({
         name: "error",
         message: "Could not reach the transcription service.",
         detail: "WebSocket closed with code 1006",
         from: "listening",
-      },
+      }),
+      isActive: turnStateNameIs("error"),
     },
   ];
 
@@ -85,23 +150,20 @@ export function StateStepper({ config, turns, turnState }: StateStepperProps) {
           <span className={styles.heading}>Force turn state</span>
           {options.map((option) => (
             <button
-              key={option.name}
+              key={option.key}
               type="button"
-              disabled={!option.state}
+              disabled={!option.action}
               className={`${styles.option} ${
-                turnState.name === option.name ? styles.active : ""
+                option.isActive ? styles.active : ""
               }`}
               onClick={() => {
-                if (!option.state) {
+                if (!option.action) {
                   return;
                 }
-                dispatch({
-                  type: "DEV_FORCED_TURN_STATE",
-                  turnState: option.state,
-                });
+                dispatch(option.action);
               }}
             >
-              {option.name}
+              {option.label}
             </button>
           ))}
         </div>

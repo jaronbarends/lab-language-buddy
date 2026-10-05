@@ -49,7 +49,15 @@ export type LiveTranscript = {
 
 export type TurnState =
   | { name: "awaitingUser" }
-  | { name: "listening"; transcript: LiveTranscript }
+  | {
+      name: "listening";
+      transcript: LiveTranscript;
+      /**
+       * False from `LISTENING_STARTED` until `MICROPHONE_STARTED`. Audio is actually
+       * being recorded and sent only once this is true, so words said before are not heard.
+       */
+      microphoneIsLive: boolean;
+    }
   /** Recording has stopped and the text is settled, but it has not been sent. */
   | { name: "reviewing"; draft: string }
   | {
@@ -122,6 +130,7 @@ export type SessionState =
 export type SessionAction =
   | { type: "START"; config: SessionConfig }
   | { type: "LISTENING_STARTED" }
+  | { type: "MICROPHONE_STARTED" }
   | { type: "TRANSCRIPT_UPDATED"; transcript: LiveTranscript }
   | { type: "DRAFT_EDIT_STARTED" }
   | { type: "DRAFT_CHANGED"; draft: string }
@@ -135,7 +144,7 @@ export type SessionAction =
   | { type: "FAILED"; message: string; detail?: string }
   | { type: "ERROR_DISMISSED" }
   | { type: "SESSION_ENDED" }
-  /** Stage 1 only — the dev state stepper. Removed once the real drivers land. */
+  /** For the development state stepper only. */
   | { type: "DEV_FORCED_TURN_STATE"; turnState: TurnState };
 
 export const initialSessionState: SessionState = {
@@ -188,7 +197,7 @@ export function composedTextOf(turnState: ComposingTurnState): string {
  * to the current state are ignored rather than throwing: a late `TRANSCRIPT_UPDATED`
  * arriving after the socket closed is normal, not a bug worth crashing over.
  *
- * Contract for the async drivers (stages 2 and 3): the speech actions are matched to
+ * Contract for the async drivers: the speech actions are matched to
  * their turn by id, but the reducer cannot tell a stale `AI_TURN_RECEIVED` or
  * `TRANSCRIPT_UPDATED` from a current one — both only check the state name. So every
  * async source must cancel when the state that started it is left: abort in-flight
@@ -261,8 +270,9 @@ export function sessionReducer(
     // Also accepted from `aiSpeaking`: Reply cuts the AI off. Leaving that state is the
     // whole interruption — the turn's text is already complete in `turns`, so the bubble
     // simply stops being highlighted and shows as it does after the audio ends. The
-    // stage 3 playback driver must stop the `<audio>` in the cleanup of its effect,
-    // which runs on leaving `aiSpeaking`; a late `AI_SPEECH_FINISHED` is ignored here.
+    // playback driver (`useAudioPlayback` in `use-audio-playback.ts`) must stop the
+    // `<audio>` in the cleanup of its effect, which runs on leaving `aiSpeaking`; a
+    // late `AI_SPEECH_FINISHED` is ignored here.
     case "LISTENING_STARTED":
       if (turnState.name !== "awaitingUser" && turnState.name !== "aiSpeaking") {
         return state;
@@ -272,8 +282,15 @@ export function sessionReducer(
         turnState: {
           name: "listening",
           transcript: { finalized: "", interim: "" },
+          microphoneIsLive: false,
         },
       };
+
+    case "MICROPHONE_STARTED":
+      if (turnState.name !== "listening" || turnState.microphoneIsLive) {
+        return state;
+      }
+      return { ...state, turnState: { ...turnState, microphoneIsLive: true } };
 
     case "TRANSCRIPT_UPDATED":
       if (turnState.name !== "listening") {
@@ -281,7 +298,7 @@ export function sessionReducer(
       }
       return {
         ...state,
-        turnState: { name: "listening", transcript: action.transcript },
+        turnState: { ...turnState, transcript: action.transcript },
       };
 
     // Send, Edit and Cancel are all offered while the mic is still open, so each of

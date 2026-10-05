@@ -17,6 +17,7 @@ const FOLLOW_TOLERANCE_PX = 4;
 type LiveTranscriptProps = {
   transcript: LiveTranscriptValue;
   conversationLang: string;
+  microphoneIsLive: boolean;
 };
 
 /**
@@ -34,6 +35,7 @@ type LiveTranscriptProps = {
 export function LiveTranscript({
   transcript,
   conversationLang,
+  microphoneIsLive,
 }: LiveTranscriptProps) {
   const nothingHeardYet = !transcript.finalized && !transcript.interim;
 
@@ -67,13 +69,15 @@ export function LiveTranscript({
 
   return (
     <Bubble author="user" className={styles.listening} aria-live="polite">
-      <span className={styles.listeningIndicator} aria-hidden="true" />
+      {microphoneIsLive && (
+        <span className={styles.listeningIndicator} aria-hidden="true" />
+      )}
       <BubbleText ref={textRef} lang={conversationLang} onScroll={handleScroll}>
         {nothingHeardYet ? (
           // The placeholder is UI text, not recognised speech: back to the page's
           // language (see <html lang> in layout.tsx).
           <span className={styles.placeholder} lang="en">
-            Listening…
+            {microphoneIsLive ? "Listening…" : "Preparing mic…"}
           </span>
         ) : (
           <>

@@ -7,9 +7,10 @@
 }
 
 /*
- * Signals that the microphone is live. It appears only in the listening state and
- * is gone the moment recording stops, so its presence is the answer to "is it still
- * hearing me?" — which is why the settled draft bubble has no dot at all.
+ * Signals that the microphone is live. It appears once the microphone is live
+ * (`microphoneIsLive` is true) and is gone the moment recording stops, so its presence
+ * is the answer to "is it still hearing me?" — which is why the settled draft bubble
+ * has no dot at all.
  *
  * Kept as its own element rather than a ::before so a pulse animation can be added
  * here later without touching the bubble.

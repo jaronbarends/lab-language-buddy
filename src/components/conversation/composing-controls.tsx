@@ -65,6 +65,7 @@ export function ComposingControls({
         <LiveTranscript
           transcript={turnState.transcript}
           conversationLang={conversationLang}
+          microphoneIsLive={turnState.microphoneIsLive}
         />
       )}
       {turnState.name === "reviewing" && (

@@ -24,6 +24,13 @@ const PREFERRED_RECORDING_MIME_TYPE = "audio/webm;codecs=opus";
 /** How often MediaRecorder hands over a chunk, which is how often one goes to Deepgram. */
 const CHUNK_INTERVAL_MS = 250;
 
+/**
+ * How long getting the microphone going may take once permission is granted. Without a
+ * bound, a hanging token fetch or socket open would leave the screen waiting without
+ * any sign.
+ */
+const LIVE_CONNECT_TIMEOUT_MS = 10_000;
+
 const MIC_DENIED_MESSAGE =
   "Microphone access was denied. Allow it in your browser settings and try again.";
 const MIC_FAILED_MESSAGE = "The microphone couldn't be started.";
@@ -79,9 +86,18 @@ function startLiveTranscription(
   let stream: MediaStream | null = null;
   let socket: WebSocket | null = null;
   let recorder: MediaRecorder | null = null;
+  let connectTimer: ReturnType<typeof setTimeout> | null = null;
+
+  function clearConnectTimer() {
+    if (connectTimer) {
+      clearTimeout(connectTimer);
+      connectTimer = null;
+    }
+  }
 
   function stop() {
     hasEnded = true;
+    clearConnectTimer();
 
     if (recorder && recorder.state !== "inactive") {
       recorder.ondataavailable = null;
@@ -127,6 +143,14 @@ function startLiveTranscription(
       return;
     }
 
+    // Started only now: time spent on the permission prompt must not count.
+    connectTimer = setTimeout(() => {
+      fail(
+        CONNECTION_FAILED_MESSAGE,
+        new DOMException("Timed out", "TimeoutError"),
+      );
+    }, LIVE_CONNECT_TIMEOUT_MS);
+
     let accessToken: string;
     try {
       accessToken = await fetchAccessToken();
@@ -139,7 +163,13 @@ function startLiveTranscription(
       return;
     }
 
-    openSocket(accessToken);
+    // Constructing a WebSocket can throw synchronously; like every other step it ends in
+    // `FAILED` rather than in a rejection nobody handles.
+    try {
+      openSocket(accessToken);
+    } catch (error) {
+      fail(CONNECTION_FAILED_MESSAGE, error);
+    }
   }
 
   function openSocket(accessToken: string) {
@@ -201,30 +231,38 @@ function startLiveTranscription(
       return;
     }
 
-    const newRecorder = new MediaRecorder(
-      stream,
-      MediaRecorder.isTypeSupported(PREFERRED_RECORDING_MIME_TYPE)
-        ? { mimeType: PREFERRED_RECORDING_MIME_TYPE }
-        : undefined,
-    );
-    recorder = newRecorder;
-
-    newRecorder.ondataavailable = (event: BlobEvent) => {
-      if (event.data.size > 0 && liveSocket.readyState === WebSocket.OPEN) {
-        liveSocket.send(event.data);
-      }
-    };
-
-    newRecorder.start(CHUNK_INTERVAL_MS);
-
-    // Only the real type is known after `start()`. Deepgram's streaming endpoint takes
-    // webm/opus and ogg/opus; Safari's mp4/aac (before 18.4) it would swallow without
-    // an error, so refuse it here rather than listen to nothing.
-    if (!recordingFormatIsStreamable(newRecorder.mimeType)) {
-      fail(
-        MIC_FAILED_MESSAGE,
-        new Error(`Unsupported recording format: ${newRecorder.mimeType}`),
+    try {
+      const newRecorder = new MediaRecorder(
+        stream,
+        MediaRecorder.isTypeSupported(PREFERRED_RECORDING_MIME_TYPE)
+          ? { mimeType: PREFERRED_RECORDING_MIME_TYPE }
+          : undefined,
       );
+      recorder = newRecorder;
+
+      newRecorder.ondataavailable = (event: BlobEvent) => {
+        if (event.data.size > 0 && liveSocket.readyState === WebSocket.OPEN) {
+          liveSocket.send(event.data);
+        }
+      };
+
+      newRecorder.start(CHUNK_INTERVAL_MS);
+
+      // Only the real type is known after `start()`. Deepgram's streaming endpoint takes
+      // webm/opus and ogg/opus; Safari's mp4/aac (before 18.4) it would swallow without
+      // an error, so refuse it here rather than listen to nothing.
+      if (!recordingFormatIsStreamable(newRecorder.mimeType)) {
+        fail(
+          MIC_FAILED_MESSAGE,
+          new Error(`Unsupported recording format: ${newRecorder.mimeType}`),
+        );
+        return;
+      }
+
+      clearConnectTimer();
+      dispatch({ type: "MICROPHONE_STARTED" });
+    } catch (error) {
+      fail(MIC_FAILED_MESSAGE, error);
     }
   }
 

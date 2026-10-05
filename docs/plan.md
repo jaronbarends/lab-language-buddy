@@ -97,8 +97,12 @@ re-picking the same language. The turns are discarded.
 
 - **`awaitingUser`** — one button, enabled. Labelled *Start conversation* when there are
   no turns yet, *Reply* otherwise.
-- **`listening`** — mic open, live transcript rendering `{ finalized, interim }`, with a
-  dot marking that the microphone is live.
+- **`listening`** — live transcript rendering `{ finalized, interim }`. Carries
+  `microphoneIsLive`, false on entry and set by `MICROPHONE_STARTED` once the recorder is
+  running and audio goes to Deepgram; until then the bubble says "Preparing mic…" and has
+  no dot, because anything said before that is not heard. The dot marks that the
+  microphone is live. If it is not live within `LIVE_CONNECT_TIMEOUT_MS` (10 s, counted
+  from the moment the permission is granted) the turn ends in `error`.
 - **`reviewing`** — recording stopped, text settled, not yet sent.
 - **`editing`** — the text in a `<textarea>`. Carries `draftBeforeEdit` so *Cancel edit*
   can restore it; that is why it is its own state rather than a flag on `reviewing`.
@@ -642,8 +646,18 @@ Per stage, in this order:
    id. Since stage 3 the same holds for two more endpoints, each spending on a paid
    account: `/api/stt/token` hands anyone a Deepgram token (short-lived, but a new one on
    every call, and it opens a live-transcription socket on our account), and `/api/tts`
-   synthesises up to 2000 characters per call with whichever provider `TTS_PROVIDER`
+   synthesises up to 1500 characters per call with whichever provider `TTS_PROVIDER`
    names. Decide the protection before the first public deployment.
+10. **Buffering the audio while the Deepgram socket opens.** Raised in the stage 3 review
+    (the "Preparing mic…" point). The recorder starts only once the socket is open, so
+    nothing said before then is recorded, and the screen shows "Preparing mic…" until it
+    does. The alternative is to start `MediaRecorder` right after `getUserMedia`, keep the
+    chunks in order (the first one carries the WebM header) and send them as soon as the
+    socket opens: no words lost and no wait before speaking. It costs code for the
+    ordering and for flushing faster than real time, and the first transcript arrives in
+    a burst. Not built yet. Measured on an iPhone after the stage 3 review: setting up the
+    microphone connection takes about 1.5 seconds, which Jaron finds too long, so this is
+    to be built at a later moment.
 
 ---
 
@@ -758,12 +772,22 @@ have been argued over first.
 | 10-03 | you | Every provider takes a `gender` and the app has one switch, `VOICE_GENDER` in `lib/tts/index.ts`, set to `"female"` | Jaron wants one gender across all languages and to test both. The route passes it on, so a per-user option later is a field in the request, not a change in the providers. |
 | 10-03 | agent | `synthesize` takes one object `{ text, language, gender }` plus the request's `AbortSignal`, instead of positional arguments | ElevenLabs ignores `language`, which would have left an unused parameter. The signal stops a paid call when the client leaves, as in the chat route. |
 | 10-03 | you | Voices: one per language and gender, GA Neural for Azure, Chirp3-HD `Aoede` (female) and `Charon` (male) for Google | Names checked against both providers' list endpoints on 10-03, not from memory. Azure's Dragon HD voices don't exist for every language and its MAI voices are in preview. Norwegian is `nb-NO` at both providers. |
-| 10-03 | you | `ELEVENLABS_VOICE_ID` is a constant in `elevenlabs.ts`, not an environment variable | A voice ID is not a secret, and the voice belongs with the other voice tables. Female is Bella and male is Chris, both default voices that the free plan can use. |
+| 10-03 | you | The ElevenLabs voices are constants in `elevenlabs.ts` (`VOICE_IDS`, one per gender), not an environment variable | A voice ID is not a secret, and the voice belongs with the other voice tables. Female is Bella and male is Chris, both default voices that the free plan can use. |
 | 10-03 | agent | `NEXT_PUBLIC_USE_MOCK_TTS` is read once in `LanguageBuddy` and passed as `enabled` to both `useAudioPlayback` and `useMockDriver` | Exactly one of the two plays the AI's turn, and the two flags can't disagree. It is not dev-only like the chat mock, since it needs no route. |
 | 10-03 | agent | A TTS failure (fetch, playback, or audio never unlocked) is logged in the browser and degrades to text-only via `AI_SPEECH_FAILED` | As the state model already said. The server logs the provider's error and answers with a generic 500, and a bad `TTS_PROVIDER` is in that log with the valid names. |
 | 10-05 | agent | The word timings are made on the first `timeupdate` with a finite `audio.duration`, not on `loadedmetadata` as in the spike | Safari can report `Infinity` until later and `estimateWordTimings` throws on it. Until the duration is known there is no highlight, instead of an error. |
 | 10-05 | you | `spikes/ai-voice-demo/findings.md` gets one added note saying live STT was verified on iPhone Safari / iOS 26, and why; nothing else in the spike changes | Planned in stage 3 item 4. As written it read as though only the Node script ever proved it, which cost a wrong risk assessment in this plan. |
 | 10-05 | you | `use-mock-driver.ts` and `useMockDriver` renamed to `use-mock-tts.ts` and `useMockTts` | The hook only fakes TTS playback since stage 3; recognition and chat have their own real drivers. |
+| 10-05 | agent | `listening` carries `microphoneIsLive`; `MICROPHONE_STARTED` sets it once the recorder has started, and until then the bubble shows "Preparing mic…" without the dot | Found in the stage 3 review. The recorder starts only in the socket's `onopen`, so words said while the token and the socket were still being set up were lost, while the screen already said "Listening…" with a live dot, against the 09-25 definition of the dot. The wording is Jaron's; the flag and the action were proposed by the agent. |
+| 10-05 | you | Buffering the audio while the socket opens is not built; it is open question 10 | The alternative to the flag. Look at how long the gap is on a device first. |
+| 10-05 | agent | `LIVE_CONNECT_TIMEOUT_MS` (10 s) ends a connect that has not produced a live microphone with `FAILED` and the existing connection message; the clock starts after `getUserMedia` has resolved. No deadline on the TTS fetch | Found in the stage 3 review: token fetch and socket open could hang with no sign. The permission dialog must not count, since the user may sit on it. TTS is left alone because the text is already on screen and Reply works. Jaron chose the 10 s and the TTS omission. |
+| 10-05 | agent | An exception when the recorder starts now ends in `FAILED` like every other failure of the hook | Found in the stage 3 review: it threw inside the socket's `onopen` handler, outside every `try`, and left `listening` open without a message. |
+| 10-05 | agent | Try again calls `unlockAudio()` | Found in the stage 3 review. Retrying a failed AI call ends in the AI speaking, and this click is the gesture. Whether iOS keeps the element unlocked for good is still unknown; harmless either way. |
+| 10-05 | agent | `TTS_PROVIDER` is checked with a type guard on `Object.hasOwn`; Google's response is validated with zod; `TTS_CONTENT_TYPE` is the one definition of the audio type and ElevenLabs asks for `output_format=mp3_44100_128` explicitly; the client types its `/api/tts` body with `TtsRequest` | Found in the stage 3 review. `in` also accepts names like `constructor`, the cast hid that, and the audio type used to live in a comment. The ElevenLabs value is also its documented default, so nothing changes in behaviour. |
+| 10-05 | agent | The dev state stepper gets a "listening (mic not live)" entry and a "speech fails" entry that dispatches `AI_SPEECH_FAILED` | The text-only fallback could only be seen with a real, failing provider. Jaron asked for the first entry. |
+| 10-05 | agent | Comments that named stages or an outside file were rewritten to describe the code as it is | Found in the stage 3 review: they would mislead someone without the plan, the worst being `loadedmetadata` where the code waits for `timeupdate`. |
+| 10-05 | agent | The text of a `/api/tts` request is capped at 1500 characters, down from 2000 | Raised by CodeRabbit on the PR. Google limits a request to 5,000 bytes (its quota page; no separate limit for Chirp 3 HD), and a typographic mark is three bytes in UTF-8, so 2000 characters could exceed it. 1500 stays under it for every provider. A real AI turn is far shorter. |
+| 10-05 | agent | Constructing the Deepgram WebSocket is inside a `try` that ends in `FAILED`, like the recorder start | Raised by CodeRabbit on the PR. The comment on `void connect()` said `connect` handles its own errors, which was untrue for this step. |
 
 ## Keeping the experiment honest
 

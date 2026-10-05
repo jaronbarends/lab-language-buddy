@@ -4,8 +4,8 @@ import type { LiveTranscript } from "@/lib/session-reducer";
 /**
  * Canned content so every screen and turn state is reachable with no network, no API
  * keys and no microphone. The AI lines are served by the mock chat route; the user
- * lines are sample transcripts for the dev state stepper, since recognition itself is
- * real since stage 3 and no longer mocked.
+ * lines are sample transcripts for the dev state stepper
+ * (components/dev/state-stepper.tsx); recognition itself is real and not mocked.
  *
  * There's a set per language purely so the mock doesn't show Norwegian to someone who
  * picked Spanish — it's throwaway text, not a translation effort. The Norwegian lines
@@ -106,7 +106,9 @@ const INTERIM_WINDOW = 3;
 /**
  * Rebuilds what a live transcript looks like partway through an utterance: a settled
  * prefix plus a trailing few words that are still provisional. Shaped to match
- * Deepgram's `is_final` split so the component consuming it doesn't change in stage 3.
+ * Deepgram's `is_final` split, which is what the live transcript renders, so the dev
+ * state stepper (src/components/dev/state-stepper.tsx) shows the same shape as real
+ * recognition.
  */
 export function mockTranscriptAt(
   sentence: string,

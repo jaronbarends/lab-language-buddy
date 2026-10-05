@@ -13,8 +13,9 @@ import { AI_STARTING_PROMPT, buildChatSystemInstruction } from "@/lib/prompt";
 const MODEL = "gemini-3.1-flash-lite";
 
 /**
- * What Gemini is asked to produce. Just the reply: whether feedback is per turn is the
- * stage 4 question, so no `correction` field here. The reply rule comes from the
+ * What Gemini is asked to produce. Just the reply: whether and how feedback on mistakes
+ * is given (per turn, on demand or at the end of a session) is still undecided, so no
+ * `correction` field here. The reply rule comes from the
  * response schema, so what the client accepts and what Gemini is told cannot differ.
  */
 const GeminiReplySchema = z.object({

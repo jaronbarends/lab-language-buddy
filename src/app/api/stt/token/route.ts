@@ -21,7 +21,7 @@ export async function POST(request: Request) {
 // directly, without ever seeing the permanent API key. The grant endpoint requires a
 // Member-role key (a viewer-role key gets 403 FORBIDDEN). On the WebSocket itself this
 // token needs the 'Bearer' Sec-WebSocket-Protocol scheme, not 'token' — that one is for
-// the permanent key only (see use-live-transcription.ts and the spike's findings.md).
+// the permanent key only (see use-live-transcription.ts).
 async function mintLiveToken(signal: AbortSignal): Promise<string> {
   const apiKey = process.env.DEEPGRAM_API_KEY;
   if (!apiKey) {

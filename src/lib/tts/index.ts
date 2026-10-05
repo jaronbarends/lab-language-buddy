@@ -13,6 +13,10 @@ type ProviderName = keyof typeof PROVIDERS;
 
 const DEFAULT_PROVIDER: ProviderName = "azure";
 
+function isProviderName(value: string): value is ProviderName {
+  return Object.hasOwn(PROVIDERS, value);
+}
+
 /**
  * Which voice every provider uses. One value for the whole app for now; a per-user
  * option later means putting `gender` in the request and passing it on from the route,
@@ -31,11 +35,11 @@ export function getTtsProvider(): TtsProvider {
     return PROVIDERS[DEFAULT_PROVIDER];
   }
 
-  if (!(configuredProvider in PROVIDERS)) {
+  if (!isProviderName(configuredProvider)) {
     throw new Error(
       `Unknown TTS_PROVIDER "${configuredProvider}" — expected one of: ${Object.keys(PROVIDERS).join(", ")}`,
     );
   }
 
-  return PROVIDERS[configuredProvider as ProviderName];
+  return PROVIDERS[configuredProvider];
 }

@@ -2,11 +2,13 @@
 
 import { useEffect, type Dispatch } from "react";
 
+import type { LanguageCode } from "@/lib/languages";
 import {
   turnStateIs,
   type SessionAction,
   type SessionState,
 } from "@/lib/session-reducer";
+import type { TtsRequest } from "@/lib/tts/types";
 import {
   countSpokenWords,
   estimateWordTimings,
@@ -140,13 +142,14 @@ export function useAudioPlayback(
 
 async function fetchSpeech(
   text: string,
-  language: string,
+  language: LanguageCode,
   signal: AbortSignal,
 ): Promise<Blob> {
+  const body: TtsRequest = { text, language };
   const response = await fetch("/api/tts", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ text, language }),
+    body: JSON.stringify(body),
     signal,
   });
 

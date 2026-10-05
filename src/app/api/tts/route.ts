@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { errorResponse } from "@/lib/chat-request";
 import { getTtsProvider, VOICE_GENDER } from "@/lib/tts";
-import { TtsRequestSchema } from "@/lib/tts/types";
+import { TTS_CONTENT_TYPE, TtsRequestSchema } from "@/lib/tts/types";
 
 export async function POST(request: Request) {
   let body: unknown;
@@ -22,7 +22,9 @@ export async function POST(request: Request) {
       { ...parsedRequest.data, gender: VOICE_GENDER },
       request.signal,
     );
-    return new Response(audio, { headers: { "Content-Type": "audio/mpeg" } });
+    return new Response(audio, {
+      headers: { "Content-Type": TTS_CONTENT_TYPE },
+    });
   } catch (error) {
     // Provider errors can carry request details, a missing key is not the caller's
     // business, and a bad TTS_PROVIDER lists the valid names; all stay in the server log.

@@ -4,7 +4,11 @@ import { useEffect, type Dispatch } from "react";
 import { z } from "zod";
 
 import { LANGUAGES, type LanguageCode } from "@/lib/languages";
-import type { SessionAction, SessionState } from "@/lib/session-reducer";
+import {
+  turnStateIs,
+  type SessionAction,
+  type SessionState,
+} from "@/lib/session-reducer";
 
 const DEEPGRAM_LISTEN_URL = "wss://api.deepgram.com/v1/listen";
 
@@ -51,8 +55,7 @@ export function useLiveTranscription(
   state: SessionState,
   dispatch: Dispatch<SessionAction>,
 ): void {
-  const turnStateIsListening =
-    state.phase === "conversation" && state.turnState.name === "listening";
+  const turnStateIsListening = turnStateIs(state, "listening");
   // Frozen for the session, so it never changes while `listening` stays true.
   const language = state.phase === "conversation" ? state.config.language : null;
 

@@ -7,7 +7,12 @@ import {
   ChatResponseSchema,
   type ChatRequest,
 } from "@/lib/chat-schema";
-import type { SessionAction, SessionState } from "@/lib/session-reducer";
+import {
+  turnStateIs,
+  type ConversationState,
+  type SessionAction,
+  type SessionState,
+} from "@/lib/session-reducer";
 
 // Read as a literal property so Next can inline it at build time; a dynamic lookup of
 // the name would not be replaced. Dev-only in effect: the mock route 404s elsewhere.
@@ -15,8 +20,6 @@ const CHAT_ENDPOINT =
   process.env.NEXT_PUBLIC_USE_MOCK_CHAT === "true"
     ? "/api/mock/chat"
     : "/api/chat";
-
-type ConversationState = Extract<SessionState, { phase: "conversation" }>;
 
 const CHAT_FAILED_MESSAGE = "The AI couldn't come up with a reply.";
 
@@ -37,12 +40,10 @@ export function useChatDriver(
   state: SessionState,
   dispatch: Dispatch<SessionAction>,
 ): void {
-  const phase = state.phase;
-  const turnStateName =
-    state.phase === "conversation" ? state.turnState.name : null;
+  const turnStateIsAiThinking = turnStateIs(state, "aiThinking");
 
   useEffect(() => {
-    if (state.phase !== "conversation" || turnStateName !== "aiThinking") {
+    if (!turnStateIsAiThinking) {
       return;
     }
 
@@ -102,7 +103,7 @@ export function useChatDriver(
     // resend the request. Entering the state is the trigger, and the request is built
     // from the state as it is at that moment.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [phase, turnStateName, dispatch]);
+  }, [turnStateIsAiThinking, dispatch]);
 }
 
 /**

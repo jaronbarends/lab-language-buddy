@@ -2,7 +2,11 @@
 
 import { useEffect, type Dispatch } from "react";
 
-import type { SessionAction, SessionState } from "@/lib/session-reducer";
+import {
+  turnStateIs,
+  type SessionAction,
+  type SessionState,
+} from "@/lib/session-reducer";
 import {
   countSpokenWords,
   estimateWordTimings,
@@ -51,10 +55,9 @@ export function useAudioPlayback(
   dispatch: Dispatch<SessionAction>,
   enabled: boolean,
 ): void {
-  const speakingTurnId =
-    state.phase === "conversation" && state.turnState.name === "aiSpeaking"
-      ? state.turnState.turnId
-      : null;
+  const speakingTurnId = turnStateIs(state, "aiSpeaking")
+    ? state.turnState.turnId
+    : null;
   const speakingText =
     state.phase === "conversation"
       ? state.turns.find((turn) => turn.id === speakingTurnId)?.text

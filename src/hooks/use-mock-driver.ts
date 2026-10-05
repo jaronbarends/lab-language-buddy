@@ -3,7 +3,11 @@
 import { useEffect, type Dispatch } from "react";
 
 import { countWords } from "@/lib/word-timing";
-import type { SessionAction, SessionState } from "@/lib/session-reducer";
+import {
+  turnStateIs,
+  type SessionAction,
+  type SessionState,
+} from "@/lib/session-reducer";
 
 /**
  * Stand-in for the TTS playback in `use-audio-playback.ts`, switched on by
@@ -27,10 +31,9 @@ export function useMockDriver(
   const phase = state.phase;
 
   // --- TTS playback, i.e. the audio element's ontimeupdate ----------------------
-  const speakingTurnId =
-    state.phase === "conversation" && state.turnState.name === "aiSpeaking"
-      ? state.turnState.turnId
-      : null;
+  const speakingTurnId = turnStateIs(state, "aiSpeaking")
+    ? state.turnState.turnId
+    : null;
 
   useEffect(() => {
     if (!enabled || phase !== "conversation" || !speakingTurnId) {

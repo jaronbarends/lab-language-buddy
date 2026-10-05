@@ -143,6 +143,24 @@ export const initialSessionState: SessionState = {
   lastConfig: null,
 };
 
+export type ConversationState = Extract<
+  SessionState,
+  { phase: "conversation" }
+>;
+
+/**
+ * Whether the session is in a conversation whose turn state is `name`. A type predicate,
+ * so after `if (turnStateIs(state, "aiSpeaking"))` (or a const holding its result) the
+ * compiler knows `state` is a conversation and what its `turnState` carries. This is the
+ * one definition of the check the effect hooks make before doing anything.
+ */
+export function turnStateIs<N extends TurnStateName>(
+  state: SessionState,
+  name: N,
+): state is ConversationState & { turnState: Extract<TurnState, { name: N }> } {
+  return state.phase === "conversation" && state.turnState.name === name;
+}
+
 export function joinTranscript({ finalized, interim }: LiveTranscript): string {
   return `${finalized} ${interim}`.trim();
 }

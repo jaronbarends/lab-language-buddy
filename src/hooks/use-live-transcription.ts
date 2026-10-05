@@ -8,6 +8,10 @@ import type { SessionAction, SessionState } from "@/lib/session-reducer";
 
 const DEEPGRAM_LISTEN_URL = "wss://api.deepgram.com/v1/listen";
 
+// Don't "upgrade" this without re-checking the languages: Norwegian exists only in the
+// nova-2 model family, not in nova-3 or flux (see the note in src/lib/languages.ts).
+const DEEPGRAM_MODEL = "nova-2";
+
 // Chrome records webm/opus by default, Safari before 18.4 mp4/aac. Ask for webm/opus
 // explicitly; if the browser can't do it, fall back to its own default and check below
 // what it actually gave us.
@@ -57,6 +61,8 @@ export function useLiveTranscription(
       return;
     }
 
+    // function call to startLiveTranscription returns stop function that is
+    // defined within startLiveTranscription. stop function is the effect cleanup.
     return startLiveTranscription(language, dispatch);
   }, [turnStateIsListening, language, dispatch]);
 }
@@ -135,7 +141,7 @@ function startLiveTranscription(
 
   function openSocket(accessToken: string) {
     const url = new URL(DEEPGRAM_LISTEN_URL);
-    url.searchParams.set("model", "nova-2");
+    url.searchParams.set("model", DEEPGRAM_MODEL);
     url.searchParams.set("language", LANGUAGES[language].deepgram);
     url.searchParams.set("interim_results", "true");
     // No `encoding` or `sample_rate`: Deepgram reads the container header of the
@@ -219,6 +225,9 @@ function startLiveTranscription(
     }
   }
 
+  // Deliberately not awaited: the caller needs `stop` straight away, to use as the
+  // effect cleanup, while the connection is still being set up. `connect` handles its
+  // own errors, so nothing is left unhandled.
   void connect();
 
   return stop;

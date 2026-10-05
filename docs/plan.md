@@ -503,8 +503,10 @@ providers and with both voice genders; on the iPhone the audio plays without a s
 With a deliberately wrong `AZURE_SPEECH_API_KEY` the AI's text stays on screen, nothing is
 spoken, and the error shows only in the console: the text-only fallback works. Step 3: the
 highlight follows the audio on desktop and on an iPhone, and stops when Reply cuts the AI
-off. A live transcription of more than 20 seconds comes out right. **Not tried on a device:**
-denying the microphone on an iPhone (on desktop it lands in the recoverable error).
+off. A live transcription of more than 20 seconds comes out right. Denying the microphone
+lands in the recoverable error with its message, on desktop and on an iPhone (tried in a
+private Safari tab, since the denial is remembered per origin and would otherwise have to
+be undone in the settings).
 
 1. `/api/stt/token`, `use-live-transcription`, interim/final rendering wired to the real
    transcript.

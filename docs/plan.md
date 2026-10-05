@@ -510,7 +510,9 @@ highlight follows the audio on desktop and on an iPhone, and stops when Reply cu
 off. A live transcription of more than 20 seconds comes out right. Denying the microphone
 lands in the recoverable error with its message, on desktop and on an iPhone (tried in a
 private Safari tab, since the denial is remembered per origin and would otherwise have to
-be undone in the settings).
+be undone in the settings). **Not tried on a device:** the microphone stopping during a
+recording (a call or another interruption that ends its track). Disconnecting a headset
+does not do it: iOS then switches to the phone's own microphone and the track continues.
 
 1. `/api/stt/token`, `use-live-transcription`, interim/final rendering wired to the real
    transcript.
@@ -788,6 +790,7 @@ have been argued over first.
 | 10-05 | agent | Comments that named stages or an outside file were rewritten to describe the code as it is | Found in the stage 3 review: they would mislead someone without the plan, the worst being `loadedmetadata` where the code waits for `timeupdate`. |
 | 10-05 | agent | The text of a `/api/tts` request is capped at 1500 characters, down from 2000 | Raised by CodeRabbit on the PR. Google limits a request to 5,000 bytes (its quota page; no separate limit for Chirp 3 HD), and a typographic mark is three bytes in UTF-8, so 2000 characters could exceed it. 1500 stays under it for every provider. A real AI turn is far shorter. |
 | 10-05 | agent | Constructing the Deepgram WebSocket is inside a `try` that ends in `FAILED`, like the recorder start | Raised by CodeRabbit on the PR. The comment on `void connect()` said `connect` handles its own errors, which was untrue for this step. |
+| 10-05 | agent | The recording format is checked, and `MICROPHONE_STARTED` sent, at the recorder's `start` event instead of right after `start()`; the recorder's `error` and an unexpected `stop` end in `FAILED` with "The microphone stopped." | Raised by CodeRabbit on the PR. Without a requested type `mimeType` can be empty until the `start` event, so the early check could reject a browser whose default format works. A recorder also stops by itself when its tracks end (a headset unplugged, an iOS interruption), and nothing noticed. The connect deadline now runs until the `start` event. The wording of the message is Jaron's. |
 
 ## Keeping the experiment honest
 

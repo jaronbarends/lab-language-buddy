@@ -34,6 +34,7 @@ const LIVE_CONNECT_TIMEOUT_MS = 10_000;
 const MIC_DENIED_MESSAGE =
   "Microphone access was denied. Allow it in your browser settings and try again.";
 const MIC_FAILED_MESSAGE = "The microphone couldn't be started.";
+const MIC_STOPPED_MESSAGE = "The microphone stopped.";
 const CONNECTION_FAILED_MESSAGE = "The connection to speech recognition failed.";
 
 const AccessTokenSchema = z.object({ accessToken: z.string().min(1) });
@@ -101,6 +102,9 @@ function startLiveTranscription(
 
     if (recorder && recorder.state !== "inactive") {
       recorder.ondataavailable = null;
+      recorder.onstart = null;
+      recorder.onerror = null;
+      recorder.onstop = null;
       recorder.stop();
     }
     stream?.getTracks().forEach((track) => track.stop());
@@ -246,21 +250,33 @@ function startLiveTranscription(
         }
       };
 
+      // The recording has begun, and its real format is known, only at the `start`
+      // event: until then `mimeType` may still be empty when none was asked for.
+      // Deepgram's streaming endpoint takes webm/opus and ogg/opus; Safari's mp4/aac
+      // (before 18.4) it would swallow without an error, so refuse it here rather than
+      // listen to nothing. Until this event the connect deadline is still running.
+      newRecorder.onstart = () => {
+        if (!recordingFormatIsStreamable(newRecorder.mimeType)) {
+          fail(
+            MIC_FAILED_MESSAGE,
+            new Error(`Unsupported recording format: ${newRecorder.mimeType}`),
+          );
+          return;
+        }
+
+        clearConnectTimer();
+        dispatch({ type: "MICROPHONE_STARTED" });
+      };
+
+      // After the start the recorder can still fail, and it stops by itself when its
+      // tracks end (a headset unplugged, an interruption by iOS). Its `stop` caused by
+      // our own cleanup does not get here: `stop()` detaches these handlers first.
+      newRecorder.onerror = () =>
+        fail(MIC_STOPPED_MESSAGE, new Error("Recorder error"));
+      newRecorder.onstop = () =>
+        fail(MIC_STOPPED_MESSAGE, new Error("Recording stopped unexpectedly"));
+
       newRecorder.start(CHUNK_INTERVAL_MS);
-
-      // Only the real type is known after `start()`. Deepgram's streaming endpoint takes
-      // webm/opus and ogg/opus; Safari's mp4/aac (before 18.4) it would swallow without
-      // an error, so refuse it here rather than listen to nothing.
-      if (!recordingFormatIsStreamable(newRecorder.mimeType)) {
-        fail(
-          MIC_FAILED_MESSAGE,
-          new Error(`Unsupported recording format: ${newRecorder.mimeType}`),
-        );
-        return;
-      }
-
-      clearConnectTimer();
-      dispatch({ type: "MICROPHONE_STARTED" });
     } catch (error) {
       fail(MIC_FAILED_MESSAGE, error);
     }

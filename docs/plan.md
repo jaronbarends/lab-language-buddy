@@ -637,7 +637,11 @@ Per stage, in this order:
    conversation's owner: nothing binds it to a caller or session, and all calls share one
    API key, so conversation isolation is an unverified assumption. There is no
    authentication or rate limit; the only bounds are 5000 characters of input and 200 of
-   id. Decide the protection before the first public deployment.
+   id. Since stage 3 the same holds for two more endpoints, each spending on a paid
+   account: `/api/stt/token` hands anyone a Deepgram token (short-lived, but a new one on
+   every call, and it opens a live-transcription socket on our account), and `/api/tts`
+   synthesises up to 2000 characters per call with whichever provider `TTS_PROVIDER`
+   names. Decide the protection before the first public deployment.
 
 ---
 

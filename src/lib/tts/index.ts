@@ -26,16 +26,16 @@ export const VOICE_GENDER: VoiceGender = "female";
  * the app on a different provider than the one that was asked for.
  */
 export function getTtsProvider(): TtsProvider {
-  const configured = process.env.TTS_PROVIDER;
-  if (!configured) {
+  const configuredProvider = process.env.TTS_PROVIDER;
+  if (!configuredProvider) {
     return PROVIDERS[DEFAULT_PROVIDER];
   }
 
-  if (!(configured in PROVIDERS)) {
+  if (!(configuredProvider in PROVIDERS)) {
     throw new Error(
-      `Unknown TTS_PROVIDER "${configured}" — expected one of: ${Object.keys(PROVIDERS).join(", ")}`,
+      `Unknown TTS_PROVIDER "${configuredProvider}" — expected one of: ${Object.keys(PROVIDERS).join(", ")}`,
     );
   }
 
-  return PROVIDERS[configured as ProviderName];
+  return PROVIDERS[configuredProvider as ProviderName];
 }

@@ -342,7 +342,7 @@ used grew the client bundle by 5.8 KB.
 | `WarningIcon` | `FaTriangleExclamation` | The error box |
 
 The original app's list also named five icons this app has no place for yet:
-`FaGraduationCap` (its Evaluate button — stage 4, undecided), `FaVolumeXmark` (a no-voice
+`FaGraduationCap` (its Evaluate button — not used: stage 4 chose per-turn correction), `FaVolumeXmark` (a no-voice
 warning, not built), `FaCircleInfo` and `FaRegCircleQuestion` (info and tooltip, not built),
 and `FaCircleXmark` (a harder failure; the error box uses the triangle instead).
 
@@ -528,28 +528,68 @@ Voice names get verified against the authoritative list endpoints rather than fr
 `GET https://{region}.tts.speech.microsoft.com/cognitiveservices/voices/list` for Azure,
 `GET https://texttospeech.googleapis.com/v1/voices?key=…` for Google.
 
-### Stage 4 — Evaluation: **discussion first, no code**
+### Stage 4 — Evaluation: per-turn correction (design decided 2026-10-06, not built)
 
-A written comparison comes before any implementation. The question is a **three-way**, not
-the two originally posed:
+A written comparison came before any implementation. The question was a **three-way**:
 
 1. **After each user turn** — what the spike does.
 2. **On demand**, via an Evaluate button — what the reference screenshots show, rendered
    inline in the thread and covering several earlier utterances at once.
 3. **Once at the end of a session** — what the current production app does.
 
-It has knock-on effects on the chat schema, the control bar, and whether feedback
-interrupts the conversational illusion.
+Decided: **option 1, per turn.** Short feedback on every turn is preferred over several
+comments about a whole conversation.
 
-**Left out of the stage 2 chat prompt, to be reconsidered here.** The spike's system
-instruction had a *Correction* section: pick the single most instructive mistake in the
-user's last message and put it in a `correction` field, never in `reply`. Stage 2 drops
-it, because the schema is `{ reply }` only and a prompt asking for a field the schema lacks
-would contradict it. If this stage chooses per-turn correction (option 1), bring the
-section back together with the `correction` field, **and** the hint that was inside it:
-illogical words in the user's message may be speech-to-text errors rather than language
-mistakes, so the AI should not correct them. That hint is irrelevant while input is typed
-(stage 2) and becomes relevant with real STT (stage 3).
+**Shape.** One call, one JSON object: the chat response becomes
+`{ interactionId, reply, correction }`, with `correction: string | null`. `null` means no
+mistake worth naming; the client then shows the fixed text "No corrections. Great!". The
+model never generates that sentence, which saves tokens and keeps it out of the
+conversation chain, where it would act as an example. As in the spike, the model picks the
+single most instructive mistake in the user's last message.
+
+**Prompt.** The *Correction* section the spike had and stage 2 dropped comes back, with the
+hint that was inside it: illogical words in the user's message may be speech-to-text errors
+rather than language mistakes, and must not be corrected. Real STT (stage 3) is what makes
+that hint matter. The correction goes in `correction`, never in `reply`.
+
+**Display.** The correction is a bubble under the user turn it belongs to, with the same
+left margin as the user's bubbles, and its own CSS class because it gets its own styling:
+a light-yellow background and a yellow border. That needs new yellow tokens; the values are
+chosen at build time. It arrives with the AI's reply, so a user turn shows no correction
+until then. The AI's opening turn has no user turn before it and carries none. **The
+correction is never spoken**: TTS reads `reply` only.
+
+**History.** The conversation history lives at Gemini behind `previous_interaction_id`, and
+the client holds only that id. Everything the model returned is in the chain, and fields
+cannot be left out of a chain, so the corrections are part of its context. Accepted for
+now. The risk is drift: the model correcting more or less often because it did before, or
+letting a correction leak into `reply`. Unmeasured; watch for it in use.
+
+**Latency.** TTS cannot start before the whole chat response is in, and the correction adds
+a few dozen output tokens to it. Estimated at a few tenths of a second, **not measured**.
+Measure the chat round trip before and after adding the field.
+
+**Fallbacks, if either risk turns out real.**
+
+- Stream the response with `reply` first in the schema, so TTS can start as soon as `reply`
+  is complete. The route is not streaming now.
+- A separate, stateless evaluation call in parallel with the chat call, given only the
+  user's turn (optionally plus the AI's preceding reply), as in the production app. That
+  keeps the chain clean and never delays TTS, at the price of two calls per turn, a second
+  route, a pending state in the UI, and a failure path for a correction that fails while
+  the reply succeeds.
+
+**Not chosen:** the Evaluate button. `FaGraduationCap` stays unused.
+
+**Build steps (proposed; check-in after each).**
+
+1. Schema, prompt and mocks: `correction` in `ChatResponseSchema` and the Gemini response
+   schema, the Correction section and the STT hint in the system instruction, the mock
+   route returning corrections. Measure the latency difference here.
+2. State and display: the correction stored on the user turn when the AI's reply arrives,
+   the bubble with its own class, the yellow tokens, the fixed "no corrections" text.
+3. Verify on desktop and on an iPhone, watching for STT-error words corrected as mistakes
+   and for corrections leaking into `reply`.
 
 ### Out of scope
 
@@ -585,7 +625,8 @@ Per stage, in this order:
 
 ## Open questions
 
-1. **Evaluation design** — stage 4, above. Untouched by design.
+1. **Evaluation design** — decided 2026-10-06: per-turn correction, see stage 4. Still open
+   inside it: the yellow token values, and whether the correction makes the model drift.
 2. **Tests.** There are none, so review is currently the only quality gate.
    `word-timing.ts` and the reducer are pure and would suit Vitest. The Gemini call now
    lives in `askGemini`, so the route's failure paths can be tested with it replaced.
@@ -791,6 +832,11 @@ have been argued over first.
 | 10-05 | agent | The text of a `/api/tts` request is capped at 1500 characters, down from 2000 | Raised by CodeRabbit on the PR. Google limits a request to 5,000 bytes (its quota page; no separate limit for Chirp 3 HD), and a typographic mark is three bytes in UTF-8, so 2000 characters could exceed it. 1500 stays under it for every provider. A real AI turn is far shorter. |
 | 10-05 | agent | Constructing the Deepgram WebSocket is inside a `try` that ends in `FAILED`, like the recorder start | Raised by CodeRabbit on the PR. The comment on `void connect()` said `connect` handles its own errors, which was untrue for this step. |
 | 10-05 | agent | The recording format is checked, and `MICROPHONE_STARTED` sent, at the recorder's `start` event instead of right after `start()`; the recorder's `error` and an unexpected `stop` end in `FAILED` with "The microphone stopped." | Raised by CodeRabbit on the PR. Without a requested type `mimeType` can be empty until the `start` event, so the early check could reject a browser whose default format works. A recorder also stops by itself when its tracks end (a headset unplugged, an iOS interruption), and nothing noticed. The connect deadline now runs until the `start` event. The wording of the message is Jaron's. |
+| 10-06 | you | Stage 4 evaluation is **per turn**: the chat response becomes `{ interactionId, reply, correction }` with `correction: string \| null`. The Evaluate button and an end-of-session summary are not built | Short feedback on every turn is preferred over several comments about a whole conversation. The three options were weighed in a written comparison first, as the stage was set up to do. |
+| 10-06 | you | `null` means no mistake and the client shows the fixed text "No corrections. Great!"; the model does not generate it | Saves tokens and keeps the sentence out of the conversation chain, where it would act as an example the model repeats. |
+| 10-06 | you | The correction is a separate bubble under the user's turn, same left margin as the user's bubbles, with its own CSS class and new light-yellow background and border tokens. It is not spoken | It gets its own styling. TTS reads `reply` only. The token values are chosen at build time. |
+| 10-06 | you | The corrections stay in the Gemini conversation chain (one call); a separate stateless evaluation call is the fallback | A chain cannot omit fields, so keeping them out needs a second call, a second route and a pending and failure state in the UI. Start simple, measure latency and drift first. Jaron would have preferred them outside the chain; this is the price of the simple start. |
+| 10-06 | agent | The stage 4 latency cost is an estimate, and measuring it is the first build step | The extra output tokens delay the whole chat response, and with it TTS, by an unknown amount. |
 
 ## Keeping the experiment honest
 

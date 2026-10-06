@@ -48,10 +48,15 @@ export const ChatRequestSchema = z.discriminatedUnion("kind", [
 
 export type ChatRequest = z.infer<typeof ChatRequestSchema>;
 
-/** What the routes return and the client parses. An empty reply is a failure. */
+/**
+ * What the routes return and the client parses. An empty reply is a failure.
+ * `correction` is about the user's latest message, and is `null` when there was nothing
+ * worth mentioning and always when the AI speaks first; an empty string is a failure too.
+ */
 export const ChatResponseSchema = z.object({
   interactionId: z.string(),
   reply: z.string().trim().min(1),
+  correction: z.string().trim().min(1).nullable(),
 });
 
 export type ChatResponse = z.infer<typeof ChatResponseSchema>;

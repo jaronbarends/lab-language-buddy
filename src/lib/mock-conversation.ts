@@ -15,6 +15,11 @@ import type { LiveTranscript } from "@/lib/session-reducer";
 type MockScript = {
   aiLines: string[];
   userLines: string[];
+  /**
+   * English explanations that quote the target language, as the real route's do. `null`
+   * is a turn without a mistake.
+   */
+  corrections: (string | null)[];
 };
 
 const MOCK_SCRIPTS: Record<LanguageCode, MockScript> = {
@@ -28,6 +33,10 @@ const MOCK_SCRIPTS: Record<LanguageCode, MockScript> = {
       "Jeg liker å gå ute når det er fint vær. Jeg liker å gå på tur selv om det regner.",
       "Jeg liker best å gå ute i naturen. Jeg foretrekker fjellet og skogen.",
     ],
+    corrections: [
+      "You said “Jeg liker å gå ute”; a native speaker would more naturally say “Jeg liker å være i naturen”.",
+      null,
+    ],
   },
   nl: {
     aiLines: [
@@ -38,6 +47,10 @@ const MOCK_SCRIPTS: Record<LanguageCode, MockScript> = {
     userLines: [
       "Ik ben graag buiten als het mooi weer is. Ik loop ook als het regent.",
       "Ik ben het liefst in de natuur. Ik houd van het bos en de bergen.",
+    ],
+    corrections: [
+      "You said “Ik loop ook als het regent”; a native speaker would more naturally say “Ik ga ook wandelen als het regent”.",
+      null,
     ],
   },
   fr: {
@@ -50,6 +63,10 @@ const MOCK_SCRIPTS: Record<LanguageCode, MockScript> = {
       "J'aime sortir quand il fait beau. J'aime aussi marcher sous la pluie.",
       "Je préfère la nature. J'aime la montagne et la forêt.",
     ],
+    corrections: [
+      "You said “J'aime aussi marcher sous la pluie”; a native speaker would more naturally say “J'aime aussi me promener sous la pluie”.",
+      null,
+    ],
   },
   de: {
     aiLines: [
@@ -60,6 +77,10 @@ const MOCK_SCRIPTS: Record<LanguageCode, MockScript> = {
     userLines: [
       "Ich bin gern draußen, wenn das Wetter schön ist. Ich gehe auch im Regen spazieren.",
       "Am liebsten bin ich in der Natur. Ich mag die Berge und den Wald.",
+    ],
+    corrections: [
+      "You said “Ich bin gern draußen”; a native speaker would more naturally say “Ich halte mich gern draußen auf”.",
+      null,
     ],
   },
   it: {
@@ -72,6 +93,10 @@ const MOCK_SCRIPTS: Record<LanguageCode, MockScript> = {
       "Mi piace stare fuori quando c'è bel tempo. Cammino anche quando piove.",
       "Preferisco la natura. Mi piacciono la montagna e il bosco.",
     ],
+    corrections: [
+      "You said “Cammino anche quando piove”; a native speaker would more naturally say “Faccio una passeggiata anche quando piove”.",
+      null,
+    ],
   },
   es: {
     aiLines: [
@@ -83,6 +108,10 @@ const MOCK_SCRIPTS: Record<LanguageCode, MockScript> = {
       "Me gusta salir cuando hace buen tiempo. También camino cuando llueve.",
       "Prefiero la naturaleza. Me gustan la montaña y el bosque.",
     ],
+    corrections: [
+      "You said “También camino cuando llueve”; a native speaker would more naturally say “También salgo a caminar cuando llueve”.",
+      null,
+    ],
   },
 };
 
@@ -90,6 +119,21 @@ const MOCK_SCRIPTS: Record<LanguageCode, MockScript> = {
 export function mockAiLine(language: LanguageCode, aiTurnIndex: number): string {
   const { aiLines } = MOCK_SCRIPTS[language];
   return aiLines[aiTurnIndex % aiLines.length];
+}
+
+/**
+ * The correction for the user turn that the AI turn `aiTurnIndex` answers. The opening
+ * AI turn answers nothing, so it has none. Cycles like the AI lines.
+ */
+export function mockCorrection(
+  language: LanguageCode,
+  aiTurnIndex: number,
+): string | null {
+  if (aiTurnIndex === 0) {
+    return null;
+  }
+  const { corrections } = MOCK_SCRIPTS[language];
+  return corrections[(aiTurnIndex - 1) % corrections.length];
 }
 
 export function mockUserLine(

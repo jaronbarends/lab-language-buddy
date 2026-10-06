@@ -1,6 +1,6 @@
 import { errorResponse, readChatRequest } from "@/lib/chat-request";
 import type { ChatResponse } from "@/lib/chat-schema";
-import { mockAiLine } from "@/lib/mock-conversation";
+import { mockAiLine, mockCorrection } from "@/lib/mock-conversation";
 
 /** Roughly what a Gemini round trip takes, so the thinking bubble is visible. */
 const MOCK_LATENCY_MS = 1300;
@@ -48,6 +48,7 @@ export async function POST(request: Request) {
   const chatResponse: ChatResponse = {
     interactionId: `${MOCK_ID_PREFIX}${aiTurnIndex}`,
     reply: mockAiLine(chatRequest.language, aiTurnIndex),
+    correction: mockCorrection(chatRequest.language, aiTurnIndex),
   };
 
   return Response.json(chatResponse);

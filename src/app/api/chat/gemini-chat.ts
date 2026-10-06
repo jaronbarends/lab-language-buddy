@@ -13,14 +13,17 @@ import { AI_STARTING_PROMPT, buildChatSystemInstruction } from "@/lib/prompt";
 const MODEL = "gemini-3.1-flash-lite";
 
 /**
- * What Gemini is asked to produce. Just the reply: whether and how feedback on mistakes
- * is given (per turn, on demand or at the end of a session) is still undecided, so no
- * `correction` field here. The reply rule comes from the
- * response schema, so what the client accepts and what Gemini is told cannot differ.
+ * What Gemini is asked to produce: the reply and the correction of the user's last
+ * message. The rules come from the response schema, so what the client accepts and what
+ * Gemini is told cannot differ. `reply` comes first on purpose: if the route ever
+ * streams, TTS can start as soon as the reply is complete.
  */
 const GeminiReplySchema = z.object({
   reply: ChatResponseSchema.shape.reply.describe(
     "The AI conversation partner's reply, in the target language.",
+  ),
+  correction: ChatResponseSchema.shape.correction.describe(
+    "A short correction of the single most instructive mistake in the user's last message, in English. Null if there was nothing worth mentioning.",
   ),
 });
 
@@ -67,7 +70,9 @@ export async function askGemini(
     throw new Error("Gemini returned no output text");
   }
 
-  const { reply } = GeminiReplySchema.parse(JSON.parse(response.output_text));
+  const { reply, correction } = GeminiReplySchema.parse(
+    JSON.parse(response.output_text),
+  );
 
-  return { interactionId: response.id, reply };
+  return { interactionId: response.id, reply, correction };
 }

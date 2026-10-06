@@ -550,7 +550,10 @@ single most instructive mistake in the user's last message.
 **Prompt.** The *Correction* section the spike had and stage 2 dropped comes back, with the
 hint that was inside it: illogical words in the user's message may be speech-to-text errors
 rather than language mistakes, and must not be corrected. Real STT (stage 3) is what makes
-that hint matter. The correction goes in `correction`, never in `reply`.
+that hint matter. For the same reason the model never gives spelling corrections, and
+never corrects spaces, punctuation, capitalization or diacritics: the user speaks, and the
+speech-to-text decides how the words are written. The correction goes in `correction`,
+never in `reply`.
 
 **Display.** The correction is a bubble under the user turn it belongs to, with the same
 left margin as the user's bubbles, and its own CSS class because it gets its own styling:
@@ -566,8 +569,11 @@ now. The risk is drift: the model correcting more or less often because it did b
 letting a correction leak into `reply`. Unmeasured; watch for it in use.
 
 **Latency.** TTS cannot start before the whole chat response is in, and the correction adds
-a few dozen output tokens to it. Estimated at a few tenths of a second, **not measured**.
-Measure the chat round trip before and after adding the field.
+a few dozen output tokens to it. Measured on 2026-10-06 (`gemini-3.1-flash-lite`, Norwegian
+B1, one user turn with a mistake, 10 runs per variant, interleaved, no chain): median
+**2273 ms** reply-only against **2538 ms** with `correction`, so about **+265 ms** (+12%).
+The ranges overlap (2043–2709 against 2177–3022 ms), so it is an order of magnitude, not a
+precise figure. A longer chain may differ.
 
 **Fallbacks, if either risk turns out real.**
 
@@ -836,7 +842,10 @@ have been argued over first.
 | 10-06 | you | `null` means no mistake and the client shows the fixed text "No corrections. Great!"; the model does not generate it | Saves tokens and keeps the sentence out of the conversation chain, where it would act as an example the model repeats. |
 | 10-06 | you | The correction is a separate bubble under the user's turn, same left margin as the user's bubbles, with its own CSS class and new light-yellow background and border tokens. It is not spoken | It gets its own styling. TTS reads `reply` only. The token values are chosen at build time. |
 | 10-06 | you | The corrections stay in the Gemini conversation chain (one call); a separate stateless evaluation call is the fallback | A chain cannot omit fields, so keeping them out needs a second call, a second route and a pending and failure state in the UI. Start simple, measure latency and drift first. Jaron would have preferred them outside the chain; this is the price of the simple start. |
-| 10-06 | agent | The stage 4 latency cost is an estimate, and measuring it is the first build step | The extra output tokens delay the whole chat response, and with it TTS, by an unknown amount. |
+| 10-06 | agent | The `correction` field costs about 265 ms on the chat round trip (median 2273 → 2538 ms, 10 runs each), so streaming and the parallel call stay fallbacks | The extra output tokens delay the whole chat response, and with it TTS. Noisy at n=10: the ranges overlap. |
+| 10-06 | you | The correction's explanation is in English, but it quotes the user's phrase and the more natural alternative in the target language, e.g. `You said “Jeg liker å gå ute”; a native speaker would more naturally say “Jeg liker å være i naturen”.` | Learning material is the target-language phrase; only the explanation is for the learner's own language. The prompt says so explicitly. |
+| 10-06 | you | The Correction prompt forbids any spelling correction, not just spaces, punctuation and diacritics; capitalization is added to the list | The input is speech-to-text, so the user is not responsible for how words are spelled. The spike's rule only covered spaces, punctuation and diacritics. |
+| 10-06 | agent | The mock chat route returns a per-language correction (a mistake quoting that language's mock user line, then `null`), none on the opening turn | The opening AI turn answers nothing, so it has nothing to correct. The first mock version quoted English phrases, which is what the line above rules out. |
 
 ## Keeping the experiment honest
 

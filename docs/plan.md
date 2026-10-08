@@ -528,7 +528,7 @@ Voice names get verified against the authoritative list endpoints rather than fr
 `GET https://{region}.tts.speech.microsoft.com/cognitiveservices/voices/list` for Azure,
 `GET https://texttospeech.googleapis.com/v1/voices?key=…` for Google.
 
-### Stage 4 — Evaluation: per-turn correction (design decided 2026-10-06, not built)
+### Stage 4 — Evaluation: per-turn correction, in its own call (design decided 2026-10-08, not built)
 
 A written comparison came before any implementation. The question was a **three-way**:
 
@@ -538,64 +538,133 @@ A written comparison came before any implementation. The question was a **three-
 3. **Once at the end of a session** — what the current production app does.
 
 Decided: **option 1, per turn.** Short feedback on every turn is preferred over several
-comments about a whole conversation.
+comments about a whole conversation. **Not chosen:** the Evaluate button (`FaGraduationCap`
+stays unused) and the end-of-session summary.
 
-**Shape.** One call, one JSON object: the chat response becomes
-`{ interactionId, reply, correction }`, with `correction: string | null`. `null` means no
-mistake worth naming; the client then shows the fixed text "No corrections. Great!". The
-model never generates that sentence, which saves tokens and keeps it out of the
-conversation chain, where it would act as an example. As in the spike, the model picks the
-single most instructive mistake in the user's last message.
+**Two calls, not one.** The first design put `correction` in the chat response. It was
+built (step 1 of the first plan) and then replaced, after measuring, by a separate call
+to a separate prompt, as in the production app. Both calls start when the user sends, in
+parallel:
 
-**Prompt.** The *Correction* section the spike had and stage 2 dropped comes back, with the
-hint that was inside it: illogical words in the user's message may be speech-to-text errors
-rather than language mistakes, and must not be corrected. Real STT (stage 3) is what makes
-that hint matter. For the same reason the model never gives spelling corrections, and
-never corrects spaces, punctuation, capitalization or diacritics: the user speaks, and the
-speech-to-text decides how the words are written. The correction goes in `correction`,
-never in `reply`.
+- `/api/chat`, as in stage 2: `{ interactionId, reply }`, chained with
+  `previous_interaction_id`. No `correction` in it; the persona prompt loses its
+  *Correction* section.
+- `/api/evaluate`: `{ language, level, input }` in, `{ correction }` out, where
+  `correction` is `Segment[] | null`. **Stateless**: no `previous_interaction_id`, so the
+  corrections never enter the conversation chain, and the corrector sees only the
+  user's latest message. The AI's opening turn has no user message and makes no call.
 
-**Display.** The correction is a bubble under the user turn it belongs to, with the same
-left margin as the user's bubbles, and its own CSS class because it gets its own styling:
-a light-yellow background and a yellow border. That needs new yellow tokens; the values are
-chosen at build time. It arrives with the AI's reply, so a user turn shows no correction
-until then. The AI's opening turn has no user turn before it and carries none. **The
-correction is never spoken**: TTS reads `reply` only.
+Why two calls: the corrector assigned the segment types wrongly in 0 of 30 corrections
+(against 4 to 7 of 30 for one call, with or without an explicit second role in the
+prompt), handled the speech-to-text hint better, and the chat call
+returns to `{ reply }` only, with no added latency before TTS (the one-call version cost
+about +255 ms). The price is two Gemini calls per turn, a second route, and the pending
+and failure states below. The measurement is in the decision log; it is small (5 runs
+per input, 8 inputs) and its heuristics were crude, so read it as a direction.
 
-**History.** The conversation history lives at Gemini behind `previous_interaction_id`, and
-the client holds only that id. Everything the model returned is in the chain, and fields
-cannot be left out of a chain, so the corrections are part of its context. Accepted for
-now. The risk is drift: the model correcting more or less often because it did before, or
-letting a correction leak into `reply`. Unmeasured; watch for it in use.
+**Segments.** `correction` is a list of `{ type: "text" | "userInput" | "suggestion",
+text }`; joined in order, the texts read as one short explanation. `text` is the
+explanation, in English at B2/C1. `userInput` quotes only the part of the user's message
+the explanation needs, never the whole message. `suggestion` is the more natural
+alternative. Both of those are in the target language. The segments carry their own
+spaces and the model adds no quotation marks: the type marks the phrase. A delimiter in
+a string cannot carry three kinds without parsing, and quotes cannot be parsed (French
+and Italian apostrophes), so the schema enforces a typed list. `null` means no mistake
+worth naming.
 
-**Latency.** TTS cannot start before the whole chat response is in, and the correction adds
-a few dozen output tokens to it. Measured on 2026-10-06 (`gemini-3.1-flash-lite`, Norwegian
-B1, one user turn with a mistake, 10 runs per variant, interleaved, no chain): median
-**2273 ms** reply-only against **2538 ms** with `correction`, so about **+265 ms** (+12%).
-The ranges overlap (2043–2709 against 2177–3022 ms), so it is an order of magnitude, not a
-precise figure. A longer chain may differ.
+**Prompts: shared part, then one part per persona**, as in the production app. In
+`prompt.ts`:
 
-**Fallbacks, if either risk turns out real.**
+- *Shared*, in both system instructions: the user's language and CEFR level, their
+  English level (B2/C1, one constant), the note that the input comes from speech-to-text
+  and illogical words may be transcription errors (new for the chat persona), and that
+  the input is spoken, never written.
+- *Chat persona*: as in stage 2, without the *Correction* section.
+- *Corrector persona*: a native speaker and teacher of the target language, informal and
+  warm (and terse, with no praise: both stand, as in the original). **The rules and the
+  segment explanation are in its `system_instruction`; `input` is only the user's
+  message.** One mistake per turn, the most instructive: grammar, vocabulary that could
+  be more natural, or nuance, calibrated to the user's CEFR level. If a mistake may be a
+  transcription error, say so instead of explaining it as a language mistake. No
+  feedback on spelling, spaces, punctuation, capitalization or diacritics. Do not point
+  out what is correct. And: *the message may not contain anything worth correcting; do
+  not go looking for a mistake, and never fall back on spelling, spaces, punctuation,
+  capitalization or diacritics just to have something to say.*
 
-- Stream the response with `reply` first in the schema, so TTS can start as soon as `reply`
-  is complete. The route is not streaming now.
-- A separate, stateless evaluation call in parallel with the chat call, given only the
-  user's turn (optionally plus the AI's preceding reply), as in the production app. That
-  keeps the chain clean and never delays TTS, at the price of two calls per turn, a second
-  route, a pending state in the UI, and a failure path for a correction that fails while
-  the reply succeeds.
+The measurement used the rules in `input`, not in `system_instruction`: re-measure once the
+real prompts exist.
 
-**Not chosen:** the Evaluate button. `FaGraduationCap` stays unused.
+**No code guard for spelling-only corrections.** Turning a correction into `null` when
+`userInput` and `suggestion` differ only in case, diacritics or spaces was considered and
+rejected: `null` shows "No corrections. Great!", which is wrong when the message had other
+mistakes and only the spelling one was returned. The prompt is the only defence.
+
+**Display.** The correction is not a bubble of its own: it is a section attached to the
+bottom of the user's bubble (`resources/screenshots-reference/evaluation-attached-to-bubble.png`).
+The bubble keeps its outline, and a divider separates the user's text from the correction
+below it. The section's background is `--color-blue-50`; the user's text keeps the normal
+user-bubble background. `text` segments are plain. `userInput` and `suggestion` are italic,
+and only `suggestion` gets a background, the user-bubble background
+(`--color-bg-secondary-subtle`). No new tokens. **The correction is never spoken**: TTS
+reads `reply` only. The section shows one of four things, each as small as possible
+(one line for the two fixed texts):
+
+- while the call runs: "Evaluating…" (a placeholder, so the bubble does not jump);
+- the segments;
+- "No corrections. Great!" when the answer is `null`;
+- "Evaluation failed" when the call fails, returns something that does not fit the
+  schema, or does not answer within **10 seconds**.
+
+**Order.** The correction may appear before the AI's reply, but the reply must not appear
+before the correction has been shown (as segments, "No corrections. Great!" or
+"Evaluation failed"). So the reply waits for the correction call to settle, and the 10 s
+timeout is what stops a hanging corrector from holding the reply. At the timeout the
+request is aborted and a late answer is ignored, so what is on screen is final. **TTS
+playback starts only once the reply is on screen**; fetching the audio may start as soon
+as the reply arrives.
+
+**Try again.** The error state retries the chat call only. A correction that has already
+arrived is kept and not requested again; a failed correction is not retried.
+
+**History.** The corrections are not in the conversation chain, because the corrector is
+stateless and branches off nothing. Whether giving it context (a branch off the chain
+with `previous_interaction_id`, as the original app did) would improve the corrections is
+untested.
+
+**Measured on 2026-10-06 and 2026-10-07** (`gemini-3.1-flash-lite`, Norwegian B1, 5 runs
+per input over 8 inputs: clear mistakes, correct sentences, a long sentence with a small
+mistake, a speech-to-text-like error, a lower-case sentence and one without diacritics).
+Three variants, 40 calls each: A the one-call prompt, C one call with an explicit second
+role for `correction`, D a separate corrector call with the original app's wording.
+
+| | A | C | D |
+|---|---|---|---|
+| Segment types wrong | 7 | 4 | 0 |
+| Correction given on a correct sentence | 0 | 0 | 0 |
+| Correction given where only spelling or diacritics were off (10 calls) | 10 | 10 | 10 |
+| ...of which spelling-only | 6 | 3 | 4 |
+| `eld` (a likely transcription error) null or flagged as one, of 5 | 1 | 0 | 3 |
+| Quotation marks in the text, of 30 | 4 | 3 | 7 |
+
+Known weak spots, not solved: the spelling ban does not hold when spelling is the only
+visible defect, the transcription hint works for three of five, and the separate call
+produces more quotation marks. Moving the segment rules into the schema's `description`
+fields was tried and was worse than keeping them in the prompt (more wrong types, and
+the explanation in the wrong language).
 
 **Build steps (proposed; check-in after each).**
 
-1. Schema, prompt and mocks: `correction` in `ChatResponseSchema` and the Gemini response
-   schema, the Correction section and the STT hint in the system instruction, the mock
-   route returning corrections. Measure the latency difference here.
-2. State and display: the correction stored on the user turn when the AI's reply arrives,
-   the bubble with its own class, the yellow tokens, the fixed "no corrections" text.
-3. Verify on desktop and on an iPhone, watching for STT-error words corrected as mistakes
-   and for corrections leaking into `reply`.
+1. Prompts and routes: split `prompt.ts` into shared, chat and corrector parts; take
+   `correction` back out of `ChatResponse` and the chat Gemini call; the new
+   `/api/evaluate` route with its Gemini call and a mock route; both mocks. Measure again
+   with the real prompts.
+2. State and driver: the correction on the user turn (running, ready, failed), the two
+   calls in parallel, the 10 s timeout and abort, the reply held until the correction has
+   settled, TTS playback gated on the reply being on screen, the Try again rule.
+3. Display: the attached section with its four contents, italics and the one background.
+4. Verify on desktop and on an iPhone, including a wrong key for `/api/evaluate` only
+   (reply still arrives, "Evaluation failed"), a corrector that does not answer in 10 s,
+   and Try again after a failed chat call.
 
 ### Out of scope
 
@@ -631,8 +700,10 @@ Per stage, in this order:
 
 ## Open questions
 
-1. **Evaluation design** — decided 2026-10-06: per-turn correction, see stage 4. Still open
-   inside it: the yellow token values, and whether the correction makes the model drift.
+1. **Evaluation design** — decided 2026-10-08: per-turn correction in its own call, see
+   stage 4. Still open inside it: whether the corrector would do better with the
+   conversation as context, and the weak spots listed there (spelling ban, transcription
+   hint, quotation marks).
 2. **Tests.** There are none, so review is currently the only quality gate.
    `word-timing.ts` and the reducer are pure and would suit Vitest. The Gemini call now
    lives in `askGemini`, so the route's failure paths can be tested with it replaced.
@@ -843,9 +914,22 @@ have been argued over first.
 | 10-06 | you | The correction is a separate bubble under the user's turn, same left margin as the user's bubbles, with its own CSS class and new light-yellow background and border tokens. It is not spoken | It gets its own styling. TTS reads `reply` only. The token values are chosen at build time. |
 | 10-06 | you | The corrections stay in the Gemini conversation chain (one call); a separate stateless evaluation call is the fallback | A chain cannot omit fields, so keeping them out needs a second call, a second route and a pending and failure state in the UI. Start simple, measure latency and drift first. Jaron would have preferred them outside the chain; this is the price of the simple start. |
 | 10-06 | agent | The `correction` field costs about 265 ms on the chat round trip (median 2273 → 2538 ms, 10 runs each), so streaming and the parallel call stay fallbacks | The extra output tokens delay the whole chat response, and with it TTS. Noisy at n=10: the ranges overlap. |
-| 10-06 | you | The correction's explanation is in English, but it quotes the user's phrase and the more natural alternative in the target language, e.g. `You said “Jeg liker å gå ute”; a native speaker would more naturally say “Jeg liker å være i naturen”.` | Learning material is the target-language phrase; only the explanation is for the learner's own language. The prompt says so explicitly. |
+| 10-06 | you | **Supersedes the separate yellow bubble above:** the correction is attached to the bottom of the user's bubble, as in `evaluation-attached-to-bubble.png`, with a `--color-blue-50` background. Target-language phrases in it are highlighted with the user-bubble background. No new tokens | The reference screenshot shows it that way, and it ties the correction to the turn it is about. The yellow tokens and the separate class are not built. |
+| 10-06 | you | The correction's explanation is in English, but the user's words and the more natural alternative stay in the target language; the user's words are only the part the explanation needs, never the whole message | Learning material is the target-language phrase; only the explanation is for the learner's own language. The prompt says so explicitly. |
+| 10-06 | you | `correction` is a list of segments typed `text`, `userInput` or `suggestion`, with no quotation marks in the text. **Supersedes** the plain-string correction and the `“…”` quotes in the logged examples above | Three kinds of text have to look different, and a delimiter inside one string cannot carry that. Jaron first said "A" (delimiter) but described this shape; the three-way distinction decided it. |
 | 10-06 | you | The Correction prompt forbids any spelling correction, not just spaces, punctuation and diacritics; capitalization is added to the list | The input is speech-to-text, so the user is not responsible for how words are spelled. The spike's rule only covered spaces, punctuation and diacritics. |
-| 10-06 | agent | The mock chat route returns a per-language correction (a mistake quoting that language's mock user line, then `null`), none on the opening turn | The opening AI turn answers nothing, so it has nothing to correct. The first mock version quoted English phrases, which is what the line above rules out. |
+| 10-06 | agent | Segments cost about +255 ms on the chat round trip (median 2947 → 3202 ms, 10 runs each), the same as the plain-string version | The extra JSON structure did not add measurable latency. Over 8 sampled corrections the types were assigned correctly and `userInput` was always a fragment, never the whole message. One had stray quotation marks inside a `text` segment. The grammar explanations in those samples were sometimes muddled: a model-quality matter, not the structure. |
+| 10-06 | agent | The mock chat route returns a per-language correction (a mistake as segments quoting part of that language's mock user line, then `null`), none on the opening turn | The opening AI turn answers nothing, so it has nothing to correct. The first mock version quoted English phrases, which is what the line above rules out. |
+| 10-08 | you | **Supersedes "one call":** the correction comes from its own call to a separate prompt. `/api/chat` goes back to `{ interactionId, reply }`; a new, stateless `/api/evaluate` returns `{ correction }`. The `correction` field added to the chat response in 63d5da86 is taken out again | A separate corrector assigned the segment types wrongly 0 of 30 times, against 4 to 7 of 30 in one call, even with an explicit second role in the prompt; it also kept corrections out of the conversation chain, as Jaron preferred, and no longer delays TTS. The price is two Gemini calls per turn, a second route, and pending and failure states. |
+| 10-08 | you | The prompts get a shared part (language and level, English level B2/C1, speech-to-text note, "spoken, never written") and one part per persona, as in the production app. The speech-to-text note is new for the chat persona. The corrector's rules and segment explanation go in its `system_instruction`; its `input` is only the user's message | Jaron's structure from the original app. The measurement put the rules in `input`, so it has to be repeated with the real prompts. |
+| 10-08 | you | The corrector's null rule reads: the message may not contain anything worth correcting; do not go looking for a mistake, and never fall back on spelling, spaces, punctuation, capitalization or diacritics just to have something to say | Jaron's experience is that most sentences do need a correction, so the rule is about not inventing one. The wording was reshaped from "Don't look for one that violates this instruction", which could be read two ways. |
+| 10-08 | you | **No code guard** that turns a spelling-only correction into `null` | `null` shows "No corrections. Great!", which would be false when the message had other mistakes and only the spelling one was returned. Proposed by the agent, rejected by Jaron. |
+| 10-08 | you | The AI's reply is shown only after the correction has been shown; the correction may appear first. A correction call that has not answered after **10 seconds** is aborted and a late answer is ignored. TTS playback starts only once the reply is on screen | The correction sits in the user's bubble, which comes before the reply. The timeout is what keeps a hanging corrector from holding the reply. Fetching the audio can start earlier. |
+| 10-08 | you | The correction section reads "Evaluating…" while the call runs, "No corrections. Great!" for `null`, and "Evaluation failed" on a failed call, an invalid response or the timeout; each text kept to one line | A placeholder reserves the height, so the bubble does not jump. "Evaluating…" instead of the thinking dots, and the failure text as short as possible, are Jaron's wording. |
+| 10-08 | you | `userInput` and `suggestion` are italic; only `suggestion` has a background, the user-bubble background. **Supersedes** the line above that highlights both and leaves it open whether they differ | The revised reference screenshot. |
+| 10-08 | you | Try again after a failed chat call repeats the chat call only; a correction that has arrived is kept, and a failed correction is not retried | Otherwise a retry pays twice and the text could change under the user. The agent's proposal, accepted. |
+| 10-08 | agent | The route is named `/api/evaluate`, takes `{ language, level, input }` and has no history or `previous_interaction_id`. Whether the corrector gets context (a branch off the chain, as in the original app) is left untested | The name follows the app's own word, "evaluation". Context was not part of the measurement. |
+| 10-08 | agent | Measured with one call (A), one call with a second role (C) and a separate call (D), 40 calls each, `gemini-3.1-flash-lite`: wrong types 7/4/0; a correction on a lower-case or no-diacritics sentence 10/10/10 of 10; of those spelling-only 6/3/4; `eld` flagged or null 1/0/3 of 5; quotation marks in the text 4/3/7 of 30. Schema `description`s instead of prompt rules (earlier run, 40 calls each): wrong types 14 against 7 | Small and crude (5 runs per input, string heuristics, only some outputs read by hand), so a direction, not a result. The spelling ban and the transcription hint do not hold fully, and D adds quotation marks; none is solved. |
 
 ## Keeping the experiment honest
 

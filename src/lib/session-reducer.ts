@@ -1,4 +1,5 @@
 import { DEFAULT_CEFR_LEVEL, type CefrLevel } from "@/lib/cefr";
+import type { EvaluationSegment } from "@/lib/chat-schema";
 import type { LanguageCode } from "@/lib/languages";
 
 export type Starter = "ai" | "user";
@@ -28,8 +29,26 @@ type TurnBase = {
   text: string;
 };
 
+/**
+ * The evaluation of a user turn, from its own call (`use-evaluation-driver.ts`).
+ * `ready` with a `null` correction means there was nothing worth correcting. Settled
+ * means `ready` or `failed`; the AI's reply is not shown before that (see
+ * `AI_TURN_RECEIVED`).
+ */
+export type Evaluation =
+  | { status: "pending" }
+  | { status: "ready"; correction: EvaluationSegment[] | null }
+  | { status: "failed" };
+
+/** What the chat call produced for an AI turn, before the turn is added to `turns`. */
+export type AiReply = {
+  id: string;
+  text: string;
+  interactionId: string;
+};
+
 export type Turn =
-  | (TurnBase & { author: "user" })
+  | (TurnBase & { author: "user"; evaluation: Evaluation })
   | (TurnBase & {
       author: "ai";
       /**
@@ -71,7 +90,16 @@ export type TurnState =
        */
       draftBeforeEdit: string;
     }
-  | { name: "aiThinking" }
+  | {
+      name: "aiThinking";
+      /**
+       * The reply has come in, but the evaluation of the user turn it answers is still
+       * pending. It is held here and shown, with the AI starting to speak, once the
+       * evaluation settles: the correction sits in the user's bubble, above the reply,
+       * and the reply must not appear before it.
+       */
+      pendingReply?: AiReply;
+    }
   | { name: "aiSpeaking"; turnId: string; spokenWordCount: number }
   | {
       name: "error";
@@ -137,6 +165,12 @@ export type SessionAction =
   | { type: "DRAFT_EDIT_CANCELLED" }
   | { type: "DRAFT_DISCARDED" }
   | { type: "USER_TURN_SENT"; id: string; text: string }
+  | {
+      type: "EVALUATION_RECEIVED";
+      turnId: string;
+      correction: EvaluationSegment[] | null;
+    }
+  | { type: "EVALUATION_FAILED"; turnId: string }
   | { type: "AI_TURN_RECEIVED"; id: string; text: string; interactionId: string }
   | { type: "AI_SPEECH_PROGRESSED"; turnId: string; spokenWordCount: number }
   | { type: "AI_SPEECH_FINISHED"; turnId: string }
@@ -168,6 +202,36 @@ export function turnStateIs<N extends TurnStateName>(
   name: N,
 ): state is ConversationState & { turnState: Extract<TurnState, { name: N }> } {
   return state.phase === "conversation" && state.turnState.name === name;
+}
+
+/** Whether the last turn is a user turn whose evaluation has not settled yet. */
+function lastUserTurnIsBeingEvaluated(turns: Turn[]): boolean {
+  const lastTurn = turns.at(-1);
+  return lastTurn?.author === "user" && lastTurn.evaluation.status === "pending";
+}
+
+/**
+ * The reply becomes an AI turn and starts being spoken, in the same transition and from
+ * the same id: there is no window in which the turn and the "this one is speaking"
+ * pointer disagree.
+ */
+function addAiTurnAndStartSpeaking(
+  state: ConversationState,
+  reply: AiReply,
+): ConversationState {
+  return {
+    ...state,
+    turns: [
+      ...state.turns,
+      {
+        id: reply.id,
+        author: "ai",
+        text: reply.text,
+        interactionId: reply.interactionId,
+      },
+    ],
+    turnState: { name: "aiSpeaking", turnId: reply.id, spokenWordCount: 0 },
+  };
 }
 
 export function joinTranscript({ finalized, interim }: LiveTranscript): string {
@@ -366,34 +430,64 @@ export function sessionReducer(
         ...state,
         turns: [
           ...state.turns,
-          { id: action.id, author: "user", text: action.text.trim() },
+          {
+            id: action.id,
+            author: "user",
+            text: action.text.trim(),
+            evaluation: { status: "pending" },
+          },
         ],
         turnState: { name: "aiThinking" },
       };
 
-    case "AI_TURN_RECEIVED":
-      if (turnState.name !== "aiThinking") {
+    // Matched by turn id, like the speech actions: the evaluation outlives `aiThinking`
+    // (a failed chat call does not cancel it), so only the turn can say whether the
+    // answer still applies. One for a turn that is not pending is ignored.
+    case "EVALUATION_RECEIVED":
+    case "EVALUATION_FAILED": {
+      const turn = state.turns.find(
+        (candidate) => candidate.id === action.turnId,
+      );
+      if (turn?.author !== "user" || turn.evaluation.status !== "pending") {
         return state;
       }
-      // The turn and the "this one is speaking" pointer are set in the same
-      // transition, from the same id — there's no window in which they disagree.
-      return {
+      const evaluation: Evaluation =
+        action.type === "EVALUATION_RECEIVED"
+          ? { status: "ready", correction: action.correction }
+          : { status: "failed" };
+      const settledState: ConversationState = {
         ...state,
-        turns: [
-          ...state.turns,
-          {
-            id: action.id,
-            author: "ai",
-            text: action.text,
-            interactionId: action.interactionId,
-          },
-        ],
-        turnState: {
-          name: "aiSpeaking",
-          turnId: action.id,
-          spokenWordCount: 0,
-        },
+        turns: state.turns.map((candidate) =>
+          candidate.id === turn.id ? { ...turn, evaluation } : candidate,
+        ),
       };
+      // The reply that was waiting for this evaluation is released with it.
+      if (turnState.name === "aiThinking" && turnState.pendingReply) {
+        return addAiTurnAndStartSpeaking(settledState, turnState.pendingReply);
+      }
+      return settledState;
+    }
+
+    // The reply waits for the evaluation of the user turn it answers: the correction may
+    // appear before the reply, never after it. The opening AI turn answers nothing, so
+    // nothing holds it back.
+    case "AI_TURN_RECEIVED": {
+      if (turnState.name !== "aiThinking" || turnState.pendingReply) {
+        return state;
+      }
+      const reply: AiReply = {
+        id: action.id,
+        text: action.text,
+        interactionId: action.interactionId,
+      };
+      if (lastUserTurnIsBeingEvaluated(state.turns)) {
+        return {
+          ...state,
+          turnState: { name: "aiThinking", pendingReply: reply },
+        };
+      }
+      return addAiTurnAndStartSpeaking(state, reply);
+    }
 
     case "AI_SPEECH_PROGRESSED":
       if (

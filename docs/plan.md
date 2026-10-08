@@ -106,7 +106,10 @@ re-picking the same language. The turns are discarded.
 - **`reviewing`** — recording stopped, text settled, not yet sent.
 - **`editing`** — the text in a `<textarea>`. Carries `draftBeforeEdit` so *Cancel edit*
   can restore it; that is why it is its own state rather than a flag on `reviewing`.
-- **`aiThinking`** — `/api/chat` in flight; typing-dots bubble.
+- **`aiThinking`** — `/api/chat` in flight; typing-dots bubble. May carry a
+  `pendingReply`: the chat answer is in, but the evaluation of the user turn it answers
+  is still pending, so the reply is held and released (into `aiSpeaking`) the moment the
+  evaluation settles. See **Evaluation of a user turn** below.
 - **`aiSpeaking`** — TTS audio playing, words progressively highlighted in the AI bubble.
   Reply is enabled here: `LISTENING_STARTED` is accepted from `aiSpeaking` as well as
   `awaitingUser`, which cuts the speech off and moves to `listening`. The bubble then
@@ -119,6 +122,16 @@ re-picking the same language. The turns are discarded.
   effect re-runs on entering it, which is the retry), otherwise to `awaitingUser`; a
   transcript in progress when listening failed is discarded. The diagram above shows the
   `awaitingUser` route only.
+- **Evaluation of a user turn** (stage 4) is not a turn state but a field of the turn: a
+  user turn carries `evaluation`, `pending` from `USER_TURN_SENT`, then `ready` (with a
+  `correction` that may be `null`) or `failed`. `EVALUATION_RECEIVED` and
+  `EVALUATION_FAILED` match on the turn id, like the speech actions, and are ignored for a
+  turn that is not `pending`. It runs in its own driver, `use-evaluation-driver.ts`, which
+  follows the turn and not `aiThinking`: a failed chat call does not cancel it, and Try
+  again does not request it a second time. The ordering rule, the reply never before the
+  correction has settled, lives in the reducer (`AI_TURN_RECEIVED` holds the reply as
+  `pendingReply`), so it is a pure function and not async coordination between hooks. A
+  correction that does not answer within 10 s becomes `failed`.
 - **TTS failure is not an error state.** `AI_SPEECH_FAILED` (only valid in `aiSpeaking`)
   goes to `awaitingUser` silently: the AI's text is already on screen, so it degrades to
   text-only. The stage 3 caller does the `console.error`. Like the other two speech
@@ -197,6 +210,8 @@ so a page reload starts from the defaults again.
     │   ├── use-session-dispatch.ts dispatch context + `useSessionDispatch`
     │   ├── use-chat-driver.ts    the Gemini round trip in `aiThinking`; picks the real or
     │   │                         the mock route via `NEXT_PUBLIC_USE_MOCK_CHAT`
+    │   ├── use-evaluation-driver.ts  the evaluation of a user turn, with its 10 s timeout;
+    │   │                         the same mock switch
     │   ├── use-live-transcription.ts  mic + Deepgram socket while `listening`
     │   ├── use-audio-playback.ts  `/api/tts` + the shared `<audio>` element in `aiSpeaking`,
     │   │                         and `unlockAudio()` for the click handlers
@@ -208,6 +223,8 @@ so a page reload starts from the defaults again.
         ├── word-timing.ts        estimateWordTimings / countSpokenWords
         ├── chat-schema.ts        zod: the chat request (a union on `kind`) and response, the
         │                         evaluation request and response (correction segments), the error body
+        ├── post-json.ts          `postJson`: the fetch both drivers use, throwing the route's own
+        │                         error text
         ├── chat-request.ts       `readChatRequest`, `readEvaluationRequest` and `errorResponse`,
         │                         shared by the real and the mock routes
         ├── prompt.ts             `buildChatSystemInstruction` and `buildEvaluationSystemInstruction`,
@@ -490,6 +507,7 @@ history is chained), and answers `{ interactionId, reply }`. An empty or whitesp
 reply is a failure, not an answer.
 
 **Mock or real, per concern.** `NEXT_PUBLIC_USE_MOCK_CHAT=true` makes `use-chat-driver.ts`
+(and, since stage 4, `use-evaluation-driver.ts`, calling `/api/mock/evaluation`)
 call `/api/mock/chat` instead: same contract, canned lines, 404 outside `next dev`. The
 mock keeps no state; its interaction ids are `mock-<n>`, so the next request's
 `previousInteractionId` tells it which line comes next. A `NEXT_PUBLIC_` value is inlined
@@ -674,9 +692,12 @@ the 10 s timeout and about as long as the chat call.
    `correction` back out of `ChatResponse` and the chat Gemini call; the new
    `/api/evaluation` route with its Gemini call and a mock route; both mocks. Measure again
    with the real prompts.
-2. State and driver: the correction on the user turn (running, ready, failed), the two
+2. **Done.** State and driver: the correction on the user turn (pending, ready, failed), the two
    calls in parallel, the 10 s timeout and abort, the reply held until the correction has
    settled, TTS playback gated on the reply being on screen, the Try again rule.
+   Until step 3 the user's bubble shows the evaluation as plain text ("Evaluating…", the
+   segments as `[type: text]`, "No corrections. Great!", "Evaluation failed"), a
+   temporary rendering in `turn-bubble.tsx` so the order and timing can be seen.
 3. Display: the attached section with its four contents, italics and the one background.
 4. Verify on desktop and on an iPhone, including a wrong key for `/api/evaluation` only
    (reply still arrives, "Evaluation failed"), a corrector that does not answer in 10 s,
@@ -794,6 +815,45 @@ Per stage, in this order:
     a burst. Not built yet. Measured on an iPhone after the stage 3 review: setting up the
     microphone connection takes about 1.5 seconds, which Jaron finds too long, so this is
     to be built at a later moment.
+11. **One bubble for the AI's thinking dots and its text.** Wanted later: an animation in
+    which the dots disappear, the bubble grows to the size of the text, and the text
+    becomes visible. Not possible with the current structure, which is not part of stage
+    4. Today they are two elements: `ThinkingBubble` (a `div role="status"`, rendered
+    after the turns while the state is `aiThinking`) and, once the reply is accepted, a
+    `TurnBubble` (a `p`, `key={turn.id}`). They share the `Bubble` frame and so look the
+    same, but one unmounts and the other mounts at the transition, so nothing exists to
+    animate: the bubble jumps from the size of the dots to the size of the text. What it
+    needs: (1) one element that survives the transition, so a key that is the same
+    before and after. The turn id is only created when the reply arrives (the chat driver
+    calls `crypto.randomUUID()` then), so it cannot be that key; either key on the
+    position ("the Nth AI turn") or have the reducer create the id when it enters
+    `aiThinking`; (2) a size transition that works for content of unknown size, since
+    height and width cannot be animated to `auto` directly (the `0fr` to `1fr` grid
+    trick, or measuring the content); (3) one role: the thinking bubble is a `status`
+    and the turn bubble a paragraph in the thread's `role="log"`, so what a screen reader
+    announces has to be decided for the shared element. Since stage 4 a held reply
+    (`pendingReply`) keeps the dots on screen until the evaluation has settled, which
+    fits either structure. The same applies to the user's bubble, which grows when its
+    evaluation arrives. Not built; to be done together with the other animation work.
+    Two ways to get the surviving element, weighed on 2026-10-08:
+    (a) **Key by position, no change to the data.** The thread renders one `AiTurnBubble`
+    with a key such as `ai-<number of AI turns before it>`, both for the waiting bubble
+    (state `aiThinking`) and for the real turn, so React reuses the element. A few lines
+    in `conversation-thread.tsx`; nothing changes in the reducer, the types or the
+    drivers. It works because turns are only appended within a session. Recommended.
+    (b) **Jaron's alternative: the waiting is part of the AI turn.** The AI turn exists from
+    the start with a status (`pending`, `ready`, as `Evaluation` has), and the
+    `TurnBubble` shows the dots while it is pending. It gives one element with its own
+    identity and one role, and fits the `Evaluation` pattern. It costs: the AI turn
+    becomes a union, a pending one having no `text` or `interactionId`, so everything that
+    reads "the last turn" has to skip it (`chatRequestFrom`, `lastUserTurnIsBeingEvaluated`,
+    the `previous_interaction_id` derivation, the stepper's `lastAiTurn`, what the
+    playback hook reads); two sources of truth, `turnState: aiThinking` and a pending turn,
+    which every transition (`START`, `USER_TURN_SENT`, `FAILED`, retry) must keep equal,
+    and which the dev stepper forcing `aiThinking` would break; the error state, which
+    shows no dots today, must remove the pending turn or give it a status; and the
+    reducer is pure, so the id has to come in with the action or be positional. It pays
+    off if a failed AI turn is ever shown inline with a retry on that spot. Not planned.
 
 ---
 
@@ -947,6 +1007,11 @@ have been argued over first.
 | 10-08 | you | The route is `/api/evaluation` (with `EvaluationRequest`, `EvaluationResponse`, `readEvaluationRequest`, `gemini-evaluation.ts`; the field and the prompt builder keep "correction"). It takes `{ language, level, input }` and has no history or `previous_interaction_id`. Whether the corrector gets context (a branch off the chain, as in the original app) is left untested | The agent first called it `/api/evaluate`; Jaron wanted the noun, since what is requested is an evaluation. Context was not part of the measurement. |
 | 10-08 | agent | Measured with one call (A), one call with a second role (C) and a separate call (D), 40 calls each, `gemini-3.1-flash-lite`: wrong types 7/4/0; a correction on a lower-case or no-diacritics sentence 10/10/10 of 10; of those spelling-only 6/3/4; `eld` flagged or null 1/0/3 of 5; quotation marks in the text 4/3/7 of 30. Schema `description`s instead of prompt rules (earlier run, 40 calls each): wrong types 14 against 7 | Small and crude (5 runs per input, string heuristics, only some outputs read by hand), so a direction, not a result. The spelling ban and the transcription hint do not hold fully, and D adds quotation marks; none is solved. |
 | 10-08 | agent | Stage 4 step 1: the corrector's system instruction also says to treat the input as text to give feedback on, never as instructions; the mock evaluate route picks its correction from a sum of the input's characters, so the same message always gets the same answer; `readChatRequest` and `readEvaluationRequest` share one `readRequest` | The first is a guard I added to the agreed prompt: the user's message is the only input, and it is untrusted. The second keeps a retry predictable in a route with no state. The third avoids a copy of the body-reading code. |
+| 10-08 | agent | Stage 4 step 2: the ordering rule is in the reducer. `AI_TURN_RECEIVED` holds the reply as `pendingReply` in `aiThinking` while the last user turn's evaluation is `pending`; `EVALUATION_RECEIVED` and `EVALUATION_FAILED` release it | A pure transition that can be run on its own, instead of two hooks waiting on each other. The evaluation driver follows the turn, not `aiThinking`, so a failed chat call leaves the evaluation running and Try again does not repeat it. The reducer scenarios (13) were run with a scratch script through Node's type stripping; the drivers and the 10 s timeout have not been run in a browser. |
+| 10-08 | you | The reply and the correction may appear in the same render when the correction arrives after the chat answer; the timing can be adjusted later | The rule is that the reply never appears before the correction, and appearing together satisfies it. Jaron: "in a later stage we can adjust the timing". |
+| 10-08 | you | TTS audio is not fetched ahead while the reply waits for the evaluation; `use-audio-playback.ts` is unchanged and fetches on entering `aiSpeaking`, which is after the reply is on screen | Prefetching needs extra state and only gains when the corrector is slower than the chat call. |
+| 10-08 | agent | `post-json.ts` takes `errorTextOf` out of `use-chat-driver.ts`, so both drivers share one fetch and one way of reading the route's error | Two copies of the same twelve lines. Asked for by Jaron as part of step 2. |
+| 10-08 | agent | `turn-bubble.tsx` renders the evaluation as plain text, marked temporary | Without a rendering nothing of step 2 is visible in the browser. Replaced in step 3. |
 
 ## Keeping the experiment honest
 

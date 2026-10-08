@@ -2,11 +2,8 @@
 
 import { useEffect, type Dispatch } from "react";
 
-import {
-  ChatErrorSchema,
-  ChatResponseSchema,
-  type ChatRequest,
-} from "@/lib/chat-schema";
+import { ChatResponseSchema, type ChatRequest } from "@/lib/chat-schema";
+import { postJson } from "@/lib/post-json";
 import {
   turnStateIs,
   type ConversationState,
@@ -28,7 +25,9 @@ const CHAT_TIMEOUT_MS = 30_000;
 
 /**
  * The Gemini round trip: while the turn state is `aiThinking`, one request to the chat
- * route, answered with `AI_TURN_RECEIVED` or `FAILED`.
+ * route, answered with `AI_TURN_RECEIVED` or `FAILED`. The reducer may hold a reply back
+ * until the evaluation of the user turn has settled; the evaluation is not this hook's
+ * business (see `use-evaluation-driver.ts`).
  *
  * Everything the request needs is derived from `turns`: no turns yet means the AI
  * speaks first (`aiStarts`); a last turn that is the user's is a `userTurn` carrying its
@@ -135,31 +134,5 @@ function chatRequestFrom(state: ConversationState): ChatRequest | null {
 }
 
 async function fetchChatReply(request: ChatRequest, signal: AbortSignal) {
-  const response = await fetch(CHAT_ENDPOINT, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(request),
-    signal,
-  });
-
-  if (!response.ok) {
-    throw new Error(await errorTextOf(response));
-  }
-
-  return ChatResponseSchema.parse(await response.json());
-}
-
-/** The routes answer failures with `{ error }`; anything else falls back to the status. */
-async function errorTextOf(response: Response): Promise<string> {
-  const fallback = `Request failed with status ${response.status}`;
-  try {
-    const body: unknown = await response.json();
-    const parsedError = ChatErrorSchema.safeParse(body);
-    if (parsedError.success) {
-      return parsedError.data.error;
-    }
-  } catch {
-    // Not JSON — the status is all there is.
-  }
-  return fallback;
+  return ChatResponseSchema.parse(await postJson(CHAT_ENDPOINT, request, signal));
 }

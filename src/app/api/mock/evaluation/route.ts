@@ -1,4 +1,4 @@
-import { errorResponse, readEvaluationRequest } from "@/lib/chat-request";
+import { errorResponse, readEvaluationRequestBody } from "@/lib/chat-request";
 import type { EvaluationResponse } from "@/lib/chat-schema";
 import { mockCorrection } from "@/lib/mock-conversation";
 
@@ -15,11 +15,11 @@ export async function POST(request: Request) {
     return errorResponse("Mock evaluation is only available in development", 404);
   }
 
-  const parsed = await readEvaluationRequest(request);
+  const parsed = await readEvaluationRequestBody(request);
   if (!parsed.ok) {
     return parsed.response;
   }
-  const { language, input } = parsed.request;
+  const { language, input } = parsed.body;
 
   await new Promise((resolve) => setTimeout(resolve, MOCK_LATENCY_MS));
 

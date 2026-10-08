@@ -2,7 +2,7 @@
 
 import { useEffect, type Dispatch } from "react";
 
-import { ChatResponseSchema, type ChatRequest } from "@/lib/chat-schema";
+import { ChatResponseSchema, type ChatRequestBody } from "@/lib/chat-schema";
 import { postJson } from "@/lib/post-json";
 import {
   turnStateIs,
@@ -46,8 +46,8 @@ export function useChatDriver(
       return;
     }
 
-    const chatRequest = chatRequestFrom(state);
-    if (!chatRequest) {
+    const chatRequestBody = createChatRequestBody(state);
+    if (!chatRequestBody) {
       dispatch({
         type: "FAILED",
         message: CHAT_FAILED_MESSAGE,
@@ -68,7 +68,7 @@ export function useChatDriver(
       abortController.abort();
     }, CHAT_TIMEOUT_MS);
 
-    fetchChatReply(chatRequest, abortController.signal)
+    fetchChatReply(chatRequestBody, abortController.signal)
       .then(({ interactionId, reply }) => {
         dispatch({
           type: "AI_TURN_RECEIVED",
@@ -109,7 +109,7 @@ export function useChatDriver(
  * `null` when the last turn is the AI's: there is nothing to answer. Only reachable by
  * forcing `aiThinking` from the dev state stepper.
  */
-function chatRequestFrom(state: ConversationState): ChatRequest | null {
+function createChatRequestBody(state: ConversationState): ChatRequestBody | null {
   const { config, turns } = state;
   const { language, level } = config;
   const lastTurn = turns.at(-1);
@@ -133,6 +133,6 @@ function chatRequestFrom(state: ConversationState): ChatRequest | null {
   };
 }
 
-async function fetchChatReply(request: ChatRequest, signal: AbortSignal) {
-  return ChatResponseSchema.parse(await postJson(CHAT_ENDPOINT, request, signal));
+async function fetchChatReply(body: ChatRequestBody, signal: AbortSignal) {
+  return ChatResponseSchema.parse(await postJson(CHAT_ENDPOINT, body, signal));
 }

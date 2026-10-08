@@ -1,25 +1,25 @@
 import { z } from "zod";
 
 import {
-  ChatRequestSchema,
-  EvaluationRequestSchema,
+  ChatRequestBodySchema,
+  EvaluationRequestBodySchema,
   type ChatError,
-  type ChatRequest,
-  type EvaluationRequest,
+  type ChatRequestBody,
+  type EvaluationRequestBody,
 } from "@/lib/chat-schema";
 
 export function errorResponse(message: string, status: number): Response {
   return Response.json({ error: message } satisfies ChatError, { status });
 }
 
-type ReadRequestResult<T> =
-  | { ok: true; request: T }
+type ReadRequestBodyResult<T> =
+  | { ok: true; body: T }
   | { ok: false; response: Response };
 
-async function readRequest<T>(
+async function readRequestBody<T>(
   request: Request,
   schema: z.ZodType<T>,
-): Promise<ReadRequestResult<T>> {
+): Promise<ReadRequestBodyResult<T>> {
   let body: unknown;
   try {
     body = await request.json();
@@ -30,27 +30,27 @@ async function readRequest<T>(
     };
   }
 
-  const parsedRequest = schema.safeParse(body);
-  if (!parsedRequest.success) {
+  const parsedBody = schema.safeParse(body);
+  if (!parsedBody.success) {
     return {
       ok: false,
-      response: errorResponse(z.prettifyError(parsedRequest.error), 400),
+      response: errorResponse(z.prettifyError(parsedBody.error), 400),
     };
   }
 
-  return { ok: true, request: parsedRequest.data };
+  return { ok: true, body: parsedBody.data };
 }
 
 /** Reads and validates the body of a chat request; shared by the real and the mock route. */
-export function readChatRequest(
+export function readChatRequestBody(
   request: Request,
-): Promise<ReadRequestResult<ChatRequest>> {
-  return readRequest(request, ChatRequestSchema);
+): Promise<ReadRequestBodyResult<ChatRequestBody>> {
+  return readRequestBody(request, ChatRequestBodySchema);
 }
 
 /** The same for an evaluation request. */
-export function readEvaluationRequest(
+export function readEvaluationRequestBody(
   request: Request,
-): Promise<ReadRequestResult<EvaluationRequest>> {
-  return readRequest(request, EvaluationRequestSchema);
+): Promise<ReadRequestBodyResult<EvaluationRequestBody>> {
+  return readRequestBody(request, EvaluationRequestBodySchema);
 }

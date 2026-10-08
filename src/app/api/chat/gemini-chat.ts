@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import {
   ChatResponseSchema,
-  type ChatRequest,
+  type ChatRequestBody,
   type ChatResponse,
 } from "@/lib/chat-schema";
 import { AI_STARTING_PROMPT, buildChatSystemInstruction } from "@/lib/prompt";
@@ -27,7 +27,7 @@ const GeminiReplySchema = z.object({
 const GeminiReplyJSONSchema = z.toJSONSchema(GeminiReplySchema);
 
 export async function askGemini(
-  request: ChatRequest,
+  body: ChatRequestBody,
   signal: AbortSignal,
 ): Promise<ChatResponse> {
   const apiKey = process.env.GEMINI_API_KEY;
@@ -35,10 +35,9 @@ export async function askGemini(
     throw new Error("Missing GEMINI_API_KEY");
   }
 
-  const input =
-    request.kind === "userTurn" ? request.input : AI_STARTING_PROMPT;
+  const input = body.kind === "userTurn" ? body.input : AI_STARTING_PROMPT;
   const previousInteractionId =
-    request.kind === "userTurn" ? request.previousInteractionId : undefined;
+    body.kind === "userTurn" ? body.previousInteractionId : undefined;
 
   const ai = new GoogleGenAI({ apiKey });
 
@@ -50,8 +49,8 @@ export async function askGemini(
       model: MODEL,
       input,
       system_instruction: buildChatSystemInstruction(
-        request.language,
-        request.level,
+        body.language,
+        body.level,
       ),
       previous_interaction_id: previousInteractionId,
       response_format: {

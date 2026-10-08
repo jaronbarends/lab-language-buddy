@@ -60,6 +60,9 @@ export type Turn =
       interactionId: string;
     });
 
+/** The user's side of a turn, the one that carries an `evaluation`. */
+export type UserTurn = Extract<Turn, { author: "user" }>;
+
 /** What Deepgram gives us mid-utterance: settled text plus a volatile tail. */
 export type LiveTranscript = {
   finalized: string;

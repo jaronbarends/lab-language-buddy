@@ -4,10 +4,15 @@ import { useEffect, type Dispatch } from "react";
 
 import {
   EvaluationResponseSchema,
-  type EvaluationRequest,
+  type EvaluationRequestBody,
 } from "@/lib/chat-schema";
 import { postJson } from "@/lib/post-json";
-import type { SessionAction, SessionState } from "@/lib/session-reducer";
+import type {
+  SessionAction,
+  SessionConfig,
+  SessionState,
+  UserTurn,
+} from "@/lib/session-reducer";
 
 // Read as a literal property so Next can inline it at build time. The same switch as the
 // chat route's: a mocked chat with a real evaluation is rarely what anyone wants.
@@ -37,14 +42,18 @@ export function useEvaluationDriver(
   state: SessionState,
   dispatch: Dispatch<SessionAction>,
 ): void {
-  const turnToEvaluate = evaluationRequestFrom(state);
-  const turnToEvaluateId = turnToEvaluate?.turnId;
+  const turnToEvaluate = getTurnToEvaluate(state);
+  const turnToEvaluateId = turnToEvaluate?.id;
 
   useEffect(() => {
-    if (!turnToEvaluate) {
+    if (state.phase !== "conversation" || !turnToEvaluate) {
       return;
     }
-    const { turnId, request } = turnToEvaluate;
+    const turnId = turnToEvaluate.id;
+    const evaluationRequestBody = createEvaluationRequestBody(
+      state.config,
+      turnToEvaluate,
+    );
 
     const abortController = new AbortController();
 
@@ -57,7 +66,7 @@ export function useEvaluationDriver(
       abortController.abort();
     }, EVALUATION_TIMEOUT_MS);
 
-    fetchEvaluation(request, abortController.signal)
+    fetchEvaluation(evaluationRequestBody, abortController.signal)
       .then(({ correction }) => {
         dispatch({ type: "EVALUATION_RECEIVED", turnId, correction });
       })
@@ -75,36 +84,36 @@ export function useEvaluationDriver(
       abortController.abort();
     };
     // `state` is deliberately absent, as in `use-chat-driver.ts`: the turn being
-    // evaluated is the trigger, and the request is built from the state at that moment.
+    // evaluated is the trigger, and the request body is built from the state at that moment.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [turnToEvaluateId, dispatch]);
 }
 
-/** `null` when no user turn is waiting for its evaluation. */
-function evaluationRequestFrom(
-  state: SessionState,
-): { turnId: string; request: EvaluationRequest } | null {
+/** The user turn still waiting for its evaluation, if any. */
+function getTurnToEvaluate(state: SessionState): UserTurn | undefined {
   if (state.phase !== "conversation") {
-    return null;
+    return undefined;
   }
 
-  const turn = state.turns.findLast(
-    (candidate) =>
-      candidate.author === "user" && candidate.evaluation.status === "pending",
+  return state.turns.findLast(
+    (turn): turn is UserTurn =>
+      turn.author === "user" && turn.evaluation.status === "pending",
   );
-  if (!turn) {
-    return null;
-  }
+}
 
-  const { language, level } = state.config;
-  return { turnId: turn.id, request: { language, level, input: turn.text } };
+function createEvaluationRequestBody(
+  config: SessionConfig,
+  turn: UserTurn,
+): EvaluationRequestBody {
+  const { language, level } = config;
+  return { language, level, input: turn.text };
 }
 
 async function fetchEvaluation(
-  request: EvaluationRequest,
+  body: EvaluationRequestBody,
   signal: AbortSignal,
 ) {
   return EvaluationResponseSchema.parse(
-    await postJson(EVALUATION_ENDPOINT, request, signal),
+    await postJson(EVALUATION_ENDPOINT, body, signal),
   );
 }

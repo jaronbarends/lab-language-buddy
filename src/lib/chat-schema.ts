@@ -27,7 +27,7 @@ const MAX_INTERACTION_ID_LENGTH = 200;
  * `language` and `level` are enums on purpose: they end up inside the system
  * instruction, and a free-text field there would let any caller write into the prompt.
  */
-export const ChatRequestSchema = z.discriminatedUnion("kind", [
+export const ChatRequestBodySchema = z.discriminatedUnion("kind", [
   z.object({
     kind: z.literal("aiStarts"),
     language: z.enum(LANGUAGE_CODES),
@@ -46,7 +46,7 @@ export const ChatRequestSchema = z.discriminatedUnion("kind", [
   }),
 ]);
 
-export type ChatRequest = z.infer<typeof ChatRequestSchema>;
+export type ChatRequestBody = z.infer<typeof ChatRequestBodySchema>;
 
 /**
  * One piece of a correction. Read in order and concatenated, the `text` values form the
@@ -85,15 +85,15 @@ export type ChatResponse = z.infer<typeof ChatResponseSchema>;
  * The contract of `/api/evaluation` and `/api/mock/evaluation`: the correction of one user
  * message. It is stateless on purpose: no interaction id, so the correction never enters
  * the conversation chain and the corrector sees only this message. `language` and
- * `level` are enums for the same reason as in `ChatRequestSchema`.
+ * `level` are enums for the same reason as in `ChatRequestBodySchema`.
  */
-export const EvaluationRequestSchema = z.object({
+export const EvaluationRequestBodySchema = z.object({
   language: z.enum(LANGUAGE_CODES),
   level: z.enum(CEFR_LEVELS),
   input: z.string().min(1).max(MAX_INPUT_LENGTH),
 });
 
-export type EvaluationRequest = z.infer<typeof EvaluationRequestSchema>;
+export type EvaluationRequestBody = z.infer<typeof EvaluationRequestBodySchema>;
 
 /**
  * `correction` is `null` when the message has nothing worth correcting. An empty list is

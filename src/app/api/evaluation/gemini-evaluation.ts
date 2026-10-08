@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import {
   EvaluationResponseSchema,
-  type EvaluationRequest,
+  type EvaluationRequestBody,
   type EvaluationResponse,
 } from "@/lib/chat-schema";
 import { buildEvaluationSystemInstruction } from "@/lib/prompt";
@@ -27,7 +27,7 @@ const GeminiCorrectionSchema = z.object({
 const GeminiCorrectionJSONSchema = z.toJSONSchema(GeminiCorrectionSchema);
 
 export async function askGeminiForEvaluation(
-  request: EvaluationRequest,
+  body: EvaluationRequestBody,
   signal: AbortSignal,
 ): Promise<EvaluationResponse> {
   const apiKey = process.env.GEMINI_API_KEY;
@@ -42,10 +42,10 @@ export async function askGeminiForEvaluation(
   const response = await ai.interactions.create(
     {
       model: MODEL,
-      input: request.input,
+      input: body.input,
       system_instruction: buildEvaluationSystemInstruction(
-        request.language,
-        request.level,
+        body.language,
+        body.level,
       ),
       response_format: {
         type: "text",

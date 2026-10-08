@@ -1,3 +1,4 @@
+import type { EvaluationSegment } from "@/lib/chat-schema";
 import type { LanguageCode } from "@/lib/languages";
 import type { LiveTranscript } from "@/lib/session-reducer";
 
@@ -16,11 +17,24 @@ type MockScript = {
   aiLines: string[];
   userLines: string[];
   /**
-   * English explanations that quote the target language, as the real route's do. `null`
-   * is a turn without a mistake.
+   * Corrections shaped like the real route's: an English explanation around phrases in
+   * the target language. `null` is a turn without a mistake.
    */
-  corrections: (string | null)[];
+  corrections: (EvaluationSegment[] | null)[];
 };
+
+function mockEvaluationSegments(
+  userInput: string,
+  suggestion: string,
+): EvaluationSegment[] {
+  return [
+    { type: "text", text: "Instead of " },
+    { type: "userInput", text: userInput },
+    { type: "text", text: ", it is more natural to say " },
+    { type: "suggestion", text: suggestion },
+    { type: "text", text: "." },
+  ];
+}
 
 const MOCK_SCRIPTS: Record<LanguageCode, MockScript> = {
   no: {
@@ -34,7 +48,7 @@ const MOCK_SCRIPTS: Record<LanguageCode, MockScript> = {
       "Jeg liker best å gå ute i naturen. Jeg foretrekker fjellet og skogen.",
     ],
     corrections: [
-      "You said “Jeg liker å gå ute”; a native speaker would more naturally say “Jeg liker å være i naturen”.",
+      mockEvaluationSegments("Jeg liker å gå ute", "Jeg liker å være i naturen"),
       null,
     ],
   },
@@ -49,7 +63,10 @@ const MOCK_SCRIPTS: Record<LanguageCode, MockScript> = {
       "Ik ben het liefst in de natuur. Ik houd van het bos en de bergen.",
     ],
     corrections: [
-      "You said “Ik loop ook als het regent”; a native speaker would more naturally say “Ik ga ook wandelen als het regent”.",
+      mockEvaluationSegments(
+        "Ik loop ook als het regent",
+        "Ik ga ook wandelen als het regent",
+      ),
       null,
     ],
   },
@@ -64,7 +81,10 @@ const MOCK_SCRIPTS: Record<LanguageCode, MockScript> = {
       "Je préfère la nature. J'aime la montagne et la forêt.",
     ],
     corrections: [
-      "You said “J'aime aussi marcher sous la pluie”; a native speaker would more naturally say “J'aime aussi me promener sous la pluie”.",
+      mockEvaluationSegments(
+        "J'aime aussi marcher sous la pluie",
+        "J'aime aussi me promener sous la pluie",
+      ),
       null,
     ],
   },
@@ -79,7 +99,10 @@ const MOCK_SCRIPTS: Record<LanguageCode, MockScript> = {
       "Am liebsten bin ich in der Natur. Ich mag die Berge und den Wald.",
     ],
     corrections: [
-      "You said “Ich bin gern draußen”; a native speaker would more naturally say “Ich halte mich gern draußen auf”.",
+      mockEvaluationSegments(
+        "Ich bin gern draußen",
+        "Ich halte mich gern draußen auf",
+      ),
       null,
     ],
   },
@@ -94,7 +117,10 @@ const MOCK_SCRIPTS: Record<LanguageCode, MockScript> = {
       "Preferisco la natura. Mi piacciono la montagna e il bosco.",
     ],
     corrections: [
-      "You said “Cammino anche quando piove”; a native speaker would more naturally say “Faccio una passeggiata anche quando piove”.",
+      mockEvaluationSegments(
+        "Cammino anche quando piove",
+        "Faccio una passeggiata anche quando piove",
+      ),
       null,
     ],
   },
@@ -109,7 +135,10 @@ const MOCK_SCRIPTS: Record<LanguageCode, MockScript> = {
       "Prefiero la naturaleza. Me gustan la montaña y el bosque.",
     ],
     corrections: [
-      "You said “También camino cuando llueve”; a native speaker would more naturally say “También salgo a caminar cuando llueve”.",
+      mockEvaluationSegments(
+        "También camino cuando llueve",
+        "También salgo a caminar cuando llueve",
+      ),
       null,
     ],
   },
@@ -122,18 +151,20 @@ export function mockAiLine(language: LanguageCode, aiTurnIndex: number): string 
 }
 
 /**
- * The correction for the user turn that the AI turn `aiTurnIndex` answers. The opening
- * AI turn answers nothing, so it has none. Cycles like the AI lines.
+ * The correction for a user message. The mock evaluation route keeps no state, so the
+ * choice follows from the text itself: the same message always gets the same correction,
+ * which makes a retry predictable, while different messages cycle through the list.
  */
 export function mockCorrection(
   language: LanguageCode,
-  aiTurnIndex: number,
-): string | null {
-  if (aiTurnIndex === 0) {
-    return null;
-  }
+  input: string,
+): EvaluationSegment[] | null {
   const { corrections } = MOCK_SCRIPTS[language];
-  return corrections[(aiTurnIndex - 1) % corrections.length];
+  let hash = 0;
+  for (const character of input) {
+    hash = (hash + character.charCodeAt(0)) % corrections.length;
+  }
+  return corrections[hash];
 }
 
 export function mockUserLine(

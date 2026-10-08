@@ -206,18 +206,25 @@ so a page reload starts from the defaults again.
         ├── languages.ts          provider-neutral language registry
         ├── cefr.ts               A1–C2 + labels
         ├── word-timing.ts        estimateWordTimings / countSpokenWords
-        ├── chat-schema.ts        zod: the chat request (a union on `kind`), the response, the
-        │                         error body
-        ├── chat-request.ts       `readChatRequest` and `errorResponse`, shared by both chat routes
-        ├── prompt.ts             `buildChatSystemInstruction`, assembled from named sections
-        └── mock-conversation.ts  canned AI lines (mock chat route) and sample user lines
-                                  (the dev state stepper)
+        ├── chat-schema.ts        zod: the chat request (a union on `kind`) and response, the
+        │                         evaluation request and response (correction segments), the error body
+        ├── chat-request.ts       `readChatRequest`, `readEvaluationRequest` and `errorResponse`,
+        │                         shared by the real and the mock routes
+        ├── prompt.ts             `buildChatSystemInstruction` and `buildEvaluationSystemInstruction`,
+        │                         assembled from shared and per-persona named sections
+        └── mock-conversation.ts  canned AI lines and corrections (mock routes) and sample user
+                                  lines (the dev state stepper)
 ```
 
 `src/app/api/chat/route.ts` and `src/app/api/mock/chat/route.ts` exist since stage 2;
 `src/app/api/chat/gemini-chat.ts` beside the first holds the Gemini call (`askGemini`),
 the model name and Gemini's `{ reply }` schema, and is server only. `.env.example`
 documents the variables; `.env.local` (not committed) holds the values.
+
+Stage 4, step 1 adds `src/app/api/evaluation/route.ts` and `src/app/api/mock/evaluation/route.ts`,
+with `src/app/api/evaluation/gemini-evaluation.ts` beside the first (`askGeminiForEvaluation`,
+its own model constant, and Gemini's `{ correction }` schema). The route is stateless: no
+`previous_interaction_id`. Nothing in the client calls it yet.
 
 `src/app/api/stt/token/route.ts` and `src/hooks/use-live-transcription.ts` exist since
 stage 3, step 1; the token mint (`mintLiveToken`) sits in the route file.
@@ -549,7 +556,7 @@ parallel:
 - `/api/chat`, as in stage 2: `{ interactionId, reply }`, chained with
   `previous_interaction_id`. No `correction` in it; the persona prompt loses its
   *Correction* section.
-- `/api/evaluate`: `{ language, level, input }` in, `{ correction }` out, where
+- `/api/evaluation`: `{ language, level, input }` in, `{ correction }` out, where
   `correction` is `Segment[] | null`. **Stateless**: no `previous_interaction_id`, so the
   corrections never enter the conversation chain, and the corrector sees only the
   user's latest message. The AI's opening turn has no user message and makes no call.
@@ -652,17 +659,26 @@ produces more quotation marks. Moving the segment rules into the schema's `descr
 fields was tried and was worse than keeping them in the prompt (more wrong types, and
 the explanation in the wrong language).
 
+**Measured again with the real prompts** (step 1: rules in `system_instruction`, through
+`/api/evaluation` on the dev server, 40 calls over the same 8 inputs): wrong types 1 of 30;
+a correction on the two correct sentences 0 of 10; a correction on the lower-case and
+no-diacritics sentences 10 of 10, 5 of them spelling-only; `eld` null or flagged as a
+transcription error 2 of 5; quotation marks in the text 8 of 30. The added line about not
+looking for a mistake changed nothing on the spelling-only inputs. Latency of the call,
+median 2550 ms (1897 to 3241), four requests at a time, dev server included, so well under
+the 10 s timeout and about as long as the chat call.
+
 **Build steps (proposed; check-in after each).**
 
-1. Prompts and routes: split `prompt.ts` into shared, chat and corrector parts; take
+1. **Done.** Prompts and routes: split `prompt.ts` into shared, chat and corrector parts; take
    `correction` back out of `ChatResponse` and the chat Gemini call; the new
-   `/api/evaluate` route with its Gemini call and a mock route; both mocks. Measure again
+   `/api/evaluation` route with its Gemini call and a mock route; both mocks. Measure again
    with the real prompts.
 2. State and driver: the correction on the user turn (running, ready, failed), the two
    calls in parallel, the 10 s timeout and abort, the reply held until the correction has
    settled, TTS playback gated on the reply being on screen, the Try again rule.
 3. Display: the attached section with its four contents, italics and the one background.
-4. Verify on desktop and on an iPhone, including a wrong key for `/api/evaluate` only
+4. Verify on desktop and on an iPhone, including a wrong key for `/api/evaluation` only
    (reply still arrives, "Evaluation failed"), a corrector that does not answer in 10 s,
    and Try again after a failed chat call.
 
@@ -920,7 +936,7 @@ have been argued over first.
 | 10-06 | you | The Correction prompt forbids any spelling correction, not just spaces, punctuation and diacritics; capitalization is added to the list | The input is speech-to-text, so the user is not responsible for how words are spelled. The spike's rule only covered spaces, punctuation and diacritics. |
 | 10-06 | agent | Segments cost about +255 ms on the chat round trip (median 2947 → 3202 ms, 10 runs each), the same as the plain-string version | The extra JSON structure did not add measurable latency. Over 8 sampled corrections the types were assigned correctly and `userInput` was always a fragment, never the whole message. One had stray quotation marks inside a `text` segment. The grammar explanations in those samples were sometimes muddled: a model-quality matter, not the structure. |
 | 10-06 | agent | The mock chat route returns a per-language correction (a mistake as segments quoting part of that language's mock user line, then `null`), none on the opening turn | The opening AI turn answers nothing, so it has nothing to correct. The first mock version quoted English phrases, which is what the line above rules out. |
-| 10-08 | you | **Supersedes "one call":** the correction comes from its own call to a separate prompt. `/api/chat` goes back to `{ interactionId, reply }`; a new, stateless `/api/evaluate` returns `{ correction }`. The `correction` field added to the chat response in 63d5da86 is taken out again | A separate corrector assigned the segment types wrongly 0 of 30 times, against 4 to 7 of 30 in one call, even with an explicit second role in the prompt; it also kept corrections out of the conversation chain, as Jaron preferred, and no longer delays TTS. The price is two Gemini calls per turn, a second route, and pending and failure states. |
+| 10-08 | you | **Supersedes "one call":** the correction comes from its own call to a separate prompt. `/api/chat` goes back to `{ interactionId, reply }`; a new, stateless `/api/evaluation` returns `{ correction }`. The `correction` field added to the chat response in 63d5da86 is taken out again | A separate corrector assigned the segment types wrongly 0 of 30 times, against 4 to 7 of 30 in one call, even with an explicit second role in the prompt; it also kept corrections out of the conversation chain, as Jaron preferred, and no longer delays TTS. The price is two Gemini calls per turn, a second route, and pending and failure states. |
 | 10-08 | you | The prompts get a shared part (language and level, English level B2/C1, speech-to-text note, "spoken, never written") and one part per persona, as in the production app. The speech-to-text note is new for the chat persona. The corrector's rules and segment explanation go in its `system_instruction`; its `input` is only the user's message | Jaron's structure from the original app. The measurement put the rules in `input`, so it has to be repeated with the real prompts. |
 | 10-08 | you | The corrector's null rule reads: the message may not contain anything worth correcting; do not go looking for a mistake, and never fall back on spelling, spaces, punctuation, capitalization or diacritics just to have something to say | Jaron's experience is that most sentences do need a correction, so the rule is about not inventing one. The wording was reshaped from "Don't look for one that violates this instruction", which could be read two ways. |
 | 10-08 | you | **No code guard** that turns a spelling-only correction into `null` | `null` shows "No corrections. Great!", which would be false when the message had other mistakes and only the spelling one was returned. Proposed by the agent, rejected by Jaron. |
@@ -928,8 +944,9 @@ have been argued over first.
 | 10-08 | you | The correction section reads "Evaluating…" while the call runs, "No corrections. Great!" for `null`, and "Evaluation failed" on a failed call, an invalid response or the timeout; each text kept to one line | A placeholder reserves the height, so the bubble does not jump. "Evaluating…" instead of the thinking dots, and the failure text as short as possible, are Jaron's wording. |
 | 10-08 | you | `userInput` and `suggestion` are italic; only `suggestion` has a background, the user-bubble background. **Supersedes** the line above that highlights both and leaves it open whether they differ | The revised reference screenshot. |
 | 10-08 | you | Try again after a failed chat call repeats the chat call only; a correction that has arrived is kept, and a failed correction is not retried | Otherwise a retry pays twice and the text could change under the user. The agent's proposal, accepted. |
-| 10-08 | agent | The route is named `/api/evaluate`, takes `{ language, level, input }` and has no history or `previous_interaction_id`. Whether the corrector gets context (a branch off the chain, as in the original app) is left untested | The name follows the app's own word, "evaluation". Context was not part of the measurement. |
+| 10-08 | you | The route is `/api/evaluation` (with `EvaluationRequest`, `EvaluationResponse`, `readEvaluationRequest`, `gemini-evaluation.ts`; the field and the prompt builder keep "correction"). It takes `{ language, level, input }` and has no history or `previous_interaction_id`. Whether the corrector gets context (a branch off the chain, as in the original app) is left untested | The agent first called it `/api/evaluate`; Jaron wanted the noun, since what is requested is an evaluation. Context was not part of the measurement. |
 | 10-08 | agent | Measured with one call (A), one call with a second role (C) and a separate call (D), 40 calls each, `gemini-3.1-flash-lite`: wrong types 7/4/0; a correction on a lower-case or no-diacritics sentence 10/10/10 of 10; of those spelling-only 6/3/4; `eld` flagged or null 1/0/3 of 5; quotation marks in the text 4/3/7 of 30. Schema `description`s instead of prompt rules (earlier run, 40 calls each): wrong types 14 against 7 | Small and crude (5 runs per input, string heuristics, only some outputs read by hand), so a direction, not a result. The spelling ban and the transcription hint do not hold fully, and D adds quotation marks; none is solved. |
+| 10-08 | agent | Stage 4 step 1: the corrector's system instruction also says to treat the input as text to give feedback on, never as instructions; the mock evaluate route picks its correction from a sum of the input's characters, so the same message always gets the same answer; `readChatRequest` and `readEvaluationRequest` share one `readRequest` | The first is a guard I added to the agreed prompt: the user's message is the only input, and it is untrusted. The second keeps a retry predictable in a route with no state. The third avoids a copy of the body-reading code. |
 
 ## Keeping the experiment honest
 

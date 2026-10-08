@@ -49,19 +49,63 @@ export const ChatRequestSchema = z.discriminatedUnion("kind", [
 export type ChatRequest = z.infer<typeof ChatRequestSchema>;
 
 /**
- * What the routes return and the client parses. An empty reply is a failure.
- * `correction` is about the user's latest message, and is `null` when there was nothing
- * worth mentioning and always when the AI speaks first; an empty string is a failure too.
+ * One piece of a correction. Read in order and concatenated, the `text` values form the
+ * explanation, so a segment carries its own surrounding spaces and must not be trimmed.
+ *
+ * - `text`: the explanation itself, in English.
+ * - `userInput`: only the part of the user's message the explanation needs, quoted in
+ *   the target language. Never the whole message.
+ * - `suggestion`: the more natural alternative, in the target language.
+ *
+ * The client renders `userInput` and `suggestion` in italics, `suggestion` also on a
+ * background, with no quotation marks of its own.
  */
+export const EVALUATION_SEGMENT_TYPES = [
+  "text",
+  "userInput",
+  "suggestion",
+] as const;
+
+export const EvaluationSegmentSchema = z.object({
+  type: z.enum(EVALUATION_SEGMENT_TYPES),
+  text: z.string().min(1),
+});
+
+export type EvaluationSegment = z.infer<typeof EvaluationSegmentSchema>;
+
+/** What the chat routes return and the client parses. An empty reply is a failure. */
 export const ChatResponseSchema = z.object({
   interactionId: z.string(),
   reply: z.string().trim().min(1),
-  correction: z.string().trim().min(1).nullable(),
 });
 
 export type ChatResponse = z.infer<typeof ChatResponseSchema>;
 
-/** What a failing route answers and the client parses. */
+/**
+ * The contract of `/api/evaluation` and `/api/mock/evaluation`: the correction of one user
+ * message. It is stateless on purpose: no interaction id, so the correction never enters
+ * the conversation chain and the corrector sees only this message. `language` and
+ * `level` are enums for the same reason as in `ChatRequestSchema`.
+ */
+export const EvaluationRequestSchema = z.object({
+  language: z.enum(LANGUAGE_CODES),
+  level: z.enum(CEFR_LEVELS),
+  input: z.string().min(1).max(MAX_INPUT_LENGTH),
+});
+
+export type EvaluationRequest = z.infer<typeof EvaluationRequestSchema>;
+
+/**
+ * `correction` is `null` when the message has nothing worth correcting. An empty list is
+ * a failure, not "no correction".
+ */
+export const EvaluationResponseSchema = z.object({
+  correction: z.array(EvaluationSegmentSchema).min(1).nullable(),
+});
+
+export type EvaluationResponse = z.infer<typeof EvaluationResponseSchema>;
+
+/** What a failing route answers and the client parses. Shared by all the routes above. */
 export const ChatErrorSchema = z.object({ error: z.string() });
 
 export type ChatError = z.infer<typeof ChatErrorSchema>;

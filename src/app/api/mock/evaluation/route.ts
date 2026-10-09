@@ -6,8 +6,20 @@ import { mockCorrection } from "@/lib/mock-conversation";
 const MOCK_LATENCY_MS = 800;
 
 /**
+ * Ways to see the other states of an evaluation without breaking anything: a message
+ * containing the first fails, one containing the second does not answer within the
+ * driver's 10 s deadline. Typed in the editor, since the mock changes nothing else.
+ */
+const FAIL_MARKER = "[fail]";
+const SLOW_MARKER = "[slow]";
+const MOCK_SLOW_LATENCY_MS = 15_000;
+
+/**
  * Stand-in for `/api/evaluation` while developing without a Gemini key or quota. Same
  * request and response contract as the real route, from `chat-schema.ts`.
+ *
+ * A message containing `[fail]` gets a 500, and one containing `[slow]` an answer only
+ * after 15 s, to try the failed and the timed-out evaluation.
  */
 export async function POST(request: Request) {
   // It has no business existing outside development.
@@ -21,7 +33,12 @@ export async function POST(request: Request) {
   }
   const { language, input } = parsed.body;
 
-  await new Promise((resolve) => setTimeout(resolve, MOCK_LATENCY_MS));
+  const latency = input.includes(SLOW_MARKER) ? MOCK_SLOW_LATENCY_MS : MOCK_LATENCY_MS;
+  await new Promise((resolve) => setTimeout(resolve, latency));
+
+  if (input.includes(FAIL_MARKER)) {
+    return errorResponse("Mock evaluation failure", 500);
+  }
 
   const evaluationResponse: EvaluationResponse = {
     correction: mockCorrection(language, input),

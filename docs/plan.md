@@ -202,7 +202,9 @@ so a page reload starts from the defaults again.
     │   │                         draft-review (DraftBubble + DraftEditor),
     │   │                         conversation-controls (a switch over composing-controls,
     │   │                         error-controls and idle-controls, which dispatch for
-    │   │                         themselves); bubble (the shared frame) and
+    │   │                         themselves); evaluation-section (the attached evaluation
+    │   │                         of a user turn); bubble (the shared frame, always a `div`,
+    │   │                         with `BubbleText` and `BubbleAttachment`) and
     │   │                         a module css beside each component for its own styles
     │   ├── dev/state-stepper.tsx development-only turn-state jumper
     │   └── ui/                   button, icons, flag-icon
@@ -630,7 +632,12 @@ The bubble keeps its outline, and a divider separates the user's text from the c
 below it. The section's background is `--color-blue-50`; the user's text keeps the normal
 user-bubble background. `text` segments are plain. `userInput` and `suggestion` are italic,
 and only `suggestion` gets a background, the user-bubble background
-(`--color-bg-secondary-subtle`). No new tokens. **The correction is never spoken**: TTS
+(`--color-bg-secondary-subtle`). No new tokens. The section's background is the primitive
+`--color-blue-50` and not the semantic `--color-bg-info` that resolves to the same value:
+"info" is too general for this. Built as `evaluation-section.tsx`, an attachment to the
+bubble (`BubbleAttachment`): the bubble is only a `div` wrapper that clips what it holds
+to its rounded corners (`overflow: hidden`, for every bubble), and the text inside is a
+`<p>`. The phrases are `<i lang>` in the conversation language, the explanation `lang="en"`. **The correction is never spoken**: TTS
 reads `reply` only. The section shows one of four things, each as small as possible
 (one line for the two fixed texts):
 
@@ -695,10 +702,13 @@ the 10 s timeout and about as long as the chat call.
 2. **Done.** State and driver: the correction on the user turn (pending, ready, failed), the two
    calls in parallel, the 10 s timeout and abort, the reply held until the correction has
    settled, TTS playback gated on the reply being on screen, the Try again rule.
-   Until step 3 the user's bubble shows the evaluation as plain text ("Evaluating…", the
-   segments as `[type: text]`, "No corrections. Great!", "Evaluation failed"), a
-   temporary rendering in `turn-bubble.tsx` so the order and timing can be seen.
-3. Display: the attached section with its four contents, italics and the one background.
+   Step 2 showed the evaluation as plain text in the user's bubble first, so that the order
+   and timing could be seen.
+3. **Done; not looked at in a browser yet.** Display: the attached section with its four
+   contents, italics and the one background. The thread scrolls again when the evaluation
+   of the last user turn settles, since the user's bubble grows then. The mock evaluation
+   route fails for a message containing `[fail]` and answers only after 15 s for one
+   containing `[slow]`, to see "Evaluation failed" and the timeout.
 4. Verify on desktop and on an iPhone, including a wrong key for `/api/evaluation` only
    (reply still arrives, "Evaluation failed"), a corrector that does not answer in 10 s,
    and Try again after a failed chat call.
@@ -820,7 +830,7 @@ Per stage, in this order:
     becomes visible. Not possible with the current structure, which is not part of stage
     4. Today they are two elements: `ThinkingBubble` (a `div role="status"`, rendered
     after the turns while the state is `aiThinking`) and, once the reply is accepted, a
-    `TurnBubble` (a `p`, `key={turn.id}`). They share the `Bubble` frame and so look the
+    `TurnBubble` (a `div` with a `p` in it, `key={turn.id}`). They share the `Bubble` frame and so look the
     same, but one unmounts and the other mounts at the transition, so nothing exists to
     animate: the bubble jumps from the size of the dots to the size of the text. What it
     needs: (1) one element that survives the transition, so a key that is the same
@@ -830,7 +840,7 @@ Per stage, in this order:
     `aiThinking`; (2) a size transition that works for content of unknown size, since
     height and width cannot be animated to `auto` directly (the `0fr` to `1fr` grid
     trick, or measuring the content); (3) one role: the thinking bubble is a `status`
-    and the turn bubble a paragraph in the thread's `role="log"`, so what a screen reader
+    and the turn bubble a wrapper with a paragraph in the thread's `role="log"`, so what a screen reader
     announces has to be decided for the shared element. Since stage 4 a held reply
     (`pendingReply`) keeps the dots on screen until the evaluation has settled, which
     fits either structure. The same applies to the user's bubble, which grows when its
@@ -1009,6 +1019,11 @@ have been argued over first.
 | 10-08 | agent | Stage 4 step 1: the corrector's system instruction also says to treat the input as text to give feedback on, never as instructions; the mock evaluate route picks its correction from a sum of the input's characters, so the same message always gets the same answer; `readChatRequestBody` and `readEvaluationRequestBody` share one `readRequestBody` | The first is a guard I added to the agreed prompt: the user's message is the only input, and it is untrusted. The second keeps a retry predictable in a route with no state. The third avoids a copy of the body-reading code. |
 | 10-08 | agent | Stage 4 step 2: the ordering rule is in the reducer. `AI_TURN_RECEIVED` holds the reply as `pendingReply` in `aiThinking` while the last user turn's evaluation is `pending`; `EVALUATION_RECEIVED` and `EVALUATION_FAILED` release it | A pure transition that can be run on its own, instead of two hooks waiting on each other. The evaluation driver follows the turn, not `aiThinking`, so a failed chat call leaves the evaluation running and Try again does not repeat it. The reducer scenarios (13) were run with a scratch script through Node's type stripping; the drivers and the 10 s timeout have not been run in a browser. |
 | 10-08 | you | What the code calls a request is a request **body**: `ChatRequest` and `EvaluationRequest` are now `ChatRequestBody` and `EvaluationRequestBody` (and their `…Schema`), `readChatRequest` and `readEvaluationRequest` are `readChatRequestBody` and `readEvaluationRequestBody` and return `{ ok, body }`, `chatRequestFrom` is `createChatRequestBody`, and the first parameter of `askGemini`, `askGeminiForEvaluation`, `fetchChatReply` and `fetchEvaluation` is `body`. The evaluation driver now gets the turn with `getTurnToEvaluate(state)` and builds the body from `state.config` and that turn with `createEvaluationRequestBody`; `UserTurn` is exported from the reducer | A `Request` is the object a route handler receives; what the code builds and validates is its body, and `postJson` already called it `body`. The old `evaluationRequestFrom` returned a turn id and a body that had little to do with each other. `parsedRequest` in `api/tts/route.ts` has the same flaw and was left, being outside the list. |
+| 10-08 | you | The correction section's background is the primitive `--color-blue-50`, not `--color-bg-info` | The semantic token happens to resolve to the same colour, but "info" is too general for this. The agent had recommended the semantic one. |
+| 10-08 | you | `Bubble` is always a `div` (the `as` prop is gone) and always has `overflow: hidden`; the text inside a bubble can be a `<p>`, which `TurnBubble` now uses | The bubble is only the wrapper. `overflow: hidden` is the effect wanted whether or not anything overflows today, so it is not tied to an attachment being present. The agent had proposed limiting it to bubbles with an attachment, and the `div` only for the user bubble with one. `thinking-bubble.tsx` and `draft-review.tsx` lost their `as="div"` for it. |
+| 10-08 | you | The thread scrolls again when the evaluation of the last user turn settles | The user's bubble grows then, which can push the newest item out of view without a new turn or turn state. |
+| 10-08 | you | The mock evaluation route fails for a message containing `[fail]` and answers only after 15 s for one containing `[slow]` | Lets the failed and the timed-out evaluation be seen without breaking a key. Proposed by the agent as option (a) of three, chosen by Jaron. |
+| 10-08 | agent | The quoted phrases are `<i lang="…">`, the explanation `lang="en"`, and the attachment is clipped by the bubble | `<i>` is the element for text in another language, and `lang` lets a screen reader pronounce the phrases in the conversation language. Not discussed. |
 | 10-08 | you | The reply and the correction may appear in the same render when the correction arrives after the chat answer; the timing can be adjusted later | The rule is that the reply never appears before the correction, and appearing together satisfies it. Jaron: "in a later stage we can adjust the timing". |
 | 10-08 | you | TTS audio is not fetched ahead while the reply waits for the evaluation; `use-audio-playback.ts` is unchanged and fetches on entering `aiSpeaking`, which is after the reply is on screen | Prefetching needs extra state and only gains when the corrector is slower than the chat call. |
 | 10-08 | agent | `post-json.ts` takes `errorTextOf` out of `use-chat-driver.ts`, so both drivers share one fetch and one way of reading the route's error | Two copies of the same twelve lines. Asked for by Jaron as part of step 2. |

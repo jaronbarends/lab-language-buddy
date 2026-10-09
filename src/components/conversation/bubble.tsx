@@ -2,13 +2,8 @@ import type { HTMLAttributes, Ref } from "react";
 
 import styles from "./bubble.module.css";
 
-type BubbleProps = HTMLAttributes<HTMLElement> & {
+type BubbleProps = HTMLAttributes<HTMLDivElement> & {
   author: "ai" | "user";
-  /**
-   * Text bubbles are paragraphs, so `p` is the default. The thinking indicator and the
-   * editor hold things a <p> may not contain, and use `div`.
-   */
-  as?: "p" | "div";
 };
 
 /**
@@ -18,11 +13,14 @@ type BubbleProps = HTMLAttributes<HTMLElement> & {
  * the same — the live transcript becoming the draft the moment recording stops — cannot
  * drift apart. What goes inside, and any layout of it, is the caller's.
  *
+ * Only the wrapper: always a `div`, so what it holds can be a paragraph, a status
+ * indicator, an editor or an attachment alike. It clips what it holds to its rounded
+ * corners.
+ *
  * Extra attributes (aria-live, role, …) pass straight through to the element.
  */
 export function Bubble({
   author,
-  as: Element = "p",
   className,
   children,
   ...rest
@@ -36,9 +34,27 @@ export function Bubble({
     .join(" ");
 
   return (
-    <Element className={classNames} {...rest}>
+    <div className={classNames} {...rest}>
       {children}
-    </Element>
+    </div>
+  );
+}
+
+/**
+ * A section attached to the bottom of a bubble, inside its border: the bubble's own
+ * text above it, a divider, then this. It runs the full width of the bubble, so it
+ * cancels the bubble's padding and brings its own. What it contains and its background
+ * are the caller's; the bubble clips it to its rounded corners.
+ */
+export function BubbleAttachment({
+  className,
+  ...rest
+}: HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={[styles.attachment, className].filter(Boolean).join(" ")}
+      {...rest}
+    />
   );
 }
 
@@ -57,8 +73,8 @@ type BubbleTextProps = HTMLAttributes<HTMLSpanElement> & {
  * cap on all three keeps them the same size when they swap places. `vh`, not `dvh`: the
  * cap does not follow the keyboard or the collapsing URL bar.
  *
- * Always a span made block by CSS, because it sits inside the transcript and draft
- * bubbles, which are paragraphs and may not contain a div.
+ * A span made block by CSS, as it was when the transcript and draft bubbles were
+ * paragraphs that could not contain a div.
  */
 export function BubbleText({ className, ...rest }: BubbleTextProps) {
   return (

@@ -106,7 +106,7 @@ export function DraftEditor({
   }
 
   return (
-    <Bubble author="user" as="div">
+    <Bubble author="user">
       <BubbleText
         ref={editorRef}
         className={styles.editor}

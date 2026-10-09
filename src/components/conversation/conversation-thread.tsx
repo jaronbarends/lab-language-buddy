@@ -27,14 +27,20 @@ export function ConversationThread({
 }: ConversationThreadProps) {
   const threadRef = useRef<HTMLDivElement | null>(null);
 
+  // The evaluation sits in the user's bubble, which grows when it settles. That can push
+  // the newest item out of view without a new turn or another turn state.
+  const lastUserTurn = turns.findLast((turn) => turn.author === "user");
+  const lastUserEvaluationStatus =
+    lastUserTurn?.author === "user" ? lastUserTurn.evaluation.status : null;
+
   const speakingTurnId =
     turnState.name === "aiSpeaking" ? turnState.turnId : null;
   const spokenWordCount =
     turnState.name === "aiSpeaking" ? turnState.spokenWordCount : 0;
 
-  // Keep the newest content in view. Keyed on the turn count and the state name
-  // rather than on the whole state, so the highlight ticking forward several times
-  // a second doesn't trigger a scroll on every word.
+  // Keep the newest content in view. Keyed on the turn count, the state name and the
+  // last user turn's evaluation status rather than on the whole state, so the highlight
+  // ticking forward several times a second doesn't trigger a scroll on every word.
   //
   // Before paint, so a turn that arrives from a timer or the network is never painted
   // once at the old scroll position and then jumped.
@@ -66,7 +72,7 @@ export function ConversationThread({
     thread.scrollTop = newestItemWouldBeClipped
       ? Math.max(0, newestItem.offsetTop - NEWEST_ITEM_TOP_GAP)
       : bottomScrollTop;
-  }, [turns.length, turnState.name]);
+  }, [turns.length, turnState.name, lastUserEvaluationStatus]);
 
   return (
     // role="log" is an implicit polite live region, so appended replies are

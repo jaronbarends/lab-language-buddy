@@ -15,8 +15,12 @@ import { buildEvaluationSystemInstruction } from "@/lib/prompt";
 const MODEL = "gemini-3.1-flash-lite";
 
 /**
- * What Gemini is asked to produce: just the correction. The rules come from the response
- * schema, so what the client accepts and what Gemini is told cannot differ.
+ * What Gemini is asked to produce: just the correction. The schema only guards the shape:
+ * a non-empty list of segments, each with a type and non-empty text, or null. The content
+ * rules (the single most instructive mistake, `userInput` only the part the explanation
+ * needs, an English explanation, no quotation marks) are in the prompt,
+ * `buildEvaluationSystemInstruction` in `src/lib/prompt.ts`. Changing the segment format
+ * means changing both.
  */
 const GeminiCorrectionSchema = z.object({
   correction: EvaluationResponseSchema.shape.correction.describe(
@@ -46,6 +50,9 @@ export async function askGeminiForEvaluation(
       model: MODEL,
       input: body.input,
       previous_interaction_id: body.previousInteractionId,
+      // Not stored: nothing ever fetches this interaction and its id is not kept. The chat
+      // call is the one that has to be stored, since the conversation chain hangs off it.
+      store: false,
       system_instruction: buildEvaluationSystemInstruction(
         body.language,
         body.level,

@@ -6,13 +6,15 @@ import {
   EvaluationResponseSchema,
   type EvaluationRequestBody,
 } from "@/lib/chat-schema";
-import { postJson } from "@/lib/post-json";
-import type {
-  SessionAction,
-  SessionConfig,
-  SessionState,
-  Turn,
-  UserTurn,
+import { EVALUATION_TIMEOUT_MS } from "@/lib/evaluation-deadline";
+import { postJsonWithDeadline } from "@/lib/post-json";
+import {
+  getPreviousInteractionId,
+  type SessionAction,
+  type SessionConfig,
+  type SessionState,
+  type Turn,
+  type UserTurn,
 } from "@/lib/session-reducer";
 
 // Read as a literal property so Next can inline it at build time. The same switch as the
@@ -21,13 +23,6 @@ const EVALUATION_ENDPOINT =
   process.env.NEXT_PUBLIC_USE_MOCK_CHAT === "true"
     ? "/api/mock/evaluation"
     : "/api/evaluation";
-
-/**
- * After this the evaluation counts as failed. It matters because the AI's reply waits for
- * the evaluation (see `AI_TURN_RECEIVED` in the reducer): a corrector that never answers
- * would otherwise hold the reply back for good.
- */
-const EVALUATION_TIMEOUT_MS = 10_000;
 
 /**
  * The evaluation of a user turn: while a user turn's evaluation is `pending`, one request
@@ -57,34 +52,20 @@ export function useEvaluationDriver(
       turnToEvaluate,
     );
 
-    const abortController = new AbortController();
-
-    // An abort from the cleanup below means the turn is no longer the one to evaluate and
-    // nobody is waiting; an abort from this deadline means the reply is, so it has to end
-    // in `EVALUATION_FAILED`.
-    let requestHasTimedOut = false;
-    const timeoutId = setTimeout(() => {
-      requestHasTimedOut = true;
-      abortController.abort();
-    }, EVALUATION_TIMEOUT_MS);
-
-    fetchEvaluation(evaluationRequestBody, abortController.signal)
-      .then(({ correction }) => {
+    // The returned cleanup cancels the request (silently) when the turn is no longer the
+    // one to evaluate; the deadline, on the other hand, means the reply is waiting, so it
+    // ends in `EVALUATION_FAILED`.
+    return postJsonWithDeadline(EVALUATION_ENDPOINT, evaluationRequestBody, {
+      timeoutMs: EVALUATION_TIMEOUT_MS,
+      parse: (json) => EvaluationResponseSchema.parse(json),
+      onResult: ({ correction }) => {
         dispatch({ type: "EVALUATION_RECEIVED", turnId, correction });
-      })
-      .catch((error: unknown) => {
-        if (abortController.signal.aborted && !requestHasTimedOut) {
-          return;
-        }
+      },
+      onFailure: (error) => {
         console.error(error);
         dispatch({ type: "EVALUATION_FAILED", turnId });
-      })
-      .finally(() => clearTimeout(timeoutId));
-
-    return () => {
-      clearTimeout(timeoutId);
-      abortController.abort();
-    };
+      },
+    });
     // `state` is deliberately absent, as in `use-chat-driver.ts`: the turn being
     // evaluated is the trigger, and the request body is built from the state at that moment.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -113,26 +94,11 @@ function createEvaluationRequestBody(
   turn: UserTurn,
 ): EvaluationRequestBody {
   const { language, level } = config;
-  const lastAiTurnBefore = turns
-    .slice(0, turns.indexOf(turn))
-    .findLast((earlierTurn) => earlierTurn.author === "ai");
 
   return {
     language,
     level,
     input: turn.text,
-    previousInteractionId:
-      lastAiTurnBefore?.author === "ai"
-        ? lastAiTurnBefore.interactionId
-        : undefined,
+    previousInteractionId: getPreviousInteractionId(turns, turn),
   };
-}
-
-async function fetchEvaluation(
-  body: EvaluationRequestBody,
-  signal: AbortSignal,
-) {
-  return EvaluationResponseSchema.parse(
-    await postJson(EVALUATION_ENDPOINT, body, signal),
-  );
 }

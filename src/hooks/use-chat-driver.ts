@@ -3,8 +3,9 @@
 import { useEffect, type Dispatch } from "react";
 
 import { ChatResponseSchema, type ChatRequestBody } from "@/lib/chat-schema";
-import { postJson } from "@/lib/post-json";
+import { postJsonWithDeadline } from "@/lib/post-json";
 import {
+  getPreviousInteractionId,
   turnStateIs,
   type ConversationState,
   type SessionAction,
@@ -58,46 +59,32 @@ export function useChatDriver(
 
     // Per the reducer's contract: a reply that arrives after `aiThinking` was left
     // would be accepted by whatever state the reducer is in now, so it must not arrive.
-    const abortController = new AbortController();
-
-    // An abort from the cleanup below means the state was left and nobody is waiting;
-    // an abort from this deadline means the user is, so it has to end in `FAILED`.
-    let requestHasTimedOut = false;
-    const timeoutId = setTimeout(() => {
-      requestHasTimedOut = true;
-      abortController.abort();
-    }, CHAT_TIMEOUT_MS);
-
-    fetchChatReply(chatRequestBody, abortController.signal)
-      .then(({ interactionId, reply }) => {
+    // The returned cleanup cancels the request (silently); the deadline, on the other
+    // hand, means the user is waiting, so it ends in `FAILED`.
+    return postJsonWithDeadline(CHAT_ENDPOINT, chatRequestBody, {
+      timeoutMs: CHAT_TIMEOUT_MS,
+      parse: (json) => ChatResponseSchema.parse(json),
+      onResult: ({ interactionId, reply }) => {
         dispatch({
           type: "AI_TURN_RECEIVED",
           id: crypto.randomUUID(),
           text: reply,
           interactionId,
         });
-      })
-      .catch((error: unknown) => {
-        if (abortController.signal.aborted && !requestHasTimedOut) {
-          return;
-        }
+      },
+      onFailure: (error, { timedOut }) => {
         console.error(error);
         dispatch({
           type: "FAILED",
           message: CHAT_FAILED_MESSAGE,
-          detail: requestHasTimedOut
+          detail: timedOut
             ? "The request timed out"
             : error instanceof Error
               ? error.message
               : String(error),
         });
-      })
-      .finally(() => clearTimeout(timeoutId));
-
-    return () => {
-      clearTimeout(timeoutId);
-      abortController.abort();
-    };
+      },
+    });
     // `state` is deliberately absent: re-running on every turns change would abort and
     // resend the request. Entering the state is the trigger, and the request is built
     // from the state as it is at that moment.
@@ -121,18 +108,11 @@ function createChatRequestBody(state: ConversationState): ChatRequestBody | null
     return null;
   }
 
-  const lastAiTurn = turns.findLast((turn) => turn.author === "ai");
-
   return {
     kind: "userTurn",
     language,
     level,
     input: lastTurn.text,
-    previousInteractionId:
-      lastAiTurn?.author === "ai" ? lastAiTurn.interactionId : undefined,
+    previousInteractionId: getPreviousInteractionId(turns, lastTurn),
   };
-}
-
-async function fetchChatReply(body: ChatRequestBody, signal: AbortSignal) {
-  return ChatResponseSchema.parse(await postJson(CHAT_ENDPOINT, body, signal));
 }

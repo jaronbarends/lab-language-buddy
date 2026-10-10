@@ -99,7 +99,9 @@ export type TurnState =
        * The reply has come in, but the evaluation of the user turn it answers is still
        * pending. It is held here and shown, with the AI starting to speak, once the
        * evaluation settles: the correction sits in the user's bubble, above the reply,
-       * and the reply must not appear before it.
+       * and the reply must not appear before it. It is released by `EVALUATION_RECEIVED`
+       * or `EVALUATION_FAILED`, so the evaluation driver must always settle; its deadline
+       * is `EVALUATION_TIMEOUT_MS` in `src/lib/evaluation-deadline.ts`.
        */
       pendingReply?: AiReply;
     }
@@ -207,6 +209,30 @@ export function turnStateIs<N extends TurnStateName>(
   return state.phase === "conversation" && state.turnState.name === name;
 }
 
+/**
+ * The interaction id a request about `turn` continues the conversation from: that of the
+ * last AI turn before it. `undefined` when there is none, which is when the user spoke
+ * first, and when `turn` is not in `turns`. The chat call and the evaluation call for the
+ * same message both use it, so both branch off the same turn.
+ */
+export function getPreviousInteractionId(
+  turns: Turn[],
+  turn: Turn,
+): string | undefined {
+  const turnIndex = turns.indexOf(turn);
+  if (turnIndex === -1) {
+    return undefined;
+  }
+
+  const lastAiTurnBefore = turns
+    .slice(0, turnIndex)
+    .findLast((earlierTurn) => earlierTurn.author === "ai");
+
+  return lastAiTurnBefore?.author === "ai"
+    ? lastAiTurnBefore.interactionId
+    : undefined;
+}
+
 /** Whether the last turn is a user turn whose evaluation has not settled yet. */
 function lastUserTurnIsBeingEvaluated(turns: Turn[]): boolean {
   const lastTurn = turns.at(-1);
@@ -264,11 +290,18 @@ export function composedTextOf(turnState: ComposingTurnState): string {
  * to the current state are ignored rather than throwing: a late `TRANSCRIPT_UPDATED`
  * arriving after the socket closed is normal, not a bug worth crashing over.
  *
- * Contract for the async drivers: the speech actions are matched to
- * their turn by id, but the reducer cannot tell a stale `AI_TURN_RECEIVED` or
- * `TRANSCRIPT_UPDATED` from a current one — both only check the state name. So every
- * async source must cancel when the state that started it is left: abort in-flight
- * fetches, and detach handlers from and close sockets.
+ * Contract for the async drivers, of which there are two kinds:
+ *
+ * - Sources bound to a turn state (chat, live transcription, playback). The reducer
+ *   cannot tell a stale `AI_TURN_RECEIVED` or `TRANSCRIPT_UPDATED` from a current one —
+ *   both only check the state name. So such a source must cancel when the state that
+ *   started it is left: abort in-flight fetches, and detach handlers from and close
+ *   sockets.
+ * - Sources bound to a turn (the evaluation). These are deliberately not cancelled when
+ *   the turn state is left: a failed chat call must not throw the correction away. Their
+ *   actions carry the turn id, and the reducer ignores one for a turn whose evaluation
+ *   is not `pending`. Such a source is cancelled when its turn no longer needs it, which
+ *   includes the session ending.
  */
 export function sessionReducer(
   state: SessionState,

@@ -17,10 +17,13 @@ type MockScript = {
   aiLines: string[];
   userLines: string[];
   /**
-   * Corrections shaped like the real route's: an English explanation around phrases in
-   * the target language. `null` is a turn without a mistake.
+   * Corrections for the mock evaluation: only the suggestion, in the target language.
+   * `null` is a turn without a mistake. The `userInput` part is not stored here;
+   * mockCorrection takes it from the first words of the message itself, so it is always
+   * a part of what was said, as the contract requires. The explanation around it and the
+   * suggestion are canned and do not fit those words, which is acceptable for a mock.
    */
-  corrections: (EvaluationSegment[] | null)[];
+  corrections: ({ suggestion: string } | null)[];
 };
 
 function mockEvaluationSegments(
@@ -48,7 +51,7 @@ const MOCK_SCRIPTS: Record<LanguageCode, MockScript> = {
       "Jeg liker best å gå ute i naturen. Jeg foretrekker fjellet og skogen.",
     ],
     corrections: [
-      mockEvaluationSegments("Jeg liker å gå ute", "Jeg liker å være i naturen"),
+      { suggestion: "Jeg liker å være i naturen" },
       null,
     ],
   },
@@ -63,10 +66,7 @@ const MOCK_SCRIPTS: Record<LanguageCode, MockScript> = {
       "Ik ben het liefst in de natuur. Ik houd van het bos en de bergen.",
     ],
     corrections: [
-      mockEvaluationSegments(
-        "Ik loop ook als het regent",
-        "Ik ga ook wandelen als het regent",
-      ),
+      { suggestion: "Ik ga ook wandelen als het regent" },
       null,
     ],
   },
@@ -81,10 +81,7 @@ const MOCK_SCRIPTS: Record<LanguageCode, MockScript> = {
       "Je préfère la nature. J'aime la montagne et la forêt.",
     ],
     corrections: [
-      mockEvaluationSegments(
-        "J'aime aussi marcher sous la pluie",
-        "J'aime aussi me promener sous la pluie",
-      ),
+      { suggestion: "J'aime aussi me promener sous la pluie" },
       null,
     ],
   },
@@ -99,10 +96,7 @@ const MOCK_SCRIPTS: Record<LanguageCode, MockScript> = {
       "Am liebsten bin ich in der Natur. Ich mag die Berge und den Wald.",
     ],
     corrections: [
-      mockEvaluationSegments(
-        "Ich bin gern draußen",
-        "Ich halte mich gern draußen auf",
-      ),
+      { suggestion: "Ich halte mich gern draußen auf" },
       null,
     ],
   },
@@ -117,10 +111,7 @@ const MOCK_SCRIPTS: Record<LanguageCode, MockScript> = {
       "Preferisco la natura. Mi piacciono la montagna e il bosco.",
     ],
     corrections: [
-      mockEvaluationSegments(
-        "Cammino anche quando piove",
-        "Faccio una passeggiata anche quando piove",
-      ),
+      { suggestion: "Faccio una passeggiata anche quando piove" },
       null,
     ],
   },
@@ -135,10 +126,7 @@ const MOCK_SCRIPTS: Record<LanguageCode, MockScript> = {
       "Prefiero la naturaleza. Me gustan la montaña y el bosque.",
     ],
     corrections: [
-      mockEvaluationSegments(
-        "También camino cuando llueve",
-        "También salgo a caminar cuando llueve",
-      ),
+      { suggestion: "También salgo a caminar cuando llueve" },
       null,
     ],
   },
@@ -152,8 +140,12 @@ export function mockAiLine(language: LanguageCode, aiTurnIndex: number): string 
 
 /**
  * The correction for a user message. The mock evaluation route keeps no state, so the
- * choice follows from the text itself: the same message always gets the same correction,
+ * choice follows from the text itself: the same message always gets the same answer,
  * which makes a retry predictable, while different messages cycle through the list.
+ *
+ * The `userInput` is the first words of the message itself, so it is always a part of
+ * what was said, as the contract requires. The explanation and the suggestion are
+ * canned and do not fit those words, which is acceptable for a mock.
  */
 export function mockCorrection(
   language: LanguageCode,
@@ -164,7 +156,17 @@ export function mockCorrection(
   for (const character of input) {
     hash = (hash + character.charCodeAt(0)) % corrections.length;
   }
-  return corrections[hash];
+  const correction = corrections[hash];
+  if (!correction) {
+    return null;
+  }
+
+  const quoted = input.trim().split(/\s+/).slice(0, 4).join(" ");
+  if (!quoted) {
+    return null;
+  }
+
+  return mockEvaluationSegments(quoted, correction.suggestion);
 }
 
 export function mockUserLine(

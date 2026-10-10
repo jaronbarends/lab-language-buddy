@@ -212,7 +212,7 @@ so a page reload starts from the defaults again.
     │   ├── use-session-dispatch.ts dispatch context + `useSessionDispatch`
     │   ├── use-chat-driver.ts    the Gemini round trip in `aiThinking`; picks the real or
     │   │                         the mock route via `NEXT_PUBLIC_USE_MOCK_CHAT`
-    │   ├── use-evaluation-driver.ts  the evaluation of a user turn, with its 10 s timeout;
+    │   ├── use-evaluation-driver.ts  the evaluation of a user turn, with `EVALUATION_TIMEOUT_MS`;
     │   │                         the same mock switch
     │   ├── use-live-transcription.ts  mic + Deepgram socket while `listening`
     │   ├── use-audio-playback.ts  `/api/tts` + the shared `<audio>` element in `aiSpeaking`,
@@ -225,8 +225,11 @@ so a page reload starts from the defaults again.
         ├── word-timing.ts        estimateWordTimings / countSpokenWords
         ├── chat-schema.ts        zod: the chat request (a union on `kind`) and response, the
         │                         evaluation request and response (correction segments), the error body
-        ├── post-json.ts          `postJson`: the fetch both drivers use, throwing the route's own
-        │                         error text
+        ├── post-json.ts          `postJson` and `postJsonWithDeadline`: the fetch both drivers use,
+        │                         with the deadline and the abort handling, throwing the route's
+        │                         own error text
+        ├── evaluation-deadline.ts  `EVALUATION_TIMEOUT_MS`, shared by the evaluation driver and
+        │                         the mock route
         ├── chat-request.ts       `readChatRequestBody`, `readEvaluationRequestBody` and `errorResponse`,
         │                         shared by the real and the mock routes
         ├── prompt.ts             `buildChatSystemInstruction` and `buildEvaluationSystemInstruction`,
@@ -243,8 +246,8 @@ documents the variables; `.env.local` (not committed) holds the values.
 Stage 4, step 1 adds `src/app/api/evaluation/route.ts` and `src/app/api/mock/evaluation/route.ts`,
 with `src/app/api/evaluation/gemini-evaluation.ts` beside the first (`askGeminiForEvaluation`,
 its own model constant, and Gemini's `{ correction }` schema). The call branches off the
-last AI turn (`previous_interaction_id`) and its own id is never handed back. Nothing in the
-client calls it yet.
+last AI turn (`previous_interaction_id`), is not stored (`store: false`) and its own id is
+never handed back. `use-evaluation-driver.ts` calls it for every user turn.
 
 `src/app/api/stt/token/route.ts` and `src/hooks/use-live-transcription.ts` exist since
 stage 3, step 1; the token mint (`mintLiveToken`) sits in the route file.
@@ -556,7 +559,7 @@ Voice names get verified against the authoritative list endpoints rather than fr
 `GET https://{region}.tts.speech.microsoft.com/cognitiveservices/voices/list` for Azure,
 `GET https://texttospeech.googleapis.com/v1/voices?key=…` for Google.
 
-### Stage 4 — Evaluation: per-turn correction, in its own call (design decided 2026-10-08, not built)
+### Stage 4 — Evaluation: per-turn correction, in its own call (built in steps 1 to 3; step 4, verification, open)
 
 A written comparison came before any implementation. The question was a **three-way**:
 
@@ -669,7 +672,8 @@ arrived is kept and not requested again; a failed correction is not retried.
 
 **History.** The corrector branches off the last AI turn, as the original app's did, and
 sees the conversation so far. The corrections are not in the chain: the evaluation call is a
-sibling of the chat call for the same message, and only the chat call's id is carried on.
+sibling of the chat call for the same message, and only the chat call's id is carried on. The evaluation call is not stored at Gemini
+(`store: false`) either: nothing fetches it, and the chat call is the one that has to be stored.
 A chat call and an evaluation call from the same AI turn, in parallel, both succeed, and
 the chain continues from the chat turn afterwards. The price is that every evaluation
 sends the conversation so far as input, so its cost grows with the conversation, which a
@@ -714,7 +718,7 @@ looking for a mistake changed nothing on the spelling-only inputs. Latency of th
 median 2550 ms (1897 to 3241), four requests at a time, dev server included, so well under
 the 10 s timeout and about as long as the chat call.
 
-**Build steps (proposed; check-in after each).**
+**Build steps (check-in after each).**
 
 1. **Done.** Prompts and routes: split `prompt.ts` into shared, chat and corrector parts; take
    `correction` back out of `ChatResponse` and the chat Gemini call; the new
@@ -725,11 +729,11 @@ the 10 s timeout and about as long as the chat call.
    settled, TTS playback gated on the reply being on screen, the Try again rule.
    Step 2 showed the evaluation as plain text in the user's bubble first, so that the order
    and timing could be seen.
-3. **Done; not looked at in a browser yet.** Display: the attached section with its four
+3. **Done.** Display: the attached section with its four
    contents, italics and the one background. The thread scrolls again when the evaluation
    of the last user turn settles, since the user's bubble grows then. The mock evaluation
-   route fails for a message containing `[fail]` and answers only after 15 s for one
-   containing `[slow]`, to see "Evaluation failed" and the timeout.
+   route fails for a message containing `[fail]` and answers only after the driver's deadline
+   plus 5 s for one containing `[slow]`, to see "Evaluation failed" and the timeout.
 4. Verify on desktop and on an iPhone, including a wrong key for `/api/evaluation` only
    (reply still arrives, "Evaluation failed"), a corrector that does not answer in 10 s,
    and Try again after a failed chat call.
@@ -834,7 +838,9 @@ Per stage, in this order:
    account: `/api/stt/token` hands anyone a Deepgram token (short-lived, but a new one on
    every call, and it opens a live-transcription socket on our account), and `/api/tts`
    synthesises up to 1500 characters per call with whichever provider `TTS_PROVIDER`
-   names. Decide the protection before the first public deployment.
+   names. Decide the protection before the first public deployment. Since stage 4 every
+   turn also makes an evaluation call that sends the conversation so far, so that exposure
+   grew with it.
 10. **Buffering the audio while the Deepgram socket opens.** Raised in the stage 3 review
     (the "Preparing mic…" point). The recorder starts only once the socket is open, so
     nothing said before then is recorded, and the screen shows "Preparing mic…" until it
@@ -884,6 +890,21 @@ Per stage, in this order:
     shows no dots today, must remove the pending turn or give it a status; and the
     reducer is pure, so the id has to come in with the action or be positional. It pays
     off if a failed AI turn is ever shown inline with a retry on that spot. Not planned.
+12. **The held reply's invariant has no single owner.** Raised in the stage 4 review (B5),
+    deferred. `pendingReply` should exist only while the last user turn's evaluation is
+    `pending`; `AI_TURN_RECEIVED`, `EVALUATION_RECEIVED` and `EVALUATION_FAILED` and
+    `lastUserTurnIsBeingEvaluated` each check it separately, and the type does not say it.
+    That is fine while no action can end the wait. When one is designed (cancel, retry),
+    first make one `releaseHeldReply(state)` helper in the reducer that every such action
+    goes through, and only if that is not enough move the held reply into the type of the
+    evaluation. `DEV_FORCED_TURN_STATE` can set any combination, but only the stepper uses it.
+13. **The two Gemini wrappers and routes are near copies.** Raised in the stage 4 review
+    (B7), deferred. `askGemini` and `askGeminiForEvaluation` repeat the key check, the
+    `interactions.create` call, the empty-output check and the JSON parse; the two
+    `route.ts` handlers repeat the error path. The models are deliberately separate
+    constants, and the evaluation call now has `store: false`, so they already differ. Make
+    a helper such as `callGeminiJson` at the third Gemini call, or when the two diverge for
+    good, so that its parameters are known.
 
 ---
 
@@ -1051,6 +1072,16 @@ have been argued over first.
 | 10-10 | you | **Supersedes "stateless":** the corrector gets the whole conversation. `EvaluationRequestBody` gains an optional `previousInteractionId` (the last AI turn before the message, as in a chat request) and the Gemini call passes it as `previous_interaction_id`. The corrector prompt says to give feedback on the latest message only but to read it in the context of the whole conversation, and mentions the hidden start message | Jaron's test: asked how he takes his coffee, answering `Ik vind zwart het lekkerst.` got a correction to *mooist*, which does not arise when the question is visible. Measured: 6 of 6 such corrections without the history, 0 of 6 with it. The corrections stay out of the chain because the call is a sibling of the chat call and its id is not carried on. |
 | 10-10 | agent | The evaluation driver derives `previousInteractionId` itself, with the same `findLast` on the AI turns that `createChatRequestBody` uses, instead of sharing one helper | Sharing it would have touched the reducer and the chat driver as well, which was more than the files Jaron had been asked about. A candidate for a small follow-up. |
 | 10-10 | you | `.bubble` has `flex-shrink: 0`, next to its `overflow: hidden` | A flex item's automatic minimum size is its content only while it does not clip; with `overflow: hidden` it is 0. In the thread (a flex column that scrolls) the bubbles were therefore squeezed and their text clipped once the thread was longer than the screen, instead of the thread scrolling. Seen on an iPhone and in the DevTools preview. Jaron first asked for `min-height: min-content` and then preferred `flex-shrink: 0` as the cleaner way to say it. Checked in Chrome at 377 px with the real bubbles copied until the thread overflowed: 0 of 10 clipped with it, 10 of 10 without; fixed on the iPhone, as reported by Jaron. |
+| 10-10 | agent | **Stage 4 review** (a cold review and CodeRabbit on the pull request; 10 points, results in `resources/reviews/.review-stage-4`): the rows below are its fixes. Deferred: B5 and B7 (open questions 12 and 13). Already decided: B6 and B9 (open question 9) | The review found no high points. CodeRabbit raised the stale plan texts and the mock quoting a phrase that was not said, neither of which the cold review could see or found. Proposed by the review, chosen by Jaron. |
+| 10-10 | agent | The evaluation deadline is `EVALUATION_TIMEOUT_MS` in `src/lib/evaluation-deadline.ts`, imported by the evaluation driver and the mock route (`MOCK_SLOW_LATENCY_MS = EVALUATION_TIMEOUT_MS + 5_000`); the reducer's comment for `pendingReply` names it and says the driver must always settle | Review B1. The reply is held until the evaluation settles, which only the deadline in another file guarantees; the mock's `15_000` was an unlinked number meant to exceed it. Two claims of the reviewer were wrong: End session exists in `aiThinking`, and the chat timer stops when the answer arrives. |
+| 10-10 | agent | `getPreviousInteractionId(turns, turn)` in the reducer is the one place that works out which AI turn a request continues from; the chat and the evaluation driver both use it. **Replaces** the 10-10 row that left the derivation duplicated | Review B2. The server relies on both calls for a message branching off the same turn, and nothing enforced it. |
+| 10-10 | agent | `postJsonWithDeadline` in `post-json.ts` holds the abort and deadline handling that was copied into both drivers. Cancelling is silent; the deadline ends in `onFailure(error, { timedOut: true })`; each hook keeps its own `eslint-disable` for the dependencies | Review B3. Same semantics as before. Checked with a Node script against the mock route: a normal answer, `[fail]`, `[slow]` with a short deadline, cancelling, and an answer that does not parse. |
+| 10-10 | agent | The reducer's contract comment for async drivers names two kinds of source: bound to a turn state (cancel when it is left) and bound to a turn (the evaluation, not cancelled when the turn state is left) | Review B4. The old text said every source must cancel when the state is left. A reader could "fix" the evaluation driver to do so, and a failed chat call would then throw the correction away. |
+| 10-10 | agent | The comments on the Gemini schema say that the schema guards the shape and the prompt carries the content rules, with no `refine` | Review B8. The old comment claimed the schema alone kept the client and Gemini in step. No malformed shape was seen in the measurements (0 of 30); a `refine` would turn a strange correction into "Evaluation failed", which is Jaron's call if one shows up. |
+| 10-10 | agent | The evaluation call is made with `store: false` | Review B10. Tested against the real API: it works together with `previous_interaction_id`, the answer then has no id, and the chain continues. Not known: how long Gemini keeps what it stores, and whether it changes cost or quota. Open question 9 stays. |
+| 10-10 | agent | The mock evaluation quotes the first four words of the message as `userInput`, with a canned explanation and suggestion; whitespace-only input gives `null` | CodeRabbit, review C2. It quoted a canned phrase that need not be in the message, which contradicts the contract. Quoting the message keeps the whole section visible for any input; returning `null` when the phrase was absent would not. |
+| 10-10 | agent | The stale stage 4 texts in this plan are corrected: the heading, step 3, the "proposed" on the build steps and "Nothing in the client calls it yet" | CodeRabbit, review C1. Step 4 stays open. |
+| 10-10 | you | One mock switch, `NEXT_PUBLIC_USE_MOCK_CHAT`, serves the chat and the evaluation, and `chat-schema.ts` and `chat-request.ts` keep their names although they now hold the evaluation too | Review B6, decided in conversation on 10-08 but not logged: Jaron agreed to the one switch, and said the file names were not to be changed now. The names `ChatError` and `ChatErrorSchema` were not discussed. |
 
 ## Keeping the experiment honest
 

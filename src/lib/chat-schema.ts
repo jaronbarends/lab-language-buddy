@@ -61,6 +61,9 @@ export type ChatRequestBody = z.infer<typeof ChatRequestBodySchema>;
  *
  * The client renders `userInput` and `suggestion` in italics, `suggestion` also on a
  * background, with no quotation marks of its own.
+ *
+ * The schema only guards the shape; what each type should contain is asked for in the
+ * prompt (`correctorTaskSection` in `src/lib/prompt.ts`).
  */
 export const EVALUATION_SEGMENT_TYPES = [
   "text",

@@ -1,15 +1,15 @@
-import { errorResponse, readChatRequest } from "@/lib/chat-request";
+import { errorResponse, readChatRequestBody } from "@/lib/chat-request";
 
 import { askGemini } from "./gemini-chat";
 
 export async function POST(request: Request) {
-  const parsed = await readChatRequest(request);
+  const parsed = await readChatRequestBody(request);
   if (!parsed.ok) {
     return parsed.response;
   }
 
   try {
-    return Response.json(await askGemini(parsed.request, request.signal));
+    return Response.json(await askGemini(parsed.body, request.signal));
   } catch (error) {
     // Provider errors can carry request details, and a missing API key is not the
     // caller's business; both stay in the server log.

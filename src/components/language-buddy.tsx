@@ -6,6 +6,7 @@ import { ConversationScreen } from "@/components/conversation/conversation-scree
 import { StateStepper } from "@/components/dev/state-stepper";
 import { SetupScreen } from "@/components/setup-screen/setup-screen";
 import { useChatDriver } from "@/hooks/use-chat-driver";
+import { useEvaluationDriver } from "@/hooks/use-evaluation-driver";
 import { useAudioPlayback } from "@/hooks/use-audio-playback";
 import { useLiveTranscription } from "@/hooks/use-live-transcription";
 import { useMockTts } from "@/hooks/use-mock-tts";
@@ -25,6 +26,7 @@ export function LanguageBuddy() {
   const [state, dispatch] = useReducer(sessionReducer, initialSessionState);
 
   useChatDriver(state, dispatch);
+  useEvaluationDriver(state, dispatch);
 
   useLiveTranscription(state, dispatch);
 

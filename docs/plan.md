@@ -106,7 +106,10 @@ re-picking the same language. The turns are discarded.
 - **`reviewing`** — recording stopped, text settled, not yet sent.
 - **`editing`** — the text in a `<textarea>`. Carries `draftBeforeEdit` so *Cancel edit*
   can restore it; that is why it is its own state rather than a flag on `reviewing`.
-- **`aiThinking`** — `/api/chat` in flight; typing-dots bubble.
+- **`aiThinking`** — `/api/chat` in flight; typing-dots bubble. May carry a
+  `pendingReply`: the chat answer is in, but the evaluation of the user turn it answers
+  is still pending, so the reply is held and released (into `aiSpeaking`) the moment the
+  evaluation settles. See **Evaluation of a user turn** below.
 - **`aiSpeaking`** — TTS audio playing, words progressively highlighted in the AI bubble.
   Reply is enabled here: `LISTENING_STARTED` is accepted from `aiSpeaking` as well as
   `awaitingUser`, which cuts the speech off and moves to `listening`. The bubble then
@@ -119,6 +122,16 @@ re-picking the same language. The turns are discarded.
   effect re-runs on entering it, which is the retry), otherwise to `awaitingUser`; a
   transcript in progress when listening failed is discarded. The diagram above shows the
   `awaitingUser` route only.
+- **Evaluation of a user turn** (stage 4) is not a turn state but a field of the turn: a
+  user turn carries `evaluation`, `pending` from `USER_TURN_SENT`, then `ready` (with a
+  `correction` that may be `null`) or `failed`. `EVALUATION_RECEIVED` and
+  `EVALUATION_FAILED` match on the turn id, like the speech actions, and are ignored for a
+  turn that is not `pending`. It runs in its own driver, `use-evaluation-driver.ts`, which
+  follows the turn and not `aiThinking`: a failed chat call does not cancel it, and Try
+  again does not request it a second time. The ordering rule, the reply never before the
+  correction has settled, lives in the reducer (`AI_TURN_RECEIVED` holds the reply as
+  `pendingReply`), so it is a pure function and not async coordination between hooks. A
+  correction that does not answer within 10 s becomes `failed`.
 - **TTS failure is not an error state.** `AI_SPEECH_FAILED` (only valid in `aiSpeaking`)
   goes to `awaitingUser` silently: the AI's text is already on screen, so it degrades to
   text-only. The stage 3 caller does the `console.error`. Like the other two speech
@@ -189,7 +202,9 @@ so a page reload starts from the defaults again.
     │   │                         draft-review (DraftBubble + DraftEditor),
     │   │                         conversation-controls (a switch over composing-controls,
     │   │                         error-controls and idle-controls, which dispatch for
-    │   │                         themselves); bubble (the shared frame) and
+    │   │                         themselves); evaluation-section (the attached evaluation
+    │   │                         of a user turn); bubble (the shared frame, always a `div`,
+    │   │                         with `BubbleText` and `BubbleAttachment`) and
     │   │                         a module css beside each component for its own styles
     │   ├── dev/state-stepper.tsx development-only turn-state jumper
     │   └── ui/                   button, icons, flag-icon
@@ -197,6 +212,8 @@ so a page reload starts from the defaults again.
     │   ├── use-session-dispatch.ts dispatch context + `useSessionDispatch`
     │   ├── use-chat-driver.ts    the Gemini round trip in `aiThinking`; picks the real or
     │   │                         the mock route via `NEXT_PUBLIC_USE_MOCK_CHAT`
+    │   ├── use-evaluation-driver.ts  the evaluation of a user turn, with `EVALUATION_TIMEOUT_MS`;
+    │   │                         the same mock switch
     │   ├── use-live-transcription.ts  mic + Deepgram socket while `listening`
     │   ├── use-audio-playback.ts  `/api/tts` + the shared `<audio>` element in `aiSpeaking`,
     │   │                         and `unlockAudio()` for the click handlers
@@ -206,18 +223,31 @@ so a page reload starts from the defaults again.
         ├── languages.ts          provider-neutral language registry
         ├── cefr.ts               A1–C2 + labels
         ├── word-timing.ts        estimateWordTimings / countSpokenWords
-        ├── chat-schema.ts        zod: the chat request (a union on `kind`), the response, the
-        │                         error body
-        ├── chat-request.ts       `readChatRequest` and `errorResponse`, shared by both chat routes
-        ├── prompt.ts             `buildChatSystemInstruction`, assembled from named sections
-        └── mock-conversation.ts  canned AI lines (mock chat route) and sample user lines
-                                  (the dev state stepper)
+        ├── chat-schema.ts        zod: the chat request (a union on `kind`) and response, the
+        │                         evaluation request and response (correction segments), the error body
+        ├── post-json.ts          `postJson` and `postJsonWithDeadline`: the fetch both drivers use,
+        │                         with the deadline and the abort handling, throwing the route's
+        │                         own error text
+        ├── evaluation-deadline.ts  `EVALUATION_TIMEOUT_MS`, shared by the evaluation driver and
+        │                         the mock route
+        ├── chat-request.ts       `readChatRequestBody`, `readEvaluationRequestBody` and `errorResponse`,
+        │                         shared by the real and the mock routes
+        ├── prompt.ts             `buildChatSystemInstruction` and `buildEvaluationSystemInstruction`,
+        │                         assembled from shared and per-persona named sections
+        └── mock-conversation.ts  canned AI lines and corrections (mock routes) and sample user
+                                  lines (the dev state stepper)
 ```
 
 `src/app/api/chat/route.ts` and `src/app/api/mock/chat/route.ts` exist since stage 2;
 `src/app/api/chat/gemini-chat.ts` beside the first holds the Gemini call (`askGemini`),
 the model name and Gemini's `{ reply }` schema, and is server only. `.env.example`
 documents the variables; `.env.local` (not committed) holds the values.
+
+Stage 4, step 1 adds `src/app/api/evaluation/route.ts` and `src/app/api/mock/evaluation/route.ts`,
+with `src/app/api/evaluation/gemini-evaluation.ts` beside the first (`askGeminiForEvaluation`,
+its own model constant, and Gemini's `{ correction }` schema). The call branches off the
+last AI turn (`previous_interaction_id`), is not stored (`store: false`) and its own id is
+never handed back. `use-evaluation-driver.ts` calls it for every user turn.
 
 `src/app/api/stt/token/route.ts` and `src/hooks/use-live-transcription.ts` exist since
 stage 3, step 1; the token mint (`mintLiveToken`) sits in the route file.
@@ -342,7 +372,7 @@ used grew the client bundle by 5.8 KB.
 | `WarningIcon` | `FaTriangleExclamation` | The error box |
 
 The original app's list also named five icons this app has no place for yet:
-`FaGraduationCap` (its Evaluate button — stage 4, undecided), `FaVolumeXmark` (a no-voice
+`FaGraduationCap` (its Evaluate button — not used: stage 4 chose per-turn correction), `FaVolumeXmark` (a no-voice
 warning, not built), `FaCircleInfo` and `FaRegCircleQuestion` (info and tooltip, not built),
 and `FaCircleXmark` (a harder failure; the error box uses the triangle instead).
 
@@ -483,6 +513,7 @@ history is chained), and answers `{ interactionId, reply }`. An empty or whitesp
 reply is a failure, not an answer.
 
 **Mock or real, per concern.** `NEXT_PUBLIC_USE_MOCK_CHAT=true` makes `use-chat-driver.ts`
+(and, since stage 4, `use-evaluation-driver.ts`, calling `/api/mock/evaluation`)
 call `/api/mock/chat` instead: same contract, canned lines, 404 outside `next dev`. The
 mock keeps no state; its interaction ids are `mock-<n>`, so the next request's
 `previousInteractionId` tells it which line comes next. A `NEXT_PUBLIC_` value is inlined
@@ -528,28 +559,195 @@ Voice names get verified against the authoritative list endpoints rather than fr
 `GET https://{region}.tts.speech.microsoft.com/cognitiveservices/voices/list` for Azure,
 `GET https://texttospeech.googleapis.com/v1/voices?key=…` for Google.
 
-### Stage 4 — Evaluation: **discussion first, no code**
+### Stage 4 — Evaluation: per-turn correction, in its own call — **done**
 
-A written comparison comes before any implementation. The question is a **three-way**, not
-the two originally posed:
+A written comparison came before any implementation. The question was a **three-way**:
 
 1. **After each user turn** — what the spike does.
 2. **On demand**, via an Evaluate button — what the reference screenshots show, rendered
    inline in the thread and covering several earlier utterances at once.
 3. **Once at the end of a session** — what the current production app does.
 
-It has knock-on effects on the chat schema, the control bar, and whether feedback
-interrupts the conversational illusion.
+Decided: **option 1, per turn.** Short feedback on every turn is preferred over several
+comments about a whole conversation. **Not chosen:** the Evaluate button (`FaGraduationCap`
+stays unused) and the end-of-session summary.
 
-**Left out of the stage 2 chat prompt, to be reconsidered here.** The spike's system
-instruction had a *Correction* section: pick the single most instructive mistake in the
-user's last message and put it in a `correction` field, never in `reply`. Stage 2 drops
-it, because the schema is `{ reply }` only and a prompt asking for a field the schema lacks
-would contradict it. If this stage chooses per-turn correction (option 1), bring the
-section back together with the `correction` field, **and** the hint that was inside it:
-illogical words in the user's message may be speech-to-text errors rather than language
-mistakes, so the AI should not correct them. That hint is irrelevant while input is typed
-(stage 2) and becomes relevant with real STT (stage 3).
+**Two calls, not one.** The first design put `correction` in the chat response. It was
+built (step 1 of the first plan) and then replaced, after measuring, by a separate call
+to a separate prompt, as in the production app. Both calls start when the user sends, in
+parallel:
+
+- `/api/chat`, as in stage 2: `{ interactionId, reply }`, chained with
+  `previous_interaction_id`. No `correction` in it; the persona prompt loses its
+  *Correction* section.
+- `/api/evaluation`: `{ language, level, input, previousInteractionId? }` in,
+  `{ correction }` out, where `correction` is `Segment[] | null`. It **branches off the
+  chain**: `previousInteractionId` is the last AI turn's id, as in a chat request, so the
+  corrector sees the whole conversation up to the message, with that message as the
+  input; it is absent only when the user spoke first. The id of the evaluation call is
+  never handed back, so the corrections never enter the chain the conversation continues
+  along. The AI's opening turn has no user message and makes no call.
+
+Why two calls: the corrector assigned the segment types wrongly in 0 of 30 corrections
+(against 4 to 7 of 30 for one call, with or without an explicit second role in the
+prompt), handled the speech-to-text hint better, and the chat call
+returns to `{ reply }` only, with no added latency before TTS (the one-call version cost
+about +255 ms). The price is two Gemini calls per turn, a second route, and the pending
+and failure states below. The measurement is in the decision log; it is small (5 runs
+per input, 8 inputs) and its heuristics were crude, so read it as a direction.
+
+**Segments.** `correction` is a list of `{ type: "text" | "userInput" | "suggestion",
+text }`; joined in order, the texts read as one short explanation. `text` is the
+explanation, in English at B2/C1. `userInput` quotes only the part of the user's message
+the explanation needs, never the whole message. `suggestion` is the more natural
+alternative. Both of those are in the target language. The segments carry their own
+spaces and the model adds no quotation marks: the type marks the phrase. A delimiter in
+a string cannot carry three kinds without parsing, and quotes cannot be parsed (French
+and Italian apostrophes), so the schema enforces a typed list. `null` means no mistake
+worth naming.
+
+**Prompts: shared part, then one part per persona**, as in the production app. In
+`prompt.ts`:
+
+- *Shared*, in both system instructions: the user's language and CEFR level, their
+  English level (B2/C1, one constant), the note that the input comes from speech-to-text
+  and illogical words may be transcription errors (new for the chat persona), and that
+  the input is spoken, never written.
+- *Chat persona*: as in stage 2, without the *Correction* section.
+- *Corrector persona*: a native speaker and teacher of the target language, informal and
+  warm (and terse, with no praise: both stand, as in the original). **The rules and the
+  segment explanation are in its `system_instruction`; `input` is only the user's
+  message.** One mistake per turn, the most instructive: grammar, vocabulary that could
+  be more natural, or nuance, calibrated to the user's CEFR level. If a mistake may be a
+  transcription error, say so instead of explaining it as a language mistake. No
+  feedback on spelling, spaces, punctuation, capitalization or diacritics. Do not point
+  out what is correct. It gives feedback on the latest message only, but is told to read
+  that message in the context of the whole conversation (what the user was answering, what
+  was being talked about), and not to give feedback on earlier messages or on the partner's.
+  It is also told that the conversation may open with a hidden system message that made
+  the partner speak first, which the user did not say. And: *the message may not contain
+  anything worth correcting; do not go looking for a mistake, and never fall back on
+  spelling, spaces, punctuation, capitalization or diacritics just to have something to
+  say.*
+
+The measurement used the rules in `input`, not in `system_instruction`: re-measure once the
+real prompts exist.
+
+**No code guard for spelling-only corrections.** Turning a correction into `null` when
+`userInput` and `suggestion` differ only in case, diacritics or spaces was considered and
+rejected: `null` shows "No corrections. Great!", which is wrong when the message had other
+mistakes and only the spelling one was returned. The prompt is the only defence.
+
+**Display.** The correction is not a bubble of its own: it is a section attached to the
+bottom of the user's bubble (`resources/screenshots-reference/evaluation-attached-to-bubble.png`).
+The bubble keeps its outline, and a divider separates the user's text from the correction
+below it. The section's background is `--color-blue-50`; the user's text keeps the normal
+user-bubble background. `text` segments are plain. `userInput` and `suggestion` are italic,
+and only `suggestion` gets a background, the user-bubble background
+(`--color-bg-secondary-subtle`). No new tokens. The section's background is the primitive
+`--color-blue-50` and not the semantic `--color-bg-info` that resolves to the same value:
+"info" is too general for this. Built as `evaluation-section.tsx`, an attachment to the
+bubble (`BubbleAttachment`): the bubble is only a `div` wrapper that clips what it holds
+to its rounded corners (`overflow: hidden`, for every bubble), and the text inside is a
+`<p>`. The phrases are `<i lang>` in the conversation language, the explanation `lang="en"`. **The correction is never spoken**: TTS
+reads `reply` only. The section shows one of four things, each as small as possible
+(one line for the two fixed texts):
+
+- while the call runs: "Evaluating…" (a placeholder, so the bubble does not jump);
+- the segments;
+- "No corrections. Great!" when the answer is `null`;
+- "Evaluation failed" when the call fails, returns something that does not fit the
+  schema, or does not answer within **10 seconds**.
+
+**Order.** The correction may appear before the AI's reply, but the reply must not appear
+before the correction has been shown (as segments, "No corrections. Great!" or
+"Evaluation failed"). So the reply waits for the correction call to settle, and the 10 s
+timeout is what stops a hanging corrector from holding the reply. At the timeout the
+request is aborted and a late answer is ignored, so what is on screen is final. **TTS
+playback starts only once the reply is on screen**; fetching the audio may start as soon
+as the reply arrives.
+
+**Try again.** The error state retries the chat call only. A correction that has already
+arrived is kept and not requested again; a failed correction is not retried.
+
+**History.** The corrector branches off the last AI turn, as the original app's did, and
+sees the conversation so far. The corrections are not in the chain: the evaluation call is a
+sibling of the chat call for the same message, and only the chat call's id is carried on. The evaluation call is not stored at Gemini
+(`store: false`) either: nothing fetches it, and the chat call is the one that has to be stored.
+A chat call and an evaluation call from the same AI turn, in parallel, both succeed, and
+the chain continues from the chat turn afterwards. The price is that every evaluation
+sends the conversation so far as input, so its cost grows with the conversation, which a
+message alone did not. A `previousInteractionId` that Gemini does not know makes the call
+fail, which shows as "Evaluation failed"; the chat call fails on it too.
+
+**Context, measured on 2026-10-10** (`gemini-3.1-flash-lite`, Dutch B1, the AI asking how
+the user takes their coffee, the user answering `Ik vind zwart het lekkerst.`, 6 runs each):
+without the conversation 6 of 6 corrections objected to *lekkerst* (it was said to be
+for taste only, while the answer was to a question about drinking it); with it 0 of 6, all
+`null`. A real mistake in a later message was still found with the history (3 of 3), and the
+hidden start message was not mentioned in the feedback (0 of 3). Three runs through the real
+route gave `null` as well.
+
+**Measured on 2026-10-06 and 2026-10-07** (`gemini-3.1-flash-lite`, Norwegian B1, 5 runs
+per input over 8 inputs: clear mistakes, correct sentences, a long sentence with a small
+mistake, a speech-to-text-like error, a lower-case sentence and one without diacritics).
+Three variants, 40 calls each: A the one-call prompt, C one call with an explicit second
+role for `correction`, D a separate corrector call with the original app's wording.
+
+| | A | C | D |
+|---|---|---|---|
+| Segment types wrong | 7 | 4 | 0 |
+| Correction given on a correct sentence | 0 | 0 | 0 |
+| Correction given where only spelling or diacritics were off (10 calls) | 10 | 10 | 10 |
+| ...of which spelling-only | 6 | 3 | 4 |
+| `eld` (a likely transcription error) null or flagged as one, of 5 | 1 | 0 | 3 |
+| Quotation marks in the text, of 30 | 4 | 3 | 7 |
+
+Known weak spots, not solved: the spelling ban does not hold when spelling is the only
+visible defect, the transcription hint works for three of five, and the separate call
+produces more quotation marks. Moving the segment rules into the schema's `description`
+fields was tried and was worse than keeping them in the prompt (more wrong types, and
+the explanation in the wrong language).
+
+**Measured again with the real prompts** (step 1: rules in `system_instruction`, through
+`/api/evaluation` on the dev server, 40 calls over the same 8 inputs): wrong types 1 of 30;
+a correction on the two correct sentences 0 of 10; a correction on the lower-case and
+no-diacritics sentences 10 of 10, 5 of them spelling-only; `eld` null or flagged as a
+transcription error 2 of 5; quotation marks in the text 8 of 30. The added line about not
+looking for a mistake changed nothing on the spelling-only inputs. Latency of the call,
+median 2550 ms (1897 to 3241), four requests at a time, dev server included, so well under
+the 10 s timeout and about as long as the chat call.
+
+**Build steps (check-in after each).**
+
+1. **Done.** Prompts and routes: split `prompt.ts` into shared, chat and corrector parts; take
+   `correction` back out of `ChatResponse` and the chat Gemini call; the new
+   `/api/evaluation` route with its Gemini call and a mock route; both mocks. Measure again
+   with the real prompts.
+2. **Done.** State and driver: the correction on the user turn (pending, ready, failed), the two
+   calls in parallel, the 10 s timeout and abort, the reply held until the correction has
+   settled, TTS playback gated on the reply being on screen, the Try again rule.
+   Step 2 showed the evaluation as plain text in the user's bubble first, so that the order
+   and timing could be seen.
+3. **Done.** Display: the attached section with its four
+   contents, italics and the one background. The thread scrolls again when the evaluation
+   of the last user turn settles, since the user's bubble grows then. The mock evaluation
+   route fails for a message containing `[fail]` and answers only after the driver's deadline
+   plus 5 s for one containing `[slow]`, to see "Evaluation failed" and the timeout.
+4. **Done.** Verify on desktop and on an iPhone, including a wrong key for `/api/evaluation` only
+   (reply still arrives, "Evaluation failed"), a corrector that does not answer in 10 s,
+   and Try again after a failed chat call.
+
+Verified by the user, with no problems: on desktop, a wrong `GEMINI_API_KEY` for
+`/api/evaluation` only, a message with `[fail]`, one with `[slow]` ("Evaluation failed" after
+10 s), Try again after a failed chat call, the mock with typed text, and `npm run build`,
+the last two after the stage review's fixes; and the evaluation on an iPhone, after the
+`flex-shrink` fix for the bubbles. **Not verified:** speech-to-text errors being corrected
+as language mistakes, which is to be judged in further use, and the weak spots of the
+corrector listed under *Measured* above (the spelling ban, the transcription hint,
+quotation marks), which are measured, not solved. There are no automated tests: the
+reducer's evaluation paths were run as scenarios with a scratch script that is not in the
+repo.
 
 ### Out of scope
 
@@ -585,7 +783,9 @@ Per stage, in this order:
 
 ## Open questions
 
-1. **Evaluation design** — stage 4, above. Untouched by design.
+1. **Evaluation design** — decided 2026-10-08: per-turn correction in its own call, see
+   stage 4. Still open inside it: the weak spots listed there (spelling ban, transcription
+   hint, quotation marks).
 2. **Tests.** There are none, so review is currently the only quality gate.
    `word-timing.ts` and the reducer are pure and would suit Vitest. The Gemini call now
    lives in `askGemini`, so the route's failure paths can be tested with it replaced.
@@ -649,7 +849,9 @@ Per stage, in this order:
    account: `/api/stt/token` hands anyone a Deepgram token (short-lived, but a new one on
    every call, and it opens a live-transcription socket on our account), and `/api/tts`
    synthesises up to 1500 characters per call with whichever provider `TTS_PROVIDER`
-   names. Decide the protection before the first public deployment.
+   names. Decide the protection before the first public deployment. Since stage 4 every
+   turn also makes an evaluation call that sends the conversation so far, so that exposure
+   grew with it.
 10. **Buffering the audio while the Deepgram socket opens.** Raised in the stage 3 review
     (the "Preparing mic…" point). The recorder starts only once the socket is open, so
     nothing said before then is recorded, and the screen shows "Preparing mic…" until it
@@ -660,6 +862,60 @@ Per stage, in this order:
     a burst. Not built yet. Measured on an iPhone after the stage 3 review: setting up the
     microphone connection takes about 1.5 seconds, which Jaron finds too long, so this is
     to be built at a later moment.
+11. **One bubble for the AI's thinking dots and its text.** Wanted later: an animation in
+    which the dots disappear, the bubble grows to the size of the text, and the text
+    becomes visible. Not possible with the current structure, which is not part of stage
+    4. Today they are two elements: `ThinkingBubble` (a `div role="status"`, rendered
+    after the turns while the state is `aiThinking`) and, once the reply is accepted, a
+    `TurnBubble` (a `div` with a `p` in it, `key={turn.id}`). They share the `Bubble` frame and so look the
+    same, but one unmounts and the other mounts at the transition, so nothing exists to
+    animate: the bubble jumps from the size of the dots to the size of the text. What it
+    needs: (1) one element that survives the transition, so a key that is the same
+    before and after. The turn id is only created when the reply arrives (the chat driver
+    calls `crypto.randomUUID()` then), so it cannot be that key; either key on the
+    position ("the Nth AI turn") or have the reducer create the id when it enters
+    `aiThinking`; (2) a size transition that works for content of unknown size, since
+    height and width cannot be animated to `auto` directly (the `0fr` to `1fr` grid
+    trick, or measuring the content); (3) one role: the thinking bubble is a `status`
+    and the turn bubble a wrapper with a paragraph in the thread's `role="log"`, so what a screen reader
+    announces has to be decided for the shared element. Since stage 4 a held reply
+    (`pendingReply`) keeps the dots on screen until the evaluation has settled, which
+    fits either structure. The same applies to the user's bubble, which grows when its
+    evaluation arrives. Not built; to be done together with the other animation work.
+    Two ways to get the surviving element, weighed on 2026-10-08:
+    (a) **Key by position, no change to the data.** The thread renders one `AiTurnBubble`
+    with a key such as `ai-<number of AI turns before it>`, both for the waiting bubble
+    (state `aiThinking`) and for the real turn, so React reuses the element. A few lines
+    in `conversation-thread.tsx`; nothing changes in the reducer, the types or the
+    drivers. It works because turns are only appended within a session. Recommended.
+    (b) **Jaron's alternative: the waiting is part of the AI turn.** The AI turn exists from
+    the start with a status (`pending`, `ready`, as `Evaluation` has), and the
+    `TurnBubble` shows the dots while it is pending. It gives one element with its own
+    identity and one role, and fits the `Evaluation` pattern. It costs: the AI turn
+    becomes a union, a pending one having no `text` or `interactionId`, so everything that
+    reads "the last turn" has to skip it (`createChatRequestBody`, `lastUserTurnIsBeingEvaluated`,
+    the `previous_interaction_id` derivation, the stepper's `lastAiTurn`, what the
+    playback hook reads); two sources of truth, `turnState: aiThinking` and a pending turn,
+    which every transition (`START`, `USER_TURN_SENT`, `FAILED`, retry) must keep equal,
+    and which the dev stepper forcing `aiThinking` would break; the error state, which
+    shows no dots today, must remove the pending turn or give it a status; and the
+    reducer is pure, so the id has to come in with the action or be positional. It pays
+    off if a failed AI turn is ever shown inline with a retry on that spot. Not planned.
+12. **The held reply's invariant has no single owner.** Raised in the stage 4 review (B5),
+    deferred. `pendingReply` should exist only while the last user turn's evaluation is
+    `pending`; `AI_TURN_RECEIVED`, `EVALUATION_RECEIVED` and `EVALUATION_FAILED` and
+    `lastUserTurnIsBeingEvaluated` each check it separately, and the type does not say it.
+    That is fine while no action can end the wait. When one is designed (cancel, retry),
+    first make one `releaseHeldReply(state)` helper in the reducer that every such action
+    goes through, and only if that is not enough move the held reply into the type of the
+    evaluation. `DEV_FORCED_TURN_STATE` can set any combination, but only the stepper uses it.
+13. **The two Gemini wrappers and routes are near copies.** Raised in the stage 4 review
+    (B7), deferred. `askGemini` and `askGeminiForEvaluation` repeat the key check, the
+    `interactions.create` call, the empty-output check and the JSON parse; the two
+    `route.ts` handlers repeat the error path. The models are deliberately separate
+    constants, and the evaluation call now has `store: false`, so they already differ. Make
+    a helper such as `callGeminiJson` at the third Gemini call, or when the two diverge for
+    good, so that its parameters are known.
 
 ---
 
@@ -791,6 +1047,53 @@ have been argued over first.
 | 10-05 | agent | The text of a `/api/tts` request is capped at 1500 characters, down from 2000 | Raised by CodeRabbit on the PR. Google limits a request to 5,000 bytes (its quota page; no separate limit for Chirp 3 HD), and a typographic mark is three bytes in UTF-8, so 2000 characters could exceed it. 1500 stays under it for every provider. A real AI turn is far shorter. |
 | 10-05 | agent | Constructing the Deepgram WebSocket is inside a `try` that ends in `FAILED`, like the recorder start | Raised by CodeRabbit on the PR. The comment on `void connect()` said `connect` handles its own errors, which was untrue for this step. |
 | 10-05 | agent | The recording format is checked, and `MICROPHONE_STARTED` sent, at the recorder's `start` event instead of right after `start()`; the recorder's `error` and an unexpected `stop` end in `FAILED` with "The microphone stopped." | Raised by CodeRabbit on the PR. Without a requested type `mimeType` can be empty until the `start` event, so the early check could reject a browser whose default format works. A recorder also stops by itself when its tracks end (a headset unplugged, an iOS interruption), and nothing noticed. The connect deadline now runs until the `start` event. The wording of the message is Jaron's. |
+| 10-06 | you | Stage 4 evaluation is **per turn**: the chat response becomes `{ interactionId, reply, correction }` with `correction: string \| null`. The Evaluate button and an end-of-session summary are not built | Short feedback on every turn is preferred over several comments about a whole conversation. The three options were weighed in a written comparison first, as the stage was set up to do. |
+| 10-06 | you | `null` means no mistake and the client shows the fixed text "No corrections. Great!"; the model does not generate it | Saves tokens and keeps the sentence out of the conversation chain, where it would act as an example the model repeats. |
+| 10-06 | you | The correction is a separate bubble under the user's turn, same left margin as the user's bubbles, with its own CSS class and new light-yellow background and border tokens. It is not spoken | It gets its own styling. TTS reads `reply` only. The token values are chosen at build time. |
+| 10-06 | you | The corrections stay in the Gemini conversation chain (one call); a separate stateless evaluation call is the fallback | A chain cannot omit fields, so keeping them out needs a second call, a second route and a pending and failure state in the UI. Start simple, measure latency and drift first. Jaron would have preferred them outside the chain; this is the price of the simple start. |
+| 10-06 | agent | The `correction` field costs about 265 ms on the chat round trip (median 2273 → 2538 ms, 10 runs each), so streaming and the parallel call stay fallbacks | The extra output tokens delay the whole chat response, and with it TTS. Noisy at n=10: the ranges overlap. |
+| 10-06 | you | **Supersedes the separate yellow bubble above:** the correction is attached to the bottom of the user's bubble, as in `evaluation-attached-to-bubble.png`, with a `--color-blue-50` background. Target-language phrases in it are highlighted with the user-bubble background. No new tokens | The reference screenshot shows it that way, and it ties the correction to the turn it is about. The yellow tokens and the separate class are not built. |
+| 10-06 | you | The correction's explanation is in English, but the user's words and the more natural alternative stay in the target language; the user's words are only the part the explanation needs, never the whole message | Learning material is the target-language phrase; only the explanation is for the learner's own language. The prompt says so explicitly. |
+| 10-06 | you | `correction` is a list of segments typed `text`, `userInput` or `suggestion`, with no quotation marks in the text. **Supersedes** the plain-string correction and the `“…”` quotes in the logged examples above | Three kinds of text have to look different, and a delimiter inside one string cannot carry that. Jaron first said "A" (delimiter) but described this shape; the three-way distinction decided it. |
+| 10-06 | you | The Correction prompt forbids any spelling correction, not just spaces, punctuation and diacritics; capitalization is added to the list | The input is speech-to-text, so the user is not responsible for how words are spelled. The spike's rule only covered spaces, punctuation and diacritics. |
+| 10-06 | agent | Segments cost about +255 ms on the chat round trip (median 2947 → 3202 ms, 10 runs each), the same as the plain-string version | The extra JSON structure did not add measurable latency. Over 8 sampled corrections the types were assigned correctly and `userInput` was always a fragment, never the whole message. One had stray quotation marks inside a `text` segment. The grammar explanations in those samples were sometimes muddled: a model-quality matter, not the structure. |
+| 10-06 | agent | The mock chat route returns a per-language correction (a mistake as segments quoting part of that language's mock user line, then `null`), none on the opening turn | The opening AI turn answers nothing, so it has nothing to correct. The first mock version quoted English phrases, which is what the line above rules out. |
+| 10-08 | you | **Supersedes "one call":** the correction comes from its own call to a separate prompt. `/api/chat` goes back to `{ interactionId, reply }`; a new, stateless `/api/evaluation` returns `{ correction }`. The `correction` field added to the chat response in 63d5da86 is taken out again | A separate corrector assigned the segment types wrongly 0 of 30 times, against 4 to 7 of 30 in one call, even with an explicit second role in the prompt; it also kept corrections out of the conversation chain, as Jaron preferred, and no longer delays TTS. The price is two Gemini calls per turn, a second route, and pending and failure states. |
+| 10-08 | you | The prompts get a shared part (language and level, English level B2/C1, speech-to-text note, "spoken, never written") and one part per persona, as in the production app. The speech-to-text note is new for the chat persona. The corrector's rules and segment explanation go in its `system_instruction`; its `input` is only the user's message | Jaron's structure from the original app. The measurement put the rules in `input`, so it has to be repeated with the real prompts. |
+| 10-08 | you | The corrector's null rule reads: the message may not contain anything worth correcting; do not go looking for a mistake, and never fall back on spelling, spaces, punctuation, capitalization or diacritics just to have something to say | Jaron's experience is that most sentences do need a correction, so the rule is about not inventing one. The wording was reshaped from "Don't look for one that violates this instruction", which could be read two ways. |
+| 10-08 | you | **No code guard** that turns a spelling-only correction into `null` | `null` shows "No corrections. Great!", which would be false when the message had other mistakes and only the spelling one was returned. Proposed by the agent, rejected by Jaron. |
+| 10-08 | you | The AI's reply is shown only after the correction has been shown; the correction may appear first. A correction call that has not answered after **10 seconds** is aborted and a late answer is ignored. TTS playback starts only once the reply is on screen | The correction sits in the user's bubble, which comes before the reply. The timeout is what keeps a hanging corrector from holding the reply. Fetching the audio can start earlier. |
+| 10-08 | you | The correction section reads "Evaluating…" while the call runs, "No corrections. Great!" for `null`, and "Evaluation failed" on a failed call, an invalid response or the timeout; each text kept to one line | A placeholder reserves the height, so the bubble does not jump. "Evaluating…" instead of the thinking dots, and the failure text as short as possible, are Jaron's wording. |
+| 10-08 | you | `userInput` and `suggestion` are italic; only `suggestion` has a background, the user-bubble background. **Supersedes** the line above that highlights both and leaves it open whether they differ | The revised reference screenshot. |
+| 10-08 | you | Try again after a failed chat call repeats the chat call only; a correction that has arrived is kept, and a failed correction is not retried | Otherwise a retry pays twice and the text could change under the user. The agent's proposal, accepted. |
+| 10-08 | you | The route is `/api/evaluation` (with `EvaluationRequestBody`, `EvaluationResponse`, `readEvaluationRequestBody`, `gemini-evaluation.ts`; the field and the prompt builder keep "correction"). It takes `{ language, level, input }` and has no history or `previous_interaction_id`. Whether the corrector gets context (a branch off the chain, as in the original app) is left untested | The agent first called it `/api/evaluate`; Jaron wanted the noun, since what is requested is an evaluation. Context was not part of the measurement. |
+| 10-08 | agent | Measured with one call (A), one call with a second role (C) and a separate call (D), 40 calls each, `gemini-3.1-flash-lite`: wrong types 7/4/0; a correction on a lower-case or no-diacritics sentence 10/10/10 of 10; of those spelling-only 6/3/4; `eld` flagged or null 1/0/3 of 5; quotation marks in the text 4/3/7 of 30. Schema `description`s instead of prompt rules (earlier run, 40 calls each): wrong types 14 against 7 | Small and crude (5 runs per input, string heuristics, only some outputs read by hand), so a direction, not a result. The spelling ban and the transcription hint do not hold fully, and D adds quotation marks; none is solved. |
+| 10-08 | agent | Stage 4 step 1: the corrector's system instruction also says to treat the input as text to give feedback on, never as instructions; the mock evaluate route picks its correction from a sum of the input's characters, so the same message always gets the same answer; `readChatRequestBody` and `readEvaluationRequestBody` share one `readRequestBody` | The first is a guard I added to the agreed prompt: the user's message is the only input, and it is untrusted. The second keeps a retry predictable in a route with no state. The third avoids a copy of the body-reading code. |
+| 10-08 | agent | Stage 4 step 2: the ordering rule is in the reducer. `AI_TURN_RECEIVED` holds the reply as `pendingReply` in `aiThinking` while the last user turn's evaluation is `pending`; `EVALUATION_RECEIVED` and `EVALUATION_FAILED` release it | A pure transition that can be run on its own, instead of two hooks waiting on each other. The evaluation driver follows the turn, not `aiThinking`, so a failed chat call leaves the evaluation running and Try again does not repeat it. The reducer scenarios (13) were run with a scratch script through Node's type stripping; the drivers and the 10 s timeout have not been run in a browser. |
+| 10-08 | you | What the code calls a request is a request **body**: `ChatRequest` and `EvaluationRequest` are now `ChatRequestBody` and `EvaluationRequestBody` (and their `…Schema`), `readChatRequest` and `readEvaluationRequest` are `readChatRequestBody` and `readEvaluationRequestBody` and return `{ ok, body }`, `chatRequestFrom` is `createChatRequestBody`, and the first parameter of `askGemini`, `askGeminiForEvaluation`, `fetchChatReply` and `fetchEvaluation` is `body`. The evaluation driver now gets the turn with `getTurnToEvaluate(state)` and builds the body from `state.config` and that turn with `createEvaluationRequestBody`; `UserTurn` is exported from the reducer | A `Request` is the object a route handler receives; what the code builds and validates is its body, and `postJson` already called it `body`. The old `evaluationRequestFrom` returned a turn id and a body that had little to do with each other. `parsedRequest` in `api/tts/route.ts` has the same flaw and was left, being outside the list. |
+| 10-08 | you | The correction section's background is the primitive `--color-blue-50`, not `--color-bg-info` | The semantic token happens to resolve to the same colour, but "info" is too general for this. The agent had recommended the semantic one. |
+| 10-08 | you | `Bubble` is always a `div` (the `as` prop is gone) and always has `overflow: hidden`; the text inside a bubble can be a `<p>`, which `TurnBubble` now uses | The bubble is only the wrapper. `overflow: hidden` is the effect wanted whether or not anything overflows today, so it is not tied to an attachment being present. The agent had proposed limiting it to bubbles with an attachment, and the `div` only for the user bubble with one. `thinking-bubble.tsx` and `draft-review.tsx` lost their `as="div"` for it. |
+| 10-08 | you | The thread scrolls again when the evaluation of the last user turn settles | The user's bubble grows then, which can push the newest item out of view without a new turn or turn state. |
+| 10-08 | you | The mock evaluation route fails for a message containing `[fail]` and answers only after 15 s for one containing `[slow]` | Lets the failed and the timed-out evaluation be seen without breaking a key. Proposed by the agent as option (a) of three, chosen by Jaron. |
+| 10-08 | agent | The quoted phrases are `<i lang="…">`, the explanation `lang="en"`, and the attachment is clipped by the bubble | `<i>` is the element for text in another language, and `lang` lets a screen reader pronounce the phrases in the conversation language. Not discussed. |
+| 10-08 | you | The reply and the correction may appear in the same render when the correction arrives after the chat answer; the timing can be adjusted later | The rule is that the reply never appears before the correction, and appearing together satisfies it. Jaron: "in a later stage we can adjust the timing". |
+| 10-08 | you | TTS audio is not fetched ahead while the reply waits for the evaluation; `use-audio-playback.ts` is unchanged and fetches on entering `aiSpeaking`, which is after the reply is on screen | Prefetching needs extra state and only gains when the corrector is slower than the chat call. |
+| 10-08 | agent | `post-json.ts` takes `errorTextOf` out of `use-chat-driver.ts`, so both drivers share one fetch and one way of reading the route's error | Two copies of the same twelve lines. Asked for by Jaron as part of step 2. |
+| 10-08 | agent | `turn-bubble.tsx` renders the evaluation as plain text, marked temporary | Without a rendering nothing of step 2 is visible in the browser. Replaced in step 3. |
+| 10-10 | you | **Supersedes "stateless":** the corrector gets the whole conversation. `EvaluationRequestBody` gains an optional `previousInteractionId` (the last AI turn before the message, as in a chat request) and the Gemini call passes it as `previous_interaction_id`. The corrector prompt says to give feedback on the latest message only but to read it in the context of the whole conversation, and mentions the hidden start message | Jaron's test: asked how he takes his coffee, answering `Ik vind zwart het lekkerst.` got a correction to *mooist*, which does not arise when the question is visible. Measured: 6 of 6 such corrections without the history, 0 of 6 with it. The corrections stay out of the chain because the call is a sibling of the chat call and its id is not carried on. |
+| 10-10 | agent | The evaluation driver derives `previousInteractionId` itself, with the same `findLast` on the AI turns that `createChatRequestBody` uses, instead of sharing one helper | Sharing it would have touched the reducer and the chat driver as well, which was more than the files Jaron had been asked about. A candidate for a small follow-up. |
+| 10-10 | you | `.bubble` has `flex-shrink: 0`, next to its `overflow: hidden` | A flex item's automatic minimum size is its content only while it does not clip; with `overflow: hidden` it is 0. In the thread (a flex column that scrolls) the bubbles were therefore squeezed and their text clipped once the thread was longer than the screen, instead of the thread scrolling. Seen on an iPhone and in the DevTools preview. Jaron first asked for `min-height: min-content` and then preferred `flex-shrink: 0` as the cleaner way to say it. Checked in Chrome at 377 px with the real bubbles copied until the thread overflowed: 0 of 10 clipped with it, 10 of 10 without; fixed on the iPhone, as reported by Jaron. |
+| 10-10 | agent | **Stage 4 review** (a cold review and CodeRabbit on the pull request; 10 points, results in `resources/reviews/.review-stage-4`): the rows below are its fixes. Deferred: B5 and B7 (open questions 12 and 13). Already decided: B6 and B9 (open question 9) | The review found no high points. CodeRabbit raised the stale plan texts and the mock quoting a phrase that was not said, neither of which the cold review could see or found. Proposed by the review, chosen by Jaron. |
+| 10-10 | agent | The evaluation deadline is `EVALUATION_TIMEOUT_MS` in `src/lib/evaluation-deadline.ts`, imported by the evaluation driver and the mock route (`MOCK_SLOW_LATENCY_MS = EVALUATION_TIMEOUT_MS + 5_000`); the reducer's comment for `pendingReply` names it and says the driver must always settle | Review B1. The reply is held until the evaluation settles, which only the deadline in another file guarantees; the mock's `15_000` was an unlinked number meant to exceed it. Two claims of the reviewer were wrong: End session exists in `aiThinking`, and the chat timer stops when the answer arrives. |
+| 10-10 | agent | `getPreviousInteractionId(turns, turn)` in the reducer is the one place that works out which AI turn a request continues from; the chat and the evaluation driver both use it. **Replaces** the 10-10 row that left the derivation duplicated | Review B2. The server relies on both calls for a message branching off the same turn, and nothing enforced it. |
+| 10-10 | agent | `postJsonWithDeadline` in `post-json.ts` holds the abort and deadline handling that was copied into both drivers. Cancelling is silent; the deadline ends in `onFailure(error, { timedOut: true })`; each hook keeps its own `eslint-disable` for the dependencies | Review B3. Same semantics as before. Checked with a Node script against the mock route: a normal answer, `[fail]`, `[slow]` with a short deadline, cancelling, and an answer that does not parse. |
+| 10-10 | agent | The reducer's contract comment for async drivers names two kinds of source: bound to a turn state (cancel when it is left) and bound to a turn (the evaluation, not cancelled when the turn state is left) | Review B4. The old text said every source must cancel when the state is left. A reader could "fix" the evaluation driver to do so, and a failed chat call would then throw the correction away. |
+| 10-10 | agent | The comments on the Gemini schema say that the schema guards the shape and the prompt carries the content rules, with no `refine` | Review B8. The old comment claimed the schema alone kept the client and Gemini in step. No malformed shape was seen in the measurements (0 of 30); a `refine` would turn a strange correction into "Evaluation failed", which is Jaron's call if one shows up. |
+| 10-10 | agent | The evaluation call is made with `store: false` | Review B10. Tested against the real API: it works together with `previous_interaction_id`, the answer then has no id, and the chain continues. Not known: how long Gemini keeps what it stores, and whether it changes cost or quota. Open question 9 stays. |
+| 10-10 | agent | The mock evaluation quotes the first four words of the message as `userInput`, with a canned explanation and suggestion; whitespace-only input gives `null` | CodeRabbit, review C2. It quoted a canned phrase that need not be in the message, which contradicts the contract. Quoting the message keeps the whole section visible for any input; returning `null` when the phrase was absent would not. |
+| 10-10 | agent | The stale stage 4 texts in this plan are corrected: the heading, step 3, the "proposed" on the build steps and "Nothing in the client calls it yet" | CodeRabbit, review C1. Step 4 stays open. |
+| 10-10 | you | One mock switch, `NEXT_PUBLIC_USE_MOCK_CHAT`, serves the chat and the evaluation, and `chat-schema.ts` and `chat-request.ts` keep their names although they now hold the evaluation too | Review B6, decided in conversation on 10-08 but not logged: Jaron agreed to the one switch, and said the file names were not to be changed now. The names `ChatError` and `ChatErrorSchema` were not discussed. |
+| 10-10 | you | Stage 4 is closed and ready to merge; the README's stage list is brought up to date (stages 2 to 4 ticked, stage 4 described as built) | Jaron did the checks that were open, with no problems (see the stage 4 section), and agreed to merge on the pull request, whose bot review could not run again because the account had reached its limit. The README still showed stage 4 as undecided and stages 2 and 3 as unticked, an older drift. |
 
 ## Keeping the experiment honest
 

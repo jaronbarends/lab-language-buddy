@@ -3,7 +3,11 @@
      left/right alignment stays legible as "who said this". */
   max-width: 85%;
   width: fit-content;
-  padding: var(--size-12) var(--size-16);
+  /* The bubble's padding, as variables because an attachment cancels exactly this and
+     adds it back inside (see .attachment). Inherited by whatever the bubble holds. */
+  --bubble-padding-block: var(--size-12);
+  --bubble-padding-inline: var(--size-16);
+  padding: var(--bubble-padding-block) var(--bubble-padding-inline);
   border: var(--border-width-default) solid var(--color-border-neutral);
   border-radius: var(--radius-16);
   /* Tighter and a touch heavier than running text: a bubble is a short utterance,
@@ -18,6 +22,13 @@
   white-space: pre-line;
   /* Long recognised words with no spaces shouldn't widen the bubble past its max. */
   overflow-wrap: break-word;
+  /* Whatever the bubble holds stays inside its rounded corners. An attachment is the
+     case that needs it, but it is the effect wanted for every bubble. */
+  overflow: hidden;
+  /* A bubble in the thread is a flex item, and a flex item's automatic minimum size is
+     its content only while it does not clip: with overflow hidden it is 0. Without this
+     a long thread squeezes the bubbles, and clips their text, instead of scrolling. */
+  flex-shrink: 0;
 }
 
 .ai {
@@ -49,6 +60,16 @@
 .bubble:has(:focus-visible) {
   outline: var(--focus-outline);
   outline-offset: var(--focus-outline-offset);
+}
+
+/* Reaches to the border on three sides: the bubble's padding is cancelled, then added
+   back inside. The divider is the user bubble's border colour, the only bubble it is in. */
+.attachment {
+  margin: var(--bubble-padding-block)
+    calc(-1 * var(--bubble-padding-inline))
+    calc(-1 * var(--bubble-padding-block));
+  padding: var(--bubble-padding-block) var(--bubble-padding-inline);
+  border-top: var(--border-width-default) solid var(--color-border-secondary);
 }
 
 /* Block, because max-height does not apply to a plain inline span. */

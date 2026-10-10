@@ -1,3 +1,4 @@
+import type { EvaluationSegment } from "@/lib/chat-schema";
 import type { LanguageCode } from "@/lib/languages";
 import type { LiveTranscript } from "@/lib/session-reducer";
 
@@ -15,7 +16,28 @@ import type { LiveTranscript } from "@/lib/session-reducer";
 type MockScript = {
   aiLines: string[];
   userLines: string[];
+  /**
+   * Corrections for the mock evaluation: only the suggestion, in the target language.
+   * `null` is a turn without a mistake. The `userInput` part is not stored here;
+   * mockCorrection takes it from the first words of the message itself, so it is always
+   * a part of what was said, as the contract requires. The explanation around it and the
+   * suggestion are canned and do not fit those words, which is acceptable for a mock.
+   */
+  corrections: ({ suggestion: string } | null)[];
 };
+
+function mockEvaluationSegments(
+  userInput: string,
+  suggestion: string,
+): EvaluationSegment[] {
+  return [
+    { type: "text", text: "Instead of " },
+    { type: "userInput", text: userInput },
+    { type: "text", text: ", it is more natural to say " },
+    { type: "suggestion", text: suggestion },
+    { type: "text", text: "." },
+  ];
+}
 
 const MOCK_SCRIPTS: Record<LanguageCode, MockScript> = {
   no: {
@@ -28,6 +50,10 @@ const MOCK_SCRIPTS: Record<LanguageCode, MockScript> = {
       "Jeg liker å gå ute når det er fint vær. Jeg liker å gå på tur selv om det regner.",
       "Jeg liker best å gå ute i naturen. Jeg foretrekker fjellet og skogen.",
     ],
+    corrections: [
+      { suggestion: "Jeg liker å være i naturen" },
+      null,
+    ],
   },
   nl: {
     aiLines: [
@@ -38,6 +64,10 @@ const MOCK_SCRIPTS: Record<LanguageCode, MockScript> = {
     userLines: [
       "Ik ben graag buiten als het mooi weer is. Ik loop ook als het regent.",
       "Ik ben het liefst in de natuur. Ik houd van het bos en de bergen.",
+    ],
+    corrections: [
+      { suggestion: "Ik ga ook wandelen als het regent" },
+      null,
     ],
   },
   fr: {
@@ -50,6 +80,10 @@ const MOCK_SCRIPTS: Record<LanguageCode, MockScript> = {
       "J'aime sortir quand il fait beau. J'aime aussi marcher sous la pluie.",
       "Je préfère la nature. J'aime la montagne et la forêt.",
     ],
+    corrections: [
+      { suggestion: "J'aime aussi me promener sous la pluie" },
+      null,
+    ],
   },
   de: {
     aiLines: [
@@ -60,6 +94,10 @@ const MOCK_SCRIPTS: Record<LanguageCode, MockScript> = {
     userLines: [
       "Ich bin gern draußen, wenn das Wetter schön ist. Ich gehe auch im Regen spazieren.",
       "Am liebsten bin ich in der Natur. Ich mag die Berge und den Wald.",
+    ],
+    corrections: [
+      { suggestion: "Ich halte mich gern draußen auf" },
+      null,
     ],
   },
   it: {
@@ -72,6 +110,10 @@ const MOCK_SCRIPTS: Record<LanguageCode, MockScript> = {
       "Mi piace stare fuori quando c'è bel tempo. Cammino anche quando piove.",
       "Preferisco la natura. Mi piacciono la montagna e il bosco.",
     ],
+    corrections: [
+      { suggestion: "Faccio una passeggiata anche quando piove" },
+      null,
+    ],
   },
   es: {
     aiLines: [
@@ -83,6 +125,10 @@ const MOCK_SCRIPTS: Record<LanguageCode, MockScript> = {
       "Me gusta salir cuando hace buen tiempo. También camino cuando llueve.",
       "Prefiero la naturaleza. Me gustan la montaña y el bosque.",
     ],
+    corrections: [
+      { suggestion: "También salgo a caminar cuando llueve" },
+      null,
+    ],
   },
 };
 
@@ -90,6 +136,37 @@ const MOCK_SCRIPTS: Record<LanguageCode, MockScript> = {
 export function mockAiLine(language: LanguageCode, aiTurnIndex: number): string {
   const { aiLines } = MOCK_SCRIPTS[language];
   return aiLines[aiTurnIndex % aiLines.length];
+}
+
+/**
+ * The correction for a user message. The mock evaluation route keeps no state, so the
+ * choice follows from the text itself: the same message always gets the same answer,
+ * which makes a retry predictable, while different messages cycle through the list.
+ *
+ * The `userInput` is the first words of the message itself, so it is always a part of
+ * what was said, as the contract requires. The explanation and the suggestion are
+ * canned and do not fit those words, which is acceptable for a mock.
+ */
+export function mockCorrection(
+  language: LanguageCode,
+  input: string,
+): EvaluationSegment[] | null {
+  const { corrections } = MOCK_SCRIPTS[language];
+  let hash = 0;
+  for (const character of input) {
+    hash = (hash + character.charCodeAt(0)) % corrections.length;
+  }
+  const correction = corrections[hash];
+  if (!correction) {
+    return null;
+  }
+
+  const quoted = input.trim().split(/\s+/).slice(0, 4).join(" ");
+  if (!quoted) {
+    return null;
+  }
+
+  return mockEvaluationSegments(quoted, correction.suggestion);
 }
 
 export function mockUserLine(

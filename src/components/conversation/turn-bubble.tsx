@@ -1,6 +1,7 @@
 import type { Turn } from "@/lib/session-reducer";
 
 import { Bubble } from "./bubble";
+import { EvaluationSection } from "./evaluation-section";
 import { HighlightedText } from "./highlighted-text";
 import styles from "./turn-bubble.module.css";
 
@@ -23,13 +24,19 @@ export function TurnBubble({
       <span className={styles.speakerLabel}>
         {turn.author === "ai" ? "AI: " : "You: "}
       </span>
-      <span lang={conversationLang}>
+      <p lang={conversationLang}>
         {turnIsBeingSpoken ? (
           <HighlightedText text={turn.text} spokenWordCount={spokenWordCount} />
         ) : (
           turn.text
         )}
-      </span>
+      </p>
+      {turn.author === "user" && (
+        <EvaluationSection
+          evaluation={turn.evaluation}
+          conversationLang={conversationLang}
+        />
+      )}
     </Bubble>
   );
 }

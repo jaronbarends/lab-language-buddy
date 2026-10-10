@@ -1,0 +1,22 @@
+.section {
+  /* The primitive colour on purpose, not the semantic --color-bg-info that happens to
+     resolve to it: "info" is too general for this. */
+  background: var(--color-blue-50);
+}
+
+/* A phrase in the target language: the user's own words, or the suggested alternative.
+   Italic is the only thing that sets the user's words apart from the explanation. */
+.targetLanguage {
+  font-style: italic;
+}
+
+/* Only the suggestion gets a background: the user bubble's own, which stands out
+   against the section's lighter one. Cloned on every line of a wrapped phrase, so each
+   fragment keeps its padding and rounded ends. */
+.suggestion {
+  padding-inline: var(--size-4);
+  border-radius: var(--radius-4);
+  background: var(--color-bg-secondary-subtle);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}

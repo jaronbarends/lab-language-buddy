@@ -25,6 +25,10 @@
   /* Whatever the bubble holds stays inside its rounded corners. An attachment is the
      case that needs it, but it is the effect wanted for every bubble. */
   overflow: hidden;
+  /* A bubble in the thread is a flex item, and a flex item's automatic minimum size is
+     its content only while it does not clip: with overflow hidden it is 0. Without this
+     a long thread squeezes the bubbles, and clips their text, instead of scrolling. */
+  flex-shrink: 0;
 }
 
 .ai {

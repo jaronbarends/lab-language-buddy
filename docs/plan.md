@@ -559,7 +559,7 @@ Voice names get verified against the authoritative list endpoints rather than fr
 `GET https://{region}.tts.speech.microsoft.com/cognitiveservices/voices/list` for Azure,
 `GET https://texttospeech.googleapis.com/v1/voices?key=…` for Google.
 
-### Stage 4 — Evaluation: per-turn correction, in its own call (built in steps 1 to 3; step 4, verification, open)
+### Stage 4 — Evaluation: per-turn correction, in its own call — **done**
 
 A written comparison came before any implementation. The question was a **three-way**:
 
@@ -734,9 +734,20 @@ the 10 s timeout and about as long as the chat call.
    of the last user turn settles, since the user's bubble grows then. The mock evaluation
    route fails for a message containing `[fail]` and answers only after the driver's deadline
    plus 5 s for one containing `[slow]`, to see "Evaluation failed" and the timeout.
-4. Verify on desktop and on an iPhone, including a wrong key for `/api/evaluation` only
+4. **Done.** Verify on desktop and on an iPhone, including a wrong key for `/api/evaluation` only
    (reply still arrives, "Evaluation failed"), a corrector that does not answer in 10 s,
    and Try again after a failed chat call.
+
+Verified by the user, with no problems: on desktop, a wrong `GEMINI_API_KEY` for
+`/api/evaluation` only, a message with `[fail]`, one with `[slow]` ("Evaluation failed" after
+10 s), Try again after a failed chat call, the mock with typed text, and `npm run build`,
+the last two after the stage review's fixes; and the evaluation on an iPhone, after the
+`flex-shrink` fix for the bubbles. **Not verified:** speech-to-text errors being corrected
+as language mistakes, which is to be judged in further use, and the weak spots of the
+corrector listed under *Measured* above (the spelling ban, the transcription hint,
+quotation marks), which are measured, not solved. There are no automated tests: the
+reducer's evaluation paths were run as scenarios with a scratch script that is not in the
+repo.
 
 ### Out of scope
 
@@ -1082,6 +1093,7 @@ have been argued over first.
 | 10-10 | agent | The mock evaluation quotes the first four words of the message as `userInput`, with a canned explanation and suggestion; whitespace-only input gives `null` | CodeRabbit, review C2. It quoted a canned phrase that need not be in the message, which contradicts the contract. Quoting the message keeps the whole section visible for any input; returning `null` when the phrase was absent would not. |
 | 10-10 | agent | The stale stage 4 texts in this plan are corrected: the heading, step 3, the "proposed" on the build steps and "Nothing in the client calls it yet" | CodeRabbit, review C1. Step 4 stays open. |
 | 10-10 | you | One mock switch, `NEXT_PUBLIC_USE_MOCK_CHAT`, serves the chat and the evaluation, and `chat-schema.ts` and `chat-request.ts` keep their names although they now hold the evaluation too | Review B6, decided in conversation on 10-08 but not logged: Jaron agreed to the one switch, and said the file names were not to be changed now. The names `ChatError` and `ChatErrorSchema` were not discussed. |
+| 10-10 | you | Stage 4 is closed and ready to merge; the README's stage list is brought up to date (stages 2 to 4 ticked, stage 4 described as built) | Jaron did the checks that were open, with no problems (see the stage 4 section), and agreed to merge on the pull request, whose bot review could not run again because the account had reached its limit. The README still showed stage 4 as undecided and stages 2 and 3 as unticked, an older drift. |
 
 ## Keeping the experiment honest
 

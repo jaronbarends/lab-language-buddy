@@ -116,10 +116,11 @@ Built in reviewable stages, one branch each, with a check-in between.
 
 - [x] **1 — Static screens, mocked data.** Every screen and turn state reachable with no
       network, API keys or microphone.
-- [ ] **2 — Gemini conversation.** `/api/chat`, multi-turn via `previous_interaction_id`.
-- [ ] **3 — Deepgram live STT and TTS.** Live interim/final transcript, spoken replies,
+- [x] **2 — Gemini conversation.** `/api/chat`, multi-turn via `previous_interaction_id`.
+- [x] **3 — Deepgram live STT and TTS.** Live interim/final transcript, spoken replies,
       word highlighting synced to playback.
-- [ ] **4 — Evaluation.** Design deliberately undecided — three options are still open.
+- [x] **4 — Evaluation.** A short correction of every user turn, from its own Gemini
+      call, attached to the user's bubble.
 
 ## Planning and decisions
 

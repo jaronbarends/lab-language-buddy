@@ -242,8 +242,9 @@ documents the variables; `.env.local` (not committed) holds the values.
 
 Stage 4, step 1 adds `src/app/api/evaluation/route.ts` and `src/app/api/mock/evaluation/route.ts`,
 with `src/app/api/evaluation/gemini-evaluation.ts` beside the first (`askGeminiForEvaluation`,
-its own model constant, and Gemini's `{ correction }` schema). The route is stateless: no
-`previous_interaction_id`. Nothing in the client calls it yet.
+its own model constant, and Gemini's `{ correction }` schema). The call branches off the
+last AI turn (`previous_interaction_id`) and its own id is never handed back. Nothing in the
+client calls it yet.
 
 `src/app/api/stt/token/route.ts` and `src/hooks/use-live-transcription.ts` exist since
 stage 3, step 1; the token mint (`mintLiveToken`) sits in the route file.
@@ -576,10 +577,13 @@ parallel:
 - `/api/chat`, as in stage 2: `{ interactionId, reply }`, chained with
   `previous_interaction_id`. No `correction` in it; the persona prompt loses its
   *Correction* section.
-- `/api/evaluation`: `{ language, level, input }` in, `{ correction }` out, where
-  `correction` is `Segment[] | null`. **Stateless**: no `previous_interaction_id`, so the
-  corrections never enter the conversation chain, and the corrector sees only the
-  user's latest message. The AI's opening turn has no user message and makes no call.
+- `/api/evaluation`: `{ language, level, input, previousInteractionId? }` in,
+  `{ correction }` out, where `correction` is `Segment[] | null`. It **branches off the
+  chain**: `previousInteractionId` is the last AI turn's id, as in a chat request, so the
+  corrector sees the whole conversation up to the message, with that message as the
+  input; it is absent only when the user spoke first. The id of the evaluation call is
+  never handed back, so the corrections never enter the chain the conversation continues
+  along. The AI's opening turn has no user message and makes no call.
 
 Why two calls: the corrector assigned the segment types wrongly in 0 of 30 corrections
 (against 4 to 7 of 30 for one call, with or without an explicit second role in the
@@ -614,9 +618,14 @@ worth naming.
   be more natural, or nuance, calibrated to the user's CEFR level. If a mistake may be a
   transcription error, say so instead of explaining it as a language mistake. No
   feedback on spelling, spaces, punctuation, capitalization or diacritics. Do not point
-  out what is correct. And: *the message may not contain anything worth correcting; do
-  not go looking for a mistake, and never fall back on spelling, spaces, punctuation,
-  capitalization or diacritics just to have something to say.*
+  out what is correct. It gives feedback on the latest message only, but is told to read
+  that message in the context of the whole conversation (what the user was answering, what
+  was being talked about), and not to give feedback on earlier messages or on the partner's.
+  It is also told that the conversation may open with a hidden system message that made
+  the partner speak first, which the user did not say. And: *the message may not contain
+  anything worth correcting; do not go looking for a mistake, and never fall back on
+  spelling, spaces, punctuation, capitalization or diacritics just to have something to
+  say.*
 
 The measurement used the rules in `input`, not in `system_instruction`: re-measure once the
 real prompts exist.
@@ -658,10 +667,22 @@ as the reply arrives.
 **Try again.** The error state retries the chat call only. A correction that has already
 arrived is kept and not requested again; a failed correction is not retried.
 
-**History.** The corrections are not in the conversation chain, because the corrector is
-stateless and branches off nothing. Whether giving it context (a branch off the chain
-with `previous_interaction_id`, as the original app did) would improve the corrections is
-untested.
+**History.** The corrector branches off the last AI turn, as the original app's did, and
+sees the conversation so far. The corrections are not in the chain: the evaluation call is a
+sibling of the chat call for the same message, and only the chat call's id is carried on.
+A chat call and an evaluation call from the same AI turn, in parallel, both succeed, and
+the chain continues from the chat turn afterwards. The price is that every evaluation
+sends the conversation so far as input, so its cost grows with the conversation, which a
+message alone did not. A `previousInteractionId` that Gemini does not know makes the call
+fail, which shows as "Evaluation failed"; the chat call fails on it too.
+
+**Context, measured on 2026-10-10** (`gemini-3.1-flash-lite`, Dutch B1, the AI asking how
+the user takes their coffee, the user answering `Ik vind zwart het lekkerst.`, 6 runs each):
+without the conversation 6 of 6 corrections objected to *lekkerst* (it was said to be
+for taste only, while the answer was to a question about drinking it); with it 0 of 6, all
+`null`. A real mistake in a later message was still found with the history (3 of 3), and the
+hidden start message was not mentioned in the feedback (0 of 3). Three runs through the real
+route gave `null` as well.
 
 **Measured on 2026-10-06 and 2026-10-07** (`gemini-3.1-flash-lite`, Norwegian B1, 5 runs
 per input over 8 inputs: clear mistakes, correct sentences, a long sentence with a small
@@ -748,8 +769,7 @@ Per stage, in this order:
 ## Open questions
 
 1. **Evaluation design** — decided 2026-10-08: per-turn correction in its own call, see
-   stage 4. Still open inside it: whether the corrector would do better with the
-   conversation as context, and the weak spots listed there (spelling ban, transcription
+   stage 4. Still open inside it: the weak spots listed there (spelling ban, transcription
    hint, quotation marks).
 2. **Tests.** There are none, so review is currently the only quality gate.
    `word-timing.ts` and the reducer are pure and would suit Vitest. The Gemini call now
@@ -1028,6 +1048,8 @@ have been argued over first.
 | 10-08 | you | TTS audio is not fetched ahead while the reply waits for the evaluation; `use-audio-playback.ts` is unchanged and fetches on entering `aiSpeaking`, which is after the reply is on screen | Prefetching needs extra state and only gains when the corrector is slower than the chat call. |
 | 10-08 | agent | `post-json.ts` takes `errorTextOf` out of `use-chat-driver.ts`, so both drivers share one fetch and one way of reading the route's error | Two copies of the same twelve lines. Asked for by Jaron as part of step 2. |
 | 10-08 | agent | `turn-bubble.tsx` renders the evaluation as plain text, marked temporary | Without a rendering nothing of step 2 is visible in the browser. Replaced in step 3. |
+| 10-10 | you | **Supersedes "stateless":** the corrector gets the whole conversation. `EvaluationRequestBody` gains an optional `previousInteractionId` (the last AI turn before the message, as in a chat request) and the Gemini call passes it as `previous_interaction_id`. The corrector prompt says to give feedback on the latest message only but to read it in the context of the whole conversation, and mentions the hidden start message | Jaron's test: asked how he takes his coffee, answering `Ik vind zwart het lekkerst.` got a correction to *mooist*, which does not arise when the question is visible. Measured: 6 of 6 such corrections without the history, 0 of 6 with it. The corrections stay out of the chain because the call is a sibling of the chat call and its id is not carried on. |
+| 10-10 | agent | The evaluation driver derives `previousInteractionId` itself, with the same `findLast` on the AI turns that `createChatRequestBody` uses, instead of sharing one helper | Sharing it would have touched the reducer and the chat driver as well, which was more than the files Jaron had been asked about. A candidate for a small follow-up. |
 
 ## Keeping the experiment honest
 

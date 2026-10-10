@@ -15,6 +15,12 @@ const MAX_INPUT_LENGTH = 5000;
  */
 const MAX_INTERACTION_ID_LENGTH = 200;
 
+/** The id of the last AI turn: where the request continues the conversation from. */
+const PreviousInteractionIdSchema = z
+  .string()
+  .min(1)
+  .max(MAX_INTERACTION_ID_LENGTH);
+
 /**
  * The contract of `/api/chat` and `/api/mock/chat`, in one place so the two routes and
  * the client cannot drift apart. A request is one of two kinds:
@@ -38,11 +44,7 @@ export const ChatRequestBodySchema = z.discriminatedUnion("kind", [
     language: z.enum(LANGUAGE_CODES),
     level: z.enum(CEFR_LEVELS),
     input: z.string().min(1).max(MAX_INPUT_LENGTH),
-    previousInteractionId: z
-      .string()
-      .min(1)
-      .max(MAX_INTERACTION_ID_LENGTH)
-      .optional(),
+    previousInteractionId: PreviousInteractionIdSchema.optional(),
   }),
 ]);
 
@@ -83,14 +85,17 @@ export type ChatResponse = z.infer<typeof ChatResponseSchema>;
 
 /**
  * The contract of `/api/evaluation` and `/api/mock/evaluation`: the correction of one user
- * message. It is stateless on purpose: no interaction id, so the correction never enters
- * the conversation chain and the corrector sees only this message. `language` and
- * `level` are enums for the same reason as in `ChatRequestBodySchema`.
+ * message. `previousInteractionId` is the last AI turn's id, as in a chat request, so the
+ * corrector sees the whole conversation up to the message it gives feedback on; it is
+ * absent only when the user spoke first. The call branches off that turn and its own id
+ * is never handed back, so the correction never enters the conversation chain.
+ * `language` and `level` are enums for the same reason as in `ChatRequestBodySchema`.
  */
 export const EvaluationRequestBodySchema = z.object({
   language: z.enum(LANGUAGE_CODES),
   level: z.enum(CEFR_LEVELS),
   input: z.string().min(1).max(MAX_INPUT_LENGTH),
+  previousInteractionId: PreviousInteractionIdSchema.optional(),
 });
 
 export type EvaluationRequestBody = z.infer<typeof EvaluationRequestBodySchema>;

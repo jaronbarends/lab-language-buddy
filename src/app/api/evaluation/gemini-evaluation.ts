@@ -37,12 +37,15 @@ export async function askGeminiForEvaluation(
 
   const ai = new GoogleGenAI({ apiKey });
 
-  // No `previous_interaction_id`: the corrector sees only this message, and nothing of
-  // this call ends up in the conversation chain.
+  // Branches off the last AI turn, so the corrector sees the conversation so far, with the
+  // message to give feedback on as the input. The chat call for the same message branches
+  // off the same turn; the id of this call is never handed back, so nothing of it ends up
+  // in the chain the conversation continues along.
   const response = await ai.interactions.create(
     {
       model: MODEL,
       input: body.input,
+      previous_interaction_id: body.previousInteractionId,
       system_instruction: buildEvaluationSystemInstruction(
         body.language,
         body.level,

@@ -11,6 +11,7 @@ import type {
   SessionAction,
   SessionConfig,
   SessionState,
+  Turn,
   UserTurn,
 } from "@/lib/session-reducer";
 
@@ -52,6 +53,7 @@ export function useEvaluationDriver(
     const turnId = turnToEvaluate.id;
     const evaluationRequestBody = createEvaluationRequestBody(
       state.config,
+      state.turns,
       turnToEvaluate,
     );
 
@@ -101,12 +103,29 @@ function getTurnToEvaluate(state: SessionState): UserTurn | undefined {
   );
 }
 
+/**
+ * The corrector gets the conversation by continuing from the last AI turn before the
+ * message, as the chat request does; there is none when the user spoke first.
+ */
 function createEvaluationRequestBody(
   config: SessionConfig,
+  turns: Turn[],
   turn: UserTurn,
 ): EvaluationRequestBody {
   const { language, level } = config;
-  return { language, level, input: turn.text };
+  const lastAiTurnBefore = turns
+    .slice(0, turns.indexOf(turn))
+    .findLast((earlierTurn) => earlierTurn.author === "ai");
+
+  return {
+    language,
+    level,
+    input: turn.text,
+    previousInteractionId:
+      lastAiTurnBefore?.author === "ai"
+        ? lastAiTurnBefore.interactionId
+        : undefined,
+  };
 }
 
 async function fetchEvaluation(

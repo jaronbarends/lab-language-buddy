@@ -107,12 +107,38 @@ export default function Page() {
   const stops = useRef<Partial<Record<EngineName, () => void>>>({});
   const startedAt = useRef<Partial<Record<EngineName, number>>>({});
 
+  // The app's pattern: a tap only sets state, and the engine starts in an effect after the
+  // render, like use-live-transcription does when the turn state becomes `listening`.
+  // Whether iOS lets the native engine start from there is what the "Native via effect"
+  // button tests; the other buttons start it straight from the tap.
+  const [effectStartIsOn, setEffectStartIsOn] = useState(false);
+
   useEffect(() => {
     const stopsByEngine = stops.current;
     return () => {
       Object.values(stopsByEngine).forEach((stop) => stop?.());
     };
   }, []);
+
+  useEffect(() => {
+    if (!effectStartIsOn) {
+      return;
+    }
+
+    const stopsByEngine = stops.current;
+    startEngine("native");
+    const startedStop = stopsByEngine.native;
+    return () => {
+      // Only the engine this effect started: a tap on another Start button may have put
+      // a newer one in its place by the time the flag is switched off.
+      if (stopsByEngine.native === startedStop) {
+        startedStop?.();
+        delete stopsByEngine.native;
+      }
+    };
+    // startEngine is recreated every render; this effect has to run only on the flag.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [effectStartIsOn]);
 
   function updateView(engine: EngineName, patch: Partial<EngineView>) {
     setViews((previous) => ({
@@ -180,16 +206,24 @@ export default function Page() {
   }
 
   function handleStart(engines: EngineName[]) {
+    setEffectStartIsOn(false);
     stopAll();
-    // Native first, and with nothing awaited before it: iOS only lets
-    // SpeechRecognition start inside the tap that asked for it.
+    // Native first, and with nothing awaited before it, so it starts inside the tap
+    // itself. Starting from an effect also works on iOS ("Native via effect"); this is
+    // just the plainest case to compare against.
     const ordered = (["native", "deepgram"] as const).filter((engine) =>
       engines.includes(engine),
     );
     ordered.forEach(startEngine);
   }
 
+  function handleStartNativeViaEffect() {
+    stopAll();
+    setEffectStartIsOn(true);
+  }
+
   function handleStop() {
+    setEffectStartIsOn(false);
     stopAll();
     setViews((previous) => ({
       deepgram: stoppedView(previous.deepgram),
@@ -198,6 +232,7 @@ export default function Page() {
   }
 
   function handleReset() {
+    setEffectStartIsOn(false);
     stopAll();
     setViews({ deepgram: EMPTY_VIEW, native: EMPTY_VIEW });
   }
@@ -241,6 +276,7 @@ export default function Page() {
         <button onClick={() => handleStart(["native", "deepgram"])}>Start both</button>
         <button onClick={() => handleStart(["deepgram"])}>Deepgram only</button>
         <button onClick={() => handleStart(["native"])}>Native only</button>
+        <button onClick={handleStartNativeViaEffect}>Native via effect</button>
         <button onClick={handleStop}>Stop</button>
         <button onClick={handleReset}>Clear</button>
       </div>

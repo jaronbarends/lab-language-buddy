@@ -584,7 +584,8 @@ parallel:
   `{ correction }` out, where `correction` is `Segment[] | null`. It **branches off the
   chain**: `previousInteractionId` is the last AI turn's id, as in a chat request, so the
   corrector sees the whole conversation up to the message, with that message as the
-  input; it is absent only when the user spoke first. The id of the evaluation call is
+  input, wrapped in `<message>` tags and a one-line instruction (`wrapMessageForFeedback`)
+  so it is not mistaken for another chat turn; it is absent only when the user spoke first. The id of the evaluation call is
   never handed back, so the corrections never enter the chain the conversation continues
   along. The AI's opening turn has no user message and makes no call.
 
@@ -1151,3 +1152,4 @@ When a file *is* pointed at, what it settles still matters:
 Two mechanisms keep this measurable rather than a matter of impression: the Source column
 above, and keeping correction rounds on their own branches, so `git diff` between them is
 literally "what changed once the reference was consulted".
+| 10-12 | you | The corrector call wraps the user message in `<message>` tags with a one-line "give feedback on this message only" instruction, and the prompt refers to those tags; the prompt also says a question in the message is not to be answered and that earlier messages are context only | The corrector answered questions and corrected words from earlier messages, since the bare input looked like any other user turn in the history. Prompt-only rules did not stop it twice. Tested by Jaron on 10-12: earlier messages no longer leak and a question gets feedback on its grammar instead of an answer. Kept as is for now; a check that every `userInput` segment occurs in the message is the next step if the leaking returns. |

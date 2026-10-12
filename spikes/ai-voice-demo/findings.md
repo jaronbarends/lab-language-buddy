@@ -237,6 +237,45 @@ i.p.v. op index — verwijdert de race volledig, ongeacht state-batching-timing.
   `speech_final`/`UtteranceEnd`-events, hergebruikt dezelfde WebSocket) of **client-side**
   (zelf geluidsniveau meten via Web Audio API) — provider-side is minder eigen code.
 
+### STT-vergelijking (2026-10-12): Deepgram live tegenover de native Web Speech API
+Aanleiding: Jaron was niet tevreden over de kwaliteit van Deepgram en had met de native
+`SpeechRecognition` in zijn eerste app (ook op iPhone, ook Noors) betere ervaringen. Gebouwd
+als wegwerppagina (`/stt-compare`, branch `spike-STT-comparison`): beide engines luisteren
+tegelijk naar dezelfde microfoon; per engine de definitieve en voorlopige tekst, de status en
+de tijd tot de eerste woorden. Native met `lang = nb-NO`, Deepgram met `nova-2` en `no`.
+
+- **iPhone (Safari): beide engines tegelijk op dezelfde microfoon werkt**, zonder dat de ene
+  de andere onderbrak. Dezelfde audio dus, geen losse uitspraken. Jaron's indruk: native iets
+  beter, en geen wachttijd voor de microfoon (geen token, geen WebSocket, geen MediaRecorder).
+  Een indruk, geen meting; de iOS-versie is niet vastgelegd.
+- **Chrome desktop: de native engine glijdt halverwege in het Zweeds.** Eén test, Noors
+  gesproken, het woord dat Jaron zei was "bedre":
+
+  > deepgram: hei jeg er i ferd med å se hvordan dette fungerer om jeg bruker to forskjellige
+  > teknikker for å omsette språkaktig tekst vi skal se hvilke modeller eller bedre sak
+  > hvilken teknikk fungerer bedre jeg lurer på det
+  >
+  > native: Hei jeg er i ferd med å se hvordan det funker Om jeg bruker to forskjellige
+  > teknikker for å omsette språk til tekst vi ska se vilken modell eller bedre sagt Hvilken
+  > Teknik funkar bättre Jag lurer på det
+
+  Zweeds in de native-uitvoer: `ska`, `vilken`, `funkar`, `bättre` (de `ä` bestaat niet in
+  het Noors), `Jag`. Geen schone omslag: `funker` en `funkar` staan in dezelfde tekst, en
+  `bedre sagt` en `Hvilken Teknik` zijn er tussendoor weer Noors. Deepgram blijft Noors maar
+  maakt eigen fouten (`språkaktig tekst`, `bedre sak`, `hvilke modeller`) die de native engine
+  goed had. Op de iPhone werd géén Zweeds gezien. Oorzaak onbekend; mogelijk kiest Chrome's
+  (serverside) model per segment tussen twee op elkaar lijkende talen — niet geverifieerd, en
+  `no-NO` tegenover `nb-NO` is niet geprobeerd.
+- **Gevolg voor de app:** een Zweeds woord uit de herkenning kan door de corrector als fout
+  van de gebruiker worden aangemerkt. Bij Deepgram geldt dat even goed voor `bedre sak`.
+  Geen van beide engines is daar veilig.
+- **Besluit:** native als standaard, Deepgram als alternatief, gekozen met een env-var, zonder
+  automatische terugval (Firefox heeft geen `SpeechRecognition`). Zie de decision-log in
+  `docs/plan.md`, 12 oktober.
+- **Niet gedaan:** één spreker en één zin, dus geen meting van foutpercentages; geen
+  vergelijking met opgenomen audio die via een speaker wordt afgespeeld (zou beide engines
+  exact dezelfde geluiden laten horen); Firefox en Chrome op Android niet geprobeerd.
+
 ## Niet onderzocht / open voor een vervolg-spike
 
 - **Azure STT alsnog bruikbaar maken** zou vereisen: opnemen als WAV/PCM via Web Audio API

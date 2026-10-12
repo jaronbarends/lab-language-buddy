@@ -30,6 +30,13 @@ const GeminiCorrectionSchema = z.object({
 
 const GeminiCorrectionJSONSchema = z.toJSONSchema(GeminiCorrectionSchema);
 
+// Sent bare, the message arrives as an ordinary user turn, which the model cannot tell
+// from the earlier user turns in the conversation. The wrapper marks it as the one to give
+// feedback on, and the rest as context.
+function wrapMessageForFeedback(message: string): string {
+  return `Give feedback on this message only. Everything before it is context.\n\n<message>\n${message}\n</message>`;
+}
+
 export async function askGeminiForEvaluation(
   body: EvaluationRequestBody,
   signal: AbortSignal,
@@ -48,7 +55,7 @@ export async function askGeminiForEvaluation(
   const response = await ai.interactions.create(
     {
       model: MODEL,
-      input: body.input,
+      input: wrapMessageForFeedback(body.input),
       previous_interaction_id: body.previousInteractionId,
       // Not stored: nothing ever fetches this interaction and its id is not kept. The chat
       // call is the one that has to be stored, since the conversation chain hangs off it.

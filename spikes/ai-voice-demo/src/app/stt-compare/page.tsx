@@ -122,8 +122,10 @@ export default function Page() {
   }
 
   function stopAll() {
-    Object.values(stops.current).forEach((stop) => stop?.());
-    stops.current = {};
+    for (const engine of ["deepgram", "native"] as const) {
+      stops.current[engine]?.();
+      delete stops.current[engine];
+    }
   }
 
   function startEngine(engine: EngineName) {

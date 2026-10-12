@@ -32,10 +32,13 @@ subprotocol rather than `token`, and a stale-closure bug in turn tracking).
 ## Fixed constraints
 
 Specified up front, not open questions: Next.js + TypeScript; Google Gemini for the
-conversation; Deepgram `nova-2` **live streaming** STT (never Google Cloud STT, never the
-Web Speech API); TTS behind a provider abstraction with Azure as default and Google and
-ElevenLabs also implemented; the browser connecting to Deepgram **directly** with a
-short-lived token from our own REST route, so there is no WebSocket server on our side;
+conversation; **live streaming** STT, never Google Cloud STT and never record-then-
+transcribe: the browser's native Web Speech API as the default and Deepgram `nova-2` as the
+alternative, chosen by an env var (decided 10-12, see the log; **until that is built the
+app is Deepgram only**, and "never the Web Speech API" was the original wording); TTS behind
+a provider abstraction with Azure as default and Google and ElevenLabs also implemented;
+with Deepgram, the browser connecting to Deepgram **directly** with a short-lived token
+from our own REST route, so there is no WebSocket server on our side;
 Safari on iPhone as a hard requirement; no persistence.
 
 ---
@@ -51,6 +54,7 @@ Safari on iPhone as a hard requirement; no persistence.
 | Conversation history | Gemini `previous_interaction_id` chaining | History lives server-side at Google; we send only the new utterance, plus the model, system instruction and response format, which go with every call. The client keeps its own array for rendering, and the chain id is read from it: each AI turn carries its `interactionId`. |
 | Chat response shape in stage 2 | `{ interactionId, reply }` — no per-turn `correction` | Whether feedback is per-turn is exactly the stage 4 question. Shipping stage 2 without it keeps that open instead of defaulting by accident. |
 | TTS providers | All three from the spike: Azure (default), Google, ElevenLabs | Three implementations stress the interface in a way two don't — see the voice-table row. |
+| STT providers | Native Web Speech API (default) and Deepgram `nova-2` live streaming (alternative); chosen by `NEXT_PUBLIC_STT_PROVIDER`; no automatic fallback | Deepgram was the only one at first because the spike ruled out the rest: Google Cloud STT broke on Safari recordings over ~17.5 s, Azure STT cannot read WebM/Opus and fails silently, ElevenLabs Scribe worked, but why it was not carried over to live streaming is not recorded, and Deepgram was cheapest, held up on Safari and was judged better than Google (`findings.md`). Live streaming then tied the app to Deepgram's WebSocket. The 10-12 spike comparison changed the default, see the log. |
 | Provider interface | `synthesize({ text, language, gender }, signal)` | The spike hardcoded `nb-NO`. Language has to cross the boundary, and each provider resolves it differently. Gender joined it on 10-03, see the log. |
 | Voice tables | Inside each provider module, not in the shared language registry | Azure and Google each need a per-language voice name; ElevenLabs' `eleven_flash_v2_5` is multilingual and takes none. A shared column would put two providers' private config in a table the client imports, with nowhere sensible for the third case. |
 | Flags | `flag-icons`, importing only the six SVGs needed | Emoji flags render as bare country letters on Windows. Importing the package stylesheet would pull in all ~260 flags. |
@@ -214,7 +218,8 @@ so a page reload starts from the defaults again.
     │   │                         the mock route via `NEXT_PUBLIC_USE_MOCK_CHAT`
     │   ├── use-evaluation-driver.ts  the evaluation of a user turn, with `EVALUATION_TIMEOUT_MS`;
     │   │                         the same mock switch
-    │   ├── use-live-transcription.ts  mic + Deepgram socket while `listening`
+    │   ├── use-live-transcription.ts  starts a speech recognition engine while `listening` and
+    │   │                         turns what it reports into reducer actions
     │   ├── use-audio-playback.ts  `/api/tts` + the shared `<audio>` element in `aiSpeaking`,
     │   │                         and `unlockAudio()` for the click handlers
     │   └── use-mock-tts.ts       fakes TTS playback; on when `NEXT_PUBLIC_USE_MOCK_TTS=true`
@@ -223,6 +228,9 @@ so a page reload starts from the defaults again.
         ├── languages.ts          provider-neutral language registry
         ├── cefr.ts               A1–C2 + labels
         ├── word-timing.ts        estimateWordTimings / countSpokenWords
+        ├── stt/                  speech recognition engines, each `start(language, callbacks)`
+        │                         returning its stop function: `deepgram.ts` (mic, token and
+        │                         socket), `types.ts` (`SttCallbacks`)
         ├── chat-schema.ts        zod: the chat request (a union on `kind`) and response, the
         │                         evaluation request and response (correction segments), the error body
         ├── post-json.ts          `postJson` and `postJsonWithDeadline`: the fetch both drivers use,
@@ -250,7 +258,9 @@ last AI turn (`previous_interaction_id`), is not stored (`store: false`) and its
 never handed back. `use-evaluation-driver.ts` calls it for every user turn.
 
 `src/app/api/stt/token/route.ts` and `src/hooks/use-live-transcription.ts` exist since
-stage 3, step 1; the token mint (`mintLiveToken`) sits in the route file.
+stage 3, step 1; the token mint (`mintLiveToken`) sits in the route file. The Deepgram code
+that was in the hook moved to `src/lib/stt/deepgram.ts` when the native engine was added
+(see the 10-12 log rows).
 
 Stage 3, step 2 adds `src/app/api/tts/route.ts`, `src/lib/tts/{types,index,azure,google,elevenlabs}.ts`
 (`index.ts` holds `getTtsProvider()` and `VOICE_GENDER`, the one switch between female and
@@ -1095,6 +1105,11 @@ have been argued over first.
 | 10-10 | agent | The stale stage 4 texts in this plan are corrected: the heading, step 3, the "proposed" on the build steps and "Nothing in the client calls it yet" | CodeRabbit, review C1. Step 4 stays open. |
 | 10-10 | you | One mock switch, `NEXT_PUBLIC_USE_MOCK_CHAT`, serves the chat and the evaluation, and `chat-schema.ts` and `chat-request.ts` keep their names although they now hold the evaluation too | Review B6, decided in conversation on 10-08 but not logged: Jaron agreed to the one switch, and said the file names were not to be changed now. The names `ChatError` and `ChatErrorSchema` were not discussed. |
 | 10-10 | you | Stage 4 is closed and ready to merge; the README's stage list is brought up to date (stages 2 to 4 ticked, stage 4 described as built) | Jaron did the checks that were open, with no problems (see the stage 4 section), and agreed to merge on the pull request, whose bot review could not run again because the account had reached its limit. The README still showed stage 4 as undecided and stages 2 and 3 as unticked, an older drift. |
+| 10-12 | you | **Supersedes the fixed constraint "never the Web Speech API":** STT becomes a provider choice like TTS. The native Web Speech API is the default and Deepgram `nova-2` stays as the alternative. **Decided, not built:** the app is still Deepgram only | Jaron's spike (`stt-compare` page, results in `spikes/ai-voice-demo/findings.md`): on his iPhone both engines ran at once on the same microphone, and the native one seemed slightly better, with no wait for the microphone to start. His Norwegian test in Chrome desktop: Deepgram stayed Norwegian but made its own errors (*språkaktig tekst*, *bedre sak* for *språk til tekst*, *bedre sagt*); the native engine got those right but drifted into Swedish (*ska*, *vilken*, *funkar*, *bättre*, *Jag*). Not seen on the iPhone. One speaker, one sentence, so an impression and not a measurement. |
+| 10-12 | you | The choice is an env var only, not in the UI | There is no reason to offer it to the user. |
+| 10-12 | you | No automatic fallback to Deepgram when the browser has no speech recognition (Firefox) | Not wanted for now. In such a browser the native provider simply cannot listen. |
+| 10-12 | agent | The env var is `NEXT_PUBLIC_STT_PROVIDER` | The choice is made in the browser, where only `NEXT_PUBLIC_` variables are visible, unlike the server-side `TTS_PROVIDER`. Same prefix as `NEXT_PUBLIC_USE_MOCK_CHAT`. The name is the agent's to propose and not discussed. |
+| 10-12 | agent | The Deepgram code moves out of `use-live-transcription.ts` into `src/lib/stt/deepgram.ts` (`startDeepgramTranscription(language, callbacks)`), with the callbacks type in `src/lib/stt/types.ts`; the hook only turns `onMicrophoneStarted`, `onTranscript` and `onFailed` into reducer actions. No change in behaviour | Step 1 of adding the native engine: both engines get the same shape and the hook no longer knows which one runs. Before building it, the effect start was tested on an iPhone: the native engine started from a `useEffect` after a state change works there (spike page, "Native via effect"), so the hook's structure can stay. |
 
 ## Keeping the experiment honest
 

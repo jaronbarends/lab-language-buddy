@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { ChatIcon } from "@/components/ui/icons";
 import { unlockAudio } from "@/hooks/use-audio-playback";
@@ -53,9 +54,7 @@ export function SetupScreen({ lastConfig, onStart }: SetupScreenProps) {
   return (
     <main className={styles.screen}>
       <header className={styles.header}>
-        <span className={styles.logo}>
-          <ChatIcon size={22} />
-        </span>
+        <Logo />
         <div>
           <h1>Language buddy</h1>
           <p className={styles.tagline}>Practice speaking out loud</p>

@@ -15,18 +15,6 @@
   margin-bottom: var(--size-32);
 }
 
-.logo {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: var(--size-48);
-  height: var(--size-48);
-  flex-shrink: 0;
-  border-radius: var(--radius-12);
-  background: var(--color-bg-primary);
-  color: var(--color-text-on-primary);
-}
-
 .tagline {
   font-size: var(--font-size-minor);
   color: var(--color-text-neutral-subtle);

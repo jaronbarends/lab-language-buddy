@@ -34,8 +34,8 @@ subprotocol rather than `token`, and a stale-closure bug in turn tracking).
 Specified up front, not open questions: Next.js + TypeScript; Google Gemini for the
 conversation; **live streaming** STT, never Google Cloud STT and never record-then-
 transcribe: the browser's native Web Speech API as the default and Deepgram `nova-2` as the
-alternative, chosen by an env var (decided 10-12, see the log; **until that is built the
-app is Deepgram only**, and "never the Web Speech API" was the original wording); TTS behind
+alternative, chosen by `NEXT_PUBLIC_STT_PROVIDER` (decided and built 10-12, see the log;
+"never the Web Speech API" was the original wording); TTS behind
 a provider abstraction with Azure as default and Google and ElevenLabs also implemented;
 with Deepgram, the browser connecting to Deepgram **directly** with a short-lived token
 from our own REST route, so there is no WebSocket server on our side;
@@ -229,8 +229,12 @@ so a page reload starts from the defaults again.
         ├── cefr.ts               A1–C2 + labels
         ├── word-timing.ts        estimateWordTimings / countSpokenWords
         ├── stt/                  speech recognition engines, each `start(language, callbacks)`
-        │                         returning its stop function: `deepgram.ts` (mic, token and
-        │                         socket), `types.ts` (`SttCallbacks`)
+        │                         returning its stop function: `native.ts` (the browser's
+        │                         `SpeechRecognition`, restarted when it ends by itself),
+        │                         `deepgram.ts` (mic, token and socket), `index.ts`
+        │                         (`getConfiguredStartFunction()`, chosen by `NEXT_PUBLIC_STT_PROVIDER`),
+        │                         `types.ts` (`SttCallbacks`, `StartFunction`), `messages.ts`
+        │                         (the failure texts both engines use)
         ├── chat-schema.ts        zod: the chat request (a union on `kind`) and response, the
         │                         evaluation request and response (correction segments), the error body
         ├── post-json.ts          `postJson` and `postJsonWithDeadline`: the fetch both drivers use,
@@ -1105,11 +1109,16 @@ have been argued over first.
 | 10-10 | agent | The stale stage 4 texts in this plan are corrected: the heading, step 3, the "proposed" on the build steps and "Nothing in the client calls it yet" | CodeRabbit, review C1. Step 4 stays open. |
 | 10-10 | you | One mock switch, `NEXT_PUBLIC_USE_MOCK_CHAT`, serves the chat and the evaluation, and `chat-schema.ts` and `chat-request.ts` keep their names although they now hold the evaluation too | Review B6, decided in conversation on 10-08 but not logged: Jaron agreed to the one switch, and said the file names were not to be changed now. The names `ChatError` and `ChatErrorSchema` were not discussed. |
 | 10-10 | you | Stage 4 is closed and ready to merge; the README's stage list is brought up to date (stages 2 to 4 ticked, stage 4 described as built) | Jaron did the checks that were open, with no problems (see the stage 4 section), and agreed to merge on the pull request, whose bot review could not run again because the account had reached its limit. The README still showed stage 4 as undecided and stages 2 and 3 as unticked, an older drift. |
-| 10-12 | you | **Supersedes the fixed constraint "never the Web Speech API":** STT becomes a provider choice like TTS. The native Web Speech API is the default and Deepgram `nova-2` stays as the alternative. **Decided, not built:** the app is still Deepgram only | Jaron's spike (`stt-compare` page, results in `spikes/ai-voice-demo/findings.md`): on his iPhone both engines ran at once on the same microphone, and the native one seemed slightly better, with no wait for the microphone to start. His Norwegian test in Chrome desktop: Deepgram stayed Norwegian but made its own errors (*språkaktig tekst*, *bedre sak* for *språk til tekst*, *bedre sagt*); the native engine got those right but drifted into Swedish (*ska*, *vilken*, *funkar*, *bättre*, *Jag*). Not seen on the iPhone. One speaker, one sentence, so an impression and not a measurement. |
+| 10-12 | you | **Supersedes the fixed constraint "never the Web Speech API":** STT becomes a provider choice like TTS. The native Web Speech API is the default and Deepgram `nova-2` stays as the alternative. Built the same day, see the rows below | Jaron's spike (`stt-compare` page, results in `spikes/ai-voice-demo/findings.md`): on his iPhone both engines ran at once on the same microphone, and the native one seemed slightly better, with no wait for the microphone to start. His Norwegian test in Chrome desktop: Deepgram stayed Norwegian but made its own errors (*språkaktig tekst*, *bedre sak* for *språk til tekst*, *bedre sagt*); the native engine got those right but drifted into Swedish (*ska*, *vilken*, *funkar*, *bättre*, *Jag*). Not seen on the iPhone. One speaker, one sentence, so an impression and not a measurement. |
 | 10-12 | you | The choice is an env var only, not in the UI | There is no reason to offer it to the user. |
 | 10-12 | you | No automatic fallback to Deepgram when the browser has no speech recognition (Firefox) | Not wanted for now. In such a browser the native provider simply cannot listen. |
 | 10-12 | agent | The env var is `NEXT_PUBLIC_STT_PROVIDER` | The choice is made in the browser, where only `NEXT_PUBLIC_` variables are visible, unlike the server-side `TTS_PROVIDER`. Same prefix as `NEXT_PUBLIC_USE_MOCK_CHAT`. The name is the agent's to propose and not discussed. |
 | 10-12 | agent | The Deepgram code moves out of `use-live-transcription.ts` into `src/lib/stt/deepgram.ts` (`startDeepgramTranscription(language, callbacks)`), with the callbacks type in `src/lib/stt/types.ts`; the hook only turns `onMicrophoneStarted`, `onTranscript` and `onFailed` into reducer actions. No change in behaviour | Step 1 of adding the native engine: both engines get the same shape and the hook no longer knows which one runs. Before building it, the effect start was tested on an iPhone: the native engine started from a `useEffect` after a state change works there (spike page, "Native via effect"), so the hook's structure can stay. |
+| 10-12 | you | When the browser ends a native session by itself while the turn is `listening` (silence, a time-out), the engine **starts a new session** and keeps the words heard so far; it does not end in `FAILED` | The choice offered was `FAILED` or restarting. Restarting keeps the user talking after a pause. A new session starts with an empty result list, so `native.ts` carries the earlier text over (finalized and interim). Not yet tested on an iPhone: whether iOS asks for permission again or needs a tap on a restart. |
+| 10-12 | agent | A session that ends within 1.5 s counts as a quick end, and three quick ends in a row end in `FAILED`; a `no-speech` or `aborted` error never does. Real errors (`not-allowed`, `audio-capture`, `network`, `language-not-supported`, anything else) end in `FAILED` with their own text | Without a limit, a browser that ends every session at once would restart forever. The numbers are the agent's and not tuned. |
+| 10-12 | you | An unknown `NEXT_PUBLIC_STT_PROVIDER` **throws when the page loads**, listing the valid names; empty or unset is `native` | Jaron first said an unknown value could use the native engine, then chose the error. A typo would otherwise leave the app on a different engine than the one asked for, which is what `getTtsProvider` also guards against. |
+| 10-12 | you | The language registry's `deepgram` field is renamed `deepgramLang` and a field `webSpeechLang` is added (`nb-NO` for Norwegian, the others with their usual region) | The native engine needs a tag with a region, which `htmlLang` does not have. Jaron: naming each field after its vendor plus `Lang` is more consistent. |
+| 10-12 | agent | `@types/dom-speech-recognition` is a dev dependency, in place of hand-written types. `typecheck` has no clashes with `lib.dom`; the package refers to an error code type it does not declare, so `native.ts` reads `event.error` as a string. The two failure texts that both engines use moved to `src/lib/stt/messages.ts` | The spike hand-wrote its types. The package is version 0.0.x and was last updated on 10-04, so if it ever clashes with a future `lib.dom` it can be dropped for local types again. `MICROPHONE_STARTED` is sent on the `start` event, as in the spike, which was tested on an iPhone; `audiostart` may be more exact but was not tried. |
 
 ## Keeping the experiment honest
 

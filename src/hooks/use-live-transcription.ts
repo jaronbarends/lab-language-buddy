@@ -2,12 +2,16 @@
 
 import { useEffect, type Dispatch } from "react";
 
-import { startDeepgramTranscription } from "@/lib/stt/deepgram";
 import {
   turnStateIs,
   type SessionAction,
   type SessionState,
 } from "@/lib/session-reducer";
+import { getConfiguredStartFunction } from "@/lib/stt";
+
+// Read when the module loads, so an unknown NEXT_PUBLIC_STT_PROVIDER fails at once and
+// not on the first tap on the microphone.
+const startTranscription = getConfiguredStartFunction();
 
 /**
  * The speech recognition engine: while the turn state is `listening`, audio goes out and
@@ -32,8 +36,7 @@ export function useLiveTranscription(
       return;
     }
 
-    // The engine returns the function that ends it, which is the effect cleanup.
-    return startDeepgramTranscription(language, {
+    const stopTranscription = startTranscription(language, {
       onMicrophoneStarted() {
         dispatch({ type: "MICROPHONE_STARTED" });
       },
@@ -49,5 +52,8 @@ export function useLiveTranscription(
         });
       },
     });
+
+    // Leaving `listening` runs the effect cleanup, which ends the engine.
+    return stopTranscription;
   }, [turnStateIsListening, language, dispatch]);
 }

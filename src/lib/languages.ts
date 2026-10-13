@@ -9,8 +9,13 @@ type Language = {
   /** How the language is named to Gemini in the system instruction. */
   promptName: string;
   /** Deepgram's `language` query param for the nova-2 model. */
-  deepgram: string;
-  /** BCP 47 tag for the `lang` attribute; separate from `deepgram`, which is a vendor param. */
+  deepgramLang: string;
+  /**
+   * BCP 47 tag for the browser's `SpeechRecognition.lang`. With a region, unlike
+   * `htmlLang`: Chrome and Safari want `nb-NO`, not `nb`.
+   */
+  webSpeechLang: string;
+  /** BCP 47 tag for the `lang` attribute; separate from the two vendor values above. */
   htmlLang: string;
 };
 
@@ -29,42 +34,48 @@ export const LANGUAGES: Record<LanguageCode, Language> = {
     code: "nl",
     label: "Dutch",
     promptName: "Dutch",
-    deepgram: "nl",
+    deepgramLang: "nl",
+    webSpeechLang: "nl-NL",
     htmlLang: "nl",
   },
   fr: {
     code: "fr",
     label: "French",
     promptName: "French",
-    deepgram: "fr",
+    deepgramLang: "fr",
+    webSpeechLang: "fr-FR",
     htmlLang: "fr",
   },
   de: {
     code: "de",
     label: "German",
     promptName: "German",
-    deepgram: "de",
+    deepgramLang: "de",
+    webSpeechLang: "de-DE",
     htmlLang: "de",
   },
   it: {
     code: "it",
     label: "Italian",
     promptName: "Italian",
-    deepgram: "it",
+    deepgramLang: "it",
+    webSpeechLang: "it-IT",
     htmlLang: "it",
   },
   no: {
     code: "no",
     label: "Norwegian",
     promptName: "Norwegian (Bokmål)",
-    deepgram: "no",
+    deepgramLang: "no",
+    webSpeechLang: "nb-NO",
     htmlLang: "nb",
   },
   es: {
     code: "es",
     label: "Spanish",
     promptName: "Spanish",
-    deepgram: "es",
+    deepgramLang: "es",
+    webSpeechLang: "es-ES",
     htmlLang: "es",
   },
 };

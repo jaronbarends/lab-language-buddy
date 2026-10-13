@@ -2,6 +2,11 @@ import { z } from "zod";
 
 import { LANGUAGES, type LanguageCode } from "@/lib/languages";
 
+import {
+  CONNECTION_FAILED_MESSAGE,
+  MIC_DENIED_MESSAGE,
+  MIC_FAILED_MESSAGE,
+} from "./messages";
 import type { SttCallbacks } from "./types";
 
 const DEEPGRAM_LISTEN_URL = "wss://api.deepgram.com/v1/listen";
@@ -25,11 +30,7 @@ const CHUNK_INTERVAL_MS = 250;
  */
 const LIVE_CONNECT_TIMEOUT_MS = 10_000;
 
-const MIC_DENIED_MESSAGE =
-  "Microphone access was denied. Allow it in your browser settings and try again.";
-const MIC_FAILED_MESSAGE = "The microphone couldn't be started.";
 const MIC_STOPPED_MESSAGE = "The microphone stopped.";
-const CONNECTION_FAILED_MESSAGE = "The connection to speech recognition failed.";
 
 const AccessTokenSchema = z.object({ accessToken: z.string().min(1) });
 
@@ -148,7 +149,7 @@ export function startDeepgramTranscription(
   function openSocket(accessToken: string) {
     const url = new URL(DEEPGRAM_LISTEN_URL);
     url.searchParams.set("model", DEEPGRAM_MODEL);
-    url.searchParams.set("language", LANGUAGES[language].deepgram);
+    url.searchParams.set("language", LANGUAGES[language].deepgramLang);
     url.searchParams.set("interim_results", "true");
     // No `encoding` or `sample_rate`: Deepgram reads the container header of the
     // webm/opus stream itself.

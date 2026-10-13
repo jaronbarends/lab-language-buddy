@@ -1,3 +1,4 @@
+import type { LanguageCode } from "@/lib/languages";
 import type { LiveTranscript } from "@/lib/session-reducer";
 
 /**
@@ -11,3 +12,6 @@ export type SttCallbacks = {
   /** The engine has already stopped itself when this is called. */
   onFailed(message: string, error: unknown): void;
 };
+
+/** Starts listening and returns the function that ends it. Safe to call twice. */
+export type StartFunction = (language: LanguageCode, callbacks: SttCallbacks) => () => void;

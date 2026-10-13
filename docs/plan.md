@@ -933,6 +933,47 @@ Per stage, in this order:
     constants, and the evaluation call now has `store: false`, so they already differ. Make
     a helper such as `callGeminiJson` at the third Gemini call, or when the two diverge for
     good, so that its parameters are known.
+14. **The native engine on an iPhone: quiet speech, and no recording on the second turn.**
+    Found 10-13 while chasing "the AI's second message is quieter". Not solved; the
+    development environment runs `NEXT_PUBLIC_STT_PROVIDER=deepgram` meanwhile.
+    - *Quiet speech.* On an iPhone with the native engine, once the microphone has been used
+      everything the AI says afterwards is quieter. When the user starts the conversation,
+      even the first AI message is quiet; when the AI starts, the first message is loud
+      and the later ones are not. The TTS provider is irrelevant (Azure and Google alike),
+      and the playback hook is not the cause: the shared `Audio` element keeps `volume` 1,
+      is not muted, and `navigator.audioSession.type` stays `auto` throughout, so the
+      page cannot see what iOS changes. With Deepgram on the same iPhone no difference in
+      volume was heard, with the AI starting and with the user starting (by ear, not
+      measured). So the native engine is what makes it quiet, and the app's own
+      `getUserMedia` with its default constraints is not.
+    - *Tried, did not work.* `navigator.audioSession.type = "playback"` in `unlockAudio()`
+      and before `play()`: the volume stayed low, and in a page that had set it Deepgram's
+      `getUserMedia` failed with `InvalidStateError: AudioSession category is not
+      compatible with audio capture`. Do not set it. Reverted; nothing of it is in the code.
+    - *Not tried.* `echoCancellation`, `noiseSuppression` and `autoGainControl` set to
+      `false` in `getUserMedia({ audio })` (`deepgram.ts`); only worth it if Deepgram turns out to be
+      quiet after all, which it did not. Playing through an `AudioContext` instead of the `<audio>` element.
+      Holding a microphone stream open from the Start click was rejected: an open capture
+      keeps iOS in play-and-record, which is the likely cause of the quiet speech.
+    - *No recording on the second user turn.* Reported on an iPhone with the native engine:
+      nothing is captured from the second turn on. Cause unknown. `native.ts` ends a
+      session that ends within 1.5 s three times in a row in `FAILED` and ignores
+      `no-speech` and `aborted`, so a session that iOS ends at once can look like silence
+      for a while. To find out: log `start`, `audiostart`, `speechstart`, `result`, `end`
+      and `error` (with its code) on screen for two turns in a row, as was done for the
+      audio element (an overlay appended to `document.body`, since an iPhone has no
+      console). The unlock trick of the original app (an empty utterance in the tap) is
+      the same idea as `unlockAudio()` and is about being allowed to play, not about
+      volume, so it does not apply.
+    - *Desktop Chrome with a Bluetooth headset.* The second AI message starts at full
+      volume and drops after about a sentence. With Windows' "reduce other sounds when a
+      communications activity is detected" set to "Do nothing" it still dropped; with the
+      headset off it was better (volume not measured). The likely cause is the headset
+      switching to its call profile (HFP) once the microphone opens, which is outside the
+      app. Not tried: the headset for output and another microphone for input.
+    - *If it is picked up.* Settle whether iOS should use Deepgram by default (the native
+      default of 10-12 rested on an impression from the spike), run the two tests above,
+      and update the 10-12 rows.
 
 ---
 
@@ -1128,6 +1169,7 @@ have been argued over first.
 | 10-13 | you | The note in `languages.ts` about nova-2 and Norwegian becomes a general one: when adding a language, check that every STT engine and every TTS provider supports it, with Norwegian and nova-2 as the example. The warning about the model stays at `DEEPGRAM_MODEL`, now without the pointer to `languages.ts` | F6. The same warning stood in both places, and the one in the table guarded an edit that is made in `deepgram.ts`. Jaron proposed the general wording; the agent had advised leaving it. |
 | 10-13 | agent | `startDeepgramTranscription` has an `AbortController` that `stop()` aborts, and `fetchAccessToken(signal)` passes it to the fetch; the `hasEnded` check after the await stays | F7. A cancelled or timed-out start used to leave the token request running, and the check was the only thing between a late token and a socket. The review's own advice, and the agent's, was a comment only; Jaron chose the abort. Needs the Deepgram path checked on an iPhone. |
 | 10-13 | agent | Comment and mechanical fixes in the STT code: why the native restart carries the interim words over (`onresult` is detached before the restart, so nothing can finalize or revise them) and that the gap between two sessions is not measured and not shown to the UI; the engine contract written out in `types.ts` (detach before stopping, `onFailed` at most once and last, `onMicrophoneStarted` once); `LiveTranscript` described as an engine's output, not Deepgram's; `getRecognitionConstructor()` in place of the nested ternary and the `!` | F2, F3, F5, F4 and F11. A shared lifecycle helper for the two engines is not built; it comes with a third engine. The gap between sessions is only worth measuring if words are missed after a pause; Jaron checked on an iPhone on 10-13 and none were. |
+| 10-13 | you | The development environment (`.env.local`) uses `NEXT_PUBLIC_STT_PROVIDER=deepgram` for now, so desktop Chrome runs the engine the iPhone runs. The default in the code (`native`, 10-12) is **not** changed | On an iPhone the native engine makes the AI's speech quieter once the microphone has been used, and records nothing on the second user turn; Deepgram showed no volume difference; the second-turn failure was reported for native only. Jaron develops mostly in Chrome and wants to see the same engine there. Findings and what was tried: open question 14. |
 
 ## Keeping the experiment honest
 

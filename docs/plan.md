@@ -273,7 +273,8 @@ male voices) and `src/hooks/use-audio-playback.ts` (the playback effect plus `un
 called from the Start chat, Send and Reply clicks).
 
 **The language registry holds only provider-neutral data** — `code`, `label`,
-`promptName`, `deepgram`, `htmlLang` (the BCP 47 tag for the `lang` attribute). Flags live in `flag-icon.tsx` and voices in each TTS provider,
+`promptName`, `deepgramLang`, `webSpeechLang` (the BCP 47 tag, with a region, for the
+browser's `SpeechRecognition`), `htmlLang` (the BCP 47 tag for the `lang` attribute). Flags live in `flag-icon.tsx` and voices in each TTS provider,
 because a language code is not a country code and not a voice name.
 
 ---

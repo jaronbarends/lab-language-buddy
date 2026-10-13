@@ -110,8 +110,10 @@ export default function Page() {
   // The app's pattern: a tap only sets state, and the engine starts in an effect after the
   // render, like use-live-transcription does when the turn state becomes `listening`.
   // Whether iOS lets the native engine start from there is what the "Native via effect"
-  // button tests; the other buttons start it straight from the tap.
-  const [effectStartIsOn, setEffectStartIsOn] = useState(false);
+  // button tests; the other buttons start it straight from the tap. A counter and not a
+  // flag: tapping the button while it is already on has to run the effect again, and 0 is
+  // off.
+  const [effectStartRun, setEffectStartRun] = useState(0);
 
   useEffect(() => {
     const stopsByEngine = stops.current;
@@ -121,7 +123,7 @@ export default function Page() {
   }, []);
 
   useEffect(() => {
-    if (!effectStartIsOn) {
+    if (effectStartRun === 0) {
       return;
     }
 
@@ -129,16 +131,16 @@ export default function Page() {
     startEngine("native");
     const startedStop = stopsByEngine.native;
     return () => {
-      // Only the engine this effect started: a tap on another Start button may have put
-      // a newer one in its place by the time the flag is switched off.
+      // Only the engine this effect started: a tap on a Start button has already stopped
+      // it, and may have put a newer one in its place, by the time this cleanup runs.
       if (stopsByEngine.native === startedStop) {
         startedStop?.();
         delete stopsByEngine.native;
       }
     };
-    // startEngine is recreated every render; this effect has to run only on the flag.
+    // startEngine is recreated every render; this effect has to run only on the counter.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [effectStartIsOn]);
+  }, [effectStartRun]);
 
   function updateView(engine: EngineName, patch: Partial<EngineView>) {
     setViews((previous) => ({
@@ -206,7 +208,7 @@ export default function Page() {
   }
 
   function handleStart(engines: EngineName[]) {
-    setEffectStartIsOn(false);
+    setEffectStartRun(0);
     stopAll();
     // Native first, and with nothing awaited before it, so it starts inside the tap
     // itself. Starting from an effect also works on iOS ("Native via effect"); this is
@@ -219,11 +221,11 @@ export default function Page() {
 
   function handleStartNativeViaEffect() {
     stopAll();
-    setEffectStartIsOn(true);
+    setEffectStartRun((run) => run + 1);
   }
 
   function handleStop() {
-    setEffectStartIsOn(false);
+    setEffectStartRun(0);
     stopAll();
     setViews((previous) => ({
       deepgram: stoppedView(previous.deepgram),
@@ -232,7 +234,7 @@ export default function Page() {
   }
 
   function handleReset() {
-    setEffectStartIsOn(false);
+    setEffectStartRun(0);
     stopAll();
     setViews({ deepgram: EMPTY_VIEW, native: EMPTY_VIEW });
   }

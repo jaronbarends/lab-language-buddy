@@ -149,11 +149,18 @@ export default function Page() {
     }));
   }
 
+  // Also marks the panels of what it stops, so one that is not started again straight
+  // away (the other engine, when a Start button starts only one) does not keep saying it
+  // is listening.
   function stopAll() {
     for (const engine of ["deepgram", "native"] as const) {
       stops.current[engine]?.();
       delete stops.current[engine];
     }
+    setViews((previous) => ({
+      deepgram: stoppedView(previous.deepgram),
+      native: stoppedView(previous.native),
+    }));
   }
 
   function startEngine(engine: EngineName) {
@@ -227,10 +234,6 @@ export default function Page() {
   function handleStop() {
     setEffectStartRun(0);
     stopAll();
-    setViews((previous) => ({
-      deepgram: stoppedView(previous.deepgram),
-      native: stoppedView(previous.native),
-    }));
   }
 
   function handleReset() {

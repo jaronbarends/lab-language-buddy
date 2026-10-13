@@ -382,7 +382,7 @@ used grew the client bundle by 5.8 KB.
 | `PencilIcon` | `FaPencil` | Edit |
 | `CrossIcon` | `FaXmark` | Cancel |
 | `FinishIcon` | `FaFlagCheckered` | End session |
-| `ChatIcon` | `FaComment` | Start chat, logo |
+| `ChatIcon` | `FaComment` | Start chat |
 | `RobotIcon` | `FaRobot` | AI in the starter toggle |
 | `PersonIcon` | `FaCircleUser` | Me in the starter toggle |
 | `WarningIcon` | `FaTriangleExclamation` | The error box |
@@ -1111,6 +1111,8 @@ have been argued over first.
 | 10-10 | agent | The stale stage 4 texts in this plan are corrected: the heading, step 3, the "proposed" on the build steps and "Nothing in the client calls it yet" | CodeRabbit, review C1. Step 4 stays open. |
 | 10-10 | you | One mock switch, `NEXT_PUBLIC_USE_MOCK_CHAT`, serves the chat and the evaluation, and `chat-schema.ts` and `chat-request.ts` keep their names although they now hold the evaluation too | Review B6, decided in conversation on 10-08 but not logged: Jaron agreed to the one switch, and said the file names were not to be changed now. The names `ChatError` and `ChatErrorSchema` were not discussed. |
 | 10-10 | you | Stage 4 is closed and ready to merge; the README's stage list is brought up to date (stages 2 to 4 ticked, stage 4 described as built) | Jaron did the checks that were open, with no problems (see the stage 4 section), and agreed to merge on the pull request, whose bot review could not run again because the account had reached its limit. The README still showed stage 4 as undecided and stages 2 and 3 as unticked, an older drift. |
+| 10-12 | ported | Favicon set (`favicon.ico`/`.svg`, `favicon-96x96.png`, `apple-icon.png`), the two web-app-manifest PNGs and `manifest.ts` taken from the existing app; the manifest name is "Language buddy" to match the page title | Brand assets, not engineering. Jaron pointed at these files. Colours stay literals (`#eff6fd`) like `themeColor` in `layout.tsx`. |
+| 10-12 | you | `Logo` is the original app's SVG inlined as a component, replacing the `ChatIcon` square on the setup screen; no SVGR | One SVG does not justify a loader dependency plus bundler config (the original's is webpack-only, and Next 16 builds with Turbopack). Revisit if the app gets many SVGs. The `ChatIcon` row in the icon table no longer says "logo". |
 | 10-12 | you | **Supersedes the fixed constraint "never the Web Speech API":** STT becomes a provider choice like TTS. The native Web Speech API is the default and Deepgram `nova-2` stays as the alternative. Built the same day, see the rows below | Jaron's spike (`stt-compare` page, results in `spikes/ai-voice-demo/findings.md`): on his iPhone both engines ran at once on the same microphone, and the native one seemed slightly better, with no wait for the microphone to start. His Norwegian test in Chrome desktop: Deepgram stayed Norwegian but made its own errors (*språkaktig tekst*, *bedre sak* for *språk til tekst*, *bedre sagt*); the native engine got those right but drifted into Swedish (*ska*, *vilken*, *funkar*, *bättre*, *Jag*). Not seen on the iPhone. One speaker, one sentence, so an impression and not a measurement. |
 | 10-12 | you | The choice is an env var only, not in the UI | There is no reason to offer it to the user. |
 | 10-12 | you | No automatic fallback to Deepgram when the browser has no speech recognition (Firefox) | Not wanted for now. In such a browser the native provider simply cannot listen. |

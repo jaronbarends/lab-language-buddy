@@ -12,7 +12,7 @@ import type { SttCallbacks } from "./types";
 const DEEPGRAM_LISTEN_URL = "wss://api.deepgram.com/v1/listen";
 
 // Don't "upgrade" this without re-checking the languages: Norwegian exists only in the
-// nova-2 model family, not in nova-3 or flux (see the note in src/lib/languages.ts).
+// nova-2 model family, not in nova-3 or flux.
 const DEEPGRAM_MODEL = "nova-2";
 
 // Chrome records webm/opus by default, Safari before 18.4 mp4/aac. Ask for webm/opus
@@ -63,6 +63,9 @@ export function startDeepgramTranscription(
   let socket: WebSocket | null = null;
   let recorder: MediaRecorder | null = null;
   let connectTimer: ReturnType<typeof setTimeout> | null = null;
+  // Aborted by stop(), so a cancelled or timed-out start does not leave a token request
+  // running.
+  const tokenRequest = new AbortController();
 
   function clearConnectTimer() {
     if (connectTimer) {
@@ -73,6 +76,8 @@ export function startDeepgramTranscription(
 
   function stop() {
     hasEnded = true;
+    // After hasEnded: the abort rejects the token fetch, and fail() ignores that once ended.
+    tokenRequest.abort();
     clearConnectTimer();
 
     if (recorder && recorder.state !== "inactive") {
@@ -127,7 +132,7 @@ export function startDeepgramTranscription(
 
     let accessToken: string;
     try {
-      accessToken = await fetchAccessToken();
+      accessToken = await fetchAccessToken(tokenRequest.signal);
     } catch (error) {
       fail(CONNECTION_FAILED_MESSAGE, error);
       return;
@@ -254,8 +259,8 @@ export function startDeepgramTranscription(
   return stop;
 }
 
-async function fetchAccessToken(): Promise<string> {
-  const response = await fetch("/api/stt/token", { method: "POST" });
+async function fetchAccessToken(signal: AbortSignal): Promise<string> {
+  const response = await fetch("/api/stt/token", { method: "POST", signal });
   if (!response.ok) {
     throw new Error(`Token request failed with status ${response.status}`);
   }

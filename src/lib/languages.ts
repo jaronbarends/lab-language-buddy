@@ -27,8 +27,10 @@ type Language = {
 // by `code` — see src/lib/tts/. ElevenLabs needs no such table at all (its model is
 // multilingual), which is precisely why voices don't belong here.
 //
-// Note on Norwegian: nova-2 is the only Deepgram model family that supports it —
-// nova-3 and flux do not. Don't "upgrade" the model without re-checking that.
+// When adding a language, check that every speech-to-text engine (Deepgram's model, the
+// browser's SpeechRecognition) and every TTS provider supports it; the TTS voices live in
+// src/lib/tts/. Example: Norwegian exists only in Deepgram's nova-2 family, not in nova-3
+// or flux.
 export const LANGUAGES: Record<LanguageCode, Language> = {
   nl: {
     code: "nl",

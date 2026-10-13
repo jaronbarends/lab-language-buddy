@@ -11,6 +11,8 @@ const NOT_AVAILABLE_MESSAGE = "Speech recognition isn't available in this browse
 const LANGUAGE_NOT_SUPPORTED_MESSAGE =
   "This browser can't recognize speech in this language.";
 const RECOGNITION_FAILED_MESSAGE = "Speech recognition failed.";
+const SERVICE_NOT_ALLOWED_MESSAGE =
+  "Speech recognition isn't allowed or is switched off on this device.";
 
 /** A session that ends sooner than this after it started counts as a quick end. */
 const QUICK_END_MS = 1_500;
@@ -29,21 +31,18 @@ const MAX_QUICK_ENDS = 3;
  * the user is still `listening`. That is not the end of the turn, so a new session is
  * started and the words heard so far stay on screen: a new session begins with an empty
  * result list.
+ *
+ * Between a session's `onend` and the next session's start nothing is captured. That gap
+ * has not been measured, and the UI is not told about it (`onMicrophoneStarted` is
+ * reported only for the first session).
  */
 export function startNativeTranscription(
   language: LanguageCode,
   callbacks: SttCallbacks,
 ): () => void {
-  // The types declare both as always present; on a browser without them (Firefox) the
-  // identifiers don't exist, which `typeof` can check without throwing.
-  const Recognition =
-    typeof SpeechRecognition !== "undefined"
-      ? SpeechRecognition
-      : typeof webkitSpeechRecognition !== "undefined"
-        ? webkitSpeechRecognition
-        : null;
+  const recognitionConstructor = getRecognitionConstructor();
 
-  if (!Recognition) {
+  if (!recognitionConstructor) {
     callbacks.onFailed(
       NOT_AVAILABLE_MESSAGE,
       new Error("SpeechRecognition is not available in this browser"),
@@ -86,8 +85,8 @@ export function startNativeTranscription(
     callbacks.onFailed(message, error);
   }
 
-  function startSession() {
-    const newSession = new Recognition!();
+  function startSession(Recognition: typeof SpeechRecognition) {
+    const newSession = new Recognition();
     session = newSession;
     sessionFinalized = "";
     sessionInterim = "";
@@ -152,8 +151,11 @@ export function startNativeTranscription(
         return;
       }
 
+      // The interim words are carried over too: releaseSession has already detached
+      // onresult, so nothing can arrive after onend that would finalize or revise them,
+      // and dropping them would remove words the user already saw on screen.
       heardBefore = joinWords(heardBefore, sessionFinalized, sessionInterim);
-      startSession();
+      startSession(Recognition);
     };
 
     try {
@@ -163,9 +165,23 @@ export function startNativeTranscription(
     }
   }
 
-  startSession();
+  startSession(recognitionConstructor);
 
   return stop;
+}
+
+function getRecognitionConstructor(): typeof SpeechRecognition | null {
+  // The types declare both as always present; on a browser without them (Firefox) the
+  // identifiers don't exist, which `typeof` can check without throwing.
+  if (typeof SpeechRecognition !== "undefined") {
+    return SpeechRecognition;
+  }
+
+  if (typeof webkitSpeechRecognition !== "undefined") {
+    return webkitSpeechRecognition;
+  }
+
+  return null;
 }
 
 /**
@@ -179,8 +195,9 @@ function messageForError(code: string): string | null {
     case "aborted":
       return null;
     case "not-allowed":
-    case "service-not-allowed":
       return MIC_DENIED_MESSAGE;
+    case "service-not-allowed":
+      return SERVICE_NOT_ALLOWED_MESSAGE;
     case "audio-capture":
       return MIC_FAILED_MESSAGE;
     case "network":

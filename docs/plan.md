@@ -103,10 +103,11 @@ re-picking the same language. The turns are discarded.
   no turns yet, *Reply* otherwise.
 - **`listening`** — live transcript rendering `{ finalized, interim }`. Carries
   `microphoneIsLive`, false on entry and set by `MICROPHONE_STARTED` once the recorder is
-  running and audio goes to Deepgram; until then the bubble says "Preparing mic…" and has
-  no dot, because anything said before that is not heard. The dot marks that the
-  microphone is live. If it is not live within `LIVE_CONNECT_TIMEOUT_MS` (10 s, counted
-  from the moment the permission is granted) the turn ends in `error`.
+  running and audio goes to the speech recognition engine; until then the bubble says
+  "Preparing mic…" and has no dot, because anything said before that is not heard. The dot
+  marks that the microphone is live. With Deepgram, if it is not live within
+  `LIVE_CONNECT_TIMEOUT_MS` (10 s, counted from the moment the permission is granted) the
+  turn ends in `error`; the native engine has no such deadline.
 - **`reviewing`** — recording stopped, text settled, not yet sent.
 - **`editing`** — the text in a `<textarea>`. Carries `draftBeforeEdit` so *Cancel edit*
   can restore it; that is why it is its own state rather than a flag on `reviewing`.
@@ -1114,7 +1115,7 @@ have been argued over first.
 | 10-12 | you | No automatic fallback to Deepgram when the browser has no speech recognition (Firefox) | Not wanted for now. In such a browser the native provider simply cannot listen. |
 | 10-12 | agent | The env var is `NEXT_PUBLIC_STT_PROVIDER` | The choice is made in the browser, where only `NEXT_PUBLIC_` variables are visible, unlike the server-side `TTS_PROVIDER`. Same prefix as `NEXT_PUBLIC_USE_MOCK_CHAT`. The name is the agent's to propose and not discussed. |
 | 10-12 | agent | The Deepgram code moves out of `use-live-transcription.ts` into `src/lib/stt/deepgram.ts` (`startDeepgramTranscription(language, callbacks)`), with the callbacks type in `src/lib/stt/types.ts`; the hook only turns `onMicrophoneStarted`, `onTranscript` and `onFailed` into reducer actions. No change in behaviour | Step 1 of adding the native engine: both engines get the same shape and the hook no longer knows which one runs. Before building it, the effect start was tested on an iPhone: the native engine started from a `useEffect` after a state change works there (spike page, "Native via effect"), so the hook's structure can stay. |
-| 10-12 | you | When the browser ends a native session by itself while the turn is `listening` (silence, a time-out), the engine **starts a new session** and keeps the words heard so far; it does not end in `FAILED` | The choice offered was `FAILED` or restarting. Restarting keeps the user talking after a pause. A new session starts with an empty result list, so `native.ts` carries the earlier text over (finalized and interim). Not yet tested on an iPhone: whether iOS asks for permission again or needs a tap on a restart. |
+| 10-12 | you | When the browser ends a native session by itself while the turn is `listening` (silence, a time-out), the engine **starts a new session** and keeps the words heard so far; it does not end in `FAILED` | The choice offered was `FAILED` or restarting. Restarting keeps the user talking after a pause. A new session starts with an empty result list, so `native.ts` carries the earlier text over (finalized and interim). Tested on an iPhone: a restart after silence needs no extra tap. All six languages were also tried there, and an unknown `NEXT_PUBLIC_STT_PROVIDER` gives the error. |
 | 10-12 | agent | A session that ends within 1.5 s counts as a quick end, and three quick ends in a row end in `FAILED`; a `no-speech` or `aborted` error never does. Real errors (`not-allowed`, `audio-capture`, `network`, `language-not-supported`, anything else) end in `FAILED` with their own text | Without a limit, a browser that ends every session at once would restart forever. The numbers are the agent's and not tuned. |
 | 10-12 | you | An unknown `NEXT_PUBLIC_STT_PROVIDER` **throws when the page loads**, listing the valid names; empty or unset is `native` | Jaron first said an unknown value could use the native engine, then chose the error. A typo would otherwise leave the app on a different engine than the one asked for, which is what `getTtsProvider` also guards against. |
 | 10-12 | you | The language registry's `deepgram` field is renamed `deepgramLang` and a field `webSpeechLang` is added (`nb-NO` for Norwegian, the others with their usual region) | The native engine needs a tag with a region, which `htmlLang` does not have. Jaron: naming each field after its vendor plus `Lang` is more consistent. |

@@ -32,10 +32,13 @@ subprotocol rather than `token`, and a stale-closure bug in turn tracking).
 ## Fixed constraints
 
 Specified up front, not open questions: Next.js + TypeScript; Google Gemini for the
-conversation; Deepgram `nova-2` **live streaming** STT (never Google Cloud STT, never the
-Web Speech API); TTS behind a provider abstraction with Azure as default and Google and
-ElevenLabs also implemented; the browser connecting to Deepgram **directly** with a
-short-lived token from our own REST route, so there is no WebSocket server on our side;
+conversation; **live streaming** STT, never Google Cloud STT and never record-then-
+transcribe: the browser's native Web Speech API as the default and Deepgram `nova-2` as the
+alternative, chosen by `NEXT_PUBLIC_STT_PROVIDER` (decided and built 10-12, see the log;
+"never the Web Speech API" was the original wording); TTS behind
+a provider abstraction with Azure as default and Google and ElevenLabs also implemented;
+with Deepgram, the browser connecting to Deepgram **directly** with a short-lived token
+from our own REST route, so there is no WebSocket server on our side;
 Safari on iPhone as a hard requirement; no persistence.
 
 ---
@@ -51,6 +54,7 @@ Safari on iPhone as a hard requirement; no persistence.
 | Conversation history | Gemini `previous_interaction_id` chaining | History lives server-side at Google; we send only the new utterance, plus the model, system instruction and response format, which go with every call. The client keeps its own array for rendering, and the chain id is read from it: each AI turn carries its `interactionId`. |
 | Chat response shape in stage 2 | `{ interactionId, reply }` — no per-turn `correction` | Whether feedback is per-turn is exactly the stage 4 question. Shipping stage 2 without it keeps that open instead of defaulting by accident. |
 | TTS providers | All three from the spike: Azure (default), Google, ElevenLabs | Three implementations stress the interface in a way two don't — see the voice-table row. |
+| STT providers | Native Web Speech API (default) and Deepgram `nova-2` live streaming (alternative); chosen by `NEXT_PUBLIC_STT_PROVIDER`; no automatic fallback | Deepgram was the only one at first because the spike ruled out the rest: Google Cloud STT broke on Safari recordings over ~17.5 s, Azure STT cannot read WebM/Opus and fails silently, ElevenLabs Scribe worked, but why it was not carried over to live streaming is not recorded, and Deepgram was cheapest, held up on Safari and was judged better than Google (`findings.md`). Live streaming then tied the app to Deepgram's WebSocket. The 10-12 spike comparison changed the default, see the log. |
 | Provider interface | `synthesize({ text, language, gender }, signal)` | The spike hardcoded `nb-NO`. Language has to cross the boundary, and each provider resolves it differently. Gender joined it on 10-03, see the log. |
 | Voice tables | Inside each provider module, not in the shared language registry | Azure and Google each need a per-language voice name; ElevenLabs' `eleven_flash_v2_5` is multilingual and takes none. A shared column would put two providers' private config in a table the client imports, with nowhere sensible for the third case. |
 | Flags | `flag-icons`, importing only the six SVGs needed | Emoji flags render as bare country letters on Windows. Importing the package stylesheet would pull in all ~260 flags. |
@@ -99,10 +103,11 @@ re-picking the same language. The turns are discarded.
   no turns yet, *Reply* otherwise.
 - **`listening`** — live transcript rendering `{ finalized, interim }`. Carries
   `microphoneIsLive`, false on entry and set by `MICROPHONE_STARTED` once the recorder is
-  running and audio goes to Deepgram; until then the bubble says "Preparing mic…" and has
-  no dot, because anything said before that is not heard. The dot marks that the
-  microphone is live. If it is not live within `LIVE_CONNECT_TIMEOUT_MS` (10 s, counted
-  from the moment the permission is granted) the turn ends in `error`.
+  running and audio goes to the speech recognition engine; until then the bubble says
+  "Preparing mic…" and has no dot, because anything said before that is not heard. The dot
+  marks that the microphone is live. With Deepgram, if it is not live within
+  `LIVE_CONNECT_TIMEOUT_MS` (10 s, counted from the moment the permission is granted) the
+  turn ends in `error`; the native engine has no such deadline.
 - **`reviewing`** — recording stopped, text settled, not yet sent.
 - **`editing`** — the text in a `<textarea>`. Carries `draftBeforeEdit` so *Cancel edit*
   can restore it; that is why it is its own state rather than a flag on `reviewing`.
@@ -214,7 +219,8 @@ so a page reload starts from the defaults again.
     │   │                         the mock route via `NEXT_PUBLIC_USE_MOCK_CHAT`
     │   ├── use-evaluation-driver.ts  the evaluation of a user turn, with `EVALUATION_TIMEOUT_MS`;
     │   │                         the same mock switch
-    │   ├── use-live-transcription.ts  mic + Deepgram socket while `listening`
+    │   ├── use-live-transcription.ts  starts a speech recognition engine while `listening` and
+    │   │                         turns what it reports into reducer actions
     │   ├── use-audio-playback.ts  `/api/tts` + the shared `<audio>` element in `aiSpeaking`,
     │   │                         and `unlockAudio()` for the click handlers
     │   └── use-mock-tts.ts       fakes TTS playback; on when `NEXT_PUBLIC_USE_MOCK_TTS=true`
@@ -223,6 +229,13 @@ so a page reload starts from the defaults again.
         ├── languages.ts          provider-neutral language registry
         ├── cefr.ts               A1–C2 + labels
         ├── word-timing.ts        estimateWordTimings / countSpokenWords
+        ├── stt/                  speech recognition engines, each `start(language, callbacks)`
+        │                         returning its stop function: `native.ts` (the browser's
+        │                         `SpeechRecognition`, restarted when it ends by itself),
+        │                         `deepgram.ts` (mic, token and socket), `index.ts`
+        │                         (`getConfiguredStartFunction()`, chosen by `NEXT_PUBLIC_STT_PROVIDER`),
+        │                         `types.ts` (`SttCallbacks`, `StartFunction`), `messages.ts`
+        │                         (the failure texts both engines use)
         ├── chat-schema.ts        zod: the chat request (a union on `kind`) and response, the
         │                         evaluation request and response (correction segments), the error body
         ├── post-json.ts          `postJson` and `postJsonWithDeadline`: the fetch both drivers use,
@@ -250,7 +263,9 @@ last AI turn (`previous_interaction_id`), is not stored (`store: false`) and its
 never handed back. `use-evaluation-driver.ts` calls it for every user turn.
 
 `src/app/api/stt/token/route.ts` and `src/hooks/use-live-transcription.ts` exist since
-stage 3, step 1; the token mint (`mintLiveToken`) sits in the route file.
+stage 3, step 1; the token mint (`mintLiveToken`) sits in the route file. The Deepgram code
+that was in the hook moved to `src/lib/stt/deepgram.ts` when the native engine was added
+(see the 10-12 log rows).
 
 Stage 3, step 2 adds `src/app/api/tts/route.ts`, `src/lib/tts/{types,index,azure,google,elevenlabs}.ts`
 (`index.ts` holds `getTtsProvider()` and `VOICE_GENDER`, the one switch between female and
@@ -258,7 +273,8 @@ male voices) and `src/hooks/use-audio-playback.ts` (the playback effect plus `un
 called from the Start chat, Send and Reply clicks).
 
 **The language registry holds only provider-neutral data** — `code`, `label`,
-`promptName`, `deepgram`, `htmlLang` (the BCP 47 tag for the `lang` attribute). Flags live in `flag-icon.tsx` and voices in each TTS provider,
+`promptName`, `deepgramLang`, `webSpeechLang` (the BCP 47 tag, with a region, for the
+browser's `SpeechRecognition`), `htmlLang` (the BCP 47 tag for the `lang` attribute). Flags live in `flag-icon.tsx` and voices in each TTS provider,
 because a language code is not a country code and not a voice name.
 
 ---
@@ -1097,6 +1113,21 @@ have been argued over first.
 | 10-10 | you | Stage 4 is closed and ready to merge; the README's stage list is brought up to date (stages 2 to 4 ticked, stage 4 described as built) | Jaron did the checks that were open, with no problems (see the stage 4 section), and agreed to merge on the pull request, whose bot review could not run again because the account had reached its limit. The README still showed stage 4 as undecided and stages 2 and 3 as unticked, an older drift. |
 | 10-12 | ported | Favicon set (`favicon.ico`/`.svg`, `favicon-96x96.png`, `apple-icon.png`), the two web-app-manifest PNGs and `manifest.ts` taken from the existing app; the manifest name is "Language buddy" to match the page title | Brand assets, not engineering. Jaron pointed at these files. Colours stay literals (`#eff6fd`) like `themeColor` in `layout.tsx`. |
 | 10-12 | you | `Logo` is the original app's SVG inlined as a component, replacing the `ChatIcon` square on the setup screen; no SVGR | One SVG does not justify a loader dependency plus bundler config (the original's is webpack-only, and Next 16 builds with Turbopack). Revisit if the app gets many SVGs. The `ChatIcon` row in the icon table no longer says "logo". |
+| 10-12 | you | **Supersedes the fixed constraint "never the Web Speech API":** STT becomes a provider choice like TTS. The native Web Speech API is the default and Deepgram `nova-2` stays as the alternative. Built the same day, see the rows below | Jaron's spike (`stt-compare` page, results in `spikes/ai-voice-demo/findings.md`): on his iPhone both engines ran at once on the same microphone, and the native one seemed slightly better, with no wait for the microphone to start. His Norwegian test in Chrome desktop: Deepgram stayed Norwegian but made its own errors (*språkaktig tekst*, *bedre sak* for *språk til tekst*, *bedre sagt*); the native engine got those right but drifted into Swedish (*ska*, *vilken*, *funkar*, *bättre*, *Jag*). Not seen on the iPhone. One speaker, one sentence, so an impression and not a measurement. |
+| 10-12 | you | The choice is an env var only, not in the UI | There is no reason to offer it to the user. |
+| 10-12 | you | No automatic fallback to Deepgram when the browser has no speech recognition (Firefox) | Not wanted for now. In such a browser the native provider simply cannot listen. |
+| 10-12 | agent | The env var is `NEXT_PUBLIC_STT_PROVIDER` | The choice is made in the browser, where only `NEXT_PUBLIC_` variables are visible, unlike the server-side `TTS_PROVIDER`. Same prefix as `NEXT_PUBLIC_USE_MOCK_CHAT`. The name is the agent's to propose and not discussed. |
+| 10-12 | agent | The Deepgram code moves out of `use-live-transcription.ts` into `src/lib/stt/deepgram.ts` (`startDeepgramTranscription(language, callbacks)`), with the callbacks type in `src/lib/stt/types.ts`; the hook only turns `onMicrophoneStarted`, `onTranscript` and `onFailed` into reducer actions. No change in behaviour | Step 1 of adding the native engine: both engines get the same shape and the hook no longer knows which one runs. Before building it, the effect start was tested on an iPhone: the native engine started from a `useEffect` after a state change works there (spike page, "Native via effect"), so the hook's structure can stay. |
+| 10-12 | you | When the browser ends a native session by itself while the turn is `listening` (silence, a time-out), the engine **starts a new session** and keeps the words heard so far; it does not end in `FAILED` | The choice offered was `FAILED` or restarting. Restarting keeps the user talking after a pause. A new session starts with an empty result list, so `native.ts` carries the earlier text over (finalized and interim; the interim words too because nothing can finalize them once the session has ended). Tested on an iPhone: a restart after silence needs no extra tap. All six languages were also tried there, and an unknown `NEXT_PUBLIC_STT_PROVIDER` gives the error. |
+| 10-12 | agent | A session that ends within 1.5 s counts as a quick end, and three quick ends in a row end in `FAILED`; a `no-speech` or `aborted` error never does. Real errors (`not-allowed`, `audio-capture`, `network`, `language-not-supported`, anything else) end in `FAILED` with their own text | Without a limit, a browser that ends every session at once would restart forever. The numbers are the agent's and not tuned. |
+| 10-12 | you | An unknown `NEXT_PUBLIC_STT_PROVIDER` **throws when the page loads**, listing the valid names; empty or unset is `native` | Jaron first said an unknown value could use the native engine, then chose the error. A typo would otherwise leave the app on a different engine than the one asked for, which is what `getTtsProvider` also guards against. |
+| 10-12 | you | The language registry's `deepgram` field is renamed `deepgramLang` and a field `webSpeechLang` is added (`nb-NO` for Norwegian, the others with their usual region) | The native engine needs a tag with a region, which `htmlLang` does not have. Jaron: naming each field after its vendor plus `Lang` is more consistent. |
+| 10-12 | agent | `@types/dom-speech-recognition` is a dev dependency, in place of hand-written types. `typecheck` has no clashes with `lib.dom`; the package refers to an error code type it does not declare, so `native.ts` reads `event.error` as a string. The two failure texts that both engines use moved to `src/lib/stt/messages.ts` | The spike hand-wrote its types. The package is version 0.0.x and was last updated on 10-04, so if it ever clashes with a future `lib.dom` it can be dropped for local types again. `MICROPHONE_STARTED` is sent on the `start` event, as in the spike, which was tested on an iPhone; `audiostart` may be more exact but was not tried. |
+| 10-13 | agent | **STT provider review** (a cold review of the branch against `origin/main`, 12 findings, none high; results in `resources/reviews/.review-stt-provider`): the rows below are its fixes. Skipped: F12, the `onX` names of the browser's handler properties (the convention exempts prop names). Already decided: F8 (open question 9: the token route is open to anyone), F9 (the throw at load, 10-12) and F10 (the function name, chosen in conversation) | The review read no plan, so it raised those three again. Proposed by the review, chosen by Jaron. |
+| 10-13 | agent | `service-not-allowed` gets its own text, *Speech recognition isn't allowed or is switched off on this device.*; `not-allowed` keeps the microphone text | F1. The code means the browser's speech service is not allowed, not that the microphone was refused, so the old text sent the user to a setting that was already right. Tested on an iPhone with Dictation off: recognition still worked, so what triggers this code there is not known; the text rests on what the code means, not on an observed case. The refused-microphone case (`not-allowed`) was not tried. |
+| 10-13 | you | The note in `languages.ts` about nova-2 and Norwegian becomes a general one: when adding a language, check that every STT engine and every TTS provider supports it, with Norwegian and nova-2 as the example. The warning about the model stays at `DEEPGRAM_MODEL`, now without the pointer to `languages.ts` | F6. The same warning stood in both places, and the one in the table guarded an edit that is made in `deepgram.ts`. Jaron proposed the general wording; the agent had advised leaving it. |
+| 10-13 | agent | `startDeepgramTranscription` has an `AbortController` that `stop()` aborts, and `fetchAccessToken(signal)` passes it to the fetch; the `hasEnded` check after the await stays | F7. A cancelled or timed-out start used to leave the token request running, and the check was the only thing between a late token and a socket. The review's own advice, and the agent's, was a comment only; Jaron chose the abort. Needs the Deepgram path checked on an iPhone. |
+| 10-13 | agent | Comment and mechanical fixes in the STT code: why the native restart carries the interim words over (`onresult` is detached before the restart, so nothing can finalize or revise them) and that the gap between two sessions is not measured and not shown to the UI; the engine contract written out in `types.ts` (detach before stopping, `onFailed` at most once and last, `onMicrophoneStarted` once); `LiveTranscript` described as an engine's output, not Deepgram's; `getRecognitionConstructor()` in place of the nested ternary and the `!` | F2, F3, F5, F4 and F11. A shared lifecycle helper for the two engines is not built; it comes with a third engine. The gap between sessions is only worth measuring if words are missed after a pause; Jaron checked on an iPhone on 10-13 and none were. |
 
 ## Keeping the experiment honest
 

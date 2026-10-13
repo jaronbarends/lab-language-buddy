@@ -107,12 +107,40 @@ export default function Page() {
   const stops = useRef<Partial<Record<EngineName, () => void>>>({});
   const startedAt = useRef<Partial<Record<EngineName, number>>>({});
 
+  // The app's pattern: a tap only sets state, and the engine starts in an effect after the
+  // render, like use-live-transcription does when the turn state becomes `listening`.
+  // Whether iOS lets the native engine start from there is what the "Native via effect"
+  // button tests; the other buttons start it straight from the tap. A counter and not a
+  // flag: tapping the button while it is already on has to run the effect again, and 0 is
+  // off.
+  const [effectStartRun, setEffectStartRun] = useState(0);
+
   useEffect(() => {
     const stopsByEngine = stops.current;
     return () => {
       Object.values(stopsByEngine).forEach((stop) => stop?.());
     };
   }, []);
+
+  useEffect(() => {
+    if (effectStartRun === 0) {
+      return;
+    }
+
+    const stopsByEngine = stops.current;
+    startEngine("native");
+    const startedStop = stopsByEngine.native;
+    return () => {
+      // Only the engine this effect started: a tap on a Start button has already stopped
+      // it, and may have put a newer one in its place, by the time this cleanup runs.
+      if (stopsByEngine.native === startedStop) {
+        startedStop?.();
+        delete stopsByEngine.native;
+      }
+    };
+    // startEngine is recreated every render; this effect has to run only on the counter.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [effectStartRun]);
 
   function updateView(engine: EngineName, patch: Partial<EngineView>) {
     setViews((previous) => ({
@@ -121,11 +149,18 @@ export default function Page() {
     }));
   }
 
+  // Also marks the panels of what it stops, so one that is not started again straight
+  // away (the other engine, when a Start button starts only one) does not keep saying it
+  // is listening.
   function stopAll() {
     for (const engine of ["deepgram", "native"] as const) {
       stops.current[engine]?.();
       delete stops.current[engine];
     }
+    setViews((previous) => ({
+      deepgram: stoppedView(previous.deepgram),
+      native: stoppedView(previous.native),
+    }));
   }
 
   function startEngine(engine: EngineName) {
@@ -180,24 +215,29 @@ export default function Page() {
   }
 
   function handleStart(engines: EngineName[]) {
+    setEffectStartRun(0);
     stopAll();
-    // Native first, and with nothing awaited before it: iOS only lets
-    // SpeechRecognition start inside the tap that asked for it.
+    // Native first, and with nothing awaited before it, so it starts inside the tap
+    // itself. Starting from an effect also works on iOS ("Native via effect"); this is
+    // just the plainest case to compare against.
     const ordered = (["native", "deepgram"] as const).filter((engine) =>
       engines.includes(engine),
     );
     ordered.forEach(startEngine);
   }
 
-  function handleStop() {
+  function handleStartNativeViaEffect() {
     stopAll();
-    setViews((previous) => ({
-      deepgram: stoppedView(previous.deepgram),
-      native: stoppedView(previous.native),
-    }));
+    setEffectStartRun((run) => run + 1);
+  }
+
+  function handleStop() {
+    setEffectStartRun(0);
+    stopAll();
   }
 
   function handleReset() {
+    setEffectStartRun(0);
     stopAll();
     setViews({ deepgram: EMPTY_VIEW, native: EMPTY_VIEW });
   }
@@ -241,6 +281,7 @@ export default function Page() {
         <button onClick={() => handleStart(["native", "deepgram"])}>Start both</button>
         <button onClick={() => handleStart(["deepgram"])}>Deepgram only</button>
         <button onClick={() => handleStart(["native"])}>Native only</button>
+        <button onClick={handleStartNativeViaEffect}>Native via effect</button>
         <button onClick={handleStop}>Stop</button>
         <button onClick={handleReset}>Clear</button>
       </div>

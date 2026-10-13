@@ -9,8 +9,13 @@ type Language = {
   /** How the language is named to Gemini in the system instruction. */
   promptName: string;
   /** Deepgram's `language` query param for the nova-2 model. */
-  deepgram: string;
-  /** BCP 47 tag for the `lang` attribute; separate from `deepgram`, which is a vendor param. */
+  deepgramLang: string;
+  /**
+   * BCP 47 tag for the browser's `SpeechRecognition.lang`. With a region, unlike
+   * `htmlLang`: Chrome and Safari want `nb-NO`, not `nb`.
+   */
+  webSpeechLang: string;
+  /** BCP 47 tag for the `lang` attribute; separate from the two vendor values above. */
   htmlLang: string;
 };
 
@@ -22,49 +27,57 @@ type Language = {
 // by `code` — see src/lib/tts/. ElevenLabs needs no such table at all (its model is
 // multilingual), which is precisely why voices don't belong here.
 //
-// Note on Norwegian: nova-2 is the only Deepgram model family that supports it —
-// nova-3 and flux do not. Don't "upgrade" the model without re-checking that.
+// When adding a language, check that every speech-to-text engine (Deepgram's model, the
+// browser's SpeechRecognition) and every TTS provider supports it; the TTS voices live in
+// src/lib/tts/. Example: Norwegian exists only in Deepgram's nova-2 family, not in nova-3
+// or flux.
 export const LANGUAGES: Record<LanguageCode, Language> = {
   nl: {
     code: "nl",
     label: "Dutch",
     promptName: "Dutch",
-    deepgram: "nl",
+    deepgramLang: "nl",
+    webSpeechLang: "nl-NL",
     htmlLang: "nl",
   },
   fr: {
     code: "fr",
     label: "French",
     promptName: "French",
-    deepgram: "fr",
+    deepgramLang: "fr",
+    webSpeechLang: "fr-FR",
     htmlLang: "fr",
   },
   de: {
     code: "de",
     label: "German",
     promptName: "German",
-    deepgram: "de",
+    deepgramLang: "de",
+    webSpeechLang: "de-DE",
     htmlLang: "de",
   },
   it: {
     code: "it",
     label: "Italian",
     promptName: "Italian",
-    deepgram: "it",
+    deepgramLang: "it",
+    webSpeechLang: "it-IT",
     htmlLang: "it",
   },
   no: {
     code: "no",
     label: "Norwegian",
     promptName: "Norwegian (Bokmål)",
-    deepgram: "no",
+    deepgramLang: "no",
+    webSpeechLang: "nb-NO",
     htmlLang: "nb",
   },
   es: {
     code: "es",
     label: "Spanish",
     promptName: "Spanish",
-    deepgram: "es",
+    deepgramLang: "es",
+    webSpeechLang: "es-ES",
     htmlLang: "es",
   },
 };

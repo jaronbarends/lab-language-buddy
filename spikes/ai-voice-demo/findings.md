@@ -269,6 +269,11 @@ de tijd tot de eerste woorden. Native met `lang = nb-NO`, Deepgram met `nova-2` 
 - **Gevolg voor de app:** een Zweeds woord uit de herkenning kan door de corrector als fout
   van de gebruiker worden aangemerkt. Bij Deepgram geldt dat even goed voor `bedre sak`.
   Geen van beide engines is daar veilig.
+- **Start vanuit een effect werkt op de iPhone (2026-10-12).** De spike-pagina heeft een knop
+  "Native via effect": de tik zet alleen een state-vlag en de native engine start daarna in
+  een `useEffect`, zoals `use-live-transcription` in de app doet. Dat werkt op iOS, dus de
+  engine hoeft niet synchroon in de klik-handler te starten. De eerdere aanname in de
+  spike-pagina dat iOS dat zou vereisen, was onjuist of in elk geval niet nodig.
 - **Besluit:** native als standaard, Deepgram als alternatief, gekozen met een env-var, zonder
   automatische terugval (Firefox heeft geen `SpeechRecognition`). Zie de decision-log in
   `docs/plan.md`, 12 oktober.

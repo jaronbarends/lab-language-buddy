@@ -68,7 +68,14 @@ plain chat text, not a selection popup, so the context is read before the choice
 - what you checked yourself and what rests on the reviewer;
 - options, each with what it changes and which files it touches, a tiny code sketch where
   the shape of the fix is the decision, always including "defer" and "skip" (with a reason);
-- your recommendation with the reasoning, and any overlap with other points.
+- your recommendation with the reasoning, your confidence in it as a percentage, what that
+  number hinges on, and what would change the recommendation, and any overlap with other
+  points.
+
+The percentage is an estimate, not a calculation. Say which part rests on something you
+checked in the code and which part on a fact you do not have (a device, the provider's
+behaviour, the owner's plans). Do not give every point the same number; if it is below about
+70%, name the one fact that would settle it.
 
 The owner may answer in free text; follow it. After each answer, append a row to the
 `## Decisions` table at the bottom of `review-results.md` (point, decision, remark with

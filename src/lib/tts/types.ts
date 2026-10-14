@@ -16,12 +16,12 @@ const MAX_TEXT_LENGTH = 1500;
  * The contract of `/api/tts`. `language` is an enum because it selects the voice; the
  * voice gender is not part of it, since the server decides that (see `VOICE_GENDER`).
  */
-export const TtsRequestSchema = z.object({
+export const TtsRequestBodySchema = z.object({
   text: z.string().min(1).max(MAX_TEXT_LENGTH),
   language: z.enum(LANGUAGE_CODES),
 });
 
-export type TtsRequest = z.infer<typeof TtsRequestSchema>;
+export type TtsRequestBody = z.infer<typeof TtsRequestBodySchema>;
 
 /**
  * Every provider must return MP3 bytes, and this is the content type the route answers

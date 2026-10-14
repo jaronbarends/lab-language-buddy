@@ -8,7 +8,7 @@ import {
   type SessionAction,
   type SessionState,
 } from "@/lib/session-reducer";
-import type { TtsRequest } from "@/lib/tts/types";
+import type { TtsRequestBody } from "@/lib/tts/types";
 import {
   countSpokenWords,
   estimateWordTimings,
@@ -145,7 +145,7 @@ async function fetchSpeech(
   language: LanguageCode,
   signal: AbortSignal,
 ): Promise<Blob> {
-  const body: TtsRequest = { text, language };
+  const body: TtsRequestBody = { text, language };
   const response = await fetch("/api/tts", {
     method: "POST",
     headers: { "Content-Type": "application/json" },

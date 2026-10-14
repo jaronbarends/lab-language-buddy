@@ -934,8 +934,11 @@ Per stage, in this order:
     a helper such as `callGeminiJson` at the third Gemini call, or when the two diverge for
     good, so that its parameters are known.
 14. **The native engine on an iPhone: quiet speech, and no recording on the second turn.**
-    Found 10-13 while chasing "the AI's second message is quieter". Not solved; the
-    development environment runs `NEXT_PUBLIC_STT_PROVIDER=deepgram` meanwhile.
+    Found 10-13 while chasing "the AI's second message is quieter". Both problems have a
+    mitigation since 10-14 (an early pause in the playback hook, a held microphone stream in
+    `native.ts`) and neither is understood. All runs are summarized in
+    `docs/ios-stt-runs.md`. The development environment is back on
+    `NEXT_PUBLIC_STT_PROVIDER=native` (10-14).
     - *Quiet speech.* On an iPhone with the native engine, once the microphone has been used
       everything the AI says afterwards is quieter. When the user starts the conversation,
       even the first AI message is quiet; when the AI starts, the first message is loud
@@ -952,28 +955,73 @@ Per stage, in this order:
       compatible with audio capture`. Do not set it. Reverted; nothing of it is in the code.
     - *Not tried.* `echoCancellation`, `noiseSuppression` and `autoGainControl` set to
       `false` in `getUserMedia({ audio })` (`deepgram.ts`); only worth it if Deepgram turns out to be
-      quiet after all, which it did not. Playing through an `AudioContext` instead of the `<audio>` element.
-      Holding a microphone stream open from the Start click was rejected: an open capture
-      keeps iOS in play-and-record, which is the likely cause of the quiet speech.
-    - *No recording on the second user turn.* Reported on an iPhone with the native engine:
-      nothing is captured from the second turn on. Cause unknown. `native.ts` ends a
-      session that ends within 1.5 s three times in a row in `FAILED` and ignores
-      `no-speech` and `aborted`, so a session that iOS ends at once can look like silence
-      for a while. To find out: log `start`, `audiostart`, `speechstart`, `result`, `end`
-      and `error` (with its code) on screen for two turns in a row, as was done for the
-      audio element (an overlay appended to `document.body`, since an iPhone has no
-      console). The unlock trick of the original app (an empty utterance in the tap) is
-      the same idea as `unlockAudio()` and is about being allowed to play, not about
-      volume, so it does not apply.
+      quiet after all, which it did not. Playing through an `AudioContext` instead of the
+      `<audio>` element, now less likely to help: it plays through the same audio session.
+      Holding a microphone stream open from the Start click was first rejected on the
+      reasoning that an open capture keeps iOS in play-and-record and makes the speech
+      quiet; it was never tried that way, and a stream held *next to the native recognition*
+      turned out to fix the volume (below).
+    - *No recording on the second user turn: found 10-14, mitigated, not understood.*
+      Logging every `SpeechRecognition` event and the audio element's events on an iPhone
+      showed that iOS does not end the engine: one session starts, `audiostart` fires, and
+      then nothing comes; after 20 to 40 s `error: audio-capture` ("Source is stopped"). The
+      held stream's own track ends too, and with Deepgram it happened once as a closed socket
+      (no audio data), so the microphone source is dead for any user and it is not the Web
+      Speech API. It happens when the AI's speech played **to its natural end** before the
+      user's turn, and mostly in the **second** turn: with natural ends turn 2 recorded in
+      2 of 13 runs and turn 1 in 14 of 15; with the early pause turn 2 recorded in 4 of 4
+      (p about 0.006 if it made no difference) and when Reply cut the AI off it recorded
+      in 8 of 8. Not a strict A/B: runs were not randomized and the phone was restarted
+      between the early-pause runs and most of the others. Working hypothesis, not shown:
+      the natural end of the AI audio *after the microphone has been used once* breaks the
+      next capture, which would fit turn 1 being fine. Ruled out by runs: the silent clip
+      of `unlockAudio()` still playing when recognition starts, a start too soon after the
+      end (failures came at 0.2 s and at 23 s, successes at 0.2 s and 27 s),
+      `audioSession.type = "play-and-record"` before `start()`, the restart logic in
+      `native.ts` (one session, never ended), and the `statechange` event at `ended` (it also
+      fires in runs that recorded, and not in one that failed). `audioSession.state` is
+      `undefined` on this iPhone; `type` stays `auto`. The mitigation is in the playback
+      hook: speech is paused 0.15 s before its end and `AI_SPEECH_FINISHED` is dispatched
+      from there, so the element never ends; the third AI message still played. With the
+      50 ms check interval it cuts 0.10 to 0.15 s off the end of every speech. Jaron listened
+      on an iPhone and on desktop Chrome: the audio has enough silence at the end that no
+      spoken text was lost (which TTS providers and sentences were checked was not
+      recorded). Also unexplained: failed first turns now and then (about 1 in 8 without
+      the early pause), and, just before the phone was restarted, runs where the AI gave no
+      sound at all while the playback log looked normal.
     - *Desktop Chrome with a Bluetooth headset.* The second AI message starts at full
       volume and drops after about a sentence. With Windows' "reduce other sounds when a
       communications activity is detected" set to "Do nothing" it still dropped; with the
       headset off it was better (volume not measured). The likely cause is the headset
       switching to its call profile (HFP) once the microphone opens, which is outside the
-      app. Not tried: the headset for output and another microphone for input.
-    - *If it is picked up.* Settle whether iOS should use Deepgram by default (the native
-      default of 10-12 rested on an impression from the spike), run the two tests above,
-      and update the 10-12 rows.
+      app. Not tried: the headset for output and another microphone for input. On 10-14
+      Jaron tested desktop Chrome with the same headset with both mitigations (the early
+      pause and the held microphone stream) in place, and the drop did not occur. That
+      weakens the HFP explanation (a headset switching to its call profile should have
+      dropped the volume with an open stream as well); the cause stays unknown. The volume
+      was judged by ear, not measured.
+    - *Quiet speech: mitigated 10-14 by holding a microphone stream.* The early pause does
+      not touch the volume: with it the AI is still quieter in turn 2 than in turn 1 (by
+      ear). `native.ts` now opens a `getUserMedia({ audio: true })` stream that nothing
+      reads, before the first session starts, and releases it in `stop()`; with it the
+      AI sounds as loud in turn 2 as in turn 1 (3 logged runs, plus 2 with the early pause
+      too, by ear, with one fixed sentence so that the AI's words did not matter). It does
+      not fix the recording (0 of 3 in turn 2 without the early pause), so both are needed.
+      Why it works is not known. With Deepgram as the STT engine the difference was absent
+      or much smaller already.
+    - *Side effects of the held stream, not checked.* The microphone indicator is on for as
+      long as the native engine listens, as it already was for Deepgram; a refused
+      microphone is reported by the engine, not by the stream; a stream that dies by itself
+      is not noticed.
+    - *Both mitigations run in every browser, without a platform check.* The problems were
+      seen on the iPhone; on desktop the speech also got quieter and the mitigation
+      prevented that too, and the recognition not starting was not seen on desktop. Jaron
+      chose not to distinguish platforms, to keep the code simple. If the mitigation is no
+      longer needed on the iPhone, it is probably not needed on desktop either.
+    - *If it is picked up.* Run the native engine on an iPhone with both mitigations for
+      longer than these runs (the failed first turns), and settle whether iOS should use
+      Deepgram by default after all (the native default of 10-12 rested on an impression
+      from the spike; Jaron kept it on 10-14, see the decision log).
 
 ---
 
@@ -1170,6 +1218,15 @@ have been argued over first.
 | 10-13 | agent | `startDeepgramTranscription` has an `AbortController` that `stop()` aborts, and `fetchAccessToken(signal)` passes it to the fetch; the `hasEnded` check after the await stays | F7. A cancelled or timed-out start used to leave the token request running, and the check was the only thing between a late token and a socket. The review's own advice, and the agent's, was a comment only; Jaron chose the abort. Needs the Deepgram path checked on an iPhone. |
 | 10-13 | agent | Comment and mechanical fixes in the STT code: why the native restart carries the interim words over (`onresult` is detached before the restart, so nothing can finalize or revise them) and that the gap between two sessions is not measured and not shown to the UI; the engine contract written out in `types.ts` (detach before stopping, `onFailed` at most once and last, `onMicrophoneStarted` once); `LiveTranscript` described as an engine's output, not Deepgram's; `getRecognitionConstructor()` in place of the nested ternary and the `!` | F2, F3, F5, F4 and F11. A shared lifecycle helper for the two engines is not built; it comes with a third engine. The gap between sessions is only worth measuring if words are missed after a pause; Jaron checked on an iPhone on 10-13 and none were. |
 | 10-13 | you | The development environment (`.env.local`) uses `NEXT_PUBLIC_STT_PROVIDER=deepgram` for now, so desktop Chrome runs the engine the iPhone runs. The default in the code (`native`, 10-12) is **not** changed | On an iPhone the native engine makes the AI's speech quieter once the microphone has been used, and records nothing on the second user turn; Deepgram showed no volume difference; the second-turn failure was reported for native only. Jaron develops mostly in Chrome and wants to see the same engine there. Findings and what was tried: open question 14. |
+| 10-14 | you | The AI's speech is **paused 0.15 s before its end** (a 50 ms check in `use-audio-playback.ts`), and `AI_SPEECH_FINISHED` is dispatched from there; `onended` stays as the fallback. It applies on every browser, not only iOS | On an iPhone with the native engine the second user turn recorded nothing when the AI's speech had ended by itself; with the early pause it recorded, and the third AI message played. The cause is unknown and the failure is intermittent, so this is a mitigation and not a fix (open question 14: turn 2 recorded in 4 of 4 runs with it and 2 of 13 without). Not limited to iOS because a browser check would add a second path to test; the cost is up to 0.15 s of the end of each message, probably silence, not measured. Checked by Jaron on 10-14: desktop Chrome sounds unchanged, the end of a message is not audibly cut off, and Deepgram as the STT engine works on the iPhone (the AI's voice is TTS, unrelated to Deepgram). |
+| 10-14 | you | The native engine holds a **`getUserMedia({ audio: true })` stream open** (nothing reads it) from before its first session until `stop()`; when it fails the engine starts anyway | On an iPhone it keeps the AI's speech from getting quieter after the microphone has been used (equal volume in 5 of 5 runs, by ear, against quieter without it), and the native engine still recognized in both turns together with the early pause. It does not fix the second-turn recording, so both are needed (`docs/ios-stt-runs.md`). Overturns the 10-13 reasoning in open question 14 that an open capture is the cause of the quiet speech; why it works is not known. The microphone indicator is on while the native engine listens. |
+| 10-14 | you | The TTS body follows the 10-08 naming: `TtsRequest` is `TtsRequestBody` and `TtsRequestSchema` is `TtsRequestBodySchema`; in the `/api/tts` route the `safeParse` result `parsedRequest` is `bodyParseResult` | Jaron: it is a request body, not a request, as with `ChatRequestBody`. The route variable held a parse result, not a body, so it is named for that. The stage 3 review row above still says `TtsRequest`, which was its name then. |
+| 10-14 | you | The development environment (`.env.local`) is back on `NEXT_PUBLIC_STT_PROVIDER=native`; **supersedes the 10-13 row** that put it on `deepgram` | With the early pause and the held microphone stream the two problems of open question 14 are mitigated. Checked by Jaron on an iPhone with the cleaned-up code (no debug logging, no fixed test sentence): the native engine recognized in both turns with the AI speaking to the end, the AI was as loud in turn 2 as in turn 1, and the microphone prompt came once as before. One session; the failed first turns seen now and then in the runs are not ruled out (open question 14). |
+| 10-14 | you | **Native stays the default STT provider**, also after the iPhone problems of open question 14, because Jaron finds its Norwegian transcription better than Deepgram's | Confirms the 10-12 row. It is his judgement and not a measurement: the evidence is the spike (one speaker, one sentence), in which the native engine got the words Deepgram got wrong but in desktop Chrome drifted into Swedish now and then. Deepgram stays the alternative (`NEXT_PUBLIC_STT_PROVIDER`), and it is what avoids the two iPhone problems without a mitigation. |
+| 10-14 | you | The two mitigations (the early pause and the held microphone stream) stay on in **every browser**, with no platform check | The problems were seen on the iPhone; on desktop the speech also got quieter and the mitigation prevented that too, and the recognition not starting was not seen on desktop. Jaron chose not to distinguish platforms, to keep the code simple. If the mitigation is no longer needed on the iPhone, it is probably not needed on desktop either. |
+| 10-14 | you | The 0.10 to 0.15 s that the early pause cuts off the end of every speech is accepted; the threshold stays 0.15 s | Jaron listened on an iPhone and on desktop Chrome: the audio has enough silence at the end that no spoken text was lost. Which TTS providers and sentences were checked was not recorded. |
+| 10-14 | you | Desktop Chrome with the Bluetooth headset no longer drops in volume with the two mitigations in place | Observed by Jaron on 10-14, by ear, not measured. It weakens the HFP hypothesis of open question 14 (a headset switching to its call profile should have dropped the volume with an open stream as well); the cause stays unknown. |
+| 10-14 | agent | A stage review proposed two code changes, and Jaron accepted them: a `.catch` on the microphone-stream chain in `native.ts`, and the early-end timer of `use-audio-playback.ts` moved into its own function `startEarlyEndTimer` with a named interval constant `EARLY_END_CHECK_MS` | A throw while starting the first session was an unhandled rejection that left the stream open; errors in the start must surface. The mitigation must be easy to find and remove. |
 
 ## Keeping the experiment honest
 

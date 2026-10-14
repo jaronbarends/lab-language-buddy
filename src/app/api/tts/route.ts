@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { errorResponse } from "@/lib/chat-request";
 import { getTtsProvider, VOICE_GENDER } from "@/lib/tts";
-import { TTS_CONTENT_TYPE, TtsRequestSchema } from "@/lib/tts/types";
+import { TTS_CONTENT_TYPE, TtsRequestBodySchema } from "@/lib/tts/types";
 
 export async function POST(request: Request) {
   let body: unknown;
@@ -12,14 +12,14 @@ export async function POST(request: Request) {
     return errorResponse("Request body is not valid JSON", 400);
   }
 
-  const parsedRequest = TtsRequestSchema.safeParse(body);
-  if (!parsedRequest.success) {
-    return errorResponse(z.prettifyError(parsedRequest.error), 400);
+  const bodyParseResult = TtsRequestBodySchema.safeParse(body);
+  if (!bodyParseResult.success) {
+    return errorResponse(z.prettifyError(bodyParseResult.error), 400);
   }
 
   try {
     const audio = await getTtsProvider().synthesize(
-      { ...parsedRequest.data, gender: VOICE_GENDER },
+      { ...bodyParseResult.data, gender: VOICE_GENDER },
       request.signal,
     );
     return new Response(audio, {

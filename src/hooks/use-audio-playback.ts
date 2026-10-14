@@ -8,7 +8,7 @@ import {
   type SessionAction,
   type SessionState,
 } from "@/lib/session-reducer";
-import type { TtsRequest } from "@/lib/tts/types";
+import type { TtsRequestBody } from "@/lib/tts/types";
 import {
   countSpokenWords,
   estimateWordTimings,
@@ -24,6 +24,17 @@ const SILENT_AUDIO_SRC =
 // later, when that gesture is long gone. So an element is started with silence during
 // the click, and then reused (by changing its `src`) for every reply.
 let sharedAudio: HTMLAudioElement | null = null;
+
+/**
+ * How close to the end the AI's speech is paused instead of left to end by itself.
+ * Together with `EARLY_END_CHECK_MS` the speech is cut 0.10 to 0.15 s before its end.
+ * Listening on an iPhone and on desktop Chrome showed enough silence at the end that no
+ * spoken text is lost. Worth listening again if the TTS provider or voice changes.
+ */
+const EARLY_END_SECONDS = 0.15;
+
+/** How often the playback position is checked for the early end. */
+const EARLY_END_CHECK_MS = 50;
 
 /**
  * Must be called synchronously from a click handler, before anything awaits: in every
@@ -75,6 +86,7 @@ export function useAudioPlayback(
     const audio = sharedAudio;
     const abortController = new AbortController();
     let objectUrl: string | null = null;
+    let stopEarlyEndTimer: (() => void) | undefined;
 
     function fail(error: unknown) {
       console.error(error);
@@ -118,6 +130,14 @@ export function useAudioPlayback(
         audio.onended = () => dispatch({ type: "AI_SPEECH_FINISHED", turnId });
         audio.onerror = () => fail(new Error("Audio playback failed"));
         audio.src = objectUrl;
+
+        // Ends the speech shortly before `ended`; see the docblock of `startEarlyEndTimer`.
+        // The `onended` handler above stays as the fallback for when the duration is not
+        // known or the timer is throttled.
+        stopEarlyEndTimer = startEarlyEndTimer(audio, () =>
+          dispatch({ type: "AI_SPEECH_FINISHED", turnId }),
+        );
+
         return audio.play();
       })
       .catch((error: unknown) => {
@@ -129,6 +149,7 @@ export function useAudioPlayback(
 
     return () => {
       abortController.abort();
+      stopEarlyEndTimer?.();
       audio.ontimeupdate = null;
       audio.onended = null;
       audio.onerror = null;
@@ -140,12 +161,52 @@ export function useAudioPlayback(
   }, [enabled, speakingTurnId, speakingText, language, dispatch]);
 }
 
+/**
+ * On an iPhone, the browser's own speech recognition can fail once the AI's speech has
+ * played to its natural end (`ended`): it starts, but receives no audio (open question
+ * 14 in docs/plan.md). The cause is not known. It did not happen when Reply cut the
+ * speech off while it was still playing, so we do the same ourselves: pause shortly
+ * before the end and call `onEarlyEnd` from here, so the audio element never reaches
+ * `ended`. The caller's `onended` handler stays as the fallback for when the duration is
+ * not known or the timer is throttled.
+ *
+ * This runs in every browser, not only on iOS, on purpose. The problems were seen on an
+ * iPhone; on desktop Chrome the speech also got quieter, which the mitigations prevent
+ * too, and the recognition not starting was not seen on desktop. There is no platform
+ * check, so the code stays simple. If the mitigation is no longer needed on the iPhone,
+ * it is probably not needed on desktop either.
+ *
+ * Returns a function that stops the timer.
+ */
+function startEarlyEndTimer(
+  audio: HTMLAudioElement,
+  onEarlyEnd: () => void,
+): () => void {
+  const timer = setInterval(() => {
+    // currentTime > 0: a stale duration from the previous src must not end it at once.
+    if (
+      audio.currentTime > 0 &&
+      Number.isFinite(audio.duration) &&
+      audio.duration - audio.currentTime < EARLY_END_SECONDS
+    ) {
+      clearInterval(timer);
+      audio.onended = null;
+      audio.pause();
+      onEarlyEnd();
+    }
+  }, EARLY_END_CHECK_MS);
+
+  return function stopEarlyEndTimer() {
+    clearInterval(timer);
+  };
+}
+
 async function fetchSpeech(
   text: string,
   language: LanguageCode,
   signal: AbortSignal,
 ): Promise<Blob> {
-  const body: TtsRequest = { text, language };
+  const body: TtsRequestBody = { text, language };
   const response = await fetch("/api/tts", {
     method: "POST",
     headers: { "Content-Type": "application/json" },

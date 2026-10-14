@@ -25,6 +25,9 @@ const SILENT_AUDIO_SRC =
 // the click, and then reused (by changing its `src`) for every reply.
 let sharedAudio: HTMLAudioElement | null = null;
 
+/** How close to the end the AI's speech is paused instead of left to end by itself. */
+const EARLY_END_SECONDS = 0.15;
+
 /**
  * Must be called synchronously from a click handler, before anything awaits: in every
  * click that can lead to the AI speaking (Start chat, Send, Reply). Best-effort; a real
@@ -75,6 +78,7 @@ export function useAudioPlayback(
     const audio = sharedAudio;
     const abortController = new AbortController();
     let objectUrl: string | null = null;
+    let earlyEndTimer: ReturnType<typeof setInterval> | undefined;
 
     function fail(error: unknown) {
       console.error(error);
@@ -118,6 +122,29 @@ export function useAudioPlayback(
         audio.onended = () => dispatch({ type: "AI_SPEECH_FINISHED", turnId });
         audio.onerror = () => fail(new Error("Audio playback failed"));
         audio.src = objectUrl;
+
+        // On an iPhone, the browser's own speech recognition can fail once the AI's
+        // speech has played to its natural end (`ended`): it starts, but receives no
+        // audio (open question 14 in docs/plan.md). The cause is not known. It did not
+        // happen when Reply cut the speech off while it was still playing, so we do the
+        // same ourselves: pause shortly before the end and dispatch AI_SPEECH_FINISHED
+        // from here, so the audio element never reaches `ended`. The `onended` handler
+        // stays as the fallback for when the duration is not known or the timer is
+        // throttled.
+        earlyEndTimer = setInterval(() => {
+          // currentTime > 0: a stale duration from the previous src must not end it at once.
+          if (
+            audio.currentTime > 0 &&
+            Number.isFinite(audio.duration) &&
+            audio.duration - audio.currentTime < EARLY_END_SECONDS
+          ) {
+            clearInterval(earlyEndTimer);
+            audio.onended = null;
+            audio.pause();
+            dispatch({ type: "AI_SPEECH_FINISHED", turnId });
+          }
+        }, 50);
+
         return audio.play();
       })
       .catch((error: unknown) => {
@@ -129,6 +156,7 @@ export function useAudioPlayback(
 
     return () => {
       abortController.abort();
+      clearInterval(earlyEndTimer);
       audio.ontimeupdate = null;
       audio.onended = null;
       audio.onerror = null;

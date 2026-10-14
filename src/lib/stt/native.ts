@@ -35,6 +35,10 @@ const MAX_QUICK_ENDS = 3;
  * Between a session's `onend` and the next session's start nothing is captured. That gap
  * has not been measured, and the UI is not told about it (`onMicrophoneStarted` is
  * reported only for the first session).
+ *
+ * A microphone stream is held open next to the recognition (see
+ * `openUnusedMicrophoneStream`); the first session starts once it is there (or has
+ * failed), and `stop` releases it.
  */
 export function startNativeTranscription(
   language: LanguageCode,
@@ -55,6 +59,7 @@ export function startNativeTranscription(
   let session: SpeechRecognition | null = null;
   let sessionStartedAt = 0;
   let quickEnds = 0;
+  let microphoneStream: MediaStream | null = null;
 
   // Words from sessions that have ended, and from the one running now.
   let heardBefore = "";
@@ -68,8 +73,14 @@ export function startNativeTranscription(
     old.onend = null;
   }
 
+  function releaseMicrophoneStream() {
+    microphoneStream?.getTracks().forEach((track) => track.stop());
+    microphoneStream = null;
+  }
+
   function stop() {
     hasEnded = true;
+    releaseMicrophoneStream();
     if (session) {
       releaseSession(session);
       session.abort();
@@ -165,9 +176,32 @@ export function startNativeTranscription(
     }
   }
 
-  startSession(recognitionConstructor);
+  openUnusedMicrophoneStream().then((stream) => {
+    if (hasEnded) {
+      stream?.getTracks().forEach((track) => track.stop());
+      return;
+    }
+
+    microphoneStream = stream;
+    startSession(recognitionConstructor);
+  });
 
   return stop;
+}
+
+/**
+ * On an iPhone, once the browser's own recognition has used the microphone the AI's
+ * speech comes out quieter; with a stream open next to it, it does not. Why is not known.
+ * Nothing reads this microphone stream; it is held open for as long as the engine
+ * listens. Best effort: when it fails the engine starts anyway and reports its own
+ * error, so the message for a refused microphone stays the engine's.
+ */
+async function openUnusedMicrophoneStream(): Promise<MediaStream | null> {
+  try {
+    return await navigator.mediaDevices.getUserMedia({ audio: true });
+  } catch {
+    return null;
+  }
 }
 
 function getRecognitionConstructor(): typeof SpeechRecognition | null {

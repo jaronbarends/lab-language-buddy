@@ -38,7 +38,9 @@ const MAX_QUICK_ENDS = 3;
  *
  * A microphone stream is held open next to the recognition (see
  * `openUnusedMicrophoneStream`); the first session starts once it is there (or has
- * failed), and `stop` releases it.
+ * failed), and `stop` releases it. The first session therefore starts only after
+ * `getUserMedia` has resolved or failed, so in every browser `onMicrophoneStarted` comes
+ * later by the time that step takes (not measured).
  */
 export function startNativeTranscription(
   language: LanguageCode,
@@ -176,15 +178,21 @@ export function startNativeTranscription(
     }
   }
 
-  openUnusedMicrophoneStream().then((stream) => {
-    if (hasEnded) {
-      stream?.getTracks().forEach((track) => track.stop());
-      return;
-    }
+  openUnusedMicrophoneStream()
+    .then((stream) => {
+      if (hasEnded) {
+        stream?.getTracks().forEach((track) => track.stop());
+        return;
+      }
 
-    microphoneStream = stream;
-    startSession(recognitionConstructor);
-  });
+      microphoneStream = stream;
+      startSession(recognitionConstructor);
+    })
+    .catch((error: unknown) => {
+      // A throw inside the then callback (for instance `new Recognition()`); fail() also
+      // releases the microphone stream.
+      fail(RECOGNITION_FAILED_MESSAGE, error);
+    });
 
   return stop;
 }
@@ -195,6 +203,12 @@ export function startNativeTranscription(
  * Nothing reads this microphone stream; it is held open for as long as the engine
  * listens. Best effort: when it fails the engine starts anyway and reports its own
  * error, so the message for a refused microphone stays the engine's.
+ *
+ * This runs in every browser, not only on iOS, on purpose. The problems were seen on an
+ * iPhone; on desktop Chrome the speech also got quieter, which this stream prevents too,
+ * and the recognition not starting was not seen on desktop. There is no platform check,
+ * so the code stays simple. If the mitigation is no longer needed on the iPhone, it is
+ * probably not needed on desktop either.
  */
 async function openUnusedMicrophoneStream(): Promise<MediaStream | null> {
   try {

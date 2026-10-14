@@ -982,16 +982,24 @@ Per stage, in this order:
       fires in runs that recorded, and not in one that failed). `audioSession.state` is
       `undefined` on this iPhone; `type` stays `auto`. The mitigation is in the playback
       hook: speech is paused 0.15 s before its end and `AI_SPEECH_FINISHED` is dispatched
-      from there, so the element never ends; the third AI message still played. Also
-      unexplained: failed first turns now and then (about 1 in 8 without the early pause),
-      and, just before the phone was restarted, runs where the AI gave no sound at all
-      while the playback log looked normal.
+      from there, so the element never ends; the third AI message still played. With the
+      50 ms check interval it cuts 0.10 to 0.15 s off the end of every speech. Jaron listened
+      on an iPhone and on desktop Chrome: the audio has enough silence at the end that no
+      spoken text was lost (which TTS providers and sentences were checked was not
+      recorded). Also unexplained: failed first turns now and then (about 1 in 8 without
+      the early pause), and, just before the phone was restarted, runs where the AI gave no
+      sound at all while the playback log looked normal.
     - *Desktop Chrome with a Bluetooth headset.* The second AI message starts at full
       volume and drops after about a sentence. With Windows' "reduce other sounds when a
       communications activity is detected" set to "Do nothing" it still dropped; with the
       headset off it was better (volume not measured). The likely cause is the headset
       switching to its call profile (HFP) once the microphone opens, which is outside the
-      app. Not tried: the headset for output and another microphone for input.
+      app. Not tried: the headset for output and another microphone for input. On 10-14
+      Jaron tested desktop Chrome with the same headset with both mitigations (the early
+      pause and the held microphone stream) in place, and the drop did not occur. That
+      weakens the HFP explanation (a headset switching to its call profile should have
+      dropped the volume with an open stream as well); the cause stays unknown. The volume
+      was judged by ear, not measured.
     - *Quiet speech: mitigated 10-14 by holding a microphone stream.* The early pause does
       not touch the volume: with it the AI is still quieter in turn 2 than in turn 1 (by
       ear). `native.ts` now opens a `getUserMedia({ audio: true })` stream that nothing
@@ -1005,6 +1013,11 @@ Per stage, in this order:
       long as the native engine listens, as it already was for Deepgram; a refused
       microphone is reported by the engine, not by the stream; a stream that dies by itself
       is not noticed.
+    - *Both mitigations run in every browser, without a platform check.* The problems were
+      seen on the iPhone; on desktop the speech also got quieter and the mitigation
+      prevented that too, and the recognition not starting was not seen on desktop. Jaron
+      chose not to distinguish platforms, to keep the code simple. If the mitigation is no
+      longer needed on the iPhone, it is probably not needed on desktop either.
     - *If it is picked up.* Run the native engine on an iPhone with both mitigations for
       longer than these runs (the failed first turns), and settle whether iOS should use
       Deepgram by default after all (the native default of 10-12 rested on an impression
@@ -1210,6 +1223,10 @@ have been argued over first.
 | 10-14 | you | The TTS body follows the 10-08 naming: `TtsRequest` is `TtsRequestBody` and `TtsRequestSchema` is `TtsRequestBodySchema`; in the `/api/tts` route the `safeParse` result `parsedRequest` is `bodyParseResult` | Jaron: it is a request body, not a request, as with `ChatRequestBody`. The route variable held a parse result, not a body, so it is named for that. The stage 3 review row above still says `TtsRequest`, which was its name then. |
 | 10-14 | you | The development environment (`.env.local`) is back on `NEXT_PUBLIC_STT_PROVIDER=native`; **supersedes the 10-13 row** that put it on `deepgram` | With the early pause and the held microphone stream the two problems of open question 14 are mitigated. Checked by Jaron on an iPhone with the cleaned-up code (no debug logging, no fixed test sentence): the native engine recognized in both turns with the AI speaking to the end, the AI was as loud in turn 2 as in turn 1, and the microphone prompt came once as before. One session; the failed first turns seen now and then in the runs are not ruled out (open question 14). |
 | 10-14 | you | **Native stays the default STT provider**, also after the iPhone problems of open question 14, because Jaron finds its Norwegian transcription better than Deepgram's | Confirms the 10-12 row. It is his judgement and not a measurement: the evidence is the spike (one speaker, one sentence), in which the native engine got the words Deepgram got wrong but in desktop Chrome drifted into Swedish now and then. Deepgram stays the alternative (`NEXT_PUBLIC_STT_PROVIDER`), and it is what avoids the two iPhone problems without a mitigation. |
+| 10-14 | you | The two mitigations (the early pause and the held microphone stream) stay on in **every browser**, with no platform check | The problems were seen on the iPhone; on desktop the speech also got quieter and the mitigation prevented that too, and the recognition not starting was not seen on desktop. Jaron chose not to distinguish platforms, to keep the code simple. If the mitigation is no longer needed on the iPhone, it is probably not needed on desktop either. |
+| 10-14 | you | The 0.10 to 0.15 s that the early pause cuts off the end of every speech is accepted; the threshold stays 0.15 s | Jaron listened on an iPhone and on desktop Chrome: the audio has enough silence at the end that no spoken text was lost. Which TTS providers and sentences were checked was not recorded. |
+| 10-14 | you | Desktop Chrome with the Bluetooth headset no longer drops in volume with the two mitigations in place | Observed by Jaron on 10-14, by ear, not measured. It weakens the HFP hypothesis of open question 14 (a headset switching to its call profile should have dropped the volume with an open stream as well); the cause stays unknown. |
+| 10-14 | agent | A stage review proposed two code changes, and Jaron accepted them: a `.catch` on the microphone-stream chain in `native.ts`, and the early-end timer of `use-audio-playback.ts` moved into its own function `startEarlyEndTimer` with a named interval constant `EARLY_END_CHECK_MS` | A throw while starting the first session was an unhandled rejection that left the stream open; errors in the start must surface. The mitigation must be easy to find and remove. |
 
 ## Keeping the experiment honest
 

@@ -1008,7 +1008,7 @@ Per stage, in this order:
     - *If it is picked up.* Run the native engine on an iPhone with both mitigations for
       longer than these runs (the failed first turns), and settle whether iOS should use
       Deepgram by default after all (the native default of 10-12 rested on an impression
-      from the spike; native is better for Norwegian, which is why it stays the default).
+      from the spike; Jaron kept it on 10-14, see the decision log).
 
 ---
 
@@ -1209,6 +1209,7 @@ have been argued over first.
 | 10-14 | you | The native engine holds a **`getUserMedia({ audio: true })` stream open** (nothing reads it) from before its first session until `stop()`; when it fails the engine starts anyway | On an iPhone it keeps the AI's speech from getting quieter after the microphone has been used (equal volume in 5 of 5 runs, by ear, against quieter without it), and the native engine still recognized in both turns together with the early pause. It does not fix the second-turn recording, so both are needed (`docs/ios-stt-runs.md`). Overturns the 10-13 reasoning in open question 14 that an open capture is the cause of the quiet speech; why it works is not known. The microphone indicator is on while the native engine listens. |
 | 10-14 | you | The TTS body follows the 10-08 naming: `TtsRequest` is `TtsRequestBody` and `TtsRequestSchema` is `TtsRequestBodySchema`; in the `/api/tts` route the `safeParse` result `parsedRequest` is `bodyParseResult` | Jaron: it is a request body, not a request, as with `ChatRequestBody`. The route variable held a parse result, not a body, so it is named for that. The stage 3 review row above still says `TtsRequest`, which was its name then. |
 | 10-14 | you | The development environment (`.env.local`) is back on `NEXT_PUBLIC_STT_PROVIDER=native`; **supersedes the 10-13 row** that put it on `deepgram` | With the early pause and the held microphone stream the two problems of open question 14 are mitigated. Checked by Jaron on an iPhone with the cleaned-up code (no debug logging, no fixed test sentence): the native engine recognized in both turns with the AI speaking to the end, the AI was as loud in turn 2 as in turn 1, and the microphone prompt came once as before. One session; the failed first turns seen now and then in the runs are not ruled out (open question 14). |
+| 10-14 | you | **Native stays the default STT provider**, also after the iPhone problems of open question 14, because Jaron finds its Norwegian transcription better than Deepgram's | Confirms the 10-12 row. It is his judgement and not a measurement: the evidence is the spike (one speaker, one sentence), in which the native engine got the words Deepgram got wrong but in desktop Chrome drifted into Swedish now and then. Deepgram stays the alternative (`NEXT_PUBLIC_STT_PROVIDER`), and it is what avoids the two iPhone problems without a mitigation. |
 
 ## Keeping the experiment honest
 

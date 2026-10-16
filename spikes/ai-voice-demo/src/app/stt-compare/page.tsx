@@ -1,28 +1,31 @@
 "use client";
 
-// Throwaway spike page: Deepgram live streaming next to the browser's native speech
-// recognition, fed by the same microphone at the same moment. Not part of the app; it
-// goes when the comparison is done. Reached by typing /stt-compare, nothing links here.
+// Throwaway spike page: Deepgram live streaming and ElevenLabs Scribe v2 Realtime next to
+// the browser's native speech recognition, fed by the same microphone at the same moment.
+// Not part of the app; it goes when the comparison is done. Reached by typing
+// /stt-compare, nothing links here.
 
 import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 
 // The spike has no language registry (that lives in the app's src/lib/languages.ts), so
-// the two tags per language are listed here. Chrome and Safari want a region for the
-// native engine (nb-NO); the app's own `htmlLang` for Norwegian is just "nb".
+// the tags per language are listed here. Chrome and Safari want a region for the
+// native engine (nb-NO); the app's own `htmlLang` for Norwegian is just "nb". Scribe's docs
+// list three-letter codes ("Norwegian (nor)").
 const LANGUAGES = {
-  no: { label: "Norwegian", deepgram: "no", native: "nb-NO" },
-  nl: { label: "Dutch", deepgram: "nl", native: "nl-NL" },
-  fr: { label: "French", deepgram: "fr", native: "fr-FR" },
-  de: { label: "German", deepgram: "de", native: "de-DE" },
-  it: { label: "Italian", deepgram: "it", native: "it-IT" },
-  es: { label: "Spanish", deepgram: "es", native: "es-ES" },
+  no: { label: "Norwegian", deepgram: "no", native: "nb-NO", scribe: "nor" },
+  nl: { label: "Dutch", deepgram: "nl", native: "nl-NL", scribe: "nld" },
+  fr: { label: "French", deepgram: "fr", native: "fr-FR", scribe: "fra" },
+  de: { label: "German", deepgram: "de", native: "de-DE", scribe: "deu" },
+  it: { label: "Italian", deepgram: "it", native: "it-IT", scribe: "ita" },
+  es: { label: "Spanish", deepgram: "es", native: "es-ES", scribe: "spa" },
 } as const;
 
 type LanguageCode = keyof typeof LANGUAGES;
 const LANGUAGE_CODES = Object.keys(LANGUAGES) as LanguageCode[];
 
-type EngineName = "deepgram" | "native";
+const ENGINES = ["deepgram", "scribe", "native"] as const;
+type EngineName = (typeof ENGINES)[number];
 type EngineStatus = "idle" | "starting" | "listening" | "ended" | "error" | "stopped";
 
 type EngineView = {
@@ -51,8 +54,13 @@ const EMPTY_VIEW: EngineView = {
 
 const ENGINE_LABELS: Record<EngineName, string> = {
   deepgram: "Deepgram nova-2 (live)",
+  scribe: "ElevenLabs Scribe v2 Realtime",
   native: "Native SpeechRecognition",
 };
+
+function emptyViews(): Record<EngineName, EngineView> {
+  return { deepgram: EMPTY_VIEW, scribe: EMPTY_VIEW, native: EMPTY_VIEW };
+}
 
 // Same values as src/hooks/use-live-transcription.ts.
 const DEEPGRAM_LISTEN_URL = "wss://api.deepgram.com/v1/listen";
@@ -60,7 +68,62 @@ const DEEPGRAM_MODEL = "nova-2";
 const PREFERRED_RECORDING_MIME_TYPE = "audio/webm;codecs=opus";
 const CHUNK_INTERVAL_MS = 250;
 
+const SCRIBE_LISTEN_URL = "wss://api.elevenlabs.io/v1/speech-to-text/realtime";
+const SCRIBE_MODEL = "scribe_v2_realtime";
+// Scribe takes only raw PCM (or u-law), not the WebM/Opus that MediaRecorder gives, so the
+// audio comes from an AudioWorklet that downsamples to this rate.
+const SCRIBE_SAMPLE_RATE = 16000;
+const SCRIBE_CHUNK_SAMPLES = 1600; // 100 ms
+
+// Runs on the audio thread. Averages the input down to SCRIBE_SAMPLE_RATE (a box filter,
+// so the ratio need not be a whole number) and posts 16-bit PCM in chunks.
+const PCM_WORKLET_SOURCE = `
+class PcmDownsampler extends AudioWorkletProcessor {
+  constructor() {
+    super();
+    this.ratio = sampleRate / ${SCRIBE_SAMPLE_RATE};
+    this.phase = 0;
+    this.sum = 0;
+    this.count = 0;
+    this.out = new Int16Array(${SCRIBE_CHUNK_SAMPLES});
+    this.outLength = 0;
+  }
+  process(inputs) {
+    const channel = inputs[0] && inputs[0][0];
+    if (!channel) {
+      return true;
+    }
+    for (let i = 0; i < channel.length; i++) {
+      this.sum += channel[i];
+      this.count++;
+      this.phase++;
+      if (this.phase >= this.ratio) {
+        this.phase -= this.ratio;
+        const sample = Math.max(-1, Math.min(1, this.sum / this.count));
+        this.out[this.outLength++] = sample < 0 ? sample * 0x8000 : sample * 0x7fff;
+        this.sum = 0;
+        this.count = 0;
+        if (this.outLength === this.out.length) {
+          this.port.postMessage(this.out.buffer, [this.out.buffer]);
+          this.out = new Int16Array(${SCRIBE_CHUNK_SAMPLES});
+          this.outLength = 0;
+        }
+      }
+    }
+    return true;
+  }
+}
+registerProcessor("pcm-downsampler", PcmDownsampler);
+`;
+
 const AccessTokenSchema = z.object({ accessToken: z.string().min(1) });
+const ScribeTokenSchema = z.object({ token: z.string().min(1) });
+// Only message_type and the fields this page reads; anything else on the message is ignored.
+const ScribeMessageSchema = z.object({
+  message_type: z.string(),
+  text: z.string().optional(),
+  error: z.string().optional(),
+});
 const ResultsMessageSchema = z.object({
   type: z.literal("Results"),
   is_final: z.boolean(),
@@ -99,10 +162,7 @@ type SpeechWindow = {
 
 export default function Page() {
   const [languageCode, setLanguageCode] = useState<LanguageCode>("no");
-  const [views, setViews] = useState<Record<EngineName, EngineView>>({
-    deepgram: EMPTY_VIEW,
-    native: EMPTY_VIEW,
-  });
+  const [views, setViews] = useState<Record<EngineName, EngineView>>(emptyViews);
   // Never reassigned, only mutated: the unmount cleanup below relies on that.
   const stops = useRef<Partial<Record<EngineName, () => void>>>({});
   const startedAt = useRef<Partial<Record<EngineName, number>>>({});
@@ -153,12 +213,13 @@ export default function Page() {
   // away (the other engine, when a Start button starts only one) does not keep saying it
   // is listening.
   function stopAll() {
-    for (const engine of ["deepgram", "native"] as const) {
+    for (const engine of ENGINES) {
       stops.current[engine]?.();
       delete stops.current[engine];
     }
     setViews((previous) => ({
       deepgram: stoppedView(previous.deepgram),
+      scribe: stoppedView(previous.scribe),
       native: stoppedView(previous.native),
     }));
   }
@@ -208,10 +269,15 @@ export default function Page() {
     };
 
     const language = LANGUAGES[languageCode];
-    stops.current[engine] =
-      engine === "native"
-        ? startNative(language.native, callbacks)
-        : startDeepgram(language.deepgram, callbacks);
+    if (engine === "native") {
+      stops.current[engine] = startNative(language.native, callbacks);
+      return;
+    }
+    if (engine === "scribe") {
+      stops.current[engine] = startScribe(language.scribe, callbacks);
+      return;
+    }
+    stops.current[engine] = startDeepgram(language.deepgram, callbacks);
   }
 
   function handleStart(engines: EngineName[]) {
@@ -220,7 +286,7 @@ export default function Page() {
     // Native first, and with nothing awaited before it, so it starts inside the tap
     // itself. Starting from an effect also works on iOS ("Native via effect"); this is
     // just the plainest case to compare against.
-    const ordered = (["native", "deepgram"] as const).filter((engine) =>
+    const ordered = (["native", "scribe", "deepgram"] as const).filter((engine) =>
       engines.includes(engine),
     );
     ordered.forEach(startEngine);
@@ -239,7 +305,7 @@ export default function Page() {
   function handleReset() {
     setEffectStartRun(0);
     stopAll();
-    setViews({ deepgram: EMPTY_VIEW, native: EMPTY_VIEW });
+    setViews(emptyViews());
   }
 
   return (
@@ -254,8 +320,8 @@ export default function Page() {
     </style>
       <h1>STT comparison</h1>
       <p>
-        Both engines listen to the same microphone. If one of them stays silent or errors
-        when both run, play a recording while running each engine on its own.
+        All engines listen to the same microphone. If one of them stays silent or errors
+        when they run together, play a recording while running each engine on its own.
       </p>
 
       <label>
@@ -275,18 +341,21 @@ export default function Page() {
         Native language tag: <code>{LANGUAGES[languageCode].native}</code>
         {" · "}
         Deepgram: <code>{LANGUAGES[languageCode].deepgram}</code>
+        {" · "}
+        Scribe: <code>{LANGUAGES[languageCode].scribe}</code>
       </p>
 
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
-        <button onClick={() => handleStart(["native", "deepgram"])}>Start both</button>
+        <button onClick={() => handleStart([...ENGINES])}>Start all</button>
         <button onClick={() => handleStart(["deepgram"])}>Deepgram only</button>
+        <button onClick={() => handleStart(["scribe"])}>Scribe only</button>
         <button onClick={() => handleStart(["native"])}>Native only</button>
         <button onClick={handleStartNativeViaEffect}>Native via effect</button>
         <button onClick={handleStop}>Stop</button>
         <button onClick={handleReset}>Clear</button>
       </div>
 
-      {(["deepgram", "native"] as const).map((engine) => (
+      {ENGINES.map((engine) => (
         <EnginePanel key={engine} name={ENGINE_LABELS[engine]} view={views[engine]} />
       ))}
     </main>
@@ -504,6 +573,183 @@ function startDeepgram(language: string, callbacks: EngineCallbacks): () => void
   void connect();
 
   return stop;
+}
+
+/** Starts the ElevenLabs Scribe v2 Realtime stream and returns the function that ends it. */
+function startScribe(language: string, callbacks: EngineCallbacks): () => void {
+  let hasEnded = false;
+  let stream: MediaStream | null = null;
+  let socket: WebSocket | null = null;
+  let node: AudioWorkletNode | null = null;
+  let source: MediaStreamAudioSourceNode | null = null;
+
+  // Created inside the tap itself, before anything is awaited: Safari keeps an
+  // AudioContext that is created later suspended.
+  const context = new AudioContext();
+
+  function stop() {
+    hasEnded = true;
+    if (node) {
+      node.port.onmessage = null;
+      node.disconnect();
+    }
+    source?.disconnect();
+    void context.close().catch(() => {});
+    stream?.getTracks().forEach((track) => track.stop());
+    if (socket) {
+      socket.onopen = null;
+      socket.onmessage = null;
+      socket.onerror = null;
+      socket.onclose = null;
+      socket.close();
+    }
+  }
+
+  function fail(message: string) {
+    if (hasEnded) {
+      return;
+    }
+    stop();
+    callbacks.onError(message);
+  }
+
+  async function connect() {
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      if (hasEnded) {
+        stop();
+        return;
+      }
+
+      const response = await fetch("/api/stt/scribe-token", { method: "POST" });
+      if (!response.ok) {
+        throw new Error(`Token request failed with status ${response.status}`);
+      }
+      const { token } = ScribeTokenSchema.parse(await response.json());
+      if (hasEnded) {
+        stop();
+        return;
+      }
+
+      openSocket(token);
+    } catch (error) {
+      fail(error instanceof Error ? `${error.name}: ${error.message}` : String(error));
+    }
+  }
+
+  function openSocket(token: string) {
+    const url = new URL(SCRIBE_LISTEN_URL);
+    url.searchParams.set("model_id", SCRIBE_MODEL);
+    url.searchParams.set("language_code", language);
+    url.searchParams.set("audio_format", `pcm_${SCRIBE_SAMPLE_RATE}`);
+    // The server decides where a segment ends, the way Deepgram's is_final does.
+    url.searchParams.set("commit_strategy", "vad");
+    url.searchParams.set("token", token);
+
+    const newSocket = new WebSocket(url);
+    socket = newSocket;
+    let finalized = "";
+
+    newSocket.onmessage = (event: MessageEvent<unknown>) => {
+      const message = parseScribeMessage(event.data);
+      if (!message) {
+        return;
+      }
+
+      switch (message.message_type) {
+        case "session_started":
+          void startAudio(newSocket);
+          return;
+        case "partial_transcript":
+          callbacks.onTranscript(finalized, message.text ?? "");
+          return;
+        case "committed_transcript":
+          finalized = `${finalized} ${message.text ?? ""}`.trim();
+          callbacks.onTranscript(finalized, "");
+          return;
+        default:
+          if (message.message_type.includes("error") || message.error) {
+            fail(`${message.message_type}: ${message.error ?? ""}`.trim());
+            return;
+          }
+          // Not asked for and not understood: visible in the console, not on the page.
+          console.debug("[scribe] unhandled message", message);
+      }
+    };
+
+    newSocket.onerror = () => fail("Socket error");
+    newSocket.onclose = (event) => fail(`Socket closed (${event.code}) ${event.reason}`.trim());
+  }
+
+  async function startAudio(liveSocket: WebSocket) {
+    if (!stream) {
+      return;
+    }
+
+    try {
+      const workletUrl = URL.createObjectURL(
+        new Blob([PCM_WORKLET_SOURCE], { type: "application/javascript" }),
+      );
+      await context.audioWorklet.addModule(workletUrl);
+      URL.revokeObjectURL(workletUrl);
+      await context.resume();
+      if (hasEnded) {
+        return;
+      }
+
+      source = context.createMediaStreamSource(stream);
+      node = new AudioWorkletNode(context, "pcm-downsampler");
+      node.port.onmessage = (event: MessageEvent<ArrayBuffer>) => {
+        if (liveSocket.readyState !== WebSocket.OPEN) {
+          return;
+        }
+        liveSocket.send(
+          JSON.stringify({
+            message_type: "input_audio_chunk",
+            audio_base_64: arrayBufferToBase64(event.data),
+            commit: false,
+            sample_rate: SCRIBE_SAMPLE_RATE,
+          }),
+        );
+      };
+      // Browsers only run a node that has a path to the destination, so it goes through a
+      // gain of 0: the microphone must not play out loud.
+      const mute = context.createGain();
+      mute.gain.value = 0;
+      source.connect(node);
+      node.connect(mute);
+      mute.connect(context.destination);
+      callbacks.onListening();
+    } catch (error) {
+      fail(error instanceof Error ? `${error.name}: ${error.message}` : String(error));
+    }
+  }
+
+  void connect();
+
+  return stop;
+}
+
+function arrayBufferToBase64(buffer: ArrayBuffer): string {
+  const bytes = new Uint8Array(buffer);
+  let binary = "";
+  for (const byte of bytes) {
+    binary += String.fromCharCode(byte);
+  }
+  return btoa(binary);
+}
+
+function parseScribeMessage(data: unknown) {
+  if (typeof data !== "string") {
+    return null;
+  }
+
+  try {
+    const parsed = ScribeMessageSchema.safeParse(JSON.parse(data));
+    return parsed.success ? parsed.data : null;
+  } catch {
+    return null;
+  }
 }
 
 function parseResultsMessage(data: unknown) {

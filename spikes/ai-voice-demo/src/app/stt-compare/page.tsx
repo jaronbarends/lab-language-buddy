@@ -12,13 +12,33 @@ import { z } from "zod";
 // the tags per language are listed here. Chrome and Safari want a region for the
 // native engine (nb-NO); the app's own `htmlLang` for Norwegian is just "nb". Scribe's docs
 // list three-letter codes ("Norwegian (nor)").
+// `sentence` is what the AI says in the turn test; it is the same every run on purpose, so
+// that the AI's words do not influence the comparison.
 const LANGUAGES = {
-  no: { label: "Norwegian", deepgram: "no", native: "nb-NO", scribe: "nor" },
-  nl: { label: "Dutch", deepgram: "nl", native: "nl-NL", scribe: "nld" },
-  fr: { label: "French", deepgram: "fr", native: "fr-FR", scribe: "fra" },
-  de: { label: "German", deepgram: "de", native: "de-DE", scribe: "deu" },
-  it: { label: "Italian", deepgram: "it", native: "it-IT", scribe: "ita" },
-  es: { label: "Spanish", deepgram: "es", native: "es-ES", scribe: "spa" },
+  no: {
+    label: "Norwegian", deepgram: "no", native: "nb-NO", scribe: "nor",
+    sentence: "Hei! Hvordan har du det i dag? Fortell meg litt om dagen din.",
+  },
+  nl: {
+    label: "Dutch", deepgram: "nl", native: "nl-NL", scribe: "nld",
+    sentence: "Hoi! Hoe gaat het vandaag met je? Vertel me eens wat over je dag.",
+  },
+  fr: {
+    label: "French", deepgram: "fr", native: "fr-FR", scribe: "fra",
+    sentence: "Salut ! Comment vas-tu aujourd'hui ? Raconte-moi un peu ta journée.",
+  },
+  de: {
+    label: "German", deepgram: "de", native: "de-DE", scribe: "deu",
+    sentence: "Hallo! Wie geht es dir heute? Erzähl mir ein bisschen von deinem Tag.",
+  },
+  it: {
+    label: "Italian", deepgram: "it", native: "it-IT", scribe: "ita",
+    sentence: "Ciao! Come stai oggi? Raccontami un po' della tua giornata.",
+  },
+  es: {
+    label: "Spanish", deepgram: "es", native: "es-ES", scribe: "spa",
+    sentence: "¡Hola! ¿Cómo estás hoy? Cuéntame un poco de tu día.",
+  },
 } as const;
 
 type LanguageCode = keyof typeof LANGUAGES;
@@ -60,6 +80,50 @@ const ENGINE_LABELS: Record<EngineName, string> = {
 
 function emptyViews(): Record<EngineName, EngineView> {
   return { deepgram: EMPTY_VIEW, scribe: EMPTY_VIEW, native: EMPTY_VIEW };
+}
+
+// The turn test imitates the app's turn change: the engine listens (turn 1), Reply stops it,
+// the AI speaks through an <audio> element, and when that ends by itself the same engine
+// starts again (turn 2). On the iPhone the native engine got no audio in turn 2 in 11 of 13
+// runs, but only when the AI's speech ended by itself (docs/ios-stt-runs.md). No early
+// pause and no held microphone stream here: that is the failing setup.
+type TurnTestPhase = "idle" | "turn1" | "speaking" | "turn2";
+
+type TurnTestRun = {
+  engine: EngineName;
+  turn1Heard: boolean;
+  turn2Heard: boolean;
+  note: string;
+};
+
+function viewHasWords(view: EngineView): boolean {
+  return view.status !== "error" && Boolean(view.finalized || view.interim);
+}
+
+/** A tenth of a second of silence, to unlock the <audio> element inside a tap. */
+function silentWavDataUri(): string {
+  const sampleCount = 800;
+  const buffer = new ArrayBuffer(44 + sampleCount * 2);
+  const view = new DataView(buffer);
+  const writeText = (offset: number, text: string) => {
+    for (let index = 0; index < text.length; index++) {
+      view.setUint8(offset + index, text.charCodeAt(index));
+    }
+  };
+  writeText(0, "RIFF");
+  view.setUint32(4, 36 + sampleCount * 2, true);
+  writeText(8, "WAVE");
+  writeText(12, "fmt ");
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true); // PCM
+  view.setUint16(22, 1, true); // mono
+  view.setUint32(24, 8000, true);
+  view.setUint32(28, 16000, true);
+  view.setUint16(32, 2, true);
+  view.setUint16(34, 16, true);
+  writeText(36, "data");
+  view.setUint32(40, sampleCount * 2, true);
+  return `data:audio/wav;base64,${arrayBufferToBase64(buffer)}`;
 }
 
 // Same values as src/hooks/use-live-transcription.ts.
@@ -167,6 +231,16 @@ export default function Page() {
   const stops = useRef<Partial<Record<EngineName, () => void>>>({});
   const startedAt = useRef<Partial<Record<EngineName, number>>>({});
 
+  // Turn test. One reused <audio> element, unlocked inside the tap that starts a run, as the
+  // app does. The AI's speech is fetched when the run starts, so Reply can play it at once.
+  const [turnTestPhase, setTurnTestPhase] = useState<TurnTestPhase>("idle");
+  const [turnTestEngine, setTurnTestEngine] = useState<EngineName>("scribe");
+  const [turnTestNote, setTurnTestNote] = useState("");
+  const [turnTestRuns, setTurnTestRuns] = useState<TurnTestRun[]>([]);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const speechUrlRef = useRef<string | null>(null);
+  const turn1HeardRef = useRef(false);
+
   // The app's pattern: a tap only sets state, and the engine starts in an effect after the
   // render, like use-live-transcription does when the turn state becomes `listening`.
   // Whether iOS lets the native engine start from there is what the "Native via effect"
@@ -179,6 +253,7 @@ export default function Page() {
     const stopsByEngine = stops.current;
     return () => {
       Object.values(stopsByEngine).forEach((stop) => stop?.());
+      releaseTurnTestAudio(audioRef.current, speechUrlRef);
     };
   }, []);
 
@@ -280,8 +355,100 @@ export default function Page() {
     stops.current[engine] = startDeepgram(language.deepgram, callbacks);
   }
 
+  // Ends a run that is under way without recording it.
+  function cancelTurnTest() {
+    releaseTurnTestAudio(audioRef.current, speechUrlRef);
+    setTurnTestPhase("idle");
+  }
+
+  // Turn 1. Everything that must happen inside the tap (unlocking the audio element, starting
+  // the engine) happens before anything is awaited.
+  function handleTurnTestStart() {
+    setEffectStartRun(0);
+    stopAll();
+    releaseTurnTestAudio(audioRef.current, speechUrlRef);
+    setTurnTestNote("");
+
+    const audio = (audioRef.current ??= new Audio());
+    audio.src = silentWavDataUri();
+    audio.play().catch(() => {});
+
+    turn1HeardRef.current = false;
+    setTurnTestPhase("turn1");
+    startEngine(turnTestEngine);
+    void fetchSpeech(LANGUAGES[languageCode].sentence);
+  }
+
+  async function fetchSpeech(text: string) {
+    try {
+      const response = await fetch("/api/tts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+      });
+      if (!response.ok) {
+        throw new Error(`TTS request failed with status ${response.status}`);
+      }
+      speechUrlRef.current = URL.createObjectURL(await response.blob());
+    } catch (error) {
+      setTurnTestNote(error instanceof Error ? error.message : String(error));
+    }
+  }
+
+  // The AI speaks. A tap, so the audio element may play; turn 2 starts when it ends by itself.
+  function handleTurnTestReply() {
+    const audio = audioRef.current;
+    const speechUrl = speechUrlRef.current;
+    if (!audio || !speechUrl) {
+      setTurnTestNote("The AI's speech is not loaded yet (or failed): wait a moment and tap Reply again");
+      return;
+    }
+
+    const engine = turnTestEngine;
+    turn1HeardRef.current = viewHasWords(views[engine]);
+    stopAll();
+    setTurnTestPhase("speaking");
+
+    audio.onended = () => {
+      audio.onended = null;
+      setTurnTestPhase("turn2");
+      startEngine(engine);
+    };
+    audio.onerror = () => {
+      setTurnTestNote("The audio element failed to play the AI's speech");
+      setTurnTestPhase("idle");
+    };
+    audio.src = speechUrl;
+    audio.play().catch((error: unknown) => {
+      setTurnTestNote(`play() was refused: ${error instanceof Error ? error.message : String(error)}`);
+      setTurnTestPhase("idle");
+    });
+  }
+
+  function cancelTurnTestAndStop() {
+    cancelTurnTest();
+    stopAll();
+  }
+
+  function handleTurnTestFinish() {
+    const engine = turnTestEngine;
+    const view = views[engine];
+    setTurnTestRuns((previous) => [
+      ...previous,
+      {
+        engine,
+        turn1Heard: turn1HeardRef.current,
+        turn2Heard: viewHasWords(view),
+        note: view.status === "error" ? view.note : "",
+      },
+    ]);
+    stopAll();
+    cancelTurnTest();
+  }
+
   function handleStart(engines: EngineName[]) {
     setEffectStartRun(0);
+    cancelTurnTest();
     stopAll();
     // Native first, and with nothing awaited before it, so it starts inside the tap
     // itself. Starting from an effect also works on iOS ("Native via effect"); this is
@@ -293,17 +460,21 @@ export default function Page() {
   }
 
   function handleStartNativeViaEffect() {
+    cancelTurnTest();
     stopAll();
     setEffectStartRun((run) => run + 1);
   }
 
   function handleStop() {
     setEffectStartRun(0);
+    cancelTurnTest();
     stopAll();
   }
 
   function handleReset() {
     setEffectStartRun(0);
+    cancelTurnTest();
+    setTurnTestNote("");
     stopAll();
     setViews(emptyViews());
   }
@@ -355,11 +526,102 @@ export default function Page() {
         <button onClick={handleReset}>Clear</button>
       </div>
 
+      <section style={{ border: "1px solid #888", borderRadius: 8, padding: 12, marginBottom: 12 }}>
+        <h2 style={{ fontSize: 18, margin: 0 }}>Turn test</h2>
+        <p style={{ margin: "4px 0" }}>
+          Start, speak, tap Reply: the AI says a fixed sentence, and when it has finished by
+          itself the same engine starts again. Speak again, then tap Finish run. A run counts
+          as heard when words came back in that turn.
+        </p>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
+          <select
+            value={turnTestEngine}
+            disabled={turnTestPhase !== "idle"}
+            onChange={(event) => setTurnTestEngine(event.target.value as EngineName)}
+          >
+            {ENGINES.map((engine) => (
+              <option key={engine} value={engine}>
+                {ENGINE_LABELS[engine]}
+              </option>
+            ))}
+          </select>
+          <button disabled={turnTestPhase !== "idle"} onClick={handleTurnTestStart}>
+            Start run
+          </button>
+          <button disabled={turnTestPhase !== "turn1"} onClick={handleTurnTestReply}>
+            Reply
+          </button>
+          <button disabled={turnTestPhase !== "turn2"} onClick={handleTurnTestFinish}>
+            Finish run
+          </button>
+          <button disabled={turnTestPhase === "idle"} onClick={cancelTurnTestAndStop}>
+            Abort run
+          </button>
+        </div>
+        <p style={{ margin: "8px 0 0" }}>
+          Phase: <strong>{turnTestPhase}</strong>
+          {turnTestNote && ` · ${turnTestNote}`}
+        </p>
+        <TurnTestRuns runs={turnTestRuns} onClear={() => setTurnTestRuns([])} />
+      </section>
+
       {ENGINES.map((engine) => (
         <EnginePanel key={engine} name={ENGINE_LABELS[engine]} view={views[engine]} />
       ))}
     </main>
   );
+}
+
+function TurnTestRuns({ runs, onClear }: { runs: TurnTestRun[]; onClear: () => void }) {
+  if (runs.length === 0) {
+    return null;
+  }
+
+  return (
+    <div style={{ marginTop: 8 }}>
+      {ENGINES.map((engine) => {
+        const engineRuns = runs.filter((run) => run.engine === engine);
+        if (engineRuns.length === 0) {
+          return null;
+        }
+        // Turn 2 counts only for runs whose turn 1 was heard: a failed first turn says
+        // nothing about the second.
+        const turn1Ok = engineRuns.filter((run) => run.turn1Heard);
+        return (
+          <p key={engine} style={{ margin: "2px 0" }}>
+            {ENGINE_LABELS[engine]}: turn 1 heard in {turn1Ok.length} of {engineRuns.length}
+            {" · "}turn 2 heard in {turn1Ok.filter((run) => run.turn2Heard).length} of{" "}
+            {turn1Ok.length}
+          </p>
+        );
+      })}
+      <ol style={{ margin: "6px 0", paddingLeft: 24 }}>
+        {runs.map((run, index) => (
+          <li key={index}>
+            {run.engine} · turn 1 {run.turn1Heard ? "ok" : "FAIL"} · turn 2{" "}
+            {run.turn2Heard ? "ok" : "FAIL"}
+            {run.note && ` · ${run.note}`}
+          </li>
+        ))}
+      </ol>
+      <button onClick={onClear}>Clear runs</button>
+    </div>
+  );
+}
+
+function releaseTurnTestAudio(
+  audio: HTMLAudioElement | null,
+  speechUrl: { current: string | null },
+) {
+  if (audio) {
+    audio.onended = null;
+    audio.onerror = null;
+    audio.pause();
+  }
+  if (speechUrl.current) {
+    URL.revokeObjectURL(speechUrl.current);
+    speechUrl.current = null;
+  }
 }
 
 function EnginePanel({ name, view }: { name: string; view: EngineView }) {

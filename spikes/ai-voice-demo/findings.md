@@ -26,7 +26,7 @@ en de opruiming van de batch-STT-code zitten alleen op `spike-ai-voice-live-stt`
 | Provider | Geschikt? | Reden |
 |---|---|---|
 | **Deepgram** (nova-2) | ✅ Ja — huidige keuze | Werkt correct met Safari's opname, ongeacht lengte (getest tot 30,8s). Rapporteert de juiste duur. Subjectief door de gebruiker beter beoordeeld dan Google. Goedkoopste optie gevonden (~$0,0043/min, pre-recorded). Let op: Noors zit alleen op het **legacy nova-2/base/enhanced-model**, niet op nova-3/flux. |
-| **ElevenLabs** (Scribe) | ✅ Ja | Werkte al vóór de Deepgram-toevoeging, geen probleem met Safari's opname. Duurder dan Deepgram maar goedkoper dan gedacht ($0,22/uur) — zie kostenpunt hieronder. |
+| **ElevenLabs** (Scribe) | ✅ Ja — sinds 2026-10-16 live getest, en beter dan Deepgram en native | Batch werkte al vóór de Deepgram-toevoeging. Live (Scribe v2 Realtime) in de vergelijkingspagina: betere Noorse transcriptie dan Deepgram en native, en op de iPhone geen dode tweede beurt. Zie "Scribe v2 Realtime (2026-10-16)" hieronder. De eerdere regel "duurder dan Deepgram" gold voor batch en klopte niet eens: batch is goedkoper ($0,22/uur tegenover ~$0,26/uur). Voor streaming is Scribe ~11% duurder. |
 | **Google Cloud STT v1** | ❌ Nee, voor deze usecase | Werkt op Chrome, maar breekt op Safari-opnames langer dan ~17,5s reële duur — ruim onder de gedocumenteerde limiet van 60s. Zie "Google STT-bug" hieronder. |
 | **Azure AI Speech** | ❌ Nee (nog niet) | STT-REST-endpoint accepteert alleen WAV/PCM of OGG/Opus, niet de WebM/Opus-container die Safari (en onze recorder) produceert. Faalt **stil**: HTTP 200, `RecognitionStatus: Success`, maar lege `DisplayText` en een onjuiste gerapporteerde duur — geen foutmelding. Zie "Azure STT: stille misser" hieronder. |
 
@@ -280,6 +280,99 @@ de tijd tot de eerste woorden. Native met `lang = nb-NO`, Deepgram met `nova-2` 
 - **Niet gedaan:** één spreker en één zin, dus geen meting van foutpercentages; geen
   vergelijking met opgenomen audio die via een speaker wordt afgespeeld (zou beide engines
   exact dezelfde geluiden laten horen); Firefox en Chrome op Android niet geprobeerd.
+
+### Scribe v2 Realtime (2026-10-16): ElevenLabs als derde engine naast Deepgram en native
+Aanleiding: Jaron was niet tevreden over Deepgram en native, en ElevenLabs Scribe was in de
+batch-spike al een ✅ zonder dat er een reden stond waarom het niet gekozen werd. Scribe is als
+derde engine in `/stt-compare` gebouwd (branch `spike-scribe-stt-compare`), met een
+beurtwisseltest erbij. Alles hieronder is op één iPhone gedaan (iOS 26.6.2, Safari) en op
+desktop Chrome, door één spreker.
+
+**Kosten voor streaming** (de $0,0043/min in de tabel hierboven is Deepgram *pre-recorded*; de
+app streamt):
+
+| | Per uur | Per minuut | Bron |
+|---|---|---|---|
+| Deepgram nova-2, streaming | $0,35 | ~$0,0058 | FAQ op deepgram.com/pricing; de tabellen daar noemen nova-2 niet. Deepgram houdt het tarief voor bestaande deployments en raadt nova-3 aan, maar Noors zit alleen op nova-2. |
+| ElevenLabs Scribe v2 Realtime | $0,39 | ~$0,0065 | elevenlabs.io/pricing/api. De productpagina noemt "$0,28/uur en lager op jaarlijkse Business-plannen"; een andere bron zegt dat er geen plankorting is. Niet uitgezocht welke klopt. |
+
+Scribe is voor streaming dus ~11% duurder, op de schaal van deze app te klein om de keuze te
+bepalen. De Deepgram-streamingtarieven op de pagina stonden als "tijdelijke promotie".
+
+**Technisch: hoe Scribe afwijkt van Deepgram**
+- **Audioformaat.** De realtime-API accepteert alleen ruwe PCM (8–48 kHz) of µ-law, geen
+  WebM/Opus. De `MediaRecorder` van het Deepgram-pad is dus niet te hergebruiken. Het pad is nu:
+  `getUserMedia` -> `AudioContext` -> `AudioWorklet` (downsampled met een boxfilter naar 16 kHz,
+  16-bit PCM, chunks van 100 ms) -> base64 in JSON (`message_type: "input_audio_chunk"`,
+  `sample_rate`, `commit: false`) over de WebSocket. De worklet staat als string in de pagina en
+  wordt via een Blob-URL geladen; dat werkt op Safari/iOS.
+- **Authenticatie.** Net als bij Deepgram rechtstreeks vanuit de browser, met een single-use
+  token: `POST https://api.elevenlabs.io/v1/single-use-token/realtime_scribe` met `xi-api-key`,
+  15 minuten geldig, verbruikt bij het eerste gebruik. Het token gaat als `token`-queryparameter
+  mee (browsers kunnen geen header op een WebSocket zetten). Route:
+  `src/app/api/stt/scribe-token/route.ts`.
+- **Verbinding.** `wss://api.elevenlabs.io/v1/speech-to-text/realtime` met `model_id=
+  scribe_v2_realtime`, `audio_format=pcm_16000`, `commit_strategy=vad` en `language_code`.
+  Noors is **`nor`** (drie letters, zoals in de ElevenLabs-taallijst), en dat werkt.
+- **Berichten terug.** `session_started` (pas dan start de audio), `partial_transcript` (interim)
+  en `committed_transcript` (definitief). Dit komt uit de docs en is in de praktijk bevestigd:
+  de transcriptie verscheen.
+- **`AudioContext` moet in de tik zelf gemaakt worden**, vóór de eerste `await`, anders blijft
+  hij op Safari suspended.
+
+**Kwaliteit.** Jaron's indruk, op desktop Chrome en op de iPhone: de transcriptie is "een stuk
+beter" dan die van Deepgram en ook beter dan die van native. Een indruk, geen meting: geen
+foutpercentages, en één spreker. Voor het eerdere Zweeds-probleem van native in Chrome is niets
+vastgelegd.
+
+**De beurtwisseling op de iPhone (iOS 26.6.2).** `/stt-compare` heeft een "Turn test": engine
+luistert (beurt 1), Reply stopt hem, de AI zegt een vaste zin via `/api/tts` uit één hergebruikt
+`<audio>`-element (ontgrendeld in de tik), en bij het vanzelf eindigen van die spraak start
+dezelfde engine opnieuw (beurt 2). Geen vroege pauze en geen vastgehouden stream, dus precies de
+opzet waarin native faalde (zie `docs/ios-stt-runs.md` in de app).
+
+| Engine | Uitkomst |
+|---|---|
+| Scribe | **11 van 11 runs: beurt 1 en beurt 2 allebei woorden terug**, 3 en daarna 8 achter elkaar na een herlading. Volume in alle beurten even luid (op het gehoor). |
+| Native | Faalde in beurt 2 in beide runs waarvan de beurt genoteerd is (beurt 1 ok, beurt 2 fail): één op de nieuwe URL, en één in dezelfde pagina-sessie *na* de 8 goede Scribe-runs. De allereerste run faalde ook; in welke beurt is niet genoteerd. Drie runs, dus een bevestiging van de 2-van-13 uit de app-runs, geen nieuwe telling. |
+
+Wat dit wel en niet zegt:
+- Als Scribe net zo vaak faalde als native (~85%), is de kans op 11 goede runs achter elkaar te
+  verwaarlozen. De kans op falen is met 11 goede runs hooguit ongeveer 25%, en waarschijnlijk
+  veel lager; meer runs maken die bovengrens kleiner. Het bewijst niet dat Scribe nooit faalt.
+- Native in dezelfde pagina-sessie als de goede Scribe-runs is de sterkste controle: dezelfde
+  telefoon, zin en audio-element, alleen de engine verschilt.
+- Het stillere volume in beurt 2 van native is bij Scribe weg (op het gehoor).
+- **Een dode microfoon na een native-fout is een toestand van de pagina, niet van de engine.**
+  Probeerde Jaron Scribe zonder te herladen nadat native gefaald had, dan faalde Scribe ook in
+  beurt 1. Na een herlading werkte Scribe weer. Dat past bij wat in de app al gezien was: de
+  microfoonbron is dood voor elke gebruiker van de pagina, ook voor een vastgehouden stream.
+- Native herstelde na een herlading niet altijd: pas na een nieuwe ngrok-URL (nieuwe origin) werkte
+  hij in beurt 1 weer, en faalde daarna in beurt 2 opnieuw. Waarom is niet uitgezocht; een
+  eerdere gedachte dat de dode toestand "per origin" blijft hangen is daarmee niet bevestigd,
+  want een gewone herlading herstelde Scribe wel.
+
+**Niet getest / open**
+- Geen foutpercentages en geen vergelijking met opgenomen audio via een speaker.
+- Eén spreker, één zin per taal, één iPhone. Chrome op Android, Firefox en een iOS onder 26 niet.
+- Foutpaden niet: een mislukt token, een verbroken socket, annuleren tijdens het ophalen van het
+  token, time-outs, en wat het token per beurt kost aan wachttijd. De spike heeft die niet.
+- Het volume is op het gehoor beoordeeld, niet gemeten.
+- Waarom Scribe de dode tweede beurt niet heeft, is niet uitgezocht. Het gebruikt hetzelfde
+  `getUserMedia` als de andere engines, plus een `AudioContext`.
+- Noors in andere realtime-modellen van ElevenLabs en OpenAI (gpt-4o-transcribe) niet geprobeerd.
+
+**Besluit:** nog niet gebouwd in de app; Jaron wil dat later oppakken. Als het gebeurt: het is
+dan de derde engine in `src/lib/stt/`, dus het moment voor de gedeelde levenscyclus-helper uit
+review-punt F2, en de app-route voor het token komt erbij.
+
+**Gotcha: `Cannot find module 'zod'` uit een route die zod niet nodig heeft.** De dev-server van
+de spike gaf een lege 500 op `/api/stt/token` en daarna op `/api/tts`, met die melding in de
+log. De gecompileerde chunk voor `/api/tts` bevatte de route van de *app* in de repo-root
+(`zod`, `@/lib/chat-request`) onder hetzelfde relatieve pad, niet de spike-route. Oorzaak
+niet vastgesteld (kapotte Turbopack-cache; Next waarschuwt ook voor twee lockfiles). Opgelost
+met de dev-server stoppen, `.next` in de spike verwijderen en opnieuw starten. Als het terugkomt:
+`turbopack.root` zetten in `next.config.ts`.
 
 ## Niet onderzocht / open voor een vervolg-spike
 

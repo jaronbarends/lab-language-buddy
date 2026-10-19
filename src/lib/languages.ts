@@ -11,7 +11,9 @@ type Language = {
   /** Deepgram's `language` query param for the nova-2 model. */
   deepgramLang: string;
   /**
-   * ElevenLabs Scribe's `language_code` (ISO 639-3). All six were tried against the live API.
+   * ElevenLabs Scribe's `language_code` (ISO 639-3). All six were tried against the live API
+   * on 2026-10-19, by ear and without a count of errors (decision log, docs/plan.md, 10-16
+   * row).
    */
   elevenLabsLang: string;
   /**

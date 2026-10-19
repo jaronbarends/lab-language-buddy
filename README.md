@@ -33,9 +33,9 @@ These were specified up front and are not open questions:
 |---|---|
 | Framework | Next.js 16 (App Router) + TypeScript |
 | Conversation AI | Google Gemini (`@google/genai`) |
-| Speech-to-text | **Live streaming**, not record-then-transcribe: the browser's native `SpeechRecognition` by default, Deepgram `nova-2` as the alternative, chosen by env var |
+| Speech-to-text | **Live streaming**, not record-then-transcribe: the browser's native `SpeechRecognition` by default, Deepgram `nova-2` and ElevenLabs Scribe v2 Realtime as the alternatives, chosen by env var |
 | Text-to-speech | Behind a provider abstraction, selected by env var. Azure AI Speech is the default; Google and ElevenLabs are also to be implemented, so the abstraction is actually exercised |
-| Live STT architecture (Deepgram) | Browser connects to Deepgram's WebSocket **directly**, with a short-lived token minted by one of our own REST routes — no WebSocket server on our side |
+| Live STT architecture (Deepgram, ElevenLabs) | Browser connects to the vendor's WebSocket **directly**, with a short-lived token minted by one of our own REST routes — no WebSocket server on our side |
 | Persistence | None. Session state is in memory |
 
 **Safari on iPhone is a hard requirement, not a nice-to-have.** An earlier spike turned up

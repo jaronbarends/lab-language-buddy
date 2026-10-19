@@ -36,13 +36,22 @@ const MessageSchema = z.object({
   error: z.string().optional(),
 });
 
-// Message types that mean the session is over or unusable. `commit_throttled` and
-// `warning` are left out: the app never commits by hand, and a warning is not fatal.
+// Message types that mean the session is over or unusable. Source:
+// https://elevenlabs.io/docs/eleven-api/guides/how-to/speech-to-text/realtime/event-reference.md
+// (checked 2026-10-19). Every type ending in "error" (auth_error, transcriber_error,
+// input_error, error) is fatal too; that is checked separately. `commit_throttled` and
+// `insufficient_audio_activity` are deliberately not fatal: the app never commits by hand,
+// and the docs do not say what the second one means or that it ends the session.
 const ERROR_MESSAGE_TYPES = new Set([
   "auth_error",
   "quota_exceeded",
   "rate_limited",
   "session_time_limit_exceeded",
+  "invalid_request",
+  "unaccepted_terms",
+  "queue_overflow",
+  "resource_exhausted",
+  "chunk_size_exceeded",
 ]);
 
 /**
@@ -66,13 +75,21 @@ export function startElevenLabsTranscription(
   let node: AudioWorkletNode | null = null;
   let mute: GainNode | null = null;
   let connectTimer: ReturnType<typeof setTimeout> | null = null;
+  // A flag rather than a check on `node`: `node` is only set after the awaits in
+  // `startStreamingAudio`, so a second `session_started` could slip in before it. Scribe's
+  // docs do not say whether `session_started` can repeat (it is sent "immediately after
+  // WebSocket connection is established"), so this guards against a case that has not been
+  // seen.
+  let streamingAudioHasStarted = false;
   // Aborted by stop(), so a cancelled or timed-out start does not leave a token request
   // running.
   const tokenRequest = new AbortController();
 
-  // Created here, inside the tap that started the turn and before anything is awaited:
-  // an AudioContext made later may stay suspended on iOS. A failure is reported from
-  // `connect`, not from here: `onFailed` must not come before this function has returned.
+  // Created here, synchronously from the effect that the Reply click triggers and before
+  // anything is awaited. Whether iOS keeps a context made from there running was tried on
+  // an iPhone by the owner; the code does not guarantee it, and the `resume()` later is the
+  // safeguard. A failure is reported from `connect`, not from here: `onFailed` must not
+  // come before this function has returned.
   let context: AudioContext | null = null;
   let contextError: unknown = null;
   try {
@@ -189,6 +206,7 @@ export function startElevenLabsTranscription(
     socket = newSocket;
 
     let finalized = "";
+    const loggedUnknownTypes = new Set<string>();
 
     newSocket.onmessage = (event: MessageEvent<unknown>) => {
       const message = parseMessage(event.data);
@@ -225,7 +243,17 @@ export function startElevenLabsTranscription(
           CONNECTION_FAILED_MESSAGE,
           new Error(`${message.message_type}: ${message.error ?? ""}`.trim()),
         );
+        return;
       }
+
+      // Anything that matched nothing above: logged once per type and connection, so a
+      // new or unlisted type is visible instead of silently ignored.
+      if (loggedUnknownTypes.has(message.message_type)) {
+        return;
+      }
+
+      loggedUnknownTypes.add(message.message_type);
+      console.warn(`ElevenLabs: unhandled message type "${message.message_type}"`);
     };
 
     // Either of these while we are still listening means the connection is gone: a
@@ -239,6 +267,11 @@ export function startElevenLabsTranscription(
   }
 
   async function startStreamingAudio(liveSocket: WebSocket) {
+    if (streamingAudioHasStarted) {
+      return;
+    }
+    streamingAudioHasStarted = true;
+
     if (!stream || !context) {
       return;
     }

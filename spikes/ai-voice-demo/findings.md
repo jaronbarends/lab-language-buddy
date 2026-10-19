@@ -362,9 +362,11 @@ Wat dit wel en niet zegt:
   `getUserMedia` als de andere engines, plus een `AudioContext`.
 - Noors in andere realtime-modellen van ElevenLabs en OpenAI (gpt-4o-transcribe) niet geprobeerd.
 
-**Besluit:** nog niet gebouwd in de app; Jaron wil dat later oppakken. Als het gebeurt: het is
-dan de derde engine in `src/lib/stt/`, dus het moment voor de gedeelde levenscyclus-helper uit
-review-punt F2, en de app-route voor het token komt erbij.
+**Besluit van de spike (2026-10-16):** Scribe was toen nog niet gebouwd in de app; Jaron wilde
+dat later oppakken. Inmiddels is Scribe als derde provider toegevoegd in `src/lib/stt/`, te
+kiezen met `NEXT_PUBLIC_STT_PROVIDER=elevenlabs`; `native` blijft de standaard. De tokenroute is
+`/api/stt/elevenlabs-token`. De gedeelde levenscyclus-helper uit review-punt F2 is nog niet
+gebouwd; `elevenlabs.ts` herhaalt de boekhouding van `deepgram.ts`.
 
 **Gotcha: `Cannot find module 'zod'` uit een route die zod niet nodig heeft.** De dev-server van
 de spike gaf een lege 500 op `/api/stt/token` en daarna op `/api/tts`, met die melding in de

@@ -53,8 +53,8 @@ export function useLiveTranscription(
       },
     });
 
-    // Leaving `listening` runs the effect cleanup, which ends the provider's
-    // engine.
+    // Leaving `listening` runs the effect cleanup, which ends
+    // the provider's engine.
     return stopTranscription;
   }, [turnStateIsListening, language, dispatch]);
 }

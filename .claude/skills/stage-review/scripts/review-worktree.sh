@@ -205,14 +205,39 @@ NODE_MODULES_LINKED=$linked
 EOF
 }
 
+# The cold branch holds nothing but the strip commit that setup made on top of the reviewed
+# ref, so it is deleted here. Anything else on it (a commit someone added) keeps it alive.
+delete_cold_branch() {
+  local name="$1" keep_branch="$2" subjects extra
+  if [ "$keep_branch" = "yes" ]; then
+    echo "BRANCH_KEPT=$BRANCH (asked with --keep-branch; delete with: git branch -D $BRANCH)"
+    return
+  fi
+  # Commits reachable from the cold branch and from no other branch or remote.
+  subjects="$(git log --format=%s "$BRANCH" --not --exclude="refs/heads/$BRANCH" --branches --remotes)"
+  extra="$(printf "%s
+" "$subjects" | grep -v -x -F "Strip context files for the cold review of $name" || true)"
+  if [ -n "$extra" ]; then
+    echo "BRANCH_KEPT=$BRANCH (it holds commits besides the strip commit; delete with: git branch -D $BRANCH)"
+    return
+  fi
+  git branch -D "$BRANCH" >/dev/null
+  echo "BRANCH_DELETED=$BRANCH"
+}
+
 teardown() {
-  local name="${1:-}" force="no"
+  local name="${1:-}" force="no" keep_branch="no" arg
   if [ -z "$name" ]; then
-    die "usage: review-worktree.sh teardown <name> [--force]"
+    die "usage: review-worktree.sh teardown <name> [--force] [--keep-branch]"
   fi
-  if [ "${2:-}" = "--force" ]; then
-    force="yes"
-  fi
+  shift
+  for arg in "$@"; do
+    case "$arg" in
+      --force) force="yes" ;;
+      --keep-branch) keep_branch="yes" ;;
+      *) die "unknown option $arg" ;;
+    esac
+  done
   load_conf
   set_paths "$name"
 
@@ -244,7 +269,7 @@ teardown() {
     echo "REPO_NODE_MODULES=missing" >&2
   fi
   echo "REMOVED=$(mixed_path "$WT")"
-  echo "BRANCH_KEPT=$BRANCH (delete with: git branch -D $BRANCH)"
+  delete_cold_branch "$name" "$keep_branch"
   echo "RESULTS_KEPT=$(mixed_path "$RES")"
 }
 

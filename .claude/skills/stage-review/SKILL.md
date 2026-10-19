@@ -108,5 +108,6 @@ Push only when asked.
 ### 9. Close
 Append a closing note to `review-results.md` (date, commits, what the owner still has to
 check, what was deliberately left). Run
-`bash "${CLAUDE_SKILL_DIR}/scripts/review-worktree.sh" teardown <name>`. The branch and the
-results folder are kept; tell the owner how to delete the branch.
+`bash "${CLAUDE_SKILL_DIR}/scripts/review-worktree.sh" teardown <name>`. It also deletes the cold
+branch, which holds only the strip commit; if the branch holds anything else it is kept and
+the output says so (`--keep-branch` keeps it on purpose). The results folder is always kept.

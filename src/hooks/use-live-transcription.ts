@@ -14,14 +14,14 @@ import { getConfiguredStartFunction } from "@/lib/stt";
 const startTranscription = getConfiguredStartFunction();
 
 /**
- * The speech recognition engine: while the turn state is `listening`, audio goes out and
- * `TRANSCRIPT_UPDATED` comes back, or `FAILED` if any step breaks.
+ * Runs the configured speech recognition provider: while the turn state is `listening`,
+ * audio goes out and `TRANSCRIPT_UPDATED` comes back, or `FAILED` if any step breaks.
  *
  * Leaving `listening` (Send, Edit, Cancel, a failure) ends all of it in the effect
- * cleanup, and the engine detaches its handlers first, so nothing can arrive after the
- * state was left (the reducer's contract for async sources). Whatever the engine has not
- * yet flushed at that moment is dropped; the transcript on screen, interim words
- * included, is what Send, Edit and Cancel act on.
+ * cleanup, and the provider's engine detaches its handlers first, so nothing can arrive
+ * after the state was left (the reducer's contract for async sources). Whatever the
+ * provider has not yet flushed at that moment is dropped; the transcript on screen,
+ * interim words included, is what Send, Edit and Cancel act on.
  */
 export function useLiveTranscription(
   state: SessionState,
@@ -53,7 +53,8 @@ export function useLiveTranscription(
       },
     });
 
-    // Leaving `listening` runs the effect cleanup, which ends the engine.
+    // Leaving `listening` runs the effect cleanup, which ends the provider's
+    // engine.
     return stopTranscription;
   }, [turnStateIsListening, language, dispatch]);
 }

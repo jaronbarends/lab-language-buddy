@@ -33,8 +33,9 @@ subprotocol rather than `token`, and a stale-closure bug in turn tracking).
 
 Specified up front, not open questions: Next.js + TypeScript; Google Gemini for the
 conversation; **live streaming** STT, never Google Cloud STT and never record-then-
-transcribe: the browser's native Web Speech API as the default and Deepgram `nova-2` as the
-alternative, chosen by `NEXT_PUBLIC_STT_PROVIDER` (decided and built 10-12, see the log;
+transcribe: the browser's native Web Speech API as the default, with Deepgram `nova-2` and
+ElevenLabs Scribe v2 Realtime (added 10-16) as the alternatives, chosen by `NEXT_PUBLIC_STT_PROVIDER`
+(decided and built 10-12, see the log;
 "never the Web Speech API" was the original wording); TTS behind
 a provider abstraction with Azure as default and Google and ElevenLabs also implemented;
 with Deepgram, the browser connecting to Deepgram **directly** with a short-lived token
@@ -103,11 +104,11 @@ re-picking the same language. The turns are discarded.
   no turns yet, *Reply* otherwise.
 - **`listening`** — live transcript rendering `{ finalized, interim }`. Carries
   `microphoneIsLive`, false on entry and set by `MICROPHONE_STARTED` once the recorder is
-  running and audio goes to the speech recognition engine; until then the bubble says
+  running and audio goes to the speech recognition provider; until then the bubble says
   "Preparing mic…" and has no dot, because anything said before that is not heard. The dot
   marks that the microphone is live. With Deepgram, if it is not live within
   `LIVE_CONNECT_TIMEOUT_MS` (10 s, counted from the moment the permission is granted) the
-  turn ends in `error`; the native engine has no such deadline.
+  turn ends in `error`; the native provider has no such deadline.
 - **`reviewing`** — recording stopped, text settled, not yet sent.
 - **`editing`** — the text in a `<textarea>`. Carries `draftBeforeEdit` so *Cancel edit*
   can restore it; that is why it is its own state rather than a flag on `reviewing`.
@@ -172,7 +173,7 @@ SetupScreen  (seeded from lastConfig ?? DEFAULT_SESSION_CONFIG)
           └─▶ dispatch({ type: 'START', config })   — frozen for the session
                  ├─▶ POST /api/chat  { language, level, input, previousInteractionId }
                  ├─▶ POST /api/tts   { text, language }
-                 └─▶ POST /api/stt/token  → { accessToken }
+                 └─▶ POST /api/stt/deepgram-token  → { accessToken }
                         client opens wss://api.deepgram.com/v1/listen
                           ?model=nova-2&language=<registry code>&interim_results=true
 ```
@@ -219,7 +220,7 @@ so a page reload starts from the defaults again.
     │   │                         the mock route via `NEXT_PUBLIC_USE_MOCK_CHAT`
     │   ├── use-evaluation-driver.ts  the evaluation of a user turn, with `EVALUATION_TIMEOUT_MS`;
     │   │                         the same mock switch
-    │   ├── use-live-transcription.ts  starts a speech recognition engine while `listening` and
+    │   ├── use-live-transcription.ts  starts a speech recognition provider while `listening` and
     │   │                         turns what it reports into reducer actions
     │   ├── use-audio-playback.ts  `/api/tts` + the shared `<audio>` element in `aiSpeaking`,
     │   │                         and `unlockAudio()` for the click handlers
@@ -229,13 +230,15 @@ so a page reload starts from the defaults again.
         ├── languages.ts          provider-neutral language registry
         ├── cefr.ts               A1–C2 + labels
         ├── word-timing.ts        estimateWordTimings / countSpokenWords
-        ├── stt/                  speech recognition engines, each `start(language, callbacks)`
+        ├── stt/                  speech recognition providers, each `start(language, callbacks)`
         │                         returning its stop function: `native.ts` (the browser's
         │                         `SpeechRecognition`, restarted when it ends by itself),
-        │                         `deepgram.ts` (mic, token and socket), `index.ts`
+        │                         `deepgram.ts` (mic, token and socket), `elevenlabs.ts` (mic, an
+        │                         AudioWorklet that makes 16 kHz PCM, token and socket; the worklet
+        │                         source is `pcm-worklet.ts`), `index.ts`
         │                         (`getConfiguredStartFunction()`, chosen by `NEXT_PUBLIC_STT_PROVIDER`),
         │                         `types.ts` (`SttCallbacks`, `StartFunction`), `messages.ts`
-        │                         (the failure texts both engines use)
+        │                         (the failure texts all providers use)
         ├── chat-schema.ts        zod: the chat request (a union on `kind`) and response, the
         │                         evaluation request and response (correction segments), the error body
         ├── post-json.ts          `postJson` and `postJsonWithDeadline`: the fetch both drivers use,
@@ -262,8 +265,11 @@ its own model constant, and Gemini's `{ correction }` schema). The call branches
 last AI turn (`previous_interaction_id`), is not stored (`store: false`) and its own id is
 never handed back. `use-evaluation-driver.ts` calls it for every user turn.
 
-`src/app/api/stt/token/route.ts` and `src/hooks/use-live-transcription.ts` exist since
-stage 3, step 1; the token mint (`mintLiveToken`) sits in the route file. The Deepgram code
+`src/app/api/stt/elevenlabs-token/route.ts` (10-16) does the same for ElevenLabs: it mints a
+single-use token, valid 15 minutes, that the browser puts in the socket URL.
+
+`src/app/api/stt/deepgram-token/route.ts` (called `src/app/api/stt/token/route.ts` until 10-19) and
+`src/hooks/use-live-transcription.ts` exist since stage 3, step 1; the token mint (`mintLiveToken`) sits in the route file. The Deepgram code
 that was in the hook moved to `src/lib/stt/deepgram.ts` when the native engine was added
 (see the 10-12 log rows).
 
@@ -863,8 +869,9 @@ Per stage, in this order:
    API key, so conversation isolation is an unverified assumption. There is no
    authentication or rate limit; the only bounds are 5000 characters of input and 200 of
    id. Since stage 3 the same holds for two more endpoints, each spending on a paid
-   account: `/api/stt/token` hands anyone a Deepgram token (short-lived, but a new one on
-   every call, and it opens a live-transcription socket on our account), and `/api/tts`
+   account: `/api/stt/deepgram-token` hands anyone a Deepgram token (short-lived, but a new one on
+   every call, and it opens a live-transcription socket on our account), `/api/stt/elevenlabs-token`
+   does the same for ElevenLabs (single-use, 15 minutes, since 10-16), and `/api/tts`
    synthesises up to 1500 characters per call with whichever provider `TTS_PROVIDER`
    names. Decide the protection before the first public deployment. Since stage 4 every
    turn also makes an evaluation call that sends the conversation so far, so that exposure
@@ -1227,6 +1234,14 @@ have been argued over first.
 | 10-14 | you | The 0.10 to 0.15 s that the early pause cuts off the end of every speech is accepted; the threshold stays 0.15 s | Jaron listened on an iPhone and on desktop Chrome: the audio has enough silence at the end that no spoken text was lost. Which TTS providers and sentences were checked was not recorded. |
 | 10-14 | you | Desktop Chrome with the Bluetooth headset no longer drops in volume with the two mitigations in place | Observed by Jaron on 10-14, by ear, not measured. It weakens the HFP hypothesis of open question 14 (a headset switching to its call profile should have dropped the volume with an open stream as well); the cause stays unknown. |
 | 10-14 | agent | A stage review proposed two code changes, and Jaron accepted them: a `.catch` on the microphone-stream chain in `native.ts`, and the early-end timer of `use-audio-playback.ts` moved into its own function `startEarlyEndTimer` with a named interval constant `EARLY_END_CHECK_MS` | A throw while starting the first session was an unhandled rejection that left the stream open; errors in the start must surface. The mitigation must be easy to find and remove. |
+| 10-16 | you | ElevenLabs Scribe v2 Realtime is a third speech recognition engine, chosen with `NEXT_PUBLIC_STT_PROVIDER=elevenlabs`; native stays the default | Jaron tried it in the spike (`/stt-compare`, `spikes/ai-voice-demo/findings.md`, "Scribe v2 Realtime") and judged the Norwegian transcription clearly better than Deepgram's and the native engine's, on desktop Chrome and on an iPhone (iOS 26.6.2). On the iPhone turn test it returned words in both turns in 11 of 11 runs, with the same volume in every turn, where the native engine failed in turn 2. That is a spike with one speaker and a fixed sentence, not a measurement of error rates, and the spike has no error paths. Streaming costs ~11% more than Deepgram nova-2 ($0.39 against $0.35 an hour). The value is `elevenlabs`, not `scribe`, after the vendor like `deepgram` and `TTS_PROVIDER=elevenlabs` (the agent's proposal, accepted). Whether the default should change was asked and answered no, for now: the 10-12 default rested on an impression, and this one rests on one spike, so changing it is a separate decision. |
+| 10-16 | agent | The ElevenLabs engine gets its audio from an `AudioWorklet` that averages the microphone down to 16 kHz 16-bit PCM and sends it as base64 JSON; the worklet source is a string in `pcm-worklet.ts`, loaded through a Blob URL | Scribe takes only PCM or u-law, not the webm/opus of `MediaRecorder`, so the Deepgram path cannot be reused. The Blob URL loads on Safari (tried on the iPhone in the spike); a file under `public/` would add a second path to keep in sync. The `AudioContext` is created in the tap, before anything is awaited, as the spike did. Everything else follows `deepgram.ts`: the connect timeout, the abortable token fetch, handlers detached before the socket closes. |
+| 10-16 | agent | A second token route, `/api/stt/elevenlabs-token`, returning `{ accessToken }` | One route per vendor keeps each key and each grant call in its own file, and the response shape matches the Deepgram route so the client code reads alike. It uses `ELEVENLABS_API_KEY`, the TTS key, so there is no new variable. It widens open question 9 by one endpoint. |
+| 10-16 | agent | A field `elevenLabsLang` in the language registry (ISO 639-3: `nld`, `fra`, `deu`, `ita`, `nor`, `spa`) | Scribe's `language_code`, next to `deepgramLang`. The codes come from ElevenLabs' language list; Jaron tried all six against the live API (10-19, by ear, without a count of errors). |
+| 10-16 | agent | The shared lifecycle helper for the engines (review point F2, "built when there is a third engine") is still not built; `elevenlabs.ts` repeats the `hasEnded`, `stop` and `fail` bookkeeping a third time | The helper would change `deepgram.ts` and `native.ts`, both checked on the iPhone, in the same change as a new engine. If something regressed, there would be no telling which change did it. The agent proposed doing it as its own step afterwards; Jaron accepted. |
+| 10-19 | you | The Deepgram token route moved from `/api/stt/token` to `/api/stt/deepgram-token`; in both token routes and both engines the like things have the same names: `TOKEN_URL` and `TokenResponseSchema` in the routes, `MessageSchema`, `parseMessage` and `startStreamingAudio` in `deepgram.ts` and `elevenlabs.ts`, and `ELEVENLABS_LISTEN_URL` and `ELEVENLABS_MODEL` after the vendor like `DEEPGRAM_LISTEN_URL` | Jaron's point: a name should describe what a thing does or whose it is, not a product, and the same function of two providers should read the same. `/api/stt/token` was the one asymmetric name, generic next to `elevenlabs-token`. `startRecording` in `deepgram.ts` became `startStreamingAudio` because there is no recording in the ElevenLabs path (an AudioWorklet feeds the socket) and the new name is true for both. Renames only, but they touch `deepgram.ts` and its route, which were checked on the iPhone before. The repeated `LIVE_CONNECT_TIMEOUT_MS`, `MIC_STOPPED_MESSAGE` and `AccessTokenSchema` in the two engines are left for the shared-lifecycle step (F2). |
+| 10-19 | you | In the STT code and in the plan's description of the current structure, "engine" is replaced by "provider": `PROVIDER_START_FUNCTIONS`, `ProviderName`, `DEFAULT_PROVIDER` and `isProviderName` in `src/lib/stt/index.ts`, and the comments in the files around it | The code used both words for the same thing: the env var is `NEXT_PUBLIC_STT_PROVIDER` (after `TTS_PROVIDER`), the code said "engine". Jaron chose one term over changing the env var, which would have meant editing `.env.local`, the docs and the error message. "Provider" is not exact for `native`, which is the browser and not a vendor; accepted. Where a sentence means the module that does the work and not the vendor, the code says "the provider's engine" (or "the native engine"); that is deliberate, not a missed replacement. The earlier log rows and open question 14 keep the word "engine": they record what was written then. The agent's own rows of 10-16 and 10-19 above also keep it. |
+| 10-19 | you | The ElevenLabs provider and the Deepgram provider, after the renames of the same day, were tried in the app on desktop Chrome and on an iPhone, and both worked there as before | Jaron's report, in his words "as before". Not recorded: the number of runs, the iOS version, whether the second turn after an AI reply was exercised, the volume of the AI's speech, and the languages other than the one used. So this settles that the new provider and the renamed Deepgram route run; it does not extend the spike's 11-of-11 turn-test result to the app, and open question 14 is unchanged. |
 
 ## Keeping the experiment honest
 

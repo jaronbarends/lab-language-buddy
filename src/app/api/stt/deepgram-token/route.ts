@@ -2,9 +2,9 @@ import { z } from "zod";
 
 import { errorResponse } from "@/lib/chat-request";
 
-const AUTH_GRANT_URL = "https://api.deepgram.com/v1/auth/grant";
+const TOKEN_URL = "https://api.deepgram.com/v1/auth/grant";
 
-const GrantResponseSchema = z.object({ access_token: z.string().min(1) });
+const TokenResponseSchema = z.object({ access_token: z.string().min(1) });
 
 export async function POST(request: Request) {
   try {
@@ -28,7 +28,7 @@ async function mintLiveToken(signal: AbortSignal): Promise<string> {
     throw new Error("Missing DEEPGRAM_API_KEY");
   }
 
-  const response = await fetch(AUTH_GRANT_URL, {
+  const response = await fetch(TOKEN_URL, {
     method: "POST",
     headers: {
       Authorization: `Token ${apiKey}`,
@@ -42,5 +42,5 @@ async function mintLiveToken(signal: AbortSignal): Promise<string> {
     throw new Error(`Deepgram grant failed (${response.status}): ${await response.text()}`);
   }
 
-  return GrantResponseSchema.parse(await response.json()).access_token;
+  return TokenResponseSchema.parse(await response.json()).access_token;
 }

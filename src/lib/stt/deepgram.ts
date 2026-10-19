@@ -36,7 +36,7 @@ const AccessTokenSchema = z.object({ accessToken: z.string().min(1) });
 
 // Only the part of a Deepgram `Results` message the app reads. Other message types
 // (Metadata, UtteranceEnd, ...) fail the parse and are ignored.
-const ResultsMessageSchema = z.object({
+const MessageSchema = z.object({
   type: z.literal("Results"),
   is_final: z.boolean(),
   channel: z.object({
@@ -167,10 +167,10 @@ export function startDeepgramTranscription(
 
     let finalized = "";
 
-    newSocket.onopen = () => startRecording(newSocket);
+    newSocket.onopen = () => startStreamingAudio(newSocket);
 
     newSocket.onmessage = (event: MessageEvent<unknown>) => {
-      const message = parseResultsMessage(event.data);
+      const message = parseMessage(event.data);
       if (!message) {
         return;
       }
@@ -199,7 +199,7 @@ export function startDeepgramTranscription(
       );
   }
 
-  function startRecording(liveSocket: WebSocket) {
+  function startStreamingAudio(liveSocket: WebSocket) {
     if (!stream) {
       return;
     }
@@ -260,7 +260,7 @@ export function startDeepgramTranscription(
 }
 
 async function fetchAccessToken(signal: AbortSignal): Promise<string> {
-  const response = await fetch("/api/stt/token", { method: "POST", signal });
+  const response = await fetch("/api/stt/deepgram-token", { method: "POST", signal });
   if (!response.ok) {
     throw new Error(`Token request failed with status ${response.status}`);
   }
@@ -272,13 +272,13 @@ function recordingFormatIsStreamable(mimeType: string): boolean {
   return mimeType.startsWith("audio/webm") || mimeType.startsWith("audio/ogg");
 }
 
-function parseResultsMessage(data: unknown) {
+function parseMessage(data: unknown) {
   if (typeof data !== "string") {
     return null;
   }
 
   try {
-    const parsed = ResultsMessageSchema.safeParse(JSON.parse(data));
+    const parsed = MessageSchema.safeParse(JSON.parse(data));
     return parsed.success ? parsed.data : null;
   } catch {
     return null;

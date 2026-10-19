@@ -1,24 +1,26 @@
 import { startDeepgramTranscription } from "./deepgram";
+import { startElevenLabsTranscription } from "./elevenlabs";
 import { startNativeTranscription } from "./native";
 import type { StartFunction } from "./types";
 
-const ENGINES = {
+const PROVIDER_START_FUNCTIONS = {
   native: startNativeTranscription,
   deepgram: startDeepgramTranscription,
+  elevenlabs: startElevenLabsTranscription,
 } satisfies Record<string, StartFunction>;
 
-type EngineName = keyof typeof ENGINES;
+type ProviderName = keyof typeof PROVIDER_START_FUNCTIONS;
 
-const DEFAULT_ENGINE: EngineName = "native";
+const DEFAULT_PROVIDER: ProviderName = "native";
 
-function isEngineName(value: string): value is EngineName {
-  return Object.hasOwn(ENGINES, value);
+function isProviderName(value: string): value is ProviderName {
+  return Object.hasOwn(PROVIDER_START_FUNCTIONS, value);
 }
 
 /**
  * Chosen by `NEXT_PUBLIC_STT_PROVIDER`; switching it is the only change needed. An unset
  * or empty value gives the default. An unknown one throws with the valid names rather
- * than falling back, so a typo can't quietly leave the app on a different engine than
+ * than falling back, so a typo can't quietly leave the app on a different provider than
  * the one that was asked for.
  *
  * Unlike `TTS_PROVIDER` this is read in the browser, so it has to be a `NEXT_PUBLIC_`
@@ -27,14 +29,15 @@ function isEngineName(value: string): value is EngineName {
 export function getConfiguredStartFunction(): StartFunction {
   const configuredProvider = process.env.NEXT_PUBLIC_STT_PROVIDER;
   if (!configuredProvider) {
-    return ENGINES[DEFAULT_ENGINE];
+    return PROVIDER_START_FUNCTIONS[DEFAULT_PROVIDER];
   }
 
-  if (!isEngineName(configuredProvider)) {
+  if (!isProviderName(configuredProvider)) {
+    const validNames = Object.keys(PROVIDER_START_FUNCTIONS).join(", ");
     throw new Error(
-      `Unknown NEXT_PUBLIC_STT_PROVIDER "${configuredProvider}" — expected one of: ${Object.keys(ENGINES).join(", ")}`,
+      `Unknown NEXT_PUBLIC_STT_PROVIDER "${configuredProvider}" — expected one of: ${validNames}`,
     );
   }
 
-  return ENGINES[configuredProvider];
+  return PROVIDER_START_FUNCTIONS[configuredProvider];
 }

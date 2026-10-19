@@ -82,13 +82,13 @@ in the repo root:
 
 ```
 GEMINI_API_KEY=
-NEXT_PUBLIC_STT_PROVIDER=native  # native | deepgram
+NEXT_PUBLIC_STT_PROVIDER=native  # native | deepgram | elevenlabs
 DEEPGRAM_API_KEY=          # only for deepgram; needs a Member-role key, a viewer key gets 403 on /auth/grant
 TTS_PROVIDER=azure         # azure | google | elevenlabs
 AZURE_SPEECH_API_KEY=
 AZURE_SPEECH_REGION=
 GOOGLE_CLOUD_API_KEY=
-ELEVENLABS_API_KEY=
+ELEVENLABS_API_KEY=         # for TTS_PROVIDER=elevenlabs and for NEXT_PUBLIC_STT_PROVIDER=elevenlabs
 ELEVENLABS_VOICE_ID=
 ```
 

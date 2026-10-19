@@ -11,6 +11,10 @@ type Language = {
   /** Deepgram's `language` query param for the nova-2 model. */
   deepgramLang: string;
   /**
+   * ElevenLabs Scribe's `language_code` (ISO 639-3). All six were tried against the live API.
+   */
+  elevenLabsLang: string;
+  /**
    * BCP 47 tag for the browser's `SpeechRecognition.lang`. With a region, unlike
    * `htmlLang`: Chrome and Safari want `nb-NO`, not `nb`.
    */
@@ -27,16 +31,17 @@ type Language = {
 // by `code` — see src/lib/tts/. ElevenLabs needs no such table at all (its model is
 // multilingual), which is precisely why voices don't belong here.
 //
-// When adding a language, check that every speech-to-text engine (Deepgram's model, the
-// browser's SpeechRecognition) and every TTS provider supports it; the TTS voices live in
-// src/lib/tts/. Example: Norwegian exists only in Deepgram's nova-2 family, not in nova-3
-// or flux.
+// When adding a language, check that every speech-to-text provider (Deepgram's model, the
+// browser's SpeechRecognition, ElevenLabs' Scribe) and every TTS provider supports it; the
+// TTS voices live in src/lib/tts/. Example: Norwegian exists only in Deepgram's nova-2
+// family, not in nova-3 or flux.
 export const LANGUAGES: Record<LanguageCode, Language> = {
   nl: {
     code: "nl",
     label: "Dutch",
     promptName: "Dutch",
     deepgramLang: "nl",
+    elevenLabsLang: "nld",
     webSpeechLang: "nl-NL",
     htmlLang: "nl",
   },
@@ -45,6 +50,7 @@ export const LANGUAGES: Record<LanguageCode, Language> = {
     label: "French",
     promptName: "French",
     deepgramLang: "fr",
+    elevenLabsLang: "fra",
     webSpeechLang: "fr-FR",
     htmlLang: "fr",
   },
@@ -53,6 +59,7 @@ export const LANGUAGES: Record<LanguageCode, Language> = {
     label: "German",
     promptName: "German",
     deepgramLang: "de",
+    elevenLabsLang: "deu",
     webSpeechLang: "de-DE",
     htmlLang: "de",
   },
@@ -61,6 +68,7 @@ export const LANGUAGES: Record<LanguageCode, Language> = {
     label: "Italian",
     promptName: "Italian",
     deepgramLang: "it",
+    elevenLabsLang: "ita",
     webSpeechLang: "it-IT",
     htmlLang: "it",
   },
@@ -69,6 +77,7 @@ export const LANGUAGES: Record<LanguageCode, Language> = {
     label: "Norwegian",
     promptName: "Norwegian (Bokmål)",
     deepgramLang: "no",
+    elevenLabsLang: "nor",
     webSpeechLang: "nb-NO",
     htmlLang: "nb",
   },
@@ -77,6 +86,7 @@ export const LANGUAGES: Record<LanguageCode, Language> = {
     label: "Spanish",
     promptName: "Spanish",
     deepgramLang: "es",
+    elevenLabsLang: "spa",
     webSpeechLang: "es-ES",
     htmlLang: "es",
   },

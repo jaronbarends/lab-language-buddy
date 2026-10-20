@@ -13,6 +13,27 @@ are deliberate, and the reasoning lives there rather than in the diff.
 update the plan and add a decision-log line in that same commit. Left as a separate chore
 it will not happen, and a stale plan is worse than none.
 
+# Grootboek (experiment, `arc/*` branches)
+
+An experiment next to the plan: numbered decision records (ADR, HDR, PDR), drift
+reports (DFT) and discovery journals (JNL) under `docs/grootboek/`, indexed by YAML
+registers in `docs/grootboek/registers/`. Read a register first, then only the
+document you need. `docs/grootboek/CLAUDE.md` loads by itself in that folder and has
+the document types and conventions. Start the `grootboek` skill
+(`.claude/skills/grootboek/`) for any grootboek document: its writing guides are a hard
+requirement.
+
+- **`docs/plan.md` stays the source for every decision made before 2026-10-20.**
+  Only decisions from the `arc/*` experiments are booked in the grootboek
+  (HDR-001 says why). It does not replace the plan rule above: a change that
+  contradicts the plan still updates the plan in the same commit.
+- **Language.** Grootboek documents are written in English, like everything else in
+  this repo. That overrides the skill's own "Documentatie: Nederlands" convention.
+- **Duty to communicate:** when a document in `docs/grootboek/` or this file changes,
+  say what changes and why, and ask for a check. No silent edits.
+- A decision without a register line does not exist for the next session. Update the
+  register in the same commit as the record.
+
 # What this is
 
 A personal learning project, also used daily by its builder, to practise spoken
@@ -56,5 +77,6 @@ machine-readable table of contents: read it first, then open only the document y
 | Design system, components | `src/components/CLAUDE.md` | when working in `src/components/` |
 | Providers, state machine | `src/lib/CLAUDE.md` | when working in `src/lib/` |
 | Plan and decisions | `docs/plan.md`, `docs/adr/` | on demand, via `docs/index.yml` |
-| Procedures | `.claude/skills/` | when invoked (`/stage-review`) |
+| Grootboek | `docs/grootboek/`, via `registers/` | on demand; `docs/grootboek/CLAUDE.md` loads when working there |
+| Procedures | `.claude/skills/` | when invoked (`/stage-review`, `/grootboek`) |
 | Agents | `.claude/agents/` (`builder`, `reviewer`) | when delegated to; parallel builders get disjoint file boundaries and share this context |

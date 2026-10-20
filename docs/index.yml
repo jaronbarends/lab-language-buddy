@@ -18,6 +18,15 @@ documents:
   - path: docs/adr/0001-decisions-live-in-the-plan.md
     what: Why decisions are kept in plan.md instead of one file each.
     read_when: deciding where to record a decision.
+  - path: docs/grootboek/CLAUDE.md
+    what: Rules for the grootboek folder (experiment on arc/* branches): document types, conventions, duty to communicate.
+    read_when: loads by itself when working in docs/grootboek.
+  - path: docs/grootboek/hdr/hdr-001-grootboek-stelsel.md
+    what: Why the grootboek exists next to plan.md, and which decisions it holds (from 2026-10-20 on).
+    read_when: deciding whether a decision goes in the grootboek or in plan.md.
+  - path: docs/grootboek/registers
+    what: YAML registers (adr, hdr, pdr, dft) — the cheap index of the grootboek; read before opening a record.
+    read_when: looking for a decision, its status or an open drift report in the grootboek.
   - path: docs/ios-stt-runs.md
     what: Record of speech-recognition test runs on an iPhone.
     read_when: touching src/lib/stt or the native-STT mitigations.
@@ -48,6 +57,9 @@ documents:
   - path: .claude/skills/stage-review/SKILL.md
     what: End-of-stage cold review procedure.
     read_when: closing a build stage.
+  - path: .claude/skills/grootboek/SKILL.md
+    what: ARC's grootboek skill (v1.5, copied from the ARC MCP resource arc://skill/grootboek/1.5): writing guides and examples per document type, registers, drift. Its text is Dutch.
+    read_when: writing or updating any document under docs/grootboek.
 
 # Headings in docs/plan.md, by topic. Search for the heading; line numbers would drift.
 plan_sections:

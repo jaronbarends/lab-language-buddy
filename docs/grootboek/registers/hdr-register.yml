@@ -1,0 +1,17 @@
+# HDR Register — overview of all Harness Decision Records
+# The index of the harness grootboek: how human and agent work together.
+#
+# Same fields and lifecycle as the ADR register; the subject is the way of working
+# (harness, hooks, collaboration), not the software.
+
+hdrs:
+  - id: "HDR-001"
+    titel: "Introduction of the grootboek system"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-20
+    implementatie-datum: 2026-10-20
+    beslissing: "Every architecture, harness, product and drift decision gets a numbered document and a register line; plan.md stays the source for decisions before 2026-10-20"
+    bestand: hdr-001-grootboek-stelsel.md

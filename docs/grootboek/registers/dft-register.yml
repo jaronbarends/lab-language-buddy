@@ -1,0 +1,7 @@
+# DFT Register — overview of all drift reports
+# A drift report is a reconciliation: does the documentation still match reality
+# (code, schema, environment)?
+#
+# Lifecycle: open → in_progress → resolved
+
+dfts: []

@@ -1,0 +1,14 @@
+# ADR Register — overview of all Architecture Decision Records
+# The cheap index of the grootboek: read the register first, then the document.
+#
+# Fields:
+#   versie        — semver-like (1.0, 1.1). Refinement = minor; change of course = new ADR.
+#   implementatie — percentage (0-100), a living gauge
+#   omgeving      — where does it run? dev | prod | geen
+#
+# Lifecycle: voorstel → discussion → accepted → in-progress → implemented
+# Immutability: an 'implemented' record no longer changes; a new record supersedes the
+# old one (the counter-entry).
+# Append-only: records never disappear — that is the bookkeeping.
+
+adrs: []

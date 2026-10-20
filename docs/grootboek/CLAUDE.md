@@ -1,0 +1,32 @@
+# Grootboek — domain context
+
+## Start the grootboek skill
+
+When creating or resuming any grootboek document: start the grootboek skill. Its writing
+guide is a hard requirement — without that context you write a form to fill in instead of
+a living document.
+
+## Document types
+
+| Type | Prefix | Question |
+|------|--------|----------|
+| ADR | adr-NNN | WHAT do we build? |
+| HDR | hdr-NNN | HOW do we work? |
+| PDR | pdr-NNN | WHY this way? |
+| DFT | dft-NNN | IS IT STILL TRUE? |
+| JNL | jnl-NNN | WHAT ARE WE DISCOVERING? |
+
+Registers live in `docs/grootboek/registers/` (YAML). Update the register with every new
+decision or status change.
+
+## Writing conventions
+
+- Documentation: English (the repo's language rule; the skill's own templates are Dutch)
+- Files: kebab-case
+- Every feature or bugfix gets a spec in `docs/grootboek/specs/`
+- Specs are throwaway: after delivery the code is the truth
+
+## Duty to communicate
+
+When a balance document or CLAUDE.md changes: say what changes and why, and ask the human
+to check it.

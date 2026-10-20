@@ -12,3 +12,49 @@ are deliberate, and the reasoning lives there rather than in the diff.
 **Keep it current in the same commit as the code.** If a change contradicts the plan,
 update the plan and add a decision-log line in that same commit. Left as a separate chore
 it will not happen, and a stale plan is worse than none.
+
+# What this is
+
+A personal learning project, also used daily by its builder, to practise spoken
+conversation in a foreign language against an AI persona. Details and ambition: the
+"Who it is for" section of `README.md`.
+
+# Working agreements
+
+These describe what the codebase and its history already do. If you find a counter-example,
+say so rather than following either blindly.
+
+- **Language.** Code, comments, UI copy, commit messages and docs are in English.
+- **Code style** in one line: TypeScript strict, function declarations, braced `if`s with
+  early returns, booleans that read as a sentence (`microphoneIsLive`), lowercase-dashed
+  file names. The full list loads when you touch `src/` (`.claude/rules/code-style.md`).
+- **Commits.** One short imperative sentence that says what changed ("Handle all documented
+  Scribe error types"), no prefixes except the rare `chore:`. No `Co-Authored-By` trailer.
+  The plan goes in the same commit as the code that invalidates it (see above).
+- **Branches.** One branch per piece of work, merged into `main` through a pull request:
+  `stage/N-name` for build stages, a descriptive name for fixes and features, `spike-*` for
+  experiments. Review fixes get their own commits on the branch under review. Code goes
+  through a branch and a PR; only small notes in the plan or tooling tweaks have been
+  committed straight to `main`, and only on Jaron's go-ahead.
+- **Checks before you call something done.** `npm run lint`, then
+  `npx next typegen && npx tsc --noEmit`, `npm run docs:check` (drift between docs and
+  repo), then `npm run build`. Anything touching audio,
+  recording or layout also needs a test on a real iPhone: Safari is a hard requirement.
+- **Folders.** `src/app` routes and global CSS, `src/components` screens and UI,
+  `src/hooks` session context and effect drivers, `src/lib` state machine, provider
+  registries and pure helpers. `spikes/` is a separate app, excluded from lint and typecheck.
+
+# Where the rest of the context lives
+
+Context is layered so that a session loads what it needs. `docs/index.yml` is the
+machine-readable table of contents: read it first, then open only the document you need.
+
+| Layer | Where | Loads |
+|---|---|---|
+| Code style | `.claude/rules/code-style.md` | when a file in `src/` is touched |
+| Safari / iPhone | `.claude/rules/safari-ios.md` | when components, hooks or STT code are touched |
+| Design system, components | `src/components/CLAUDE.md` | when working in `src/components/` |
+| Providers, state machine | `src/lib/CLAUDE.md` | when working in `src/lib/` |
+| Plan and decisions | `docs/plan.md`, `docs/adr/` | on demand, via `docs/index.yml` |
+| Procedures | `.claude/skills/` | when invoked (`/stage-review`) |
+| Agents | `.claude/agents/` (`builder`, `reviewer`) | when delegated to; parallel builders get disjoint file boundaries and share this context |

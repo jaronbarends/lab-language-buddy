@@ -1,0 +1,103 @@
+# Register of the documentation. Read this first, then open only the document you need.
+# `npm run docs:check` verifies that every path below exists and that no document under
+# docs/ is missing from the list. Keep it current in the same commit as the change.
+
+documents:
+  - path: README.md
+    what: Front door. What the app is, who it is for, stack, how to run it, build stages.
+    read_when: first contact with the repo; changing env vars or the stack table.
+  - path: CLAUDE.md
+    what: Working agreements (language, commits, branches, checks) and the map of the context layers.
+    read_when: always loaded.
+  - path: AGENTS.md
+    what: Warning that this Next.js version differs from training data; read node_modules/next/dist/docs first.
+    read_when: always loaded; before writing any Next.js code.
+  - path: docs/plan.md
+    what: Living plan and decision record. See `plan_sections` for where to look.
+    read_when: before a structural change; when a choice in the code looks arbitrary.
+  - path: docs/adr/0001-decisions-live-in-the-plan.md
+    what: Why decisions are kept in plan.md instead of one file each.
+    read_when: deciding where to record a decision.
+  - path: docs/ios-stt-runs.md
+    what: Record of speech-recognition test runs on an iPhone.
+    read_when: touching src/lib/stt or the native-STT mitigations.
+  - path: spikes/ai-voice-demo/findings.md
+    what: The four non-obvious bugs already paid for, and the provider comparison.
+    read_when: before touching voice code.
+  - path: src/components/CLAUDE.md
+    what: Design system and component rules.
+    read_when: loads by itself when working in src/components.
+  - path: src/lib/CLAUDE.md
+    what: State machine and provider rules.
+    read_when: loads by itself when working in src/lib.
+  - path: .claude/rules/code-style.md
+    what: Code style.
+    read_when: loads by itself when a file in src is touched.
+  - path: .claude/rules/safari-ios.md
+    what: The Safari / iPhone rules in short form.
+    read_when: loads by itself for components, hooks, STT code and CSS.
+  - path: .claude/agents/builder.md
+    what: Agent that implements one bounded task inside a file boundary; reports in seven fields.
+    read_when: delegating a build task, alone or in parallel with other builders.
+  - path: .claude/agents/reviewer.md
+    what: Read-only agent that checks a builder diff against its assignment.
+    read_when: after each task that matters, before the work reaches Jaron.
+  - path: scripts/check-docs.mjs
+    what: Drift check between docs and repo (env vars, paths, register, plan staleness).
+    read_when: `npm run docs:check` fails or a new kind of drift needs checking.
+  - path: .claude/skills/stage-review/SKILL.md
+    what: End-of-stage cold review procedure.
+    read_when: closing a build stage.
+
+# Headings in docs/plan.md, by topic. Search for the heading; line numbers would drift.
+plan_sections:
+  - heading: "## Fixed constraints"
+    topic: what was specified up front and is not an open question
+  - heading: "## Decisions"
+    topic: the standing choices, with the reason (framework, hosting, persistence, styling, state, providers, errors)
+  - heading: "## State model"
+    topic: session and turn states
+  - heading: "## Config flow"
+    topic: how session config reaches the screens
+  - heading: "## File layout"
+    topic: the folder tree
+  - heading: "## Design system"
+    topic: tokens, reset and element CSS carried over from the existing app, and the deltas
+  - heading: "## Safari/iPhone requirements"
+    topic: the numbered requirements and the recording-format resolution
+  - heading: "## Next.js 16 specifics"
+    topic: what differs from Next 14/15
+  - heading: "## Build stages"
+    topic: stages 1 to 4 and their status
+  - heading: "## Open questions"
+    topic: what is not decided
+  - heading: "## Decision log"
+    topic: dated changes after approval, with the Source column (agent, you, ported)
+  - heading: "## Keeping the experiment honest"
+    topic: what the agent may and may not read from the reference repo
+
+# Decisions that have a row in plan.md "Decisions". Name -> where the reason is.
+decisions:
+  - name: Framework (Next.js 16, TypeScript strict)
+    where: "docs/plan.md, ## Decisions"
+  - name: Hosting (Vercel)
+    where: "docs/plan.md, ## Decisions"
+  - name: Persistence (none)
+    where: "docs/plan.md, ## Decisions"
+  - name: Styling (CSS Modules over the ported design system)
+    where: "docs/plan.md, ## Decisions"
+  - name: State (one useReducer session machine)
+    where: "docs/plan.md, ## Decisions"
+  - name: STT and TTS providers behind registries
+    where: "docs/plan.md, ## Decisions; src/lib/CLAUDE.md"
+  - name: Decisions are kept in plan.md
+    where: "docs/adr/0001-decisions-live-in-the-plan.md"
+
+# What must change together. The check script verifies the first two mechanically.
+travels_together:
+  - when: a process.env variable is added or removed in src
+    also: .env.example and the env block in README.md
+  - when: a file is added under docs/ or a path in this register moves
+    also: this file
+  - when: code changes a choice that plan.md records
+    also: docs/plan.md and a Decision log row, in the same commit

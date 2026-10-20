@@ -25,6 +25,18 @@ What's being tested is the *workflow*: how well a fairly involved app can be sco
 staged and reviewed when someone else writes the code. Judge the repo on that as much as
 on the app.
 
+## Who it is for and what it aims at
+
+- **Type:** personal tool and learning project, one user, no accounts, no persistence.
+- **What:** a spoken-conversation practice app: a live conversation with an AI persona
+  in the language and CEFR level you pick, and a short correction of every turn you speak.
+- **For whom:** for its builder. It is a personal learning project and a tool to use daily
+  for practising a language. It is deployed to Vercel for that use, not for a public.
+- **Ambition:** a working app reliable enough for daily use, on an iPhone first, and an
+  experiment in having an AI agent write the code. Opening it up to other users is not
+  planned; if that ever changes, that is the moment to decide whether this codebase is the
+  base or gets refactored, and to raise the bar (environment separation, CI) accordingly.
+
 ## Stack and fixed constraints
 
 These were specified up front and are not open questions:
@@ -43,7 +55,8 @@ several Safari-only failures that never show up in desktop Chrome. Anything touc
 recording or layout needs testing on a real device, not just reasoning from the spec.
 
 Everything else — styling approach, state management, component structure — was the
-agent's call.
+agent's call. Hosting is Vercel. The reasons behind these choices are in the Decisions
+table of [`docs/plan.md`](docs/plan.md).
 
 ## Repository layout
 
@@ -77,8 +90,9 @@ free one and prints it; use that port below too.
 
 ### Environment variables
 
-Not needed yet — stage 1 makes no network calls. From stage 2 onward, create `.env.local`
-in the repo root:
+Copy `.env.example` to `.env.local` in the repo root and fill it in; `.env.example` has the
+full explanation of every variable. The gist (without the mocks below, the chat needs
+`GEMINI_API_KEY`):
 
 ```
 GEMINI_API_KEY=
@@ -89,7 +103,8 @@ AZURE_SPEECH_API_KEY=
 AZURE_SPEECH_REGION=
 GOOGLE_CLOUD_API_KEY=
 ELEVENLABS_API_KEY=         # for TTS_PROVIDER=elevenlabs and for NEXT_PUBLIC_STT_PROVIDER=elevenlabs
-ELEVENLABS_VOICE_ID=
+NEXT_PUBLIC_USE_MOCK_CHAT=false  # true: canned replies and corrections, no Gemini call (next dev only)
+NEXT_PUBLIC_USE_MOCK_TTS=false   # true: the AI turn is "spoken" by a timer, no TTS call
 ```
 
 ### Testing on an iPhone

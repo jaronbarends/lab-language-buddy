@@ -4,4 +4,14 @@
 #
 # Lifecycle: open → in_progress → resolved
 
-dfts: []
+dfts:
+  - id: "DFT-001"
+    titel: "First reconciliation of the software balance — no drift found"
+    status: resolved
+    datum: 2026-10-21
+    aanleiding: "Deliberate trial of the drift mechanism (HDR-002, REQ-GG-05); no code change had occurred since the balance was written"
+    bevindingen: 0
+    hoog: 0
+    midden: 0
+    laag: 0
+    bestand: dft-001-eerste-reconciliatie-software-balans.md

@@ -158,5 +158,14 @@ it may need the full history in a CI checkout. Not built; no workflow file exist
   crystallize those five decisions into their own records, per the grootboek's own rule that
   a journal issue lands in a target record rather than staying a journal entry. K6 stays
   unbooked: it is answered but not yet decided whether to act on it.
+- **2026-10-21 — balance extended with the frontend layer.** REQ-GG-01's scope gap closed;
+  most of what the explorer found was already decided in `plan.md` (09-29, 09-30, 10-02,
+  10-03), cited from the balance rather than duplicated.
+- **2026-10-21 — DFT-001: first reconciliation, no drift found.** REQ-GG-05 exercised once.
+  No code change has happened since the balance was written, so this proved the process
+  (a reconciliation can be requested and registered) rather than its ability to catch real
+  drift. The loop (journal → decision → document → code → drift) still has not closed
+  end-to-end; that needs a real code change to follow a decision, which has not happened
+  yet (REQ-GG-09).
 
 This journal closes when K6, K7 and K8 are decided or parked.

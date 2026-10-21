@@ -45,6 +45,9 @@ documents:
   - path: docs/grootboek/journaal/jnl-001-instap-software-balans.md
     what: Onboarding journal for the software balance trial; eight issues (balance vs plan, environments, route auth and its follow-up, CI and its follow-up, model choice, Google key).
     read_when: accepting or discarding the balance; answering one of its open questions.
+  - path: docs/grootboek/dft/dft-001-eerste-reconciliatie-software-balans.md
+    what: First drift reconciliation of the software balance; no drift found, because no code changed since the balance was written. Tested the process, not detection.
+    read_when: running or interpreting the next reconciliation of the balance.
   - path: docs/grootboek/registers
     what: YAML registers (adr, hdr, pdr, dft, jnl) — the cheap index of the grootboek; read before opening a record.
     read_when: looking for a decision, its status or an open drift report in the grootboek.

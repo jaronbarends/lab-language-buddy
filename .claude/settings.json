@@ -9,6 +9,24 @@
             "command": "node .claude/hooks/guard-no-subagent-commit.cjs"
           }
         ]
+      },
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/guard-kenniswerker.cjs"
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/guard-kenniswerker.cjs"
+          }
+        ]
       }
     ]
   }

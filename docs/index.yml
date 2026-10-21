@@ -21,6 +21,9 @@ documents:
   - path: docs/code-architectuur.md
     what: Code-organization doctrine (REQ-AH-10, agentic harnas onderdeel D) — qualitative rules only, no thresholds or register.
     read_when: splitting or growing a file; before adding a new structural pattern.
+  - path: docs/code-architectuur-register.json
+    what: Machine-readable contract (REQ-AH-11) — warn/hard-limit thresholds and the per-file ceiling/excluded decisions. Line counts are a snapshot; REQ-AH-12 makes them live-measured.
+    read_when: a file crosses the warn threshold; recording or revisiting a ceiling decision.
   - path: docs/grootboek/CLAUDE.md
     what: Rules for the grootboek folder (experiment on arc/* branches): document types, conventions, duty to communicate.
     read_when: loads by itself when working in docs/grootboek.

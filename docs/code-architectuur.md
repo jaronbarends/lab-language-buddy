@@ -3,7 +3,7 @@
 This document describes how this codebase should be organized so that an AI agent can work
 with it effectively. It is the doctrine side of the agentic harness (ARC's
 "het-agentic-harnas", onderdeel D): principles only, no thresholds and no per-file register.
-Those live in `code-architectuur-register.json` and are read, not re-decided, by whoever
+Those live in `docs/code-architectuur-register.json` and are read, not re-decided, by whoever
 builds.
 
 `docs/plan.md` stays the single source for *what* this app is and *why* it is shaped the way
@@ -111,7 +111,7 @@ barrel files in `src/` — keep it that way as the codebase grows.
 - A new structural pattern worth generalizing → add a numbered rule under section 2, with the
   lived example that justified it.
 - A file growing past the register's threshold → the decision (exclude it, give it a ceiling,
-  or split it) goes in `code-architectuur-register.json`, not here. This document stays
+  or split it) goes in `docs/code-architectuur-register.json`, not here. This document stays
   principles; the register stays decisions.
 - If a rule stops matching how the codebase actually works, say so and change the rule — this
   document describes what is true, not what was once intended.

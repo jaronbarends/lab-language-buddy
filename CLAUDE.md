@@ -102,7 +102,7 @@ machine-readable table of contents: read it first, then open only the document y
 | Design system, components | `src/components/CLAUDE.md` | when working in `src/components/` |
 | Providers, state machine | `src/lib/CLAUDE.md` | when working in `src/lib/` |
 | Plan and decisions | `docs/plan.md`, `docs/adr/` | on demand, via `docs/index.yml` |
-| Code architecture | `docs/code-architectuur.md` | on demand; before splitting or growing a file |
+| Code architecture | `docs/code-architectuur.md` + `docs/code-architectuur-register.json` | on demand; before splitting or growing a file |
 | Grootboek | `docs/grootboek/`, via `registers/` | on demand; `docs/grootboek/CLAUDE.md` loads when working there |
 | Procedures | `.claude/skills/` | when invoked (`/stage-review`, `/grootboek`) |
 | Agents | `.claude/agents/` (`builder`, `reviewer`) | when delegated to; parallel builders get disjoint file boundaries and share this context |

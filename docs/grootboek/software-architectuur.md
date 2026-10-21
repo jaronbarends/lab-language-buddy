@@ -6,7 +6,7 @@ versie: "1.0"
 status: v1
 datum: 2026-10-20
 bron: JNL-001
-notitie: Derived from the code and the git history (scope `src/lib`, `src/hooks`, `src/app/api`, the delivery chain), reviewed by a fresh-context critique pass, and accepted by the human on 2026-10-20. Accepted as a whole, not section by section. Open questions live in JNL-001, not here.
+notitie: Derived from the code and the git history (scope `src/lib`, `src/hooks`, `src/app/api`, the delivery chain), reviewed by a fresh-context critique pass, and accepted by the human on 2026-10-20. Accepted as a whole, not section by section. Open questions live in JNL-001, not here. Kept as a trial per HDR-002.
 ---
 
 # Software architecture — language-buddy
@@ -129,14 +129,14 @@ Word highlighting uses an estimate from text length, not provider timing.
 | Provider choice | `TTS_PROVIDER` (server), `NEXT_PUBLIC_STT_PROVIDER` (baked in at build) | same variables |
 
 `main` is the production branch; every other branch deploys as a Vercel preview with
-Vercel's default settings, so nothing but a merge into `main` reaches production (JNL-001,
-K2; this is configured in the Vercel dashboard, not in the repo). The `NEXT_PUBLIC_*`
+Vercel's default settings, so nothing but a merge into `main` reaches production (ADR-001;
+this is configured in the Vercel dashboard, not in the repo). The `NEXT_PUBLIC_*`
 variables are enabled for Preview too; the API keys are enabled for Production only, so a
 preview builds but its vendor-calling routes fail at runtime and it cannot spend a key.
 Vercel Authentication is active with Standard Protection: previews ask for a Vercel login;
-the production domain is public.
+the production domain is public (ADR-002 covers what that leaves open).
 There is no CI workflow in the repo; the checks are the ones listed in `CLAUDE.md`. Running
-them on pull requests to `main` is wanted but not built (JNL-001, K4 and K8).
+them on pull requests to `main` is wanted but not built (HDR-003; JNL-001, K8).
 
 ## 6. Service authentication
 
@@ -174,7 +174,7 @@ agree on a secret: none found.
 | Vercel hosting | plan.md → Decisions: Hosting | a long-lived server process |
 | CSS Modules | plan.md → Decisions: Styling | Tailwind |
 | `useReducer` + dispatch context | plan.md → Decisions: State | a state-management library |
-| Gemini for chat and correction | The provider was specified up front (plan.md → Fixed constraints); the model (`flash-lite`) was chosen on price, without an extensive comparison (JNL-001, K5) | other models were not compared |
+| Gemini for chat and correction | The provider was specified up front (plan.md → Fixed constraints); the model (`flash-lite`) was chosen on price, without an extensive comparison (ADR-003) | other models were not compared |
 | Azure TTS as default | plan.md → Decisions: TTS providers | — |
 | Native Web Speech as default STT | plan.md → Decision log (10-12, 10-14) | Google Cloud STT and Azure STT, ruled out in the spike (plan.md → Decisions: STT providers) |
 | No persistence | plan.md → Decisions: Persistence | storing conversations |
@@ -189,7 +189,7 @@ agree on a secret: none found.
 | Values that enter a system prompt are constrained | `language` and `level` are zod enums in the request schema |
 | Input size is bounded | the chat input and the text sent to TTS have length limits in their zod schemas |
 | An abandoned request stops the vendor call | the route's request signal is passed on to the Gemini and TTS calls |
-| Callers of our own routes | no principle found; no authentication or rate limit in the repo. The risk is accepted for now and a fix is wanted soon (JNL-001, K3 and K7) |
+| Callers of our own routes | no principle found; no authentication or rate limit in the repo. The risk is accepted for now and a fix is wanted soon (ADR-002, provisional; JNL-001, K7) |
 
 ## 10. How this document changes
 

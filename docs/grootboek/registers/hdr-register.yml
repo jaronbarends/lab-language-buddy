@@ -15,3 +15,21 @@ hdrs:
     implementatie-datum: 2026-10-20
     beslissing: "Every architecture, harness, product and drift decision gets a numbered document and a register line; plan.md stays the source for decisions before 2026-10-20"
     bestand: hdr-001-grootboek-stelsel.md
+  - id: "HDR-002"
+    titel: "Balance next to plan.md, as a drift-detection trial"
+    status: in-progress
+    versie: "1.0"
+    implementatie: 50
+    omgeving: geen
+    datum: 2026-10-20
+    beslissing: "Keep software-architectuur.md to try the grootboek's drift mechanism; plan.md stays the source until the trial is settled"
+    bestand: hdr-002-balance-next-to-plan-drift-trial.md
+  - id: "HDR-003"
+    titel: "CI checks wanted on pull requests to main"
+    status: accepted
+    versie: "1.0"
+    implementatie: 0
+    omgeving: geen
+    datum: 2026-10-20
+    beslissing: "Lint, typecheck, build and docs:check should run on every PR to main; not yet built (K8)"
+    bestand: hdr-003-ci-checks-wanted-on-pull-requests.md

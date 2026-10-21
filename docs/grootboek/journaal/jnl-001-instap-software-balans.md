@@ -5,7 +5,8 @@ datum: 2026-10-20
 kernvraag: What is the technical architecture of language-buddy, and which parts of it are decisions nobody has written down?
 doel-records:
   - "software-architectuur.md (v1.0, accepted 2026-10-20)"
-  - "ADR candidates, listed under K1 (not booked)"
+  - "ADR-001, ADR-002, ADR-003 (K2, K3, K5)"
+  - "HDR-002, HDR-003 (K1, K4)"
 ---
 
 # JNL-001 — Onboarding journal: the software balance
@@ -55,7 +56,7 @@ for now; the human intends to move the plan into the grootboek eventually, but w
 the grootboek first. Until then the balance is a derived reading path next to the plan, and
 the drift risk between the two is accepted for the duration of the experiment. Not yet
 booked as a record; HDR-001 already says the plan stays the source until the experiment is
-settled.
+settled. **Booked as HDR-002.**
 
 ### K2 — Environments: which branch deploys where?
 
@@ -81,7 +82,7 @@ public variables (`NEXT_PUBLIC_*`) are enabled for Preview as well; all secret v
 - A preview therefore cannot spend any vendor key. That also bounds K3 to production.
 
 Nothing to change; it is a consistent setup for the stated wish (no `arc/*` in production,
-no objection to previews).
+no objection to previews). **Booked as ADR-001.**
 
 ### K3 — The routes have no caller authentication or rate limit
 
@@ -100,7 +101,7 @@ reachable by anyone who knows the URL, and K3 stands for production. (The source
 on some older production URLs; check the dashboard if it matters.) Vendor spend limits exist at some vendors but the
 human no longer knows exactly which; getting that overview is the human's own task, outside
 the repo, to be picked up soon. It is the only cap on the damage that does not depend on
-code.
+code. **Booked as ADR-002** (provisional; K7 will supersede it).
 
 ### K4 — No CI in the repo
 
@@ -109,7 +110,7 @@ test suite" decision. **Question:** deliberate and settled, or something to revi
 
 **Decision (2026-10-20, the human):** the absence of CI was not a deliberate choice. The
 checks (lint, typecheck, build, `docs:check`) should run on a pull request to `main`. How
-that is set up is K8.
+that is set up is K8. **Booked as HDR-003.**
 
 ### K5 — Why `gemini-3.1-flash-lite`?
 
@@ -119,7 +120,7 @@ is not recorded in the code or the plan.
 
 **Decision (2026-10-20, the human):** a deliberate choice, made on price. No extensive
 comparison with other models was done; the plan's measurements (10-06 to 10-10) describe
-how this model performs, they did not compare it with others.
+how this model performs, they did not compare it with others. **Booked as ADR-003.**
 
 ### K6 — Google TTS key as a URL query parameter
 
@@ -153,5 +154,9 @@ it may need the full history in a CI checkout. Not built; no workflow file exist
 
 - **2026-10-20 — balance accepted.** The human accepted `software-architectuur.md` as v1.0
   (leading document), as a whole. Next: the drift trial (a DFT report), in a later session.
+- **2026-10-21 — K1, K2, K3, K4, K5 booked.** HDR-002, ADR-001, ADR-002, HDR-003 and ADR-003
+  crystallize those five decisions into their own records, per the grootboek's own rule that
+  a journal issue lands in a target record rather than staying a journal entry. K6 stays
+  unbooked: it is answered but not yet decided whether to act on it.
 
 This journal closes when K6, K7 and K8 are decided or parked.

@@ -71,6 +71,10 @@ say so rather than following either blindly.
   the lead thread to make one change itself: it creates
   `.claude/.hoofdthread-override.json` (`{"activatedAt": "<ISO timestamp>", "durationMinutes": 15}`,
   15 minutes unless Jaron names a longer duration), which the hook honors only until it expires.
+- **Fork mode.** On by default, no setup needed. Use it for conversation-fed synthesis work — a
+  spec, a draft, a write-up where the dialogue itself is the source. Living documents and
+  registers (`docs/plan.md`, the grootboek registers) stay lead-thread work; they are not fork
+  material.
 - **Checks before you call something done.** `npm run lint`, then
   `npx next typegen && npx tsc --noEmit`, `npm run docs:check` (drift between docs and
   repo), then `npm run build`. Anything touching audio,

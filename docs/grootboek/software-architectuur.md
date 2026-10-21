@@ -6,21 +6,26 @@ versie: "1.0"
 status: v1
 datum: 2026-10-20
 bron: JNL-001
-notitie: Derived from the code and the git history (scope `src/lib`, `src/hooks`, `src/app/api`, the delivery chain), reviewed by a fresh-context critique pass, and accepted by the human on 2026-10-20. Accepted as a whole, not section by section. Open questions live in JNL-001, not here. Kept as a trial per HDR-002.
+notitie: Derived from the code and the git history (scope `src/lib`, `src/hooks`, `src/app/api`, the delivery chain), reviewed by a fresh-context critique pass, and accepted by the human on 2026-10-20. Accepted as a whole, not section by section. Extended on 2026-10-21 with the frontend component layer (`src/components`, the app shell), closing REQ-GG-01's scope gap; most of what the explorer found was already decided in plan.md, cited where so. Open questions live in JNL-001, not here. Kept as a trial per HDR-002.
 ---
 
 # Software architecture — language-buddy
 
 **Lens.** The technical view: what the components are, how they connect, how credentials
-move, what differs between environments. What the user experiences (screens, copy, design
-system) and how human and agent work together are other perspectives and are not covered.
+move, what differs between environments. The frontend is covered as structure — which
+components exist, how state and actions flow through them — not as product or visual
+design: copy, layout and the design system are a different perspective and are not covered
+here (see `src/components/CLAUDE.md` and `docs/plan.md` → Design system for those).
 
 **Reading guide.** Wanting the whole chain: sections 1 and 4. Working on a provider or a
-route: sections 3 and 6. Touching deployment or env vars: sections 5 and 6.
+route: sections 3 and 6. Working on a screen or a component: sections 2 and 3. Touching
+deployment or env vars: sections 5 and 6.
 
-**Source of decisions.** There are no ADRs yet. "Decision" references point to rows in
-`docs/plan.md` (the "Decisions" table or the "Decision log"). A choice marked *candidate*
-shows in the code but has no decision record anywhere (see HDR-001 for why).
+**Source of decisions.** Most "Decision" references point to rows in `docs/plan.md` (the
+"Decisions" table or the "Decision log"), which stays the source for anything decided before
+2026-10-20 (HDR-001). A reference to an ADR or HDR number points to a record under
+`docs/grootboek/`. A choice marked *candidate* shows in the code but has no decision record
+anywhere.
 
 ## 1. The system and the choices that make it possible
 
@@ -49,8 +54,9 @@ per-turn correction.
 ```mermaid
 flowchart LR
   subgraph Browser
-    UI["Screens + hooks"]
-    RED["Session reducer"]
+    SCREENS["Screens (SetupScreen, ConversationScreen)"]
+    CTRL["Leaf controls (Composing/Idle/Error, dev StateStepper)"]
+    RED["LanguageBuddy: reducer + effect hooks"]
     NATIVE["Native speech recognition"]
   end
   subgraph Server["Next.js routes (stateless)"]
@@ -60,15 +66,22 @@ flowchart LR
     TOK["/api/stt/*-token"]
     MOCK["/api/mock/* (development only)"]
   end
-  UI <--> RED
-  UI --> NATIVE
-  UI --> CHAT --> GEM["Gemini"]
-  UI --> EVAL --> GEM
-  UI --> TTS --> TV["Azure / Google / ElevenLabs TTS"]
-  UI --> TOK --> SV["Deepgram / ElevenLabs token services"]
-  UI -. "WebSocket with token" .-> STT["Deepgram / ElevenLabs Scribe"]
-  UI --> MOCK
+  RED -- "state as props" --> SCREENS --> CTRL
+  CTRL -- "dispatch (context)" --> RED
+  RED --> NATIVE
+  RED --> CHAT --> GEM["Gemini"]
+  RED --> EVAL --> GEM
+  RED --> TTS --> TV["Azure / Google / ElevenLabs TTS"]
+  RED --> TOK --> SV["Deepgram / ElevenLabs token services"]
+  RED -. "WebSocket with token" .-> STT["Deepgram / ElevenLabs Scribe"]
+  RED --> MOCK
 ```
+
+Only four components call `useSessionDispatch()` directly: `ComposingControls`,
+`IdleControls`, `ErrorControls` and the dev-only `StateStepper`. Everything else in
+`SCREENS` and the presentational pieces between `SCREENS` and `CTRL` (the thread, the
+bubbles, the evaluation display, the setup form fields) only receive state and callbacks as
+props — they never touch the reducer directly.
 
 ## 3. Components: responsibilities and decisions
 
@@ -84,6 +97,10 @@ flowchart LR
 | Mock routes (`src/app/api/mock/*`) | Canned chat and evaluation replies; 404 outside development. | plan.md → Decision log (10-03, the chat mock; 10-08, the evaluation mock) |
 | Prompt builder (`src/lib/prompt.ts`) | Builds the system instruction for the chat call and for the correction call, on every request. | plan.md → Build stages (stages 2 and 4) |
 | Contracts (`src/lib/chat-schema.ts`, `tts/types.ts`, `stt/types.ts`) | The request/response shapes and the provider interfaces, shared by routes, hooks and providers. | plan.md → Decisions: Provider interface |
+| App shell (`src/app/layout.tsx`, `page.tsx`, `manifest.ts`) | Fonts, PWA manifest, global CSS, mounts `LanguageBuddy` as the one page. | — |
+| `LanguageBuddy` (`src/components/language-buddy.tsx`) | Owns the reducer, wires every effect hook, renders exactly one screen for the current `phase`, provides `dispatch` through context. | plan.md → Decisions: State |
+| Screens (`SetupScreen`, `ConversationScreen`) and the presentational pieces under them (thread, bubbles, evaluation display, form fields) | Receive state and callbacks as props; render; never call `dispatch` directly. | plan.md → Decisions: State; plan.md → Decision log (09-29, the removed state context) |
+| Leaf controls (`ComposingControls`, `IdleControls`, `ErrorControls`, dev-only `StateStepper`) | The only components that call `useSessionDispatch()`. `ConversationControls` switches on `turnState.name` to render exactly one of them. | plan.md → Decision log (09-30, the `ConversationControls` split) |
 
 ## 4. Core data flow: one conversation turn
 
@@ -118,6 +135,11 @@ unknown; plan.md → Open questions, 14).
 the conversation and does not return into the chain; the AI reply is held until the
 evaluation of the preceding turn has settled, so a correction never appears after the reply.
 Word highlighting uses an estimate from text length, not provider timing.
+
+**Where the two user actions in the diagram originate:** "starts listening" is
+`IdleControls` dispatching `LISTENING_STARTED`; "sends the turn" is `ComposingControls`
+dispatching `USER_TURN_SENT`. Both are leaf controls (see section 3); nothing between them
+and `LanguageBuddy` touches the reducer.
 
 ## 5. Environments
 

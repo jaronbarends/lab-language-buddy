@@ -27,6 +27,15 @@
             "command": "node .claude/hooks/guard-kenniswerker.cjs"
           }
         ]
+      },
+      {
+        "matcher": "Agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/triage-guard.cjs"
+          }
+        ]
       }
     ]
   }

@@ -71,6 +71,13 @@ say so rather than following either blindly.
   the lead thread to make one change itself: it creates
   `.claude/.hoofdthread-override.json` (`{"activatedAt": "<ISO timestamp>", "durationMinutes": 15}`,
   15 minutes unless Jaron names a longer duration), which the hook honors only until it expires.
+- **Staffel.** Before starting a builder, load the `triage` skill and classify the task —
+  trivial / normal / risky, by type, never by size — then put the one-line verdict
+  (`regime: ... — <reason>`) on the first line of the builder's assignment. A `triage-guard`
+  hook refuses a lead-thread builder-start without that line (a builder started by another
+  agent passes through — the orchestrating agent is the assurance there, per the skill).
+  `trivial` gets a one-line assignment and a three-line report, no reviewer; anything else
+  keeps the full contract.
 - **Fork mode.** On by default, no setup needed. Use it for conversation-fed synthesis work — a
   spec, a draft, a write-up where the dialogue itself is the source. Living documents and
   registers (`docs/plan.md`, the grootboek registers) stay lead-thread work; they are not fork

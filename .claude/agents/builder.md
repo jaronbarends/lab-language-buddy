@@ -21,6 +21,21 @@ documents your task touches. Rules and the `CLAUDE.md` of `src/components/` and 
 load when you touch those paths. `docs/plan.md` has the reasons behind choices that look
 arbitrary: read the relevant section before changing a structural choice.
 
+## Regime
+
+The first line of your assignment is a triage verdict: `regime: trivial|normal|risky —
+<reason>`. It sets which contract below applies.
+
+- **trivial** — skip ahead: a one-line goal is enough, and your report collapses to three
+  lines (status, what changed, verification). No reviewer follows this task; the mechanical
+  checks are the assurance.
+- **normal** or **risky** — the full assignment and report format below apply, as always.
+  Under `risky`, say so explicitly if anything about the approach gives you pause, rather
+  than pushing through it.
+
+No `regime:` line means the assignment is incomplete — report `NEEDS_CONTEXT` rather than
+guessing one.
+
 ## The assignment must contain four things
 
 The **goal** (what works when you are done), the **boundary** (the files and folders that

@@ -6,7 +6,7 @@ versie: "1.0"
 status: v1
 datum: 2026-10-20
 bron: JNL-001
-notitie: Derived from the code and the git history (scope `src/lib`, `src/hooks`, `src/app/api`, the delivery chain), reviewed by a fresh-context critique pass, and accepted by the human on 2026-10-20. Accepted as a whole, not section by section. Extended on 2026-10-21 with the frontend component layer (`src/components`, the app shell), closing REQ-GG-01's scope gap; most of what the explorer found was already decided in plan.md, cited where so. Open questions live in JNL-001, not here. Kept as a trial per HDR-002.
+notitie: Derived from the code and the git history (scope `src/lib`, `src/hooks`, `src/app/api`, the delivery chain), reviewed by a fresh-context critique pass, and accepted by the human on 2026-10-20. Accepted as a whole, not section by section. Extended on 2026-10-21 with the frontend component layer (`src/components`, the app shell), closing REQ-GG-01's scope gap; most of what the explorer found was already decided in plan.md, cited where so. § 6 updated 2026-10-21 for ADR-004 (Google TTS key moved to a header). Open questions live in JNL-001, not here. Kept as a trial per HDR-002.
 ---
 
 # Software architecture — language-buddy
@@ -166,7 +166,7 @@ them on pull requests to `main` is wanted but not built (HDR-003; JNL-001, K8).
 |---|---|---|---|
 | Server → Gemini | API key | `GEMINI_API_KEY` | server only |
 | Server → Azure TTS | subscription key header | `AZURE_SPEECH_API_KEY`, `AZURE_SPEECH_REGION` | server only |
-| Server → Google TTS | API key as URL query parameter | `GOOGLE_CLOUD_API_KEY` | server only |
+| Server → Google TTS | API key as a header (`x-goog-api-key`) | `GOOGLE_CLOUD_API_KEY` | server only |
 | Server → ElevenLabs TTS | key header | `ELEVENLABS_API_KEY` | server only |
 | Server → ElevenLabs token service | key header; returns a single-use token | `ELEVENLABS_API_KEY` | server only |
 | Browser → ElevenLabs Scribe | single-use token as a query parameter on the WebSocket URL | token from our route | browser, short-lived |

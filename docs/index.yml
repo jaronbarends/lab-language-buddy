@@ -39,6 +39,9 @@ documents:
   - path: docs/grootboek/adr/adr-003-gemini-flash-lite-on-price.md
     what: Why gemini-3.1-flash-lite, and that it was chosen on price without an extensive model comparison.
     read_when: considering a different model for chat or evaluation.
+  - path: docs/grootboek/adr/adr-004-google-tts-key-as-header.md
+    what: GOOGLE_CLOUD_API_KEY moved from a URL query parameter to the x-goog-api-key header; confirmed against the live endpoint first.
+    read_when: touching src/lib/tts/google.ts or its auth.
   - path: docs/grootboek/software-architectuur.md
     what: Technical balance v1.0 (accepted 2026-10-20), derived from the code: components, data flow, environments, auth matrix, choices. Open questions are in JNL-001. Not yet checked for drift.
     read_when: working on routes, providers, deployment or env vars; when running the drift trial.

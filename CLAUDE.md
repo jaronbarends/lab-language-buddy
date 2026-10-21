@@ -59,7 +59,10 @@ say so rather than following either blindly.
   committed straight to `main`, and only on Jaron's go-ahead.
 - **Hooks.** `.claude/settings.json` wires hooks under `.claude/hooks/`. A hook's output is an
   order, not a suggestion: when one fires, carry out exactly what it says — nothing skipped,
-  nothing deferred, no working around it with a different tool or phrasing.
+  nothing deferred, no working around it with a different tool or phrasing. A hook that
+  carries a procedure (a checklist, a release ritual) keeps that procedure in its own file
+  next to the script and injects it at the right moment — the checklist is data, the hook is
+  delivery, so a procedure change never means a code change.
 - **Checks before you call something done.** `npm run lint`, then
   `npx next typegen && npx tsc --noEmit`, `npm run docs:check` (drift between docs and
   repo), then `npm run build`. Anything touching audio,

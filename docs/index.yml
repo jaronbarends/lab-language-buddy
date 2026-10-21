@@ -36,6 +36,9 @@ documents:
   - path: docs/grootboek/hdr/hdr-003-ci-checks-wanted-on-pull-requests.md
     what: Decision that lint/typecheck/build/docs:check should run on PRs to main; not yet built (K8).
     read_when: setting up CI for this repo.
+  - path: docs/grootboek/hdr/hdr-004-session-scoped-refactor-loop.md
+    what: Why REQ-AH-13's refactor loop is a session-scoped PreToolUse hook, not ARC's unattended git-level push-hook (refused by the safety classifier).
+    read_when: touching the refactor loop; porting another ARC harness convention.
   - path: docs/grootboek/adr/adr-001-environment-and-deployment-topology.md
     what: main is production, other branches preview by default, secret env vars Production-only; configured in Vercel, not in the repo.
     read_when: changing branch or env-var setup in Vercel.

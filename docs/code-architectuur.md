@@ -115,3 +115,21 @@ barrel files in `src/` — keep it that way as the codebase grows.
   principles; the register stays decisions.
 - If a rule stops matching how the codebase actually works, say so and change the rule — this
   document describes what is true, not what was once intended.
+
+## 4. The refactor loop (REQ-AH-13)
+
+The loop that keeps this document and its register alive: `scripts/sweep-code-architectuur.mjs`
+walks every file in `src/` against the thresholds and the register's decisions; the
+`refactor-werkplaats` agent (`.claude/agents/refactor-werkplaats.md`) reads this document and
+the register, and for a flagged file delivers either a diff on its own worktree branch or a
+new register decision — never neither.
+
+**What it is not, and why.** ARC's own convention wires this as a git-level push-hook that
+spawns the refactor agent unattended, in the background, on every push — including pushes made
+outside Claude Code entirely. Building that here was refused by the harness's own safety
+classifier ("Create Unsafe Agents": an unattended, code-editing agent triggered by a routine
+git operation). What exists instead is session-scoped: a `guard-push-sweep` PreToolUse hook
+denies a lead-thread `git push` when the sweep finds new flagged files, naming them; the lead
+thread then spawns `refactor-werkplaats` itself, in the same, human-supervised session, before
+retrying. It only catches pushes made through Claude Code — a push from a plain terminal
+bypasses it, the same known blind spot as the other guard-hooks in this harness.

@@ -77,7 +77,10 @@ const PATH_PATTERN = /^[\w.@-]+(\/[\w.@-]+)+\/?$/;
 const REPO_ROOTS = ["src", "docs", ".claude", "spikes", "scripts", "public"];
 // Gitignored runtime artifacts that CLAUDE.md documents by path but that only exist while
 // active (e.g. a time-boxed hook override) — absent is their normal, expected state.
-const EPHEMERAL_PATHS = new Set([".claude/.hoofdthread-override.json"]);
+const EPHEMERAL_PATHS = new Set([
+  ".claude/.hoofdthread-override.json",
+  "docs/.refactor-pending.json",
+]);
 for (const doc of contextDocs) {
   for (const match of read(doc).matchAll(/`([^`\s]+)`/g)) {
     const token = match[1];

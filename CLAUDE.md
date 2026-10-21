@@ -82,6 +82,14 @@ say so rather than following either blindly.
   spec, a draft, a write-up where the dialogue itself is the source. Living documents and
   registers (`docs/plan.md`, the grootboek registers) stay lead-thread work; they are not fork
   material.
+- **Refactor loop.** Before the lead thread pushes, a `guard-push-sweep` hook sweeps `src/`
+  for files past the doorbell/hard-limit with no register decision. If it finds any new ones,
+  it denies the push and names them; the lead thread spawns the `refactor-werkplaats` agent
+  for those files, then retries. A pending marker (`docs/.refactor-pending.json`, 24h TTL)
+  stops the next push from re-flagging a file that already has a proposal awaiting review. A
+  git-level push-hook that spawns this unattended, matching ARC's own convention, was refused
+  by the harness's own safety classifier ("Create Unsafe Agents") — this session-scoped
+  version is what's actually built; see `docs/code-architectuur.md`'s REQ-AH-13 note.
 - **Checks before you call something done.** `npm run lint`, then
   `npx next typegen && npx tsc --noEmit`, `npm run docs:check` (drift between docs and
   repo), then `npm run build`. Anything touching audio,

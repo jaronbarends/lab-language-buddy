@@ -33,3 +33,13 @@ hdrs:
     datum: 2026-10-20
     beslissing: "Lint, typecheck, build and docs:check should run on every PR to main; not yet built (K8)"
     bestand: hdr-003-ci-checks-wanted-on-pull-requests.md
+  - id: "HDR-004"
+    titel: "Session-scoped refactor loop instead of an unattended push-hook"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-21
+    implementatie-datum: 2026-10-21
+    beslissing: "ARC's unattended git-level push-hook for the refactor loop (REQ-AH-13) was refused by Claude Code's own safety classifier; a session-scoped guard-push-sweep hook is built instead"
+    bestand: hdr-004-session-scoped-refactor-loop.md

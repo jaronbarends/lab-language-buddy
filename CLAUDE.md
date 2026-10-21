@@ -57,6 +57,20 @@ say so rather than following either blindly.
   experiments. Review fixes get their own commits on the branch under review. Code goes
   through a branch and a PR; only small notes in the plan or tooling tweaks have been
   committed straight to `main`, and only on Jaron's go-ahead.
+- **Hooks.** `.claude/settings.json` wires hooks under `.claude/hooks/`. A hook's output is an
+  order, not a suggestion: when one fires, carry out exactly what it says — nothing skipped,
+  nothing deferred, no working around it with a different tool or phrasing. A hook that
+  carries a procedure (a checklist, a release ritual) keeps that procedure in its own file
+  next to the script and injects it at the right moment — the checklist is data, the hook is
+  delivery, so a procedure change never means a code change.
+- **Working model: subagent-tenzij.** The lead thread steers and decides; it does not write
+  source itself. Edits to `src/` or `spikes/` go through a builder subagent — a
+  `guard-kenniswerker` hook enforces this for the lead thread (subagent calls pass through;
+  `docs/`, `.claude/` and other non-code files are a carve-out, so this file or a hook script
+  can still be edited directly). A time-boxed override exists for when Jaron explicitly asks
+  the lead thread to make one change itself: it creates
+  `.claude/.hoofdthread-override.json` (`{"activatedAt": "<ISO timestamp>", "durationMinutes": 15}`,
+  15 minutes unless Jaron names a longer duration), which the hook honors only until it expires.
 - **Checks before you call something done.** `npm run lint`, then
   `npx next typegen && npx tsc --noEmit`, `npm run docs:check` (drift between docs and
   repo), then `npm run build`. Anything touching audio,

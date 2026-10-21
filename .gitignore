@@ -45,3 +45,6 @@ credentials*
 service-account*.json
 *.key
 *.p12
+
+# agentic harnas: time-boxed kenniswerker-guard override, personal and ephemeral
+.claude/.hoofdthread-override.json

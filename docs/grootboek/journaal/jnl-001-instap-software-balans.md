@@ -31,7 +31,7 @@ the balance cites a file; the questions below are the places where the code did 
 | K3 | The routes have no caller authentication or rate limit | decided 2026-10-20 (accepted for now) |
 | K4 | No CI in the repo | decided 2026-10-20 |
 | K5 | Why `gemini-3.1-flash-lite`? | decided 2026-10-20 |
-| K6 | Google TTS key travels as a URL query parameter | open |
+| K6 | Google TTS key travels as a URL query parameter | decided 2026-10-21 |
 | K7 | How to protect the routes (follow-up of K3) | open |
 | K8 | CI on pull requests to `main` (follow-up of K4) | open |
 
@@ -135,6 +135,12 @@ documentation describes sending an API key in the `x-goog-api-key` header for RE
 but a search did not confirm that the Text-to-Speech endpoint accepts that; verify before
 changing the code.
 
+**Decision (2026-10-21, the human):** change it. The human tested both forms directly
+against the live endpoint with their own key (`Invoke-WebRequest`, once with `?key=`, once
+with the `x-goog-api-key` header) and got `200` on both, settling what a documentation
+search alone could not. **Booked as ADR-004** — the first grootboek decision in this repo
+that changed code, not only documentation.
+
 ### K7 — How to protect the routes (follow-up of K3)
 
 Open. The human wants the exposure of the vendor-calling routes in production solved soon.
@@ -167,5 +173,9 @@ it may need the full history in a CI checkout. Not built; no workflow file exist
   drift. The loop (journal → decision → document → code → drift) still has not closed
   end-to-end; that needs a real code change to follow a decision, which has not happened
   yet (REQ-GG-09).
+- **2026-10-21 — K6 decided and booked as ADR-004.** `src/lib/tts/google.ts` now sends the
+  key as a header. This is the code step the drift trial was missing: a future DFT against
+  this balance now has a real change to reconcile against, closing REQ-GG-09's loop once
+  that DFT runs.
 
-This journal closes when K6, K7 and K8 are decided or parked.
+This journal closes when K7 and K8 are decided or parked.

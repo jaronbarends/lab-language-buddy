@@ -9,8 +9,8 @@ jnls:
     datum: 2026-10-20
     laatste-sessie: 2026-10-20
     kwesties-totaal: 8
-    kwesties-besloten: 5
-    kwesties-open: 3
+    kwesties-besloten: 6
+    kwesties-open: 2
     kwesties-geparkeerd: 0
     doel-records:
       - "software-architectuur.md (v1.0, accepted 2026-10-20)"

@@ -42,3 +42,13 @@ adrs:
     implementatie-datum: 2026-10-20
     beslissing: "gemini-3.1-flash-lite for chat and evaluation, chosen on price without an extensive model comparison"
     bestand: adr-003-gemini-flash-lite-on-price.md
+  - id: "ADR-004"
+    titel: "Google TTS key as a header, not a URL query parameter"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: prod
+    datum: 2026-10-21
+    implementatie-datum: 2026-10-21
+    beslissing: "GOOGLE_CLOUD_API_KEY moves to the x-goog-api-key header; confirmed working against the live endpoint before the change"
+    bestand: adr-004-google-tts-key-as-header.md

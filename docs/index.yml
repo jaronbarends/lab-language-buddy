@@ -24,8 +24,14 @@ documents:
   - path: docs/grootboek/hdr/hdr-001-grootboek-stelsel.md
     what: Why the grootboek exists next to plan.md, and which decisions it holds (from 2026-10-20 on).
     read_when: deciding whether a decision goes in the grootboek or in plan.md.
+  - path: docs/grootboek/software-architectuur.md
+    what: Technical balance v1.0 (accepted 2026-10-20), derived from the code: components, data flow, environments, auth matrix, choices. Open questions are in JNL-001. Not yet checked for drift.
+    read_when: working on routes, providers, deployment or env vars; when running the drift trial.
+  - path: docs/grootboek/journaal/jnl-001-instap-software-balans.md
+    what: Onboarding journal for the software balance trial; eight issues (balance vs plan, environments, route auth and its follow-up, CI and its follow-up, model choice, Google key).
+    read_when: accepting or discarding the balance; answering one of its open questions.
   - path: docs/grootboek/registers
-    what: YAML registers (adr, hdr, pdr, dft) — the cheap index of the grootboek; read before opening a record.
+    what: YAML registers (adr, hdr, pdr, dft, jnl) — the cheap index of the grootboek; read before opening a record.
     read_when: looking for a decision, its status or an open drift report in the grootboek.
   - path: docs/ios-stt-runs.md
     what: Record of speech-recognition test runs on an iPhone.

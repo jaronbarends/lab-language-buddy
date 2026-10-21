@@ -1,0 +1,17 @@
+# JNL Register — overview of all journals (discovery)
+# A journal counts issues instead of implementation percentages: the discovery is done when
+# the issues are decided and have landed in target records (ADR/PDR/HDR).
+
+jnls:
+  - id: "JNL-001"
+    titel: "Onboarding journal — the software balance"
+    status: discovery
+    datum: 2026-10-20
+    laatste-sessie: 2026-10-20
+    kwesties-totaal: 8
+    kwesties-besloten: 5
+    kwesties-open: 3
+    kwesties-geparkeerd: 0
+    doel-records:
+      - "software-architectuur.md (v1.0, accepted 2026-10-20)"
+    bestand: jnl-001-instap-software-balans.md

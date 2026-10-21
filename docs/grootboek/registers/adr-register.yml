@@ -1,0 +1,44 @@
+# ADR Register — overview of all Architecture Decision Records
+# The cheap index of the grootboek: read the register first, then the document.
+#
+# Fields:
+#   versie        — semver-like (1.0, 1.1). Refinement = minor; change of course = new ADR.
+#   implementatie — percentage (0-100), a living gauge
+#   omgeving      — where does it run? dev | prod | geen
+#
+# Lifecycle: voorstel → discussion → accepted → in-progress → implemented
+# Immutability: an 'implemented' record no longer changes; a new record supersedes the
+# old one (the counter-entry).
+# Append-only: records never disappear — that is the bookkeeping.
+
+adrs:
+  - id: "ADR-001"
+    titel: "Environment and deployment topology"
+    status: accepted
+    versie: "1.0"
+    implementatie: 100
+    omgeving: prod
+    datum: 2026-10-20
+    beslissing: "main is production; other branches (incl. arc/*) deploy as Vercel previews by default; secret env vars are Production-only"
+    notitie: "Configured in the Vercel dashboard, not in the repo; no drift check covers it"
+    bestand: adr-001-environment-and-deployment-topology.md
+  - id: "ADR-002"
+    titel: "Routes unauthenticated, accepted for now"
+    status: accepted
+    versie: "1.0"
+    implementatie: 0
+    omgeving: prod
+    datum: 2026-10-20
+    beslissing: "No caller authentication or rate limit on any server route; risk accepted for now, fix wanted soon"
+    notitie: "Provisional; superseded by a new ADR once K7 lands a protection mechanism"
+    bestand: adr-002-routes-unauthenticated-for-now.md
+  - id: "ADR-003"
+    titel: "Gemini flash-lite, chosen on price"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: prod
+    datum: 2026-10-20
+    implementatie-datum: 2026-10-20
+    beslissing: "gemini-3.1-flash-lite for chat and evaluation, chosen on price without an extensive model comparison"
+    bestand: adr-003-gemini-flash-lite-on-price.md

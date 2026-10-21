@@ -9,12 +9,14 @@
       "path": "src/lib/session-reducer.ts",
       "position": "ceiling",
       "ceiling": 600,
+      "lines": 577,
       "reason": "One cohesive state machine (code-architectuur.md §2.2, the doctrine's own lived example); a new turn state extends the discriminated union rather than splitting the file."
     },
     {
       "path": "src/lib/stt/elevenlabs.ts",
       "position": "ceiling",
       "ceiling": 400,
+      "lines": 371,
       "reason": "One provider's full connection lifecycle (token fetch, WS handshake with several close/error paths, audio streaming, message parsing) — same shape as deepgram.ts and native.ts, longer because ElevenLabs's handshake has more states to handle."
     }
   ]

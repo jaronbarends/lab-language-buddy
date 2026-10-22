@@ -1,0 +1,29 @@
+name: Checks
+
+# HDR-003: the checks named in CLAUDE.md run on every pull request. The branch list names
+# both the production branch and the current integration branch; a branch that no longer
+# exists is simply never matched, so removing arc/arc-main later needs no change here.
+on:
+  pull_request:
+    branches: [main, arc/arc-main]
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # docs:check reads git history (plan-staleness warning); a shallow clone has none.
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      # --ignore-scripts: the Husky "prepare" hook has no place in CI.
+      - run: npm ci --ignore-scripts
+      - run: npm run lint
+      - run: npx next typegen && npx tsc --noEmit
+      - run: npm run docs:check
+      # REQ-AH-12 mechanism 2: verify only. It never rewrites or commits the register.
+      - run: npm run register:check
+      - run: npm run build

@@ -25,13 +25,14 @@ hdrs:
     beslissing: "Keep software-architectuur.md to try the grootboek's drift mechanism; plan.md stays the source until the trial is settled"
     bestand: hdr-002-balance-next-to-plan-drift-trial.md
   - id: "HDR-003"
-    titel: "CI checks wanted on pull requests to main"
-    status: accepted
+    titel: "CI checks on pull requests to main and arc/arc-main"
+    status: implemented
     versie: "1.0"
-    implementatie: 0
+    implementatie: 100
     omgeving: geen
     datum: 2026-10-20
-    beslissing: "Lint, typecheck, build and docs:check should run on every PR to main; not yet built (K8)"
+    implementatie-datum: 2026-10-22
+    beslissing: "Lint, typecheck, docs:check, the register drift check (REQ-AH-12) and build run on every PR to main or arc/arc-main (K8)"
     bestand: hdr-003-ci-checks-wanted-on-pull-requests.md
   - id: "HDR-004"
     titel: "Session-scoped refactor loop instead of an unattended push-hook"

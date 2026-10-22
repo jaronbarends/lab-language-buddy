@@ -33,7 +33,7 @@ the balance cites a file; the questions below are the places where the code did 
 | K5 | Why `gemini-3.1-flash-lite`? | decided 2026-10-20 |
 | K6 | Google TTS key travels as a URL query parameter | decided 2026-10-21 |
 | K7 | How to protect the routes (follow-up of K3) | open |
-| K8 | CI on pull requests to `main` (follow-up of K4) | open |
+| K8 | CI on pull requests to `main` (follow-up of K4) | decided, booked in HDR-003 |
 
 ### K1 — Balance next to plan.md: what is it for?
 
@@ -151,10 +151,8 @@ iPhone flow. Not researched yet.
 
 ### K8 — CI on pull requests to `main` (follow-up of K4)
 
-Open. Wanted: lint, typecheck (`npx next typegen && npx tsc --noEmit`), build and
-`npm run docs:check` on every pull request to `main`. Not researched yet. One thing to look
-at first: `docs:check` has a check that reads git history (the plan-staleness warning), so
-it may need the full history in a CI checkout. Not built; no workflow file exists.
+Decided and built: see HDR-003. The history wrinkle turned out real; the workflow checks out
+with `fetch-depth: 0`.
 
 ## Decision log
 
@@ -178,4 +176,7 @@ it may need the full history in a CI checkout. Not built; no workflow file exist
   this balance now has a real change to reconcile against, closing REQ-GG-09's loop once
   that DFT runs.
 
-This journal closes when K7 and K8 are decided or parked.
+- **2026-10-22 — K8 built (HDR-003).** `.github/workflows/checks.yml` runs on PRs to `main`
+  and `arc/arc-main`, with the REQ-AH-12 register drift check in the same workflow.
+
+This journal closes when K7 is decided or parked.

@@ -15,11 +15,9 @@ jobs:
         with:
           # docs:check reads git history (plan-staleness warning); a shallow clone has none.
           fetch-depth: 0
-      # Node 24 ships npm 11, the same npm that wrote package-lock.json; npm 10 (Node 22) rejects
-      # the lockfile in `npm ci` over missing optional @emnapi entries.
       - uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 22
           cache: npm
       # --ignore-scripts: the Husky "prepare" hook has no place in CI.
       - run: npm ci --ignore-scripts

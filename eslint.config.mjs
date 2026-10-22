@@ -14,6 +14,8 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // The reference spike is a separate app with its own config — not ours to lint.
     "spikes/**",
+    // Node hook scripts for Claude Code (CommonJS by necessity), not app code.
+    ".claude/hooks/**",
   ]),
 ]);
 

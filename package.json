@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "docs:check": "node scripts/check-docs.mjs",
+    "register:check": "node scripts/sync-code-architectuur-register.mjs --check",
     "prepare": "husky"
   },
   "dependencies": {

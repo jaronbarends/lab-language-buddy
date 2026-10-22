@@ -48,3 +48,5 @@ service-account*.json
 
 # agentic harnas: time-boxed kenniswerker-guard override, personal and ephemeral
 .claude/.hoofdthread-override.json
+# agentic harnas: pending-refactor markers for the push-sweep, local and ephemeral
+docs/.refactor-pending.json

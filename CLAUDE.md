@@ -71,6 +71,25 @@ say so rather than following either blindly.
   the lead thread to make one change itself: it creates
   `.claude/.hoofdthread-override.json` (`{"activatedAt": "<ISO timestamp>", "durationMinutes": 15}`,
   15 minutes unless Jaron names a longer duration), which the hook honors only until it expires.
+- **Staffel.** Before starting a builder, load the `triage` skill and classify the task —
+  trivial / normal / risky, by type, never by size — then put the one-line verdict
+  (`regime: ... — <reason>`) on the first line of the builder's assignment. A `triage-guard`
+  hook refuses a lead-thread builder-start without that line (a builder started by another
+  agent passes through — the orchestrating agent is the assurance there, per the skill).
+  `trivial` gets a one-line assignment and a three-line report, no reviewer; anything else
+  keeps the full contract.
+- **Fork mode.** On by default, no setup needed. Use it for conversation-fed synthesis work — a
+  spec, a draft, a write-up where the dialogue itself is the source. Living documents and
+  registers (`docs/plan.md`, the grootboek registers) stay lead-thread work; they are not fork
+  material.
+- **Refactor loop.** Before the lead thread pushes, a `guard-push-sweep` hook sweeps `src/`
+  for files past the doorbell/hard-limit with no register decision. If it finds any new ones,
+  it denies the push and names them; the lead thread spawns the `refactor-werkplaats` agent
+  for those files, then retries. A pending marker (`docs/.refactor-pending.json`, 24h TTL)
+  stops the next push from re-flagging a file that already has a proposal awaiting review. A
+  git-level push-hook that spawns this unattended, matching ARC's own convention, was refused
+  by the harness's own safety classifier ("Create Unsafe Agents") — this session-scoped
+  version is what's actually built; see `docs/code-architectuur.md`'s REQ-AH-13 note.
 - **Checks before you call something done.** `npm run lint`, then
   `npx next typegen && npx tsc --noEmit`, `npm run docs:check` (drift between docs and
   repo), then `npm run build`. Anything touching audio,
@@ -91,6 +110,7 @@ machine-readable table of contents: read it first, then open only the document y
 | Design system, components | `src/components/CLAUDE.md` | when working in `src/components/` |
 | Providers, state machine | `src/lib/CLAUDE.md` | when working in `src/lib/` |
 | Plan and decisions | `docs/plan.md`, `docs/adr/` | on demand, via `docs/index.yml` |
+| Code architecture | `docs/code-architectuur.md` + `docs/code-architectuur-register.json` | on demand; before splitting or growing a file |
 | Grootboek | `docs/grootboek/`, via `registers/` | on demand; `docs/grootboek/CLAUDE.md` loads when working there |
 | Procedures | `.claude/skills/` | when invoked (`/stage-review`, `/grootboek`) |
 | Agents | `.claude/agents/` (`builder`, `reviewer`) | when delegated to; parallel builders get disjoint file boundaries and share this context |

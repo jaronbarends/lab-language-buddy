@@ -18,6 +18,12 @@ documents:
   - path: docs/adr/0001-decisions-live-in-the-plan.md
     what: Why decisions are kept in plan.md instead of one file each.
     read_when: deciding where to record a decision.
+  - path: docs/code-architectuur.md
+    what: Code-organization doctrine (REQ-AH-10, agentic harnas onderdeel D) — qualitative rules only, no thresholds or register.
+    read_when: splitting or growing a file; before adding a new structural pattern.
+  - path: docs/code-architectuur-register.json
+    what: Machine-readable contract (REQ-AH-11) — warn/hard-limit thresholds and the per-file ceiling/excluded decisions. Line counts are a snapshot; REQ-AH-12 makes them live-measured.
+    read_when: a file crosses the warn threshold; recording or revisiting a ceiling decision.
   - path: docs/grootboek/CLAUDE.md
     what: Rules for the grootboek folder (experiment on arc/* branches): document types, conventions, duty to communicate.
     read_when: loads by itself when working in docs/grootboek.
@@ -30,6 +36,9 @@ documents:
   - path: docs/grootboek/hdr/hdr-003-ci-checks-wanted-on-pull-requests.md
     what: Decision that lint/typecheck/build/docs:check should run on PRs to main; not yet built (K8).
     read_when: setting up CI for this repo.
+  - path: docs/grootboek/hdr/hdr-004-session-scoped-refactor-loop.md
+    what: Why REQ-AH-13's refactor loop is a session-scoped PreToolUse hook, not ARC's unattended git-level push-hook (refused by the safety classifier).
+    read_when: touching the refactor loop; porting another ARC harness convention.
   - path: docs/grootboek/adr/adr-001-environment-and-deployment-topology.md
     what: main is production, other branches preview by default, secret env vars Production-only; configured in Vercel, not in the repo.
     read_when: changing branch or env-var setup in Vercel.

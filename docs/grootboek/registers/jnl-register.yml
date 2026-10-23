@@ -26,6 +26,6 @@ jnls:
     kwesties-geparkeerd: 1
     doel-records:
       - "ADR for the bubble's structure (K2), to be written"
-      - "HDR-005 (K10)"
+      - "HDR-006 (K10)"
       - "a spec as the build plan, once decided"
     bestand: jnl-002-chat-bubble-animation.md

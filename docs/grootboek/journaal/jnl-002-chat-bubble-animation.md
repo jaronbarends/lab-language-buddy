@@ -5,7 +5,7 @@ datum: 2026-10-23
 kernvraag: How does an AI bubble go from thinking dots to its text as one element that grows, without breaking the scroll, the read-along highlight or the screen reader?
 doel-records:
   - "ADR for the bubble's structure (K2), to be written once decided"
-  - "HDR-005 (K10), booked 2026-10-23"
+  - "HDR-006 (K10), booked 2026-10-23"
   - "a spec as the build plan, once the issues are decided"
   - "a PDR only if the human treats the motion behaviour as a product promise"
 ---
@@ -147,7 +147,7 @@ not work on the iPhone. Not tested: how `clip-path` behaves on iOS with a bubble
 at once, K3 is no longer about animating height and width but about revealing an already-full
 bubble. That is a different and easier problem than the baseline assumes (measure, then
 transition pixel values). The baseline is left as written, since it is the reference point for
-HDR-005; this consequence was not part of it.
+HDR-006; this consequence was not part of it.
 
 ### K5 — Read-along
 
@@ -208,12 +208,12 @@ direction are separate work and get their own journal or issue when picked up.
 
 ### K10 — Modern Web Guidance
 
-Booked as **HDR-005**: a trial of Google's Modern Web Guidance (agent skills with current web
+Booked as **HDR-006**: a trial of Google's Modern Web Guidance (agent skills with current web
 platform guidance), scoped to this feature. The comparison is K3's baseline above against what
 the guidance recommends, with the result written as one line here after the iPhone spike. Its
 guides include `css/animate-to-intrinsic-sizes`, `ui-behaviors/motion` and
 `ui-behaviors/animate-element-entry-exit`, which is why K3 is the test case. The outcome is
-open; the exit criterion is in HDR-005.
+open; the exit criterion is in HDR-006.
 
 **Result (to be filled in after the spike):** same / different and better / different and
 worse / nothing added; and whether the iPhone confirmed it.
@@ -231,7 +231,7 @@ consulted the guidance before reading the K3 baseline (guides `animate-to-intrin
   said nothing on overshoot. A fair reading is "same, with one confirming source", with the
   caveat that the final design is outside what it covered.
 - The extra "Modern Web Guidance" section did not disturb the builder's report format.
-- `DISABLE_TELEMETRY=1` was present in the builder subagent's shell (see HDR-005).
+- `DISABLE_TELEMETRY=1` was present in the builder subagent's shell (see HDR-006).
 
 Process note: the first spike showed no animation at all, because the waiting bubble and the
 reply sat in different child slots of the thread, so React remounted instead of reusing the
@@ -251,7 +251,7 @@ carries a condition the plan did not state: both must be in the SAME array.
 - **2026-10-23 — K6 parked.** With the condition that today's roles and label keep working.
 - **2026-10-23 — K7, K8, K9 decided.** AI bubble only for now; reduced motion skips the reveal;
   the other animation work is out of scope.
-- **2026-10-23 — K10 agreed as a trial, booked as HDR-005 (accepted).** The baseline for K3 was
+- **2026-10-23 — K10 agreed as a trial, booked as HDR-006 (accepted).** The baseline for K3 was
   written before the guidance was consulted.
 - **2026-10-23 — spike built and committed on `arc/bubble-animation`.** `AiBubble` (one element,
   position key, waiting bubble in the same array as the turns), scale 0 to 1 with back-easing,
@@ -269,6 +269,6 @@ carries a condition the plan did not state: both must be in the SAME array.
   in `AiBubble`; `ThinkingBubble` is now only the dots (`ThinkingDots` would be accurate). The
   human corrects names that promise more than the code does, so that is his call.
 - Not written yet: the ADR for K2 (after K3 is settled), the spec, the K10 verdict and the
-  decision on HDR-005 (keep, switch off or adjust).
+  decision on HDR-006 (keep, switch off or adjust).
 
 This journal closes when K1 to K9 are decided or parked and the ADR (K2) and the spec exist.

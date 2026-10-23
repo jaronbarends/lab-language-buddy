@@ -44,3 +44,14 @@ hdrs:
     implementatie-datum: 2026-10-21
     beslissing: "ARC's unattended git-level push-hook for the refactor loop (REQ-AH-13) was refused by Claude Code's own safety classifier; a session-scoped guard-push-sweep hook is built instead"
     bestand: hdr-004-session-scoped-refactor-loop.md
+  - id: "HDR-005"
+    titel: "The branch that merges second renumbers its records"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-23
+    implementatie-datum: 2026-10-23
+    beslissing: "Parallel arc/* branches book the same next number; whichever merges second renumbers its own records in its own branch, after merging arc/arc-main into it and before its PR. Merged records keep their number"
+    notitie: "docs:check does not detect duplicate ids; the check is manual. arc/bubble-animation's HDR-005 is the first to be renumbered"
+    bestand: hdr-005-renumber-on-merge-when-numbers-collide.md

@@ -36,7 +36,7 @@ plan predates 2026-10-20 and carries a pointer here, so the two places do not dr
 |---|---|---|
 | K1 | Scope: only open question 11, or an enter animation on every bubble too? | decided 2026-10-23 |
 | K2 | The surviving element: key by position (a) or a pending AI turn (b)? | decided 2026-10-23 (a) |
-| K3 | Growing in height and width: which technique? (spike on an iPhone) | open |
+| K3 | Growing in height and width: which technique? (spike on an iPhone) | spike built 2026-10-23, tuning open |
 | K4 | The thread's scroll effect against a bubble that is still growing | decided 2026-10-23 (A) |
 | K5 | Read-along: may the highlight start while the text is still appearing? | decided 2026-10-23 (only when fully visible) |
 | K6 | One element, one role: `status` or `log`? | parked 2026-10-23 |
@@ -105,6 +105,20 @@ browser support:
 - Risks I expect on iOS: `transitionend` not firing when the tab is backgrounded or the
   transition is interrupted (so release to `auto` needs a timeout fallback), and the interplay
   with K4.
+
+**Spike result (2026-10-23, built on `arc/bubble-animation`, tuned by eye on desktop Chrome and
+the human's iPhone; "works more or less as wanted", to be continued).** What was built is not the
+baseline and not the first spike either:
+
+- First version: a `clip-path` reveal from the dots' size (K4(A)). It ran on the iPhone.
+- Replaced at the human's request by a `scale` 0 to 1 from the top-left corner, 350ms, with the
+  overshoot in the easing (`cubic-bezier(0.34, 1.56, 0.64, 1)`, peak about 1.10). Reason: a
+  clip-path cannot show an overshoot, and keyframes of 1 to 1.02 were too faint to see. The
+  cost, accepted: the bubble no longer starts at the dots' size; it grows out of its corner.
+- The text (label and paragraph) is transparent during the growth and fades in over 200ms
+  starting when it ends; one CSS variable (`--reveal-duration`) drives both. The dots vanish
+  at once. Reduced motion: no scale, no fade (reasoned, not tested).
+- Layout is at its final size at once, so K4(A) still holds: the scroll effect is unchanged.
 
 ### K4 — The scroll effect against a growing bubble
 
@@ -204,6 +218,26 @@ open; the exit criterion is in HDR-005.
 **Result (to be filled in after the spike):** same / different and better / different and
 worse / nothing added; and whether the iPhone confirmed it.
 
+**Facts so far (2026-10-23; the verdict is the human's and is not written yet).** The builder
+consulted the guidance before reading the K3 baseline (guides `animate-to-intrinsic-sizes`,
+`motion`, `animate-element-entry-exit`):
+
+- It confirms the baseline's refusal of `interpolate-size`: the guide itself says Chromium only
+  (Chrome and Edge 129), an instant jump in Safari.
+- Its `motion` guide recommends `clip-path` for geometric reveals; that matched K4(A) and the
+  first spike, which ran on the iPhone. The final solution (scale with back-easing) is NOT what
+  the guidance recommends, and it is not in the baseline either: it came from the human.
+- It did not change the approach the agent would have taken once K4(A) was decided, and it
+  said nothing on overshoot. A fair reading is "same, with one confirming source", with the
+  caveat that the final design is outside what it covered.
+- The extra "Modern Web Guidance" section did not disturb the builder's report format.
+- `DISABLE_TELEMETRY=1` was present in the builder subagent's shell (see HDR-005).
+
+Process note: the first spike showed no animation at all, because the waiting bubble and the
+reply sat in different child slots of the thread, so React remounted instead of reusing the
+element. Neither the builder nor the reviewer caught it; the human's screen did. K2(a) therefore
+carries a condition the plan did not state: both must be in the SAME array.
+
 ## Decision log
 
 - **2026-10-23 — journal opened.** Issues K1 to K10 from a read of the plan and the code. The
@@ -219,5 +253,22 @@ worse / nothing added; and whether the iPhone confirmed it.
   the other animation work is out of scope.
 - **2026-10-23 — K10 agreed as a trial, booked as HDR-005 (accepted).** The baseline for K3 was
   written before the guidance was consulted.
+- **2026-10-23 — spike built and committed on `arc/bubble-animation`.** `AiBubble` (one element,
+  position key, waiting bubble in the same array as the turns), scale 0 to 1 with back-easing,
+  delayed text fade. K3 stays open for tuning; K10 has facts but no verdict.
+
+**Where to pick up (written for the next session):**
+
+- Tune on the phone: the second value of the cubic-bezier (1.56 gives a peak of about 1.10;
+  1.3 about 1.03; 1.0 none), the 350ms and 200ms. Check a tall reply near the bottom of the
+  thread for a scroll shift (a scaled element extends the scrollable area for a moment).
+- K5 is decided but not built: the read-along highlight still starts at once. It needs a look
+  at the playback hook first.
+- K6 is parked: a VoiceOver test of the role change on the surviving element is still owed.
+- Cleanup left behind: the AI branch in `TurnBubble` is dead code and its markup is duplicated
+  in `AiBubble`; `ThinkingBubble` is now only the dots (`ThinkingDots` would be accurate). The
+  human corrects names that promise more than the code does, so that is his call.
+- Not written yet: the ADR for K2 (after K3 is settled), the spec, the K10 verdict and the
+  decision on HDR-005 (keep, switch off or adjust).
 
 This journal closes when K1 to K9 are decided or parked and the ADR (K2) and the spec exist.

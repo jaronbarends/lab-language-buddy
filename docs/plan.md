@@ -934,7 +934,9 @@ Per stage, in this order:
     off if a failed AI turn is ever shown inline with a retry on that spot. Not planned.
     **Since 2026-10-23 the discovery and decisions for this animation live in the
     grootboek, in `docs/grootboek/journaal/jnl-002-chat-bubble-animation.md` (JNL-002).**
-    This item stays as the background; do not decide here.
+    This item stays as the background; do not decide here. A first version is built on
+    `arc/bubble-animation` (one `AiBubble` element, keyed by position, scale reveal with a
+    delayed text fade); its state and what is still open are in JNL-002.
 12. **The held reply's invariant has no single owner.** Raised in the stage 4 review (B5),
     deferred. `pendingReply` should exist only while the last user turn's evaluation is
     `pending`; `AI_TURN_RECEIVED`, `EVALUATION_RECEIVED` and `EVALUATION_FAILED` and

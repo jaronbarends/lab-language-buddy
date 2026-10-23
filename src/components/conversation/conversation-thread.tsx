@@ -4,7 +4,7 @@ import { useLayoutEffect, useRef } from "react";
 
 import type { Turn, TurnState } from "@/lib/session-reducer";
 
-import { ThinkingBubble } from "./thinking-bubble";
+import { AiBubble } from "./ai-bubble";
 import { TurnBubble } from "./turn-bubble";
 import styles from "./conversation-thread.module.css";
 
@@ -19,6 +19,15 @@ type ConversationThreadProps = {
  * the edge. Matches the thread's own top padding (--space-4).
  */
 const NEWEST_ITEM_TOP_GAP = 16;
+
+/** How many AI turns come before `endIndex`: the position an AI bubble is keyed by. */
+function countAiTurns(turns: Turn[], endIndex: number) {
+  return turns.slice(0, endIndex).filter((turn) => turn.author === "ai").length;
+}
+
+function aiBubbleKey(position: number) {
+  return `ai-${position}`;
+}
 
 export function ConversationThread({
   turns,
@@ -74,6 +83,47 @@ export function ConversationThread({
       : bottomScrollTop;
   }, [turns.length, turnState.name, lastUserEvaluationStatus]);
 
+  // One array for the turns and the waiting bubble: React matches keys only among the
+  // children of the same array, so the waiting AiBubble and the reply that replaces it
+  // are the same element only if both sit in this array (JNL-002, K2).
+  const items = turns.map((turn, index) => {
+    const turnSpokenWordCount =
+      turn.id === speakingTurnId ? spokenWordCount : null;
+
+    if (turn.author === "user") {
+      return (
+        <TurnBubble
+          key={turn.id}
+          turn={turn}
+          conversationLang={conversationLang}
+          spokenWordCount={turnSpokenWordCount}
+        />
+      );
+    }
+
+    // Keyed by position, not by turn id. Turns are only ever appended or reset, so the
+    // position cannot shift mid-session.
+    return (
+      <AiBubble
+        key={aiBubbleKey(countAiTurns(turns, index))}
+        turn={turn}
+        conversationLang={conversationLang}
+        spokenWordCount={turnSpokenWordCount}
+      />
+    );
+  });
+
+  if (turnState.name === "aiThinking") {
+    items.push(
+      <AiBubble
+        key={aiBubbleKey(countAiTurns(turns, turns.length))}
+        turn={null}
+        conversationLang={conversationLang}
+        spokenWordCount={null}
+      />,
+    );
+  }
+
   return (
     // role="log" is an implicit polite live region, so appended replies are
     // announced while focus stays on the controls.
@@ -83,16 +133,7 @@ export function ConversationThread({
       role="log"
       aria-label="Conversation"
     >
-      {turns.map((turn) => (
-        <TurnBubble
-          key={turn.id}
-          turn={turn}
-          conversationLang={conversationLang}
-          spokenWordCount={turn.id === speakingTurnId ? spokenWordCount : null}
-        />
-      ))}
-
-      {turnState.name === "aiThinking" && <ThinkingBubble />}
+      {items}
     </div>
   );
 }

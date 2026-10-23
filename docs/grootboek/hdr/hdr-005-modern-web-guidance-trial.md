@@ -90,8 +90,8 @@ Taken by the human on 2026-10-23:
 1. **Telemetry: off.** `DISABLE_TELEMETRY=1` for the agent's shell. The search queries are short
    and about CSS, but they leave the machine. Setting the variable is a harness change of its
    own: made on 2026-10-23 as an `env` block in `.claude/settings.json`. The name is generic, so
-   it may also reach other tools that read it. Whether it reaches the shell of a builder
-   subagent is not yet verified; check that in a fresh session (`echo $DISABLE_TELEMETRY`).
+   it may also reach other tools that read it. Verified 2026-10-23: the builder subagent's
+   shell has `DISABLE_TELEMETRY=1`.
 2. **Permission: approve each run by hand** for the duration of the trial. No allow-list entry.
 3. **The Baseline target: the default** (Baseline Widely available). Nothing is added to
    `CLAUDE.md` for it.

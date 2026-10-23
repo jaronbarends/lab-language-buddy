@@ -1,6 +1,6 @@
 # HDR-005: Try Modern Web Guidance on the bubble animation, with the baseline written first
 
-- **Status:** accepted
+- **Status:** in-progress
 - **Date:** 2026-10-23
 - **Type:** Harness Decision Record (HOW do we work)
 
@@ -99,8 +99,15 @@ Taken by the human on 2026-10-23:
    "Modern Web Guidance" section. Kept during the trial, because it lists the guide ids and
    rules that shaped the code, which is the evidence for the one-line result in JNL-002 K10. To
    watch on the first run: whether it disturbs the builder's fixed report format.
-5. **Install route: the `/plugin` commands.** Where it installs (project or user) is observed
-   afterwards in the `/plugin` screen and noted here.
+5. **Install route: the `/plugin` commands.** Done on 2026-10-23, in a terminal window: the
+   `/plugin` command is not available in the VS Code extension ("isn't available in this
+   environment"), but `/reload-plugins` is. Result, read from `~/.claude/plugins/installed_plugins.json`:
+   version 0.0.195, **scope `local`** (this user, this project path only; enabled in the
+   gitignored `.claude/settings.local.json`), cached under `~/.claude/plugins/cache/googlechrome/`.
+   Consequence: nothing of it is in the repo, so it does not travel to another machine or
+   clone; fine for a trial, to be revisited if it is kept. The cached plugin is pinned at
+   0.0.195, but the CLI it calls is still fetched as `@latest` on each run. Uninstall is not
+   documented by the vendor; the `/plugin` screen in a terminal is the route.
 
 ## Consequences
 

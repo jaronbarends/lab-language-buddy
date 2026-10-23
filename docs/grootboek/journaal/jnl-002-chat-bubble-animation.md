@@ -34,15 +34,15 @@ plan predates 2026-10-20 and carries a pointer here, so the two places do not dr
 
 | # | Issue | Status |
 |---|---|---|
-| K1 | Scope: only open question 11, or an enter animation on every bubble too? | open |
-| K2 | The surviving element: key by position (a) or a pending AI turn (b)? | open |
+| K1 | Scope: only open question 11, or an enter animation on every bubble too? | decided 2026-10-23 |
+| K2 | The surviving element: key by position (a) or a pending AI turn (b)? | decided 2026-10-23 (a) |
 | K3 | Growing in height and width: which technique? (spike on an iPhone) | open |
-| K4 | The thread's scroll effect against a bubble that is still growing | open |
-| K5 | Read-along: may the highlight start while the text is still appearing? | open |
-| K6 | One element, one role: `status` or `log`? | open |
-| K7 | The user's bubble growing when its evaluation arrives | open |
-| K8 | `prefers-reduced-motion` | open |
-| K9 | Overlap with the microphone dot pulse and the dots-and-bounce direction | open |
+| K4 | The thread's scroll effect against a bubble that is still growing | decided 2026-10-23 (A) |
+| K5 | Read-along: may the highlight start while the text is still appearing? | decided 2026-10-23 (only when fully visible) |
+| K6 | One element, one role: `status` or `log`? | parked 2026-10-23 |
+| K7 | The user's bubble growing when its evaluation arrives | decided 2026-10-23 (AI bubble only for now) |
+| K8 | `prefers-reduced-motion` | decided 2026-10-23 |
+| K9 | Overlap with the microphone dot pulse and the dots-and-bounce direction | decided 2026-10-23 (out of scope) |
 | K10 | Modern Web Guidance: does it give a better answer for K3? | trial agreed, outcome open |
 
 ### K1 — Scope
@@ -52,6 +52,12 @@ thinking dots. Open question 11 asks for the dots-to-text transition and says it
 together with the other animation work". **Question for the human:** is this journal only that
 transition, or also an enter animation for every new bubble (the user's too)? These are two
 separate pieces of work with different risk.
+
+**Decision (2026-10-23, the human):** start with the transition only (option A): the AI bubble
+going from thinking dots to its text as one element. An enter animation for every bubble is not
+part of this first piece; it is decided after the K3 spike, because what "appearing" means for
+the AI bubble depends on K2 (with one surviving element it appears when the dots do, not when
+the text does). The user's bubble growing on evaluation stays K7, separate.
 
 ### K2 — The surviving element
 
@@ -67,6 +73,13 @@ so nothing exists to animate. The plan weighed two ways on 2026-10-08:
 
 **Question for the human:** confirm (a)? (b) pays off only if a failed AI turn is ever shown
 inline with a retry, which is not planned. Lands in an ADR.
+
+**Decision (2026-10-23, the human):** (a), key by position. Checked before deciding: the reducer
+only appends turns, updates one in place with `map`, or resets `turns` to `[]` (session-reducer.ts
+lines 253, 467, 496, 314), so the position key cannot shift mid-session. Line 314 was not opened;
+it is assumed to be the reset to a new session. The ADR is not written yet: it waits for K3 to
+K6, so that one record covers the structure including the role it settles on. Condition that
+would reopen this: any future action that removes a single turn.
 
 ### K3 — Growing in height and width
 
@@ -100,8 +113,27 @@ the state name and the last user turn's evaluation status. It decides between "s
 bottom" and "align the bubble's top" from the bubble's size at that moment
 (`newestItem.offsetTop < bottomScrollTop`). A bubble that grows after that moment can end up
 partly out of view, or the top-alignment decision can be made on the wrong size. **Question:**
-scroll to the *final* size up front (measured in K3's technique), or follow the growth frame by
-frame? The first is simpler and likely the right default; it needs K3's measurement.
+scroll to the *final* size up front, or follow the growth frame by frame?
+
+A scroll position cannot be set beyond what the content currently occupies, so "scroll to the
+final size" only works if the bubble takes its final space in the layout at once. Two options:
+
+- (A) **Layout at final size at once, animation only visual** (for example a `clip-path`
+  reveal). The scroll effect stays unchanged. Safe because the animating bubble is always the
+  last element in the thread, so nothing else shifts.
+- (B) **Follow the growth** with a `ResizeObserver` or `requestAnimationFrame`, re-scrolling
+  during the animation. More code, and scrolling during an animation is a known source of jank
+  on iOS.
+
+**Decision (2026-10-23, the human):** (A), with (B) as the fallback if the spike shows (A) does
+not work on the iPhone. Not tested: how `clip-path` behaves on iOS with a bubble that has
+`overflow: hidden` and rounded corners; the spike (K3) is where that is found out.
+
+**Consequence for K3, noted after the K3 baseline was written.** If the layout is at final size
+at once, K3 is no longer about animating height and width but about revealing an already-full
+bubble. That is a different and easier problem than the baseline assumes (measure, then
+transition pixel values). The baseline is left as written, since it is the reference point for
+HDR-005; this consequence was not part of it.
 
 ### K5 — Read-along
 
@@ -110,6 +142,12 @@ for the human:** may the highlight start while the text is still appearing, or o
 text is fully visible? The second is simpler to reason about, but delays the highlight by the
 length of the animation.
 
+**Decision (2026-10-23, the human):** the highlight starts only once the text is fully visible.
+The cost is a delay of about the length of the reveal; how long that is, is not yet known and
+follows from the spike (K3). If the delay turns out to be noticeable, this is the issue to
+reopen. How the highlight is held back (the audio start, the `spokenWordCount` or only the
+styling) is a build detail, not decided here, and needs a look at the playback hook first.
+
 ### K6 — One element, one role
 
 `ThinkingBubble` is `role="status"` with an `aria-label`; `TurnBubble` is a wrapper with a
@@ -117,11 +155,23 @@ paragraph in the thread's `role="log"`. A single surviving element has to pick, 
 what a screen reader announces. VoiceOver was explicitly out of scope for stage 1 (see the
 review notes in the plan), so this may be parked rather than decided.
 
+**Parked (2026-10-23, the human).** There is no existing screen-reader behaviour to preserve
+and no test procedure, so deciding now would be deciding blind. Condition on the build: the
+roles and the label that exist today keep working as they do, and the builder reports it if one
+surviving element makes that impossible. Open risk, not verified: switching the role of an
+element that stays mounted is an unusual pattern for screen readers, and it may not be possible
+without a change. To be picked up with a real VoiceOver test, as its own piece of work.
+
 ### K7 — The user's bubble growing
 
 The user's bubble grows when its evaluation settles (the evaluation section is attached to it).
 The plan says the same technique applies. **Question:** same animation as the AI bubble, or
 only the AI bubble in the first version?
+
+**Decision (2026-10-23, the human):** only the AI bubble in the first version. The user's bubble
+keeps jumping to its larger size when the evaluation settles; that is accepted for now and is the
+follow-up if it bothers in use. Note: with K4(A) the scroll effect is untouched for it, so
+nothing new breaks.
 
 ### K8 — Reduced motion
 
@@ -129,11 +179,18 @@ The dot pulse already honours `prefers-reduced-motion`. The proposal to confirm:
 motion on, the size transition and any enter animation are skipped and the bubble goes straight
 to its final state. The human's call.
 
+**Decision (2026-10-23, the human):** confirmed. With `prefers-reduced-motion: reduce` the
+reveal is skipped and the bubble goes straight to its final state, as the dot pulse already
+does. The read-along delay of K5 then also disappears for those users.
+
 ### K9 — Overlap with other animation work
 
 The plan has a pulse planned for the microphone-active dot (Decision log, 09-25) and the human
 has mentioned a dots-and-bounce direction after the TTS latency measurements. **Question:** in
 or out of this journal? Default: out, to keep this one to the bubbles.
+
+**Decision (2026-10-23, the human):** out. The microphone dot pulse and the dots-and-bounce
+direction are separate work and get their own journal or issue when picked up.
 
 ### K10 — Modern Web Guidance
 
@@ -151,6 +208,15 @@ worse / nothing added; and whether the iPhone confirmed it.
 
 - **2026-10-23 — journal opened.** Issues K1 to K10 from a read of the plan and the code. The
   human confirmed this work stays on `arc/*` for now, so no new HDR on the method's scope.
+- **2026-10-23 — K1 decided.** Scope is the dots-to-text transition only; a general enter
+  animation waits until after the K3 spike.
+- **2026-10-23 — K2 decided.** Key by position; the reducer was checked for turn removal.
+- **2026-10-23 — K4 decided.** Layout at final size at once, animation only visual; changes
+  what K3 is about (see the note in K4).
+- **2026-10-23 — K5 decided.** Highlight starts once the text is fully visible.
+- **2026-10-23 — K6 parked.** With the condition that today's roles and label keep working.
+- **2026-10-23 — K7, K8, K9 decided.** AI bubble only for now; reduced motion skips the reveal;
+  the other animation work is out of scope.
 - **2026-10-23 — K10 agreed as a trial, booked as HDR-005 (accepted).** The baseline for K3 was
   written before the guidance was consulted.
 

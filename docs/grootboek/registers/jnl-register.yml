@@ -21,9 +21,9 @@ jnls:
     datum: 2026-10-23
     laatste-sessie: 2026-10-23
     kwesties-totaal: 10
-    kwesties-besloten: 0
-    kwesties-open: 10
-    kwesties-geparkeerd: 0
+    kwesties-besloten: 7
+    kwesties-open: 2
+    kwesties-geparkeerd: 1
     doel-records:
       - "ADR for the bubble's structure (K2), to be written"
       - "HDR-005 (K10)"

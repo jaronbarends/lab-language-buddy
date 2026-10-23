@@ -32,6 +32,37 @@ it. A difference the iPhone does not confirm does not count as a gain. "Same" is
 and a reason not to keep it. This record then moves to `implemented` (kept) or is superseded or
 rejected.
 
+## Extension (2026-10-23): more than one test
+
+The human wants to test with a few more CSS-related tasks before deciding, so the procedure
+above is repeated, not just run once. It applies to every task where the skill itself says it
+should trigger (UI and layout, scroll and motion, performance, web APIs, forms and
+accessibility), and not to backend work, scripts, tooling or trivial edits.
+
+For each such task, in this order:
+
+1. The agent writes its own approach down **before** the guidance is consulted, in the
+   journal or spec of that task. The skill's own description says to run it first ("mandatory"
+   for HTML/CSS work); in the lead thread that is deliberately **not** followed until the
+   baseline is written. The builder is told in its assignment to consult it, as in K10.
+2. The builder consults the guidance and reports what it recommends and how it differs from
+   the baseline.
+3. A row goes into the trial log below, and the human gives the verdict for that task.
+
+**Lesson from the first test (JNL-002):** write the baseline *after* the design decisions that
+constrain the problem. There, K4 changed what K3 was about after the baseline existed, so the
+comparison was partly moot. A baseline written against a problem that is still moving does not
+measure the guidance.
+
+**The trial ends after three tests in total** (the bubble animation plus two more; decided by
+the human, 2026-10-23). Then the human decides: keep, switch off or adjust.
+
+### Trial log
+
+| # | Task | Baseline (where) | Guidance recommended | Difference | iPhone confirmed | Verdict (human) |
+|---|---|---|---|---|---|---|
+| 1 | Bubble reveal (JNL-002 K3) | JNL-002 K3 | `clip-path` for reveals; `interpolate-size` Chromium-only | Same on the key point; final design came from the human, outside both | The first spike ran; the final design was tuned by eye | open |
+
 ## Why
 
 The animation work depends on web platform features whose support changes quickly (animating to

@@ -19,6 +19,13 @@ a living document.
 Registers live in `docs/grootboek/registers/` (YAML). Update the register with every new
 decision or status change.
 
+## Numbering across parallel branches
+
+Branches booking records in parallel hand out the same next number. The branch that merges
+second renumbers its own records, in its own branch, after merging `arc/arc-main` into it and
+before its pull request; merged records keep their number (HDR-005). `npm run docs:check`
+does not catch duplicate ids, so check each register by hand.
+
 ## Writing conventions
 
 - Documentation: English (the repo's language rule; the skill's own templates are Dutch)

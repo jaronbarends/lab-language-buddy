@@ -63,6 +63,9 @@ documents:
   - path: docs/grootboek/dft/dft-001-eerste-reconciliatie-software-balans.md
     what: First drift reconciliation of the software balance; no drift found, because no code changed since the balance was written. Tested the process, not detection.
     read_when: running or interpreting the next reconciliation of the balance.
+  - path: docs/grootboek/dft/dft-002-guard-blocks-claude-md-under-src.md
+    what: Open drift report; the subagent-tenzij hook blocks CLAUDE.md files under src/ for the lead thread, while the working agreement exempts non-code files. Decision pending (change the hook or the agreement).
+    read_when: touching guard-kenniswerker or the working-model line in CLAUDE.md; picking up the open drift reports.
   - path: docs/grootboek/registers
     what: YAML registers (adr, hdr, pdr, dft, jnl) — the cheap index of the grootboek; read before opening a record.
     read_when: looking for a decision, its status or an open drift report in the grootboek.

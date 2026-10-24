@@ -42,6 +42,9 @@ documents:
   - path: docs/grootboek/hdr/hdr-005-renumber-on-merge-when-numbers-collide.md
     what: Rule for parallel arc/* branches that book the same record number; the branch that merges second renumbers its own records, in its own branch.
     read_when: merging an arc/* branch that has booked grootboek records; numbering a new record.
+  - path: docs/grootboek/hdr/hdr-006-communication-duty-hook.md
+    what: Why a PostToolUse hook reminds the agent of the duty to communicate when a leading document changes; where the list lives, the blind spots, subagent wording.
+    read_when: changing the list of leading documents; touching notify-leading-document or leading-documents.json.
   - path: docs/grootboek/adr/adr-001-environment-and-deployment-topology.md
     what: main is production, other branches preview by default, secret env vars Production-only; configured in Vercel, not in the repo.
     read_when: changing branch or env-var setup in Vercel.

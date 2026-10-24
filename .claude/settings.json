@@ -41,6 +41,26 @@
           }
         ]
       }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/notify-leading-document.cjs"
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/notify-leading-document.cjs"
+          }
+        ]
+      }
     ]
   }
 }

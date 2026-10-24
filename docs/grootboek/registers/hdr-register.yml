@@ -55,3 +55,14 @@ hdrs:
     beslissing: "Parallel arc/* branches book the same next number; whichever merges second renumbers its own records in its own branch, after merging arc/arc-main into it and before its PR. Merged records keep their number"
     notitie: "docs:check does not detect duplicate ids; the check is manual. arc/bubble-animation's HDR-005 is the first to be renumbered"
     bestand: hdr-005-renumber-on-merge-when-numbers-collide.md
+  - id: "HDR-006"
+    titel: "A hook reminds the agent of the duty to communicate"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-24
+    implementatie-datum: 2026-10-24
+    beslissing: "A PostToolUse hook on Edit and Write reminds the agent (lead thread and subagents, with different wording) when a leading document changes; the list of leading documents and the wording are data in .claude/hooks/leading-documents.json"
+    notitie: "Never blocks. Blind spots: shell-made changes, edits outside Claude Code. No de-duplication. The list is kept in two places (root CLAUDE.md and the json). Numbering: arc/bubble-animation holds HDR-006 for the Modern Web Guidance trial, so one of the two renumbers when it merges second (HDR-005)"
+    bestand: hdr-006-communication-duty-hook.md

@@ -35,5 +35,4 @@ does not catch duplicate ids, so check each register by hand.
 
 ## Duty to communicate
 
-When a balance document or CLAUDE.md changes: say what changes and why, and ask the human
-to check it.
+See the root `CLAUDE.md`: it holds the list of leading documents and the rule.

@@ -15,3 +15,13 @@ dfts:
     midden: 0
     laag: 0
     bestand: dft-001-eerste-reconciliatie-software-balans.md
+  - id: "DFT-002"
+    titel: "The subagent-tenzij guard blocks CLAUDE.md files under src/, the working agreement says it should not"
+    status: open
+    datum: 2026-10-24
+    aanleiding: "Found while designing the communication-duty hook (REQ-GG-04); tested with simulated lead-thread calls"
+    bevindingen: 1
+    hoog: 0
+    midden: 0
+    laag: 1
+    bestand: dft-002-guard-blocks-claude-md-under-src.md

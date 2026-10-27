@@ -10,6 +10,7 @@
     "docs:check": "node scripts/check-docs.mjs",
     "docs:renumber": "node scripts/renumber-records.mjs",
     "docs:drift": "node scripts/drift-signal.mjs",
+    "docs:incidents": "node scripts/incidents.mjs",
     "test:scripts": "node --test \"scripts/*.test.mjs\"",
     "register:check": "node scripts/sync-code-architectuur-register.mjs --check",
     "prepare": "husky"

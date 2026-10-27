@@ -89,3 +89,25 @@ hdrs:
     beslissing: "A leading document declares its werkgebied in its front matter; npm run docs:drift lists the code changes in that scope since the document was last touched, docs:check warns on drift and fails on a missing path; a signal is followed by a reconciliation and a DFT"
     notitie: "REQ-GG-05. Signal, not verdict. Proved on a throwaway checkout of arc/bubble-animation (750dc49, four files); the reconciliation that follows a real signal is still open. Numbering: arc/bubble-animation holds its own HDR-008 and renumbers via docs:renumber (HDR-007)"
     bestand: hdr-008-drift-signal.md
+  - id: "HDR-009"
+    titel: "Recurring faults are logged by pattern and codified at three"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-28
+    implementatie-datum: 2026-10-28
+    beslissing: "An incident register grouped by pattern (no ids, one line per incident); npm run docs:incidents and docs:check count it and warn at three without a maatregel; at three the pattern is codified (rule, hook or skill) and an HDR books it; a logging duty in CLAUDE.md"
+    notitie: "REQ-GG-06. Threshold three (the requirement), not more than three (the skill's HDR guide). Seeded from six memory notes. Logging depends on the agent: no hook sees a human correction. Numbering: arc/bubble-animation holds its own HDR-008 and renumbers via docs:renumber (HDR-007)"
+    bestand: hdr-009-incident-register.md
+  - id: "HDR-010"
+    titel: "A name is checked against what it promises"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-28
+    implementatie-datum: 2026-10-28
+    beslissing: "A rule in .claude/rules/code-style.md: a name says what the function returns or does and uses its neighbours' word; a correction is accepted without defence, with a reason and a better proposal"
+    notitie: "First pattern codified through the incident register (naming-precision, seven incidents). A rule cannot be checked mechanically: success is no further naming incident"
+    bestand: hdr-010-names-checked-against-what-they-promise.md

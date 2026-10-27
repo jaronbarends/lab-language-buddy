@@ -5,7 +5,7 @@ import type { Turn } from "@/lib/session-reducer";
 import styles from "./ai-bubble.module.css";
 import { Bubble } from "./bubble";
 import { HighlightedText } from "./highlighted-text";
-import { ThinkingBubble } from "./thinking-bubble";
+import { ThinkingIndicator } from "./thinking-indicator";
 import turnStyles from "./turn-bubble.module.css";
 
 type AiTurn = Extract<Turn, { author: "ai" }>;
@@ -41,10 +41,10 @@ export function AiBubble({
   const [startedAsThinking] = useState(turn === null);
 
   if (turn === null) {
-    // Role and label as ThinkingBubble had them (JNL-003, K6 parked).
+    // Role and label as the old ThinkingBubble had them (JNL-003, K6 parked).
     return (
       <Bubble author="ai" role="status" aria-label="Waiting for a reply">
-        <ThinkingBubble />
+        <ThinkingIndicator />
       </Bubble>
     );
   }

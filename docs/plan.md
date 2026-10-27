@@ -210,8 +210,9 @@ so a page reload starts from the defaults again.
     ├── components/
     │   ├── language-buddy.tsx    owns the reducer, renders by phase
     │   ├── setup-screen/         setup-screen, language-picker, level-select, starter-toggle
-    │   ├── conversation/         conversation-screen, conversation-thread, turn-bubble,
-    │   │                         highlighted-text, live-transcript, thinking-bubble,
+    │   ├── conversation/         conversation-screen, conversation-thread, ai-bubble,
+    │   │                         turn-bubble, highlighted-text, live-transcript,
+    │   │                         thinking-indicator,
     │   │                         draft-review (DraftBubble + DraftEditor),
     │   │                         conversation-controls (a switch over composing-controls,
     │   │                         error-controls and idle-controls, which dispatch for

@@ -266,8 +266,9 @@ carries a condition the plan did not state: both must be in the SAME array.
   at the playback hook first.
 - K6 is parked: a VoiceOver test of the role change on the surviving element is still owed.
 - Cleanup left behind: the AI branch in `TurnBubble` is dead code and its markup is duplicated
-  in `AiBubble`; `ThinkingBubble` is now only the dots (`ThinkingDots` would be accurate). The
-  human corrects names that promise more than the code does, so that is his call.
+  in `AiBubble`. Done 2026-10-27: `ThinkingBubble` is now `ThinkingIndicator` (the human's
+  choice, named after its function rather than its form, so a different animation would not
+  force another rename; the agent had proposed `ThinkingDots`).
 - Not written yet: the ADR for K2 (after K3 is settled), the spec, the K10 verdict and the
   decision on HDR-013 (keep, switch off or adjust).
 

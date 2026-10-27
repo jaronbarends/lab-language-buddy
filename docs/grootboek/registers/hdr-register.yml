@@ -78,3 +78,14 @@ hdrs:
     beslissing: "Records are renumbered before the merge, not after: npm run docs:renumber renumbers the branch's colliding records, docs:check fails on a duplicated id, and a guard hook holds back a merge of arc/arc-main or main until the script has run"
     notitie: "Reverses the order in HDR-005 (renumber before merging) and replaces its manual check. First automated test in the repo, for scripts only (plan, log 10-27). Tried on a throwaway worktree of arc/bubble-animation: HDR-006 to HDR-007"
     bestand: hdr-007-mechanical-renumbering.md
+  - id: "HDR-008"
+    titel: "A drift signal tells when the code a leading document describes has moved on"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-27
+    implementatie-datum: 2026-10-27
+    beslissing: "A leading document declares its werkgebied in its front matter; npm run docs:drift lists the code changes in that scope since the document was last touched, docs:check warns on drift and fails on a missing path; a signal is followed by a reconciliation and a DFT"
+    notitie: "REQ-GG-05. Signal, not verdict. Proved on a throwaway checkout of arc/bubble-animation (750dc49, four files); the reconciliation that follows a real signal is still open. Numbering: arc/bubble-animation holds its own HDR-008 and renumbers via docs:renumber (HDR-007)"
+    bestand: hdr-008-drift-signal.md

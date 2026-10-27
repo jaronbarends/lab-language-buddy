@@ -31,6 +31,26 @@
   flex-shrink: 0;
 }
 
+/*
+ * The one minimum width of the three bubbles that hold the user's words while they are
+ * composing: live transcript, settled draft and editor (set with Bubble's
+ * `hasMinimumWidth`). Defined here only, so the three cannot drift apart. It keeps a short
+ * text from changing the bubble's width when the bubble turns into the next one.
+ *
+ * 17ch is an estimate, not a measurement (JNL-003 K13). It is sized so that the
+ * placeholder state "Preparing mic…" and the live state "Listening…" (the latter with the
+ * 12px dot and the 8px gap) both fit without the bubble changing width. `ch` is the width
+ * of "0" in the bubble's 18px font, about 0.6em, so roughly 11px: 17ch is about 184px
+ * border box, minus 36px of padding and border, leaving about 148px of content. "Listening…"
+ * needs about 90px plus the 20px of dot and gap; "Preparing mic…" about 120px. If the
+ * placeholder text, the dot, the gap, the padding or the font changes, re-derive it.
+ * Against the max-width of 85%: a min-width beats a max-width in CSS, so this must stay
+ * below 85% of the thread on the narrowest screen (85% of 320px is 272px; it is 184px).
+ */
+.minimumWidth {
+  min-width: 17ch;
+}
+
 .ai {
   align-self: flex-start;
   background: var(--color-bg-default);

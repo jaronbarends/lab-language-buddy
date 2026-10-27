@@ -42,10 +42,11 @@ plan predates 2026-10-20 and carries a pointer here, so the two places do not dr
 | K6 | One element, one role: `status` or `log`? | parked 2026-10-23 |
 | K7 | The user's bubble growing when its evaluation arrives | decided 2026-10-23 (AI bubble only for now) |
 | K8 | `prefers-reduced-motion` | decided 2026-10-23 |
-| K9 | Overlap with the microphone dot pulse and the dots-and-bounce direction | decided 2026-10-23 (out of scope) |
+| K9 | Overlap with the microphone dot pulse and the dots-and-bounce direction | decided 2026-10-23 (out of scope); the mic dot pulse picked up as K13 on 2026-10-27 |
 | K10 | Modern Web Guidance: does it give a better answer for K3? | trial agreed, outcome open |
 | K11 | The user's bubble when it is sent: what animates | decided and built 2026-10-27, iPhone test open; shrink in the bar and the thinking-bubble delay come after |
 | K12 | Speech start against the end of the reveal | parked 2026-10-27 |
+| K13 | The listening indicator pulses while the microphone is live | decided 2026-10-27; build open |
 
 ### K1 — Scope
 
@@ -338,6 +339,112 @@ short reply, a fast or cached response, or the mock TTS could start earlier. K5 
 the highlight starts when the text is fully visible, after the fade (550ms), not at the end of
 the scale (350ms). Nothing is built.
 
+### K13 — The listening indicator pulses while the microphone is live
+
+K9 put the microphone dot pulse out of this journal "until picked up"; the human picked it up
+on 2026-10-27, so it is booked here as an issue rather than in a journal of its own. The
+dots-and-bounce direction from K9 stays out.
+
+What was read from the reference app, on the human's pointer to the file (plan, "Keeping the
+experiment honest"; only the rule and keyframes named below, nothing else of the file):
+`.listeningIndicator` in `SpeechResults.module.css` is a dot (`--size-12`, `--color-bg-primary`)
+with an `::after` over it (`position: absolute; inset: 0`, the same circle, `background-color:
+inherit`) that runs `animation: pulse 1.6s infinite`; `@keyframes pulse` goes from `scale: 1;
+opacity: 0.8` to `scale: 2.2; opacity: 0`. A ring that widens and fades while the dot stays. The
+original has no `prefers-reduced-motion` rule.
+
+Here today: the dot is `.listeningIndicator` in `live-transcript.module.css`, 8px, rendered
+only while `microphoneIsLive` is true (`live-transcript.tsx`), inside a bubble that clips
+(`overflow: hidden`).
+
+**Decisions (2026-10-27, the human):**
+
+1. The element is that dot (the one named `listeningIndicator`).
+2. It pulses only while the microphone is live, not in "Preparing mic…".
+3. Reduced motion: no pulse; only the plain dot that exists now.
+4. (After seeing it with an 8px dot, same day.) The dot gets the original's size, 12px, and the
+   ring the original's dimension (2.2 x the dot, so 26.4px across). Changing only the size would
+   have misaligned the dot, so its `margin-top` follows the line height: see "Built".
+
+Taken over from the original without a decision of its own: the animation itself (1.6s,
+infinite, scale 1 to 2.2, opacity 0.8 to 0). Tuning is for the device.
+
+**Baseline (the agent's own approach, written 2026-10-27 after reading the original and before any
+web guidance was consulted; HDR-013, test 3).** From the agent's own knowledge, unverified:
+
+- Keep the original's structure: `position: relative` on `.listeningIndicator` and an `::after`
+  over it (`position: absolute; inset: 0`, `border-radius: inherit`, `background: inherit`) that
+  runs the pulse. The `::after` is the ring; the dot itself never animates, so the reduced-motion
+  version is exactly today's dot.
+- The keyframes as in the original, animating only `scale` and `opacity` (compositor-friendly),
+  with `transform-origin` at the centre (the default), so the ring grows evenly around the dot.
+- The original's timing (1.6s, infinite) and its default easing; I would not add `ease-out`
+  unless it looks wrong on the device.
+- Reduced motion: `animation: none` on the `::after` and hide it (`display: none`), because a
+  static ring at `scale: 1; opacity: 0.8` would sit exactly on the dot but change its colour.
+- The ring reaches 2.2 x 8px = 17.6px, 4.8px beyond the dot on every side. The dot sits 16px from the
+  bubble's left edge and 20px from its top (padding plus the 8px `margin-top`), and 8px from the
+  text, so I expect no clipping by the bubble's `overflow: hidden` and no touching the text.
+- No `will-change` and no JavaScript; the pulse is as long as the element exists.
+- Risks I expect: the ring being too faint or too small at 8px, and Safari re-rasterising the
+  circle while it scales.
+
+**Built (2026-10-27), not yet tested on the iPhone.** `.listeningIndicator` in
+`live-transcript.module.css` has `position: relative` and a nested `&::after` ring (same circle,
+`inset: 0`, `border-radius` and `background` inherited, so the tokens are kept) running
+`listening-pulse 1.6s infinite`: `scale` 1 to 2.2 and `opacity` 0.8 to 0, the original's default
+easing. Under `prefers-reduced-motion: reduce` the ring is `display: none`, so only today's
+plain dot remains. The dot is 12px (`--size`), and its `margin-top` is
+`calc((1lh - var(--size)) / 2)`: at 18px text with a line height of 1.25 a line is 22.5px, so
+the margin is 5.25px and the dot's centre (11.25px) lands on the first line's centre. `lh` is
+supported since Chrome 109 and Safari 16.4, from the agent's own knowledge; the guidance has no
+guide on it. From the CSS (not measured): the ring reaches 7.2px beyond the dot, the dot is 16px
+from the bubble's clip edge on the left and 17.25px from the top, and the text is 8px away, so
+the ring is not clipped and ends 0.8px short of the text, where it is almost transparent; that
+may look tight on the device.
+
+Found while checking the alignment (not caused by the pulse, not changed): the text is NOT where
+it was when the dot appears and disappears. The dot takes its width plus the 8px gap, so the text
+starts 20px from the padding edge while the microphone is live (it was 16px with the 8px dot) and
+0px in "Preparing mic…" and in the settled draft, which have no dot. The text moves 20px when the
+microphone goes live and 20px back when recording stops, and the text width shrinks by the same
+amount while live, so a longer transcript can rewrap at those moments. The comment on `.listening`
+("nothing shifts when recording ends — the indicator dot is the only difference") is true for the
+frame but not for the text.
+
+**Decision 5 (2026-10-27, the human, after seeing it live):** the shift in width was slightly
+disturbing, so the three bubbles the user's words pass through while composing (live transcript,
+settled draft, editor) get one shared minimum width, `min-width: 17ch`, sized from the
+placeholder "Preparing mic…" (the human tried 17ch himself). It is defined once, in
+`bubble.module.css`, and switched on with `Bubble`'s `hasMinimumWidth`. The comment on
+`.listening` was corrected. Accepted by the human: for text longer than that the text still moves
+20px when the dot goes, since the bubble's colour and outline change at that moment anyway; and a
+one-word draft is now a bubble 17ch wide. Rejected: keeping the dot's room free in every state (a
+design change, not needed now). The 17ch is an estimate (about 184px border box, 148px of content,
+from the agent's knowledge of the font; not measured) and must be re-derived if the placeholder
+text, the dot, the gap, the padding or the font changes. It stays below 85% of the thread's
+width on a 320px screen, by the same estimate.
+
+Afterwards the editor's own `min-width: 4ch` was removed as redundant: the editor text is a block
+inside a bubble that is now at least 17ch wide, and `min-height: 1lh` stays for the height.
+**Tested on the iPhone by the human (2026-10-27): all points passed**, the ones listed for this
+change (the bubble keeping its width from "Preparing mic…" through live to the draft, the
+one-word draft and the editor at 17ch, a long transcript unchanged, the narrow screen).
+
+Guidance result for the trial (facts only, the verdict is the human's): no guide covers a pulsing
+or expanding-ring indicator; the searches only found general motion guides (`motion`,
+`individual-transform-properties`, `spinner`). It agreed with the baseline on animating only
+`scale` and `opacity` (the compositor), on not applying `animation-duration: 0.01ms` globally,
+and on handling reduced motion per rule. Differences: (1) it mandates an identity base `scale: 1`
+on an element that animates `scale`, which the baseline did not have; this time the builder
+APPLIED it, on the `::after` ring (unlike the bubbles in K11, where it was left out). The ring
+is a childless pseudo-element, so the cost, a permanent stacking context, is nil here, but it is
+a different outcome from K11 and the human may want one rule for both. (2) It prefers "default to
+static, opt in to motion", and its `spinner` guide says to slow a persistent animation down under
+reduced motion instead of stopping it, so the user can still tell it is active. That contradicts
+decision 3 (no pulse under reduced motion). K13 was followed; the plain dot already says the
+microphone is live.
+
 ## Decision log
 
 - **2026-10-23 — journal opened.** Issues K1 to K10 from a read of the plan and the code. The
@@ -364,6 +471,9 @@ the scale (350ms). Nothing is built.
   fading in after the user's text (the human's addition; the strip's frame is visible at once); a dev-only preview of the sent bubble was
   added. The base `scale: 1` of the guidance was not applied. Next: the iPhone test, then the
   thinking bubble's delay and, later, the draft shrinking in the control bar.
+- **2026-10-27 — K13 decided and built.** The listening dot pulses while the microphone is live
+  (a ring, as in the original app); no pulse under reduced motion. Test 3 of the HDR-013 trial.
+  Tested on the iPhone by the human, all points passed. Next: the human's verdict on the trial.
 
 **Where to pick up (written for the next session):**
 

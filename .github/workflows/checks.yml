@@ -24,6 +24,8 @@ jobs:
       - run: npm run lint
       - run: npx next typegen && npx tsc --noEmit
       - run: npm run docs:check
+      # HDR-007: the tests of the scripts that rewrite documents (node:test, no dependency).
+      - run: npm run test:scripts
       # REQ-AH-12 mechanism 2: verify only. It never rewrites or commits the register.
       - run: npm run register:check
       - run: npm run build

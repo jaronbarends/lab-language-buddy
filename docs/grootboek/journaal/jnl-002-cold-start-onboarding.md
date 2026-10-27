@@ -1,7 +1,7 @@
 ---
 titel: Cold-start journal — can a newcomer work from the repo alone?
 status: discovery
-datum: 2026-10-28
+datum: 2026-10-27
 kernvraag: Where does the repo not describe itself well enough for an agent that has nothing but the repo?
 doel-records:
   - "HDR-011 (K1, K2)"
@@ -47,11 +47,11 @@ the README, `docs/index.yml`, `plan.md` or the registers. The layering works.
 
 | # | Issue | Status |
 |---|---|---|
-| K1 | The base branch for arc work is not in the root `CLAUDE.md` | decided 2026-10-28, booked in HDR-011 |
-| K2 | Nothing says the branch comes before the first edit | decided 2026-10-28, booked in HDR-011 |
+| K1 | The base branch for arc work is not in the root `CLAUDE.md` | decided 2026-10-27, booked in HDR-011 |
+| K2 | Nothing says the branch comes before the first edit | decided 2026-10-27, booked in HDR-011 |
 | K3 | The checks were not run, though they could have been | open |
 | K4 | The README links to a private artifact a newcomer cannot open | open |
-| K5 | What does one run of one hour prove? | decided 2026-10-28 |
+| K5 | What does one run of one hour prove? | decided 2026-10-27 |
 | K6 | Does the "no AI-or-self verdict" rule hold? | holds in one run, open until repeated |
 
 ### K1 — The base branch for arc work is not in the root `CLAUDE.md`
@@ -62,7 +62,7 @@ not what happens: it branches from `arc/arc-main` and goes back into it. That is
 workflow. The fresh agent's answer to "what do I do before a change" followed the root exactly:
 `stage/N-name`, a descriptive name or `spike-*`, and never commit to `main`. No base branch.
 
-**Decided (Jaron, 2026-10-28):** one sentence in the root `Branches` line, naming
+**Decided (Jaron, 2026-10-27):** one sentence in the root `Branches` line, naming
 `arc/arc-main` as the base while it is the integration branch, and `main` as production.
 **Booked as HDR-011.** The sentence has to change when `arc/arc-main` merges into `main`.
 
@@ -72,7 +72,7 @@ workflow. The fresh agent's answer to "what do I do before a change" followed th
 reported correctly that it needs a branch and a PR. Nothing was committed, so no rule was
 broken; Jaron expected the branch first.
 
-**Decided (Jaron, 2026-10-28):** the same sentence says the branch is created before the first
+**Decided (Jaron, 2026-10-27):** the same sentence says the branch is created before the first
 edit. **No hook for it.** It is one incident and the rule is not even written yet; if it
 recurs after the rule, the pattern escalates (HDR-010 gives the reasoning). Logged as the
 pattern `branch-before-edit` in the incident register. **Booked as HDR-011.**
@@ -94,7 +94,7 @@ the principles should be reachable for a newcomer is Jaron's call. **Open.**
 ### K5 — What does one run of one hour prove?
 
 It proves that the knowledge is there and in the right layers. It does not prove "the same day",
-and one run is one data point. **Decided (2026-10-28):** the first hour is the measure, a run
+and one run is one data point. **Decided (2026-10-27):** the first hour is the measure, a run
 counts as productive with at most two corrections the repo already answers (the incident
 threshold is three), and REQ-GG-10 counts as almost met until a second round after the fixes
 comes out better.
@@ -109,7 +109,7 @@ it.** An earlier version of this journal wrongly said no occasion had arisen.
 
 ## Decision log
 
-- **2026-10-28 — K1 and K2 decided and booked as HDR-011.** One sentence in the root `Branches`
+- **2026-10-27 — K1 and K2 decided and booked as HDR-011.** One sentence in the root `Branches`
   line. The incident `branch-before-edit` is logged. K5 decided: a first-hour measure.
 - **Next:** a second round of the cold run after the fix, on a new task, to see whether the
   base-branch question and the branch-first habit improve, and whether K3, K4 and K6 repeat.

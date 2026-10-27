@@ -3,7 +3,7 @@ titel: "An incident register: recurring faults are counted and codified at three
 type: spec
 soort: plan van aanpak
 status: concept
-datum: 28 oktober 2026
+datum: 27 oktober 2026
 auteurs: Jaron, Mama Claude
 ---
 

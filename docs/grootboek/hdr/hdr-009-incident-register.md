@@ -1,7 +1,7 @@
 # HDR-009: Recurring faults are logged by pattern and codified at three
 
 - **Status:** implemented
-- **Date:** 2026-10-28
+- **Date:** 2026-10-27
 - **Implementation:** 100
 - **Type:** Harness Decision Record (HOW do we work)
 
@@ -39,7 +39,7 @@ The threshold is three, as the requirement says. The grootboek skill's HDR guide
 
 ## Consequences
 
-- **Seeded** on 2026-10-28 from the six feedback notes in Claude's memory, counted by what the
+- **Seeded** on 2026-10-27 from the six feedback notes in Claude's memory, counted by what the
   notes themselves say and not by a full history: `naming-precision` 7, `answer-first` 2,
   `act-on-question` 2, `review-point-context` 1, `id-with-title` 1, `ai-vs-self-advice` 1.
 - **First codification:** `naming-precision` stood at seven on day one, so the register warned

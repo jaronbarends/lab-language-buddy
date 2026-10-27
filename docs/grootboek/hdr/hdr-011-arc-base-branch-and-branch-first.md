@@ -1,7 +1,7 @@
 # HDR-011: Arc work branches from `arc/arc-main`, and the branch exists before the first edit
 
 - **Status:** implemented
-- **Date:** 2026-10-28
+- **Date:** 2026-10-27
 - **Implementation:** 100
 - **Type:** Harness Decision Record (HOW do we work)
 

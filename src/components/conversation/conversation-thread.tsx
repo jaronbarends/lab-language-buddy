@@ -85,7 +85,7 @@ export function ConversationThread({
 
   // One array for the turns and the waiting bubble: React matches keys only among the
   // children of the same array, so the waiting AiBubble and the reply that replaces it
-  // are the same element only if both sit in this array (JNL-002, K2).
+  // are the same element only if both sit in this array (JNL-003, K2).
   const items = turns.map((turn, index) => {
     const turnSpokenWordCount =
       turn.id === speakingTurnId ? spokenWordCount : null;

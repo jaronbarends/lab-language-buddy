@@ -22,7 +22,7 @@ type AiBubbleProps = {
  * The AI's bubble, for both the waiting state and the reply. The thread gives it the
  * same key in both (`ai-<position>`), so React keeps this one element and the text
  * replaces the dots in place, and the bubble grows out of its top-left corner
- * (JNL-002, K2 and K4(A)).
+ * (JNL-003, K2 and K4(A)).
  *
  * The layout takes the final size at once; only a scale (a transform, which does not
  * affect layout) is animated, so the thread's scroll effect sees the final size and
@@ -41,7 +41,7 @@ export function AiBubble({
   const [startedAsThinking] = useState(turn === null);
 
   if (turn === null) {
-    // Role and label as ThinkingBubble had them (JNL-002, K6 parked).
+    // Role and label as ThinkingBubble had them (JNL-003, K6 parked).
     return (
       <Bubble author="ai" role="status" aria-label="Waiting for a reply">
         <ThinkingBubble />

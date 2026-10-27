@@ -84,3 +84,13 @@ patronen:
       - datum: 2026-10-03
         wat: "A one-line AI-or-self verdict and learning-goal framing given in a project that does not want them"
         bron: "memory note feedback-no-ai-vs-self-advice-here"
+  - patroon: reviewer-claim-unchecked
+    titel: "A reviewer's claim is passed on without being checked against the code"
+    maatregel:
+    incidenten:
+      - datum: 2026-10-10
+        wat: "Two claims in stage 4 finding B1 turned out to be wrong when checked"
+        bron: "stage 4 review, finding B1"
+      - datum: 2026-10-23
+        wat: "The reviewer approved the bubble spike on the reasoning that the position key is equal across the thinking-to-reply transition, missing that the waiting bubble and the reply sat in different child slots of the thread, so React remounted and no animation ran; the lead checked the tokens and the scope but did not trace the key claim, and it was found on the user's screen"
+        bron: "bubble animation spike, JNL-003 K10 process note"

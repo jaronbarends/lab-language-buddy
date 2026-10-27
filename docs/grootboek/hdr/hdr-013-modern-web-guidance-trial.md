@@ -1,4 +1,4 @@
-# HDR-008: Try Modern Web Guidance on the bubble animation, with the baseline written first
+# HDR-013: Try Modern Web Guidance on the bubble animation, with the baseline written first
 
 - **Status:** in-progress
 - **Date:** 2026-10-23
@@ -14,17 +14,17 @@ honestly.
 ## Decision
 
 Try **Modern Web Guidance** (the Chrome team's agent skills with current web platform guidance,
-`GoogleChrome/modern-web-guidance`) on the chat bubble animation (JNL-002), and decide
+`GoogleChrome/modern-web-guidance`) on the chat bubble animation (JNL-003), and decide
 afterwards whether it stays.
 
 The method costs almost no extra work:
 
-1. Before the spike, the agent writes its own approach for JNL-002 K3 (growing a bubble in
+1. Before the spike, the agent writes its own approach for JNL-003 K3 (growing a bubble in
    height and width), from its own knowledge. Done on 2026-10-23, in K3.
 2. The spike's assignment to the builder carries one extra sentence: consult the guidance for
    K3 and report what it recommends and whether that differs from the baseline in K3.
 3. The spike runs on a real iPhone, as planned anyway.
-4. One line goes into JNL-002 K10: same / different and better / different and worse /
+4. One line goes into JNL-003 K10: same / different and better / different and worse /
    nothing added, and whether the iPhone confirmed it.
 
 **Exit criterion.** Right after that line, the human decides: keep it, switch it off, or adjust
@@ -49,7 +49,7 @@ For each such task, in this order:
    the baseline.
 3. A row goes into the trial log below, and the human gives the verdict for that task.
 
-**Lesson from the first test (JNL-002):** write the baseline *after* the design decisions that
+**Lesson from the first test (JNL-003):** write the baseline *after* the design decisions that
 constrain the problem. There, K4 changed what K3 was about after the baseline existed, so the
 comparison was partly moot. A baseline written against a problem that is still moving does not
 measure the guidance.
@@ -61,7 +61,7 @@ the human, 2026-10-23). Then the human decides: keep, switch off or adjust.
 
 | # | Task | Baseline (where) | Guidance recommended | Difference | iPhone confirmed | Verdict (human) |
 |---|---|---|---|---|---|---|
-| 1 | Bubble reveal (JNL-002 K3) | JNL-002 K3 | `clip-path` for reveals; `interpolate-size` Chromium-only | Same on the key point; final design came from the human, outside both | The first spike ran; the final design was tuned by eye | open |
+| 1 | Bubble reveal (JNL-003 K3) | JNL-003 K3 | `clip-path` for reveals; `interpolate-size` Chromium-only | Same on the key point; final design came from the human, outside both | The first spike ran; the final design was tuned by eye | open |
 
 ## Why
 
@@ -128,7 +128,7 @@ Taken by the human on 2026-10-23:
    `CLAUDE.md` for it.
 4. **The extra section in replies: leave it on.** The skill makes the agent end a reply with a
    "Modern Web Guidance" section. Kept during the trial, because it lists the guide ids and
-   rules that shaped the code, which is the evidence for the one-line result in JNL-002 K10. To
+   rules that shaped the code, which is the evidence for the one-line result in JNL-003 K10. To
    watch on the first run: whether it disturbs the builder's fixed report format.
 5. **Install route: the `/plugin` commands.** Done on 2026-10-23, in a terminal window: the
    `/plugin` command is not available in the VS Code extension ("isn't available in this
@@ -147,4 +147,4 @@ Taken by the human on 2026-10-23:
   Web Guidance first; the project's Baseline target is X."* Changing `CLAUDE.md` follows the
   duty to communicate: say what changes and ask for a check.
 - Installing is done by the human with the `/plugin` commands; the agent cannot run those.
-- Source: JNL-002, issue K10.
+- Source: JNL-003, issue K10.

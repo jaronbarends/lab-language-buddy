@@ -15,7 +15,7 @@ jnls:
     doel-records:
       - "software-architectuur.md (v1.0, accepted 2026-10-20)"
     bestand: jnl-001-instap-software-balans.md
-  - id: "JNL-002"
+  - id: "JNL-003"
     titel: "Chat bubble animation"
     status: discovery
     datum: 2026-10-23
@@ -26,6 +26,6 @@ jnls:
     kwesties-geparkeerd: 1
     doel-records:
       - "ADR for the bubble's structure (K2), to be written"
-      - "HDR-008 (K10)"
+      - "HDR-013 (K10)"
       - "a spec as the build plan, once decided"
-    bestand: jnl-002-chat-bubble-animation.md
+    bestand: jnl-003-chat-bubble-animation.md

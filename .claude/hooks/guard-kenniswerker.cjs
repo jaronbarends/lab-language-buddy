@@ -29,6 +29,11 @@ function isGuardedPath(filePath, cwd) {
   if (rel.startsWith('..') || path.isAbsolute(rel)) {
     return false;
   }
+  // A Markdown file is documentation, not code (the CLAUDE.md files under src/ are leading
+  // documents the lead thread maintains itself, DFT-002), so it is not guarded.
+  if (path.extname(rel).toLowerCase() === '.md') {
+    return false;
+  }
   const topLevel = rel.split(path.sep)[0].toLowerCase();
   return GUARDED_TOP_LEVEL_DIRS.includes(topLevel);
 }

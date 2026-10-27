@@ -8,7 +8,8 @@
 //   --no-fetch                                 do not run `git fetch origin` first
 //
 // Why a plain find-and-replace is safe: before the merge, every mention of a colliding id in
-// the lines this branch added means the branch's own record. Only those lines are touched.
+// the lines this branch added means the branch's own record. Only those lines are touched, in
+// documents, registers and source comments (see REWRITABLE).
 // Exit codes: 0 done or nothing to do, 2 refused (see the message), 3 base ref not found.
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, renameSync, writeFileSync } from "node:fs";
@@ -17,6 +18,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { RECORD_TYPES, checkRecords, formatId, idNumber, parseRegister } from "./records.mjs";
 
 const DEFAULT_BASE = "origin/arc/arc-main";
+
+// The text files whose added lines may mention a record id: documents and registers, and the
+// source files that cite a record in a comment (DFT-003). Other files are left alone.
+const REWRITABLE = /\.(md|ya?ml|json|css|[cm]?[jt]sx?)$/;
 
 export class Refusal extends Error {
   constructor(message, kind = "refused") {
@@ -149,7 +154,7 @@ export function renumber(root, baseRef) {
   const editedFiles = [];
   for (const [path, added] of addedLinesSince(root, mergeBase)) {
     const fullPath = join(root, path);
-    if (!existsSync(fullPath) || !/\.(md|ya?ml|json)$/.test(path)) {
+    if (!existsSync(fullPath) || !REWRITABLE.test(path)) {
       continue;
     }
     const lines = readFileSync(fullPath, "utf8").split("\n");

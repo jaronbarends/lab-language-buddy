@@ -52,6 +52,7 @@ before(() => {
   write(HDR_REGISTER, `hdrs:\n${hdrEntry("HDR-001", "hdr-001-first.md")}`);
   write("docs/grootboek/hdr/hdr-001-first.md", "# HDR-001: first\n");
   write("docs/index.yml", `documents:\n${indexLine("hdr-001-first.md")}`);
+  write("src/old.ts", "// mentions HDR-002 on a line the branch did not add\n");
   commit("main");
 
   // base: the branch that merged first, and took HDR-002 for the hook
@@ -69,6 +70,7 @@ before(() => {
   write("docs/index.yml", read("docs/index.yml") + indexLine("hdr-002-trial.md"));
   write(JNL_REGISTER, 'jnls:\n  - id: "JNL-001"\n    doel-records:\n      - "HDR-002"\n    bestand: jnl-001-notes.md\n');
   write("docs/grootboek/journaal/jnl-001-notes.md", "Decided in HDR-002 (see hdr-002-trial.md). HDR-001 stays.\n");
+  write("src/components/x.tsx", "// Built on HDR-002 (see JNL-001); HDR-001 stays.\nexport const x = 1;\n");
   commit("feature takes HDR-002");
 });
 
@@ -98,6 +100,17 @@ describe("renumbering against a base that took the same id", () => {
     );
     assert.match(read(JNL_REGISTER), /- "HDR-003"/);
     assert.deepEqual(checkRecords(root), []);
+  });
+
+  it("rewrites a reference in a source comment the branch added (DFT-003)", () => {
+    assert.equal(
+      read("src/components/x.tsx"),
+      "// Built on HDR-003 (see JNL-001); HDR-001 stays.\nexport const x = 1;\n",
+    );
+  });
+
+  it("leaves a line in a source file that the branch did not add alone", () => {
+    assert.equal(read("src/old.ts"), "// mentions HDR-002 on a line the branch did not add\n");
   });
 
   it("leaves a record that already landed alone", () => {

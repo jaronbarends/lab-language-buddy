@@ -149,3 +149,5 @@ one commit.
 Read it before changing anything structural — several things that look arbitrary (no Stop
 button, `editing` as its own state, the live transcript living outside the thread) are
 deliberate and the reasoning is recorded there.
+
+As of 20-10-2026, we're using Arc with a Grootboek for keeping track of planning and decisions. [Principles described here](https://claude.ai/artifact/HvsnLkFpHyWXknynSejorb) (private link, for my own reference only)

@@ -33,6 +33,9 @@ has run, and `npm run docs:check` fails on a duplicated id. Merged records keep 
 - Files: kebab-case
 - Every feature or bugfix gets a spec in `docs/grootboek/specs/`
 - Specs are throwaway: after delivery the code is the truth
+- A leading document that describes code, a new balance included, declares its `werkgebied`
+  (the files and folders it is about) in its front matter; `npm run docs:drift` and
+  `npm run docs:check` use it to signal drift (HDR-008)
 
 ## Duty to communicate
 

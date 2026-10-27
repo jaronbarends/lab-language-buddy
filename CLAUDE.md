@@ -70,7 +70,10 @@ say so rather than following either blindly.
   `stage/N-name` for build stages, a descriptive name for fixes and features, `spike-*` for
   experiments. Review fixes get their own commits on the branch under review. Code goes
   through a branch and a PR; only small notes in the plan or tooling tweaks have been
-  committed straight to `main`, and only on Jaron's go-ahead.
+  committed straight to `main`, and only on Jaron's go-ahead. Create the branch before the
+  first edit, not after. Work in the grootboek experiment (`arc/*`) branches from
+  `arc/arc-main` and goes back into it through a PR, while `arc/arc-main` is the integration
+  branch; `main` is production (HDR-011).
 - **Hooks.** `.claude/settings.json` wires hooks under `.claude/hooks/`. A hook's output is an
   order, not a suggestion: when one fires, carry out exactly what it says — nothing skipped,
   nothing deferred, no working around it with a different tool or phrasing. A hook that

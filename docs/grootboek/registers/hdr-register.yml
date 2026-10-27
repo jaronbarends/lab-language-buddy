@@ -111,3 +111,14 @@ hdrs:
     beslissing: "A rule in .claude/rules/code-style.md: a name says what the function returns or does and uses its neighbours' word; a correction is accepted without defence, with a reason and a better proposal"
     notitie: "First pattern codified through the incident register (naming-precision, seven incidents). A rule cannot be checked mechanically: success is no further naming incident"
     bestand: hdr-010-names-checked-against-what-they-promise.md
+  - id: "HDR-011"
+    titel: "Arc work branches from arc/arc-main, and the branch exists before the first edit"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-28
+    implementatie-datum: 2026-10-28
+    beslissing: "The Branches line of the root CLAUDE.md names arc/arc-main as the base for arc work (and main as production) and says the branch is created before the first edit; no hook for the second half (one incident)"
+    notitie: "From the first cold-start run (JNL-002, K1 and K2). The sentence is time-bound: update it when arc/arc-main merges into main. Proof is a second cold-start round"
+    bestand: hdr-011-arc-base-branch-and-branch-first.md

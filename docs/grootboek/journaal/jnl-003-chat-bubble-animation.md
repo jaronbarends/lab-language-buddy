@@ -44,6 +44,8 @@ plan predates 2026-10-20 and carries a pointer here, so the two places do not dr
 | K8 | `prefers-reduced-motion` | decided 2026-10-23 |
 | K9 | Overlap with the microphone dot pulse and the dots-and-bounce direction | decided 2026-10-23 (out of scope) |
 | K10 | Modern Web Guidance: does it give a better answer for K3? | trial agreed, outcome open |
+| K11 | The user's bubble when it is sent: what animates | decided and built 2026-10-27, iPhone test open; shrink in the bar and the thinking-bubble delay come after |
+| K12 | Speech start against the end of the reveal | parked 2026-10-27 |
 
 ### K1 — Scope
 
@@ -238,6 +240,104 @@ reply sat in different child slots of the thread, so React remounted instead of 
 element. Neither the builder nor the reviewer caught it; the human's screen did. K2(a) therefore
 carries a condition the plan did not state: both must be in the SAME array.
 
+### K11 — The user's bubble when it is sent
+
+New scope: K1 left an enter animation for the other bubbles until after the spike, and the
+timing of the AI bubble is now settled (350ms, 200ms, as built). The evaluation inside the user's
+bubble is NOT part of this (K7 stays: later).
+
+How it works today (read from the code, 2026-10-27): the text being composed sits in the control
+bar at the bottom, outside the thread: the live transcript, then `DraftBubble` (or
+`DraftEditor`). Send (`composing-controls.tsx`) dispatches `USER_TURN_SENT`; the draft bubble
+disappears from the bar and a `TurnBubble` for the user appears at the end of the thread, just
+above the bar. So the sent bubble is a new element, not the draft moving.
+
+Design questions put to the human, none answered yet:
+
+1. What moves: the same scale-up as the AI bubble, mirrored (anchored bottom-right, since the
+   user's bubble is on the right), or a slide from the draft's position in the bar into the
+   thread? Recommendation: the scale. The slide needs measuring the draft and fights a bar
+   whose content changes on Send, with Safari as the risk.
+2. The text: hidden during the scale and faded in afterwards, as in the AI bubble, or visible
+   throughout? Recommendation: as the AI bubble, for consistency.
+3. Timing: the same 350ms, 200ms and curve as the AI bubble?
+4. To look at on the device, not decided: the AI's dots appear at the same moment as the sent
+   bubble, so two things arrive at once.
+
+**Decisions (2026-10-27, the human):**
+
+1. The same scale as the AI bubble, anchored bottom-right (the user's bubble is on the right).
+   Later in this feature the human probably wants the draft to shrink to scale 0 in the control
+   bar first and then grow in the thread; that will add a delay. Not part of this step.
+2. The text is hidden first and then faded in, as in the AI bubble.
+3. The same timing: 350ms, 200ms, the same curve.
+4. Not in this step, "in a moment": the AI's thinking bubble should appear after a small delay,
+   so the user sees the order: first their own text, then the AI seems to start thinking. The
+   timing of that is decided next.
+
+The evaluation's own growth when it settles stays out (K7).
+
+**Added by the human after seeing it (2026-10-27):** the text "Evaluating…" must not be visible
+while the user's text is still hidden. It stays hidden through the scale and the user's text fade
+and then fades in, so an order is visible: scale, then user text, then the evaluation text. The
+strip itself (divider and blue background) is visible at once and scales with the bubble. The
+agent first read "the strip should fade" as the whole strip and built that; the human corrected it.
+
+**Baseline (the agent's own approach, written 2026-10-27 before any web guidance was consulted;
+HDR-013, test 2).** From the agent's own knowledge, unverified against current browser support:
+
+- Reuse the AI bubble's reveal instead of writing it twice: move the `.reveal` and `.text`
+  rules and the keyframes out of `ai-bubble.module.css` into one shared CSS module, with the
+  anchor as a custom property (`--reveal-origin`: top left for the AI, bottom right for the
+  user). The values of the AI animation do not change.
+- The user's `TurnBubble` gets the reveal class and the text class when the turn appears after
+  the thread has mounted. How to know that: the thread remembers how many turns it had on its
+  first render (a ref) and only turns after that animate, so a remount does not replay all.
+- The scale keeps `transform-origin: bottom right` and the same curve and duration variable. The
+  layout is at its final size at once (K4(A)), so the scroll effect is untouched.
+- Anchored at the bottom-right the overshoot grows left and up, away from the right edge, so
+  unlike the AI bubble it cannot be cut off at the side. It can overlap the bubble above for a
+  moment.
+- Reduced motion: no scale and no fade, as for the AI bubble.
+- Risks I expect: the draft in the control bar disappears in the same frame the bubble starts at
+  scale 0, so the sent text may be seen nowhere for a moment (a gap that the later shrink-in-the-
+  bar step would fill); Safari re-rasterising the border while it scales; and the extraction
+  touching the AI animation, which the human has just tuned and wants kept.
+
+**Built (2026-10-27), not yet tested on the iPhone.** The sent user turn scales 0 to 1 from the
+bottom-right in 350ms with the AI bubble's curve; "You: " and the paragraph fade in over 200ms
+from 350ms; the text of the "Evaluating…" strip (its frame is visible at once) fades in over 200ms from 800ms (a pause of 250ms, `--evaluation-pause`, after the user's text: the human found it too quick without one). The two reveals share
+`bubble-reveal.module.css` (the anchor is `--reveal-origin`; the durations are
+`--reveal-duration` and `--fade-duration`), and the AI bubble's values are unchanged. Only a
+turn that appears after the thread mounted animates: the thread keeps its turn count at mount
+in lazy state (the baseline said a ref; the lazy state is the same idiom as `startedAsThinking`
+in the AI bubble and avoids reading a ref while rendering). A dev-only preview button shows the
+sent bubble without a conversation (see `docs/plan.md`, decision log 10-27).
+
+Guidance result for the trial (facts only, the verdict is the human's): the Modern Web Guidance
+agreed on every point of substance with the baseline (a shared module, only `scale` and
+`opacity`, reduced motion off, the same curve). It added one rule, the identity base `scale: 1`
+for an element that animates `scale` (guide `individual-transform-properties`), which was
+deliberately NOT applied: it adds a permanent stacking context for a risk that did not show up
+here, and the reviewer found no real risk in the CSS. It said nothing on a `transform-origin`
+that depends on the side the bubble is on.
+
+Process: this is test 2 of the HDR-013 trial. Order: the human decided, the agent wrote the
+baseline above, the builder consults the guidance and reports, a row goes in the trial log.
+A builder check: only turns that appear after the thread mounted may animate.
+
+### K12 — Speech start against the end of the reveal
+
+The human wants the AI's speech to start only once the bubble has its final size. Parked
+2026-10-27 until it bothers in practice. Reasoning: the TTS request starts when the reply
+arrives, together with the animation (`use-audio-playback.ts`), and the measured gap between
+reply and speech was about 0.85s for 240 characters and 1.55s for 584 (Azure, the default
+provider; desktop Chrome, 2026-10-05, iPhone not measured). The reveal takes 350ms and the fade
+ends at 550ms, so with a real provider the speech normally starts after the animation anyway. A
+short reply, a fast or cached response, or the mock TTS could start earlier. K5 stays as decided:
+the highlight starts when the text is fully visible, after the fade (550ms), not at the end of
+the scale (350ms). Nothing is built.
+
 ## Decision log
 
 - **2026-10-23 — journal opened.** Issues K1 to K10 from a read of the plan and the code. The
@@ -256,6 +356,14 @@ carries a condition the plan did not state: both must be in the SAME array.
 - **2026-10-23 — spike built and committed on `arc/bubble-animation`.** `AiBubble` (one element,
   position key, waiting bubble in the same array as the turns), scale 0 to 1 with back-easing,
   delayed text fade. K3 stays open for tuning; K10 has facts but no verdict.
+- **2026-10-27 — timing settled, K11 and K12 opened.** The human is satisfied with the timing and
+  wants to keep it. A dev-only preview of the AI bubble was added to replay the transition (see
+  `docs/plan.md`, decision log 10-27; a first attempt through the reducer was rejected in review).
+  K11: animate the user's bubble on Send. K12: speech start after the reveal, parked. K5 unchanged.
+- **2026-10-27 — K11 built.** The user's bubble reveals on send, with the "Evaluating…" text
+  fading in after the user's text (the human's addition; the strip's frame is visible at once); a dev-only preview of the sent bubble was
+  added. The base `scale: 1` of the guidance was not applied. Next: the iPhone test, then the
+  thinking bubble's delay and, later, the draft shrinking in the control bar.
 
 **Where to pick up (written for the next session):**
 

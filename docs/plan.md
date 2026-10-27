@@ -211,7 +211,8 @@ so a page reload starts from the defaults again.
     │   ├── language-buddy.tsx    owns the reducer, renders by phase
     │   ├── setup-screen/         setup-screen, language-picker, level-select, starter-toggle
     │   ├── conversation/         conversation-screen, conversation-thread, ai-bubble,
-    │   │                         turn-bubble, highlighted-text, live-transcript,
+    │   │                         turn-bubble, bubble-reveal (the shared reveal CSS of
+    │   │                         both bubbles), highlighted-text, live-transcript,
     │   │                         thinking-indicator,
     │   │                         draft-review (DraftBubble + DraftEditor),
     │   │                         conversation-controls (a switch over composing-controls,
@@ -220,7 +221,10 @@ so a page reload starts from the defaults again.
     │   │                         of a user turn); bubble (the shared frame, always a `div`,
     │   │                         with `BubbleText` and `BubbleAttachment`) and
     │   │                         a module css beside each component for its own styles
-    │   ├── dev/state-stepper.tsx development-only turn-state jumper
+    │   ├── dev/state-stepper.tsx development-only turn-state jumper, plus buttons for
+    │   │                         two local previews (ai-bubble-preview and
+    │   │                         user-bubble-preview, each with its store; the reducer is
+    │   │                         not involved)
     │   └── ui/                   button, icons, flag-icon
     ├── hooks/
     │   ├── use-session-dispatch.ts dispatch context + `useSessionDispatch`
@@ -1264,6 +1268,8 @@ have been argued over first.
 | 10-20 | you | Audience and ambition written down in the README: a personal learning project that Jaron also uses daily himself, deployed to Vercel, not for a public; opening it to others is a later decision | Started as a pure AI-codegen experiment; the goal shifted to a tool in daily use. Arrived at while working through the ARC `projectidentiteit` requirements (REQ-PI-01). |
 | 10-20 | agent | Context layering and a drift check added, from the ARC `projectidentiteit` requirements: `.claude/rules/` (code style, Safari), `CLAUDE.md` in `src/components` and `src/lib`, `docs/index.yml` as register, `docs/adr/`, `.claude/agents/` (builder, reviewer), and `npm run docs:check` (`scripts/check-docs.mjs`) | CLAUDE.md was a pointer to the plan with no working agreements; they lived only in Jaron's global file. Layering lets a session load what it needs, the register is the cheap index before the 1,300-line plan, and the check turns drift into a failing command: its first run found stale env docs in the README (mock flags missing, `ELEVENLABS_VOICE_ID` listed though no code reads it). Parallel builders must not edit `plan.md` (the one shared file); the lead writes their log rows. |
 | 10-27 | you | **Narrows "no test suite":** the app still has none, but a script under `scripts/` that rewrites documents without anyone reading the result gets a test, written with `node:test` (built into Node, no dependency). The first is for the record-renumbering script (spec `docs/grootboek/specs/automatic-renumbering-on-merge.md`) | The "no tests" decision was about device-specific app behaviour, which a test cannot reproduce. A renumbering script is pure logic on files and git, and a wrong renumbering is found months later, not in review. Open question 2 (tests for the app, Vitest on the reducer and `word-timing.ts`) stays open. |
+| 10-27 | you | The dev state stepper gets two buttons, "short reply" and "long reply", under "Preview bubbles": a local `AiBubble` appears at the end of the thread with the dots, and after 1.5 s the same element becomes a dummy reply, so the dots-to-text animation (JNL-003) runs. It is local state in a small module store (`src/components/dev/ai-bubble-preview*.ts(x)`), rendered by `ConversationThread` in development only; it touches neither the reducer nor `turns`. Whether it stays is decided later | The animation could only be seen by holding a real conversation. A first attempt forced `aiThinking` and was rejected in review: that starts `useChatDriver`, which with an AI turn last dispatches `FAILED` (the session lands in `error`) and with a user turn last sends a real chat request. The preview does not scroll the thread itself, so the scroll-on-arrival of a tall reply is still only checked in a real conversation. A second button, "sent user bubble", shows one sent user turn (evaluation pending) with the reveal below, from its own store, for the same reason. |
+| 10-27 | you | The user's bubble grows in when it is sent, with the AI bubble's reveal mirrored: `scale` 0 to 1 from the bottom-right, 350 ms, the same overshoot curve; the "You: " label and the text are hidden during the scale and fade in over 200 ms, and the text "Evaluating…" in the evaluation strip fades in after the user's text and a 250 ms pause (from 800 ms, `--evaluation-pause`), while the strip's frame is visible at once. The two reveals share one CSS module (`bubble-reveal.module.css`, the anchor is `--reveal-origin`, the durations are `--reveal-duration` and `--fade-duration`); `ai-bubble.module.css` is gone. Only a turn that appears after the thread mounted animates (`ConversationThread` remembers its turn count at mount). Reduced motion: none of it. Not done yet: the draft shrinking in the control bar first, the AI's thinking bubble appearing after a delay, and the evaluation's own growth (K7) | The text sent used to jump into the thread (JNL-003, K11). The layout takes its final size at once, so the thread's scroll effect did not change. The agent kept the base `scale: 1` of the Modern Web Guidance out, since it adds a permanent stacking context for a risk not seen here (HDR-013 trial, test 2). |
 
 ## Keeping the experiment honest
 

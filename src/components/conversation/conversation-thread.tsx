@@ -1,7 +1,9 @@
 "use client";
 
-import { useLayoutEffect, useRef } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 
+import { AiBubblePreview } from "@/components/dev/ai-bubble-preview";
+import { UserBubblePreview } from "@/components/dev/user-bubble-preview";
 import type { Turn, TurnState } from "@/lib/session-reducer";
 
 import { AiBubble } from "./ai-bubble";
@@ -35,6 +37,12 @@ export function ConversationThread({
   conversationLang,
 }: ConversationThreadProps) {
   const threadRef = useRef<HTMLDivElement | null>(null);
+
+  // How many turns the thread had on its first render (lazy initial state is never
+  // updated). Turns are only appended, so a turn at an index from here on appeared after
+  // the thread mounted and may animate in; the earlier ones just appear, so a remount
+  // does not replay every bubble (JNL-003, K11).
+  const [turnCountAtMount] = useState(turns.length);
 
   // The evaluation sits in the user's bubble, which grows when it settles. That can push
   // the newest item out of view without a new turn or another turn state.
@@ -97,6 +105,7 @@ export function ConversationThread({
           turn={turn}
           conversationLang={conversationLang}
           spokenWordCount={turnSpokenWordCount}
+          shouldReveal={index >= turnCountAtMount}
         />
       );
     }
@@ -134,6 +143,14 @@ export function ConversationThread({
       aria-label="Conversation"
     >
       {items}
+      {/* Gated here, not only inside the component: NODE_ENV is replaced at build time,
+          so in production this branch and the import are dead code. */}
+      {process.env.NODE_ENV === "development" && (
+        <AiBubblePreview conversationLang={conversationLang} />
+      )}
+      {process.env.NODE_ENV === "development" && (
+        <UserBubblePreview conversationLang={conversationLang} />
+      )}
     </div>
   );
 }

@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import type { Turn } from "@/lib/session-reducer";
 
-import styles from "./ai-bubble.module.css";
+import revealStyles from "./bubble-reveal.module.css";
 import { Bubble } from "./bubble";
 import { HighlightedText } from "./highlighted-text";
 import { ThinkingIndicator } from "./thinking-indicator";
@@ -54,12 +54,12 @@ export function AiBubble({
   return (
     <Bubble
       author="ai"
-      className={startedAsThinking ? styles.reveal : undefined}
+      className={startedAsThinking ? revealStyles.reveal : undefined}
     >
       <span
         className={[
           turnStyles.speakerLabel,
-          startedAsThinking ? styles.text : undefined,
+          startedAsThinking ? revealStyles.text : undefined,
         ]
           .filter(Boolean)
           .join(" ")}
@@ -68,7 +68,7 @@ export function AiBubble({
       </span>
       <p
         lang={conversationLang}
-        className={startedAsThinking ? styles.text : undefined}
+        className={startedAsThinking ? revealStyles.text : undefined}
       >
         {turnIsBeingSpoken ? (
           <HighlightedText text={turn.text} spokenWordCount={spokenWordCount} />

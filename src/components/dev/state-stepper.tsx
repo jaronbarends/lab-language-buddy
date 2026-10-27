@@ -1,9 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 
 import { useSessionDispatch } from "@/hooks/use-session-dispatch";
-import { mockTranscriptAt, mockUserLine } from "@/lib/mock-conversation";
+import {
+  mockAiLine,
+  mockTranscriptAt,
+  mockUserLine,
+} from "@/lib/mock-conversation";
 import type {
   SessionAction,
   SessionConfig,
@@ -12,7 +16,14 @@ import type {
   TurnStateName,
 } from "@/lib/session-reducer";
 
+import {
+  getAiBubblePreviewState,
+  getServerAiBubblePreviewState,
+  startAiBubblePreview,
+  subscribeToAiBubblePreview,
+} from "./ai-bubble-preview-store";
 import styles from "./state-stepper.module.css";
+import { showUserBubblePreview } from "./user-bubble-preview-store";
 
 type StateStepperProps = {
   config: SessionConfig;
@@ -43,6 +54,12 @@ function forcedTurnState(turnState: TurnState): SessionAction {
 export function StateStepper({ config, turns, turnState }: StateStepperProps) {
   const dispatch = useSessionDispatch();
   const [panelIsOpen, setPanelIsOpen] = useState(false);
+  const previewIsPending =
+    useSyncExternalStore(
+      subscribeToAiBubblePreview,
+      getAiBubblePreviewState,
+      getServerAiBubblePreviewState,
+    ).phase === "thinking";
 
   if (process.env.NODE_ENV !== "development") {
     return null;
@@ -143,6 +160,17 @@ export function StateStepper({ config, turns, turnState }: StateStepperProps) {
     },
   ];
 
+  // Short: one line. Long: twelve lines (about 400 words), far taller than a phone screen.
+  const previewButtons = [
+    { label: "short reply", text: mockAiLine(config.language, 0) },
+    {
+      label: "long reply",
+      text: Array.from({ length: 12 }, (_, index) =>
+        mockAiLine(config.language, index),
+      ).join(" "),
+    },
+  ];
+
   return (
     <div className={styles.wrapper}>
       {panelIsOpen && (
@@ -166,6 +194,25 @@ export function StateStepper({ config, turns, turnState }: StateStepperProps) {
               {option.label}
             </button>
           ))}
+          <span className={styles.heading}>Preview bubbles</span>
+          {previewButtons.map((button) => (
+            <button
+              key={button.label}
+              type="button"
+              disabled={previewIsPending}
+              className={styles.option}
+              onClick={() => startAiBubblePreview(button.text)}
+            >
+              {button.label}
+            </button>
+          ))}
+          <button
+            type="button"
+            className={styles.option}
+            onClick={() => showUserBubblePreview(sampleUserLine)}
+          >
+            sent user bubble
+          </button>
         </div>
       )}
 

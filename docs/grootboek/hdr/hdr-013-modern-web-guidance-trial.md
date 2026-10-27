@@ -62,6 +62,7 @@ the human, 2026-10-23). Then the human decides: keep, switch off or adjust.
 | # | Task | Baseline (where) | Guidance recommended | Difference | iPhone confirmed | Verdict (human) |
 |---|---|---|---|---|---|---|
 | 1 | Bubble reveal (JNL-003 K3) | JNL-003 K3 | `clip-path` for reveals; `interpolate-size` Chromium-only | Same on the key point; final design came from the human, outside both | The first spike ran; the final design was tuned by eye | open |
+| 2 | User bubble reveal on send (JNL-003 K11) | JNL-003 K11 | A shared module, only `scale` and `opacity`, reduced motion off, the same curve; one extra rule: identity base `scale: 1` (`individual-transform-properties`); nothing on a `transform-origin` that depends on the side | Same on every point of substance; the one extra rule was deliberately not applied | Not yet tested on the iPhone | open |
 
 ## Why
 

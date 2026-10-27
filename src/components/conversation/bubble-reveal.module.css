@@ -1,0 +1,81 @@
+/*
+ * Reveals a bubble by growing it out of one corner, from scale 0 to 1, anchored where the
+ * bubble's tail is. Shared by the AI's bubble (top-left, the default) and the user's
+ * bubble (bottom-right, `.fromBottomRight`), so the two cannot drift apart (JNL-003,
+ * K11). The easing curve is the overshoot: its second control value (1.56) lets the
+ * scale run past 1 (peak about 1.098, at about 57% of the duration) and settle back.
+ * Then the text fades in, starting exactly when the growth ends.
+ *
+ * The layout is already at its final size; scale is a transform, so it does not affect
+ * layout and the thread's scroll effect sees the final size and needs no change (K4(A)).
+ *
+ * Deliberate (Jaron): the AI bubble no longer starts at the size of the thinking dots;
+ * the dots vanish at once and the bubble grows from nothing.
+ *
+ * The animation has no fill, so no transform remains afterwards and the bubble's focus
+ * ring, which sits outside its box, is not affected.
+ */
+.reveal {
+  /* One number for the growth and for the text fade's delay, so they cannot drift. */
+  --reveal-duration: 350ms;
+  /* One number for every fade, so the text and the strip after it cannot drift. */
+  --fade-duration: 200ms;
+  /* The pause between the end of the user's text fade and the start of the evaluation text. */
+  --evaluation-pause: 250ms;
+  transform-origin: var(--reveal-origin, top left);
+  animation: grow var(--reveal-duration) cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* The user's bubble sits on the right, so it grows out of its bottom-right corner. */
+.fromBottomRight {
+  --reveal-origin: bottom right;
+}
+
+/*
+ * The speaker label and the paragraph, only in a bubble that ran the reveal. Held
+ * transparent through the delay by the backwards fill (no separate opacity: 0 that
+ * would stay), then faded in. Without the fill the text would show during the growth.
+ */
+.text {
+  animation: fade-in var(--fade-duration) ease-out backwards;
+  animation-delay: var(--reveal-duration);
+}
+
+/*
+ * The evaluation text inside the user bubble's strip (not the strip itself, whose frame
+ * is visible at once and scales with the bubble): the same fade, starting when the
+ * user's text fade ends plus a pause (--evaluation-pause), so the order is growth, text,
+ * a beat, evaluation text: it starts at 800ms and ends at 1000ms, and the pause keeps the
+ * two fades from reading as one. Put on one span
+ * that stays mounted, once at mount; the animation only restarts when its name changes,
+ * so the evaluation settling from pending to ready or failed does not replay it, and the
+ * backwards fill leaves no opacity behind. Opacity animates on the inline span as it is.
+ * Not the evaluation's own animation (K7), only its first appearance at send time.
+ */
+.afterText {
+  animation: fade-in var(--fade-duration) ease-out backwards;
+  animation-delay: calc(
+    var(--reveal-duration) + var(--fade-duration) + var(--evaluation-pause)
+  );
+}
+
+@keyframes grow {
+  from {
+    scale: 0;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* No scale, no fade: the text is simply there. */
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .text,
+  .afterText {
+    animation: none;
+  }
+}

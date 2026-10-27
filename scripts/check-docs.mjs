@@ -13,10 +13,13 @@
 //      the record file exists and starts with its own id          (error)
 //   7. a leading document's werkgebied paths exist (error), and
 //      its code has not changed since the document did           (warning)
+//   8. the incident register is well formed (error), and no pattern
+//      has three incidents without a codified fix                (warning)
 import { execFileSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import { findDrift } from "./drift-signal.mjs";
+import { analyseIncidents } from "./incidents.mjs";
 import { checkRecords } from "./records.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1");
@@ -147,6 +150,11 @@ for (const document of drift.documents) {
     );
   }
 }
+
+// 8. recurring faults: a pattern at the threshold must be codified in an HDR
+const incidents = analyseIncidents(ROOT);
+errors.push(...incidents.errors);
+warnings.push(...incidents.warnings);
 
 for (const warning of warnings) {
   console.warn(`warning  ${warning}`);

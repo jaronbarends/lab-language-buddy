@@ -97,7 +97,9 @@ say so rather than following either blindly.
   version is what's actually built; see `docs/code-architectuur.md`'s REQ-AH-13 note.
 - **Checks before you call something done.** `npm run lint`, then
   `npx next typegen && npx tsc --noEmit`, `npm run docs:check` (drift between docs and
-  repo), then `npm run build`. Anything touching audio,
+  repo), `npm run test:scripts` (the tests of the scripts that rewrite documents),
+  `npm run register:check` (the code-architecture register has not drifted), then
+  `npm run build`. Anything touching audio,
   recording or layout also needs a test on a real iPhone: Safari is a hard requirement.
 - **Folders.** `src/app` routes and global CSS, `src/components` screens and UI,
   `src/hooks` session context and effect drivers, `src/lib` state machine, provider

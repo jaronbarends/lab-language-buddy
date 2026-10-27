@@ -14,6 +14,9 @@ request to `main` or `arc/arc-main`, in `.github/workflows/checks.yml`. The regi
 check of REQ-AH-12 (mechanism 2) runs in the same workflow on purpose: one piece of CI
 infrastructure, not two.
 
+*Amended 2026-10-27, with Jaron's go-ahead although the record had landed:* the same workflow
+also runs `npm run test:scripts`, the tests of the scripts that rewrite documents (HDR-007).
+
 ## Why
 
 Checks exist and are documented, but nothing enforces that they were actually run before a

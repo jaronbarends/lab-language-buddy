@@ -42,7 +42,7 @@ documents:
   - path: docs/grootboek/hdr/hdr-005-renumber-on-merge-when-numbers-collide.md
     what: Rule for parallel arc/* branches that book the same record number; the branch that merges second renumbers its own records, in its own branch.
     read_when: merging an arc/* branch that has booked grootboek records; numbering a new record.
-  - path: docs/grootboek/hdr/hdr-006-modern-web-guidance-trial.md
+  - path: docs/grootboek/hdr/hdr-008-modern-web-guidance-trial.md
     what: Trial of Modern Web Guidance on the bubble animation; the agent's baseline is written before the guidance is consulted, then the human keeps, switches off or adjusts it.
     read_when: considering web-platform guidance tooling for the agent; closing JNL-002 K10.
   - path: docs/grootboek/adr/adr-001-environment-and-deployment-topology.md

@@ -1,4 +1,4 @@
-# HDR-006: Try Modern Web Guidance on the bubble animation, with the baseline written first
+# HDR-008: Try Modern Web Guidance on the bubble animation, with the baseline written first
 
 - **Status:** in-progress
 - **Date:** 2026-10-23

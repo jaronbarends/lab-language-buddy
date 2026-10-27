@@ -25,3 +25,13 @@ dfts:
     midden: 0
     laag: 1
     bestand: dft-002-guard-blocks-claude-md-under-src.md
+  - id: "DFT-003"
+    titel: "The renumber script leaves record ids in source comments unchanged, HDR-005 says it should not"
+    status: in_progress
+    datum: 2026-10-27
+    aanleiding: "Found by the animation session after merging arc/arc-main into arc/bubble-animation: three comments in src/ still said JNL-002, now another journal"
+    bevindingen: 1
+    hoog: 0
+    midden: 1
+    laag: 0
+    bestand: dft-003-renumber-script-misses-source-files.md

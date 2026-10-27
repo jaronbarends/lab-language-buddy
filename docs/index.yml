@@ -99,6 +99,9 @@ documents:
   - path: docs/grootboek/specs/automatic-renumbering-on-merge.md
     what: Plan for making HDR-005's renumbering mechanical: a duplicate-id check in docs:check, a renumber script, and a hook that stops merges of arc/arc-main or main until it has run. Throwaway once built.
     read_when: building or changing the renumber script, the duplicate-id check or the merge hook.
+  - path: docs/grootboek/dft/dft-003-renumber-script-misses-source-files.md
+    what: Drift report; the renumber script rewrote only documents, while HDR-005 promises code comments too. Fixed in the script; stays in progress until the three stale comments on arc/bubble-animation are corrected.
+    read_when: touching renumber-records.mjs or the REWRITABLE file types; checking whether the three stale JNL-002 comments in src/ are fixed.
   - path: docs/grootboek/registers
     what: YAML registers (adr, hdr, pdr, dft, jnl) — the cheap index of the grootboek; read before opening a record.
     read_when: looking for a decision, its status or an open drift report in the grootboek.

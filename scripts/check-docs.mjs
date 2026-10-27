@@ -11,10 +11,17 @@
 //      commit that touched src/                                  (warning)
 //   6. every grootboek register holds each record id once, and
 //      the record file exists and starts with its own id          (error)
+//   7. a leading document's werkgebied paths exist (error), and
+//      its code has not changed since the document did           (warning)
+//   8. the incident register is well formed (error), and no pattern
+//      has three incidents without a codified fix                (warning)
+//   9. no grootboek record or register is dated after today      (error)
 import { execFileSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
-import { checkRecords } from "./records.mjs";
+import { findDrift } from "./drift-signal.mjs";
+import { analyseIncidents } from "./incidents.mjs";
+import { checkRecordDates, checkRecords } from "./records.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1");
 const MAX_PLAN_LAG_DAYS = 30;
@@ -132,6 +139,26 @@ if (planTime && sourceTime) {
 
 // 6. the grootboek registers hold each record id once, and the files match
 errors.push(...checkRecords(ROOT));
+
+// 7. leading documents with a werkgebied: the code they describe has not moved on without them
+const drift = findDrift(ROOT);
+errors.push(...drift.problems);
+for (const document of drift.documents) {
+  if (document.commits.length > 0) {
+    warnings.push(
+      `drift: ${document.path} is ${document.commits.length} commit(s) behind its werkgebied ` +
+        `(${document.files.length} file(s)); run npm run docs:drift`,
+    );
+  }
+}
+
+// 9. no record is dated after today
+errors.push(...checkRecordDates(ROOT));
+
+// 8. recurring faults: a pattern at the threshold must be codified in an HDR
+const incidents = analyseIncidents(ROOT);
+errors.push(...incidents.errors);
+warnings.push(...incidents.warnings);
 
 for (const warning of warnings) {
   console.warn(`warning  ${warning}`);

@@ -15,6 +15,18 @@ jnls:
     doel-records:
       - "software-architectuur.md (v1.0, accepted 2026-10-20)"
     bestand: jnl-001-instap-software-balans.md
+  - id: "JNL-002"
+    titel: "Cold-start journal — can a newcomer work from the repo alone?"
+    status: afgerond
+    datum: 2026-10-27
+    laatste-sessie: 2026-10-27
+    kwesties-totaal: 6
+    kwesties-besloten: 6
+    kwesties-open: 0
+    kwesties-geparkeerd: 0
+    doel-records:
+      - "HDR-011 (K1, K2)"
+    bestand: jnl-002-cold-start-onboarding.md
   - id: "JNL-003"
     titel: "Chat bubble animation"
     status: discovery

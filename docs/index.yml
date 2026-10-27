@@ -48,6 +48,24 @@ documents:
   - path: docs/grootboek/hdr/hdr-007-mechanical-renumbering.md
     what: Why record renumbering is a script, a duplicate-id check and a merge guard hook, and why the order is renumber first, merge second (reverses HDR-005's steps).
     read_when: merging arc/arc-main or main into a branch; touching renumber-records, the guard-merge-renumber hook or the duplicate-id check.
+  - path: docs/grootboek/hdr/hdr-008-drift-signal.md
+    what: Why leading documents declare a werkgebied and a script signals when the code in it changed after the document; signal not verdict, followed by a reconciliation and a DFT (REQ-GG-05).
+    read_when: touching drift-signal or the werkgebied field; running a reconciliation; creating a new balance.
+  - path: docs/grootboek/hdr/hdr-009-incident-register.md
+    what: Why recurring faults are logged by pattern in an incident register and codified at three (REQ-GG-06); the threshold, what happens at three, and why logging depends on the agent.
+    read_when: logging an incident; touching the incident register or its counter; a docs:check warning about a pattern.
+  - path: docs/grootboek/hdr/hdr-010-names-checked-against-what-they-promise.md
+    what: The naming rule in code-style.md and why: seven naming corrections in the stage 4 review, the first pattern codified through the incident register.
+    read_when: naming a function, status or type in src/; a naming correction from Jaron.
+  - path: docs/grootboek/hdr/hdr-011-arc-base-branch-and-branch-first.md
+    what: Why the root CLAUDE.md names arc/arc-main as the base for arc work and says the branch comes before the first edit; found in the first cold-start run.
+    read_when: starting work on an arc branch; updating the Branches line when arc/arc-main merges into main.
+  - path: docs/grootboek/journaal/jnl-002-cold-start-onboarding.md
+    what: Cold-start journal (REQ-GG-10): what a fresh agent with only the repo got right and where the repo does not describe itself; six issues, two decided in HDR-011.
+    read_when: running the next cold-start round; judging whether onboarding works; deciding the open issues (checks not run, the private README link, the AI-or-self rule).
+  - path: docs/grootboek/hdr/hdr-012-no-record-dated-after-today.md
+    what: Why docs:check fails on a record dated after today (read in Europe/Amsterdam), what it reads and what it cannot catch; the maatregel of the date-assumed incident pattern.
+    read_when: writing a date in a record or register; a docs:check error about a date after today; changing the timezone constant.
   - path: docs/grootboek/hdr/hdr-013-modern-web-guidance-trial.md
     what: Trial of Modern Web Guidance on the bubble animation; the agent's baseline is written before the guidance is consulted, then the human keeps, switches off or adjusts it.
     read_when: considering web-platform guidance tooling for the agent; closing JNL-003 K10.
@@ -76,8 +94,14 @@ documents:
     what: First drift reconciliation of the software balance; no drift found, because no code changed since the balance was written. Tested the process, not detection.
     read_when: running or interpreting the next reconciliation of the balance.
   - path: docs/grootboek/dft/dft-002-guard-blocks-claude-md-under-src.md
-    what: Open drift report; the subagent-tenzij hook blocks CLAUDE.md files under src/ for the lead thread, while the working agreement exempts non-code files. Decision pending (change the hook or the agreement).
-    read_when: touching guard-kenniswerker or the working-model line in CLAUDE.md; picking up the open drift reports.
+    what: Resolved drift report; the subagent-tenzij hook blocked CLAUDE.md files under src/ for the lead thread while the working agreement exempts non-code files. Fixed by letting the hook allow Markdown; the first drift report to run booking, decision, change and closure.
+    read_when: touching guard-kenniswerker or the working-model line in CLAUDE.md; looking for an example of a drift report followed up to the end.
+  - path: docs/grootboek/specs/incident-register.md
+    what: Plan for the front half of the immune system (REQ-GG-06): an incident register grouped by pattern, a counter that warns at three without a codified fix, a logging duty, and the first use on naming-precision. Throwaway once built.
+    read_when: building or changing the incident register or its counter; logging an incident.
+  - path: docs/grootboek/specs/drift-signal.md
+    what: Plan for a drift signal (REQ-GG-05): a werkgebied field in the front matter of a leading document, a script that lists the code changes in that scope since the document was last touched, and a warning in docs:check. Throwaway once built.
+    read_when: building or changing the drift signal; adding werkgebied to a leading document.
   - path: docs/grootboek/specs/automatic-renumbering-on-merge.md
     what: Plan for making HDR-005's renumbering mechanical: a duplicate-id check in docs:check, a renumber script, and a hook that stops merges of arc/arc-main or main until it has run. Throwaway once built.
     read_when: building or changing the renumber script, the duplicate-id check or the merge hook.

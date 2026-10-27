@@ -1,0 +1,86 @@
+# Incident register — recurring faults, counted per pattern
+# Once is an incident, twice is chance, three times is a weakness of the harness
+# (REQ-GG-06). At three, the pattern is codified (a rule, hook or skill) and booked as an
+# HDR, whose id goes in `maatregel`. `npm run docs:check` warns until it is.
+#
+# An incident is a line, not a decision: no ids, no documents (HDR-001 books decisions).
+# Add an entry when Jaron corrects the agent, or a tool fails in a way that has happened
+# before, and say so in a sentence. Append-only, like the other registers.
+#
+# Fields:
+#   patroon    — a slug; a new fault that looks like an existing pattern joins it
+#   maatregel  — the HDR that codified the pattern (empty until then)
+#   datum      — YYYY-MM-DD
+#   aantal     — optional, default 1: several of the same fault in one go
+#   wat, bron  — what happened, and where it was found
+
+patronen:
+  - patroon: naming-precision
+    titel: "A name promises more or less than the code does"
+    maatregel: HDR-010
+    incidenten:
+      - datum: 2026-10-10
+        aantal: 7
+        wat: "Seven names corrected in one review, each with a reason and each right: a request body called a request, a status called running before anything ran, a function claiming the reply was spoken"
+        bron: "stage 4 review"
+  - patroon: answer-first
+    titel: "A direct question gets the reasoning first and the answer buried in it"
+    maatregel:
+    incidenten:
+      - datum: 2026-09-23
+        aantal: 2
+        wat: "Asked whether Opus was the best model for the task and whether the plan was complete, the answer came wrapped in per-stage reasoning instead of first"
+        bron: "memory note feedback-answer-the-question-asked"
+  - patroon: act-on-question
+    titel: "A question or a description of a change is treated as an instruction to execute"
+    maatregel:
+    incidenten:
+      - datum: 2026-09-23
+        aantal: 2
+        wat: "Deleting dead code was also committed, and a feasibility question about a branch was answered by restructuring git on the spot"
+        bron: "memory note feedback-dont-execute-on-questions"
+  - patroon: review-point-context
+    titel: "A review finding is put to a decision before it stands on its own in the chat"
+    maatregel:
+    incidenten:
+      - datum: 2026-10-03
+        wat: "A finding described as a schema with three loose optional fields, so the review file had to be opened to understand it"
+        bron: "memory note feedback-review-points-self-contained"
+  - patroon: id-with-title
+    titel: "A numbered record is cited by its id alone"
+    maatregel:
+    incidenten:
+      - datum: 2026-10-21
+        wat: "A bare requirement id in a status update, which sends the reader off to look it up"
+        bron: "memory note feedback-requirement-ids-need-titles"
+  - patroon: branch-before-edit
+    titel: "Work is edited on the integration branch before a branch exists"
+    maatregel: HDR-011
+    incidenten:
+      - datum: 2026-10-27
+        wat: "A fresh agent edited README.md directly on arc/arc-main, uncommitted, and said only afterwards that a branch and PR are needed"
+        bron: "cold-start run, phase 2 (JNL-002)"
+  - patroon: document-not-fully-read
+    titel: "A claim about a document is made without reading it in full"
+    maatregel:
+    incidenten:
+      - datum: 2026-10-27
+        wat: "Said the README lists only lint and build, from a search for npm run that misses lines starting with npx; it also listed the typecheck"
+        bron: "cold-start run 1, found when the agent's diff came back"
+      - datum: 2026-10-27
+        wat: "Wrote in the journal that no occasion had arisen to test the AI-or-self rule, without reading the global instruction that asks for a verdict before any new task"
+        bron: "found while preparing cold-start run 2"
+  - patroon: date-assumed
+    titel: "A date is assumed instead of read from the clock"
+    maatregel: HDR-012
+    incidenten:
+      - datum: 2026-10-27
+        wat: "Wrote 2026-10-28 in 22 places in eight files, a day ahead of the clock and of every commit"
+        bron: "found in the reflog of cold-start run 2"
+  - patroon: ai-vs-self-advice
+    titel: "Global instructions and the project disagree, and only private memory settles it"
+    maatregel:
+    incidenten:
+      - datum: 2026-10-03
+        wat: "A one-line AI-or-self verdict and learning-goal framing given in a project that does not want them"
+        bron: "memory note feedback-no-ai-vs-self-advice-here"

@@ -6,6 +6,13 @@ versie: "1.0"
 status: v1
 datum: 2026-10-20
 bron: JNL-001
+werkgebied:
+  - src/lib
+  - src/hooks
+  - src/app
+  - src/components
+  - next.config.ts
+  - .env.example
 notitie: Derived from the code and the git history (scope `src/lib`, `src/hooks`, `src/app/api`, the delivery chain), reviewed by a fresh-context critique pass, and accepted by the human on 2026-10-20. Accepted as a whole, not section by section. Extended on 2026-10-21 with the frontend component layer (`src/components`, the app shell), closing REQ-GG-01's scope gap; most of what the explorer found was already decided in plan.md, cited where so. § 6 updated 2026-10-21 for ADR-004 (Google TTS key moved to a header). Open questions live in JNL-001, not here. Kept as a trial per HDR-002.
 ---
 

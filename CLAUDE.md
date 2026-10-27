@@ -38,6 +38,11 @@ requirement.
   outside this duty.
 - A decision without a register line does not exist for the next session. Update the
   register in the same commit as the record.
+- **Incident register.** When Jaron corrects the agent, or a tool fails in a way that has
+  happened before, add one entry to `docs/grootboek/registers/incident-register.yml` (a new
+  pattern if none fits) and say so in one sentence. At three incidents in a pattern without a
+  `maatregel`, `docs:check` warns: codify it as a rule, hook or skill and book an HDR
+  (HDR-009).
 
 # What this is
 
@@ -51,6 +56,10 @@ These describe what the codebase and its history already do. If you find a count
 say so rather than following either blindly.
 
 - **Language.** Code, comments, UI copy, commit messages and docs are in English.
+- **No AI-or-self verdicts.** This project is an experiment in building with an AI that writes
+  most of the code. Skip the one-line "let AI generate this / write this yourself"
+  recommendation and the Next.js/TypeScript learning-goal framing from the global
+  instructions. Flagging a vague prompt or spec is still welcome.
 - **Code style** in one line: TypeScript strict, function declarations, braced `if`s with
   early returns, booleans that read as a sentence (`microphoneIsLive`), lowercase-dashed
   file names. The full list loads when you touch `src/` (`.claude/rules/code-style.md`).
@@ -61,7 +70,10 @@ say so rather than following either blindly.
   `stage/N-name` for build stages, a descriptive name for fixes and features, `spike-*` for
   experiments. Review fixes get their own commits on the branch under review. Code goes
   through a branch and a PR; only small notes in the plan or tooling tweaks have been
-  committed straight to `main`, and only on Jaron's go-ahead.
+  committed straight to `main`, and only on Jaron's go-ahead. Create the branch before the
+  first edit, not after. Work in the grootboek experiment (`arc/*`) branches from
+  `arc/arc-main` and goes back into it through a PR, while `arc/arc-main` is the integration
+  branch; `main` is production (HDR-011).
 - **Hooks.** `.claude/settings.json` wires hooks under `.claude/hooks/`. A hook's output is an
   order, not a suggestion: when one fires, carry out exactly what it says — nothing skipped,
   nothing deferred, no working around it with a different tool or phrasing. A hook that

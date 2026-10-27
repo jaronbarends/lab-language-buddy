@@ -1,6 +1,6 @@
 // Shared by check-docs.mjs and renumber-records.mjs: where the grootboek records and their
 // registers live, how to read a register, and the problems a register can have.
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 // One entry per record type: the id prefix, the register and the folder its files live in.
@@ -64,6 +64,78 @@ export function checkRecords(root) {
         problems.push(`records: ${entry.bestand} should start with ${entry.id.toLowerCase()}-`);
       }
     }
+  }
+  return problems;
+}
+
+// A record that is dated after today was dated by assumption and not by the clock (HDR-012).
+// "Today" is read in this timezone, not UTC: CI runs in UTC, and a record written just after
+// midnight here would otherwise look like it comes from tomorrow.
+const TIME_ZONE = "Europe/Amsterdam";
+const DUTCH_MONTHS = [
+  "januari", "februari", "maart", "april", "mei", "juni",
+  "juli", "augustus", "september", "oktober", "november", "december",
+];
+const FRONT_LINES = 20;
+
+export function todayInAmsterdam(now = new Date()) {
+  return new Intl.DateTimeFormat("sv-SE", {
+    timeZone: TIME_ZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(now);
+}
+
+// The date a structured line carries, as YYYY-MM-DD, or null. Only structured fields count:
+// the register fields, the front matter, the "- **Date:**" line of a record and the Dutch
+// "datum: 27 oktober 2026" of a spec. A date in running prose is not looked at.
+function dateOnLine(line) {
+  const iso =
+    line.match(/^\s*(?:- )?(?:datum|implementatie-datum|laatste-sessie):\s*(\d{4}-\d{2}-\d{2})\s*$/) ??
+    line.match(/^- \*\*(?:Date|Implemented):\*\*\s*(\d{4}-\d{2}-\d{2})/);
+  if (iso) {
+    return iso[1];
+  }
+  const dutch = line.match(/^datum:\s*(\d{1,2}) (\p{L}+) (\d{4})\s*$/u);
+  if (!dutch) {
+    return null;
+  }
+  const month = DUTCH_MONTHS.indexOf(dutch[2].toLowerCase());
+  if (month < 0) {
+    return null;
+  }
+  return `${dutch[3]}-${String(month + 1).padStart(2, "0")}-${dutch[1].padStart(2, "0")}`;
+}
+
+function listGrootboekFiles(root, dir) {
+  const found = [];
+  for (const entry of readdirSync(join(root, dir))) {
+    const path = `${dir}/${entry}`;
+    if (statSync(join(root, path)).isDirectory()) {
+      found.push(...listGrootboekFiles(root, path));
+    } else if (entry.endsWith(".md") || entry.endsWith(".yml")) {
+      found.push(path);
+    }
+  }
+  return found;
+}
+
+export function checkRecordDates(root, today = todayInAmsterdam()) {
+  const problems = [];
+  const base = "docs/grootboek";
+  if (!existsSync(join(root, base))) {
+    return problems;
+  }
+  for (const path of listGrootboekFiles(root, base)) {
+    const lines = readFileSync(join(root, path), "utf8").split(/\r?\n/);
+    const checked = path.endsWith(".yml") ? lines : lines.slice(0, FRONT_LINES);
+    checked.forEach((line, index) => {
+      const date = dateOnLine(line);
+      if (date && date > today) {
+        problems.push(`records: ${path}:${index + 1} is dated ${date}, after today (${today})`);
+      }
+    });
   }
   return problems;
 }

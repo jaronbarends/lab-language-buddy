@@ -53,6 +53,13 @@ patronen:
       - datum: 2026-10-21
         wat: "A bare requirement id in a status update, which sends the reader off to look it up"
         bron: "memory note feedback-requirement-ids-need-titles"
+  - patroon: branch-before-edit
+    titel: "Work is edited on the integration branch before a branch exists"
+    maatregel: HDR-011
+    incidenten:
+      - datum: 2026-10-28
+        wat: "A fresh agent edited README.md directly on arc/arc-main, uncommitted, and said only afterwards that a branch and PR are needed"
+        bron: "cold-start run, phase 2 (JNL-002)"
   - patroon: ai-vs-self-advice
     titel: "Global instructions and the project disagree, and only private memory settles it"
     maatregel:

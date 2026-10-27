@@ -57,6 +57,12 @@ documents:
   - path: docs/grootboek/hdr/hdr-010-names-checked-against-what-they-promise.md
     what: The naming rule in code-style.md and why: seven naming corrections in the stage 4 review, the first pattern codified through the incident register.
     read_when: naming a function, status or type in src/; a naming correction from Jaron.
+  - path: docs/grootboek/hdr/hdr-011-arc-base-branch-and-branch-first.md
+    what: Why the root CLAUDE.md names arc/arc-main as the base for arc work and says the branch comes before the first edit; found in the first cold-start run.
+    read_when: starting work on an arc branch; updating the Branches line when arc/arc-main merges into main.
+  - path: docs/grootboek/journaal/jnl-002-cold-start-onboarding.md
+    what: Cold-start journal (REQ-GG-10): what a fresh agent with only the repo got right and where the repo does not describe itself; six issues, two decided in HDR-011.
+    read_when: running the next cold-start round; judging whether onboarding works; deciding the open issues (checks not run, the private README link, the AI-or-self rule).
   - path: docs/grootboek/adr/adr-001-environment-and-deployment-topology.md
     what: main is production, other branches preview by default, secret env vars Production-only; configured in Vercel, not in the repo.
     read_when: changing branch or env-var setup in Vercel.

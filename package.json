@@ -8,6 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "docs:check": "node scripts/check-docs.mjs",
+    "docs:renumber": "node scripts/renumber-records.mjs",
+    "test:scripts": "node --test scripts/renumber-records.test.mjs",
     "register:check": "node scripts/sync-code-architectuur-register.mjs --check",
     "prepare": "husky"
   },

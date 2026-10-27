@@ -32,7 +32,8 @@ hdrs:
     omgeving: geen
     datum: 2026-10-20
     implementatie-datum: 2026-10-22
-    beslissing: "Lint, typecheck, docs:check, the register drift check (REQ-AH-12) and build run on every PR to main or arc/arc-main (K8)"
+    beslissing: "Lint, typecheck, docs:check, the script tests (npm run test:scripts), the register drift check (REQ-AH-12) and build run on every PR to main or arc/arc-main (K8)"
+    notitie: "Amended 2026-10-27 with Jaron's go-ahead, although the record had landed: test:scripts added (HDR-007)"
     bestand: hdr-003-ci-checks-wanted-on-pull-requests.md
   - id: "HDR-004"
     titel: "Session-scoped refactor loop instead of an unattended push-hook"
@@ -55,6 +56,28 @@ hdrs:
     beslissing: "Parallel arc/* branches book the same next number; whichever merges second renumbers its own records in its own branch, after merging arc/arc-main into it and before its PR. Merged records keep their number"
     notitie: "docs:check does not detect duplicate ids; the check is manual. arc/bubble-animation's HDR-005 is the first to be renumbered"
     bestand: hdr-005-renumber-on-merge-when-numbers-collide.md
+  - id: "HDR-006"
+    titel: "A hook reminds the agent of the duty to communicate"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-24
+    implementatie-datum: 2026-10-24
+    beslissing: "A PostToolUse hook on Edit and Write reminds the agent (lead thread and subagents, with different wording) when a leading document changes; the list of leading documents and the wording are data in .claude/hooks/leading-documents.json"
+    notitie: "Never blocks. Blind spots: shell-made changes, edits outside Claude Code. No de-duplication. The list is kept in two places (root CLAUDE.md and the json). Numbering: arc/bubble-animation holds HDR-006 for the Modern Web Guidance trial, so one of the two renumbers when it merges second (HDR-005)"
+    bestand: hdr-006-communication-duty-hook.md
+  - id: "HDR-007"
+    titel: "Renumbering is mechanical: a check, a script and a guard hook"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-27
+    implementatie-datum: 2026-10-27
+    beslissing: "Records are renumbered before the merge, not after: npm run docs:renumber renumbers the branch's colliding records, docs:check fails on a duplicated id, and a guard hook holds back a merge of arc/arc-main or main until the script has run"
+    notitie: "Reverses the order in HDR-005 (renumber before merging) and replaces its manual check. First automated test in the repo, for scripts only (plan, log 10-27). Tried on a throwaway worktree of arc/bubble-animation: HDR-006 to HDR-007"
+    bestand: hdr-007-mechanical-renumbering.md
   - id: "HDR-008"
     titel: "Try Modern Web Guidance on the bubble animation, baseline written first"
     status: in-progress

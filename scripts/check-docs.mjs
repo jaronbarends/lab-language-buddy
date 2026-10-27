@@ -9,9 +9,12 @@
 //      docs/ is listed                                           (error)
 //   5. plan.md is not more than 30 days older than the newest
 //      commit that touched src/                                  (warning)
+//   6. every grootboek register holds each record id once, and
+//      the record file exists and starts with its own id          (error)
 import { execFileSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
+import { checkRecords } from "./records.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1");
 const MAX_PLAN_LAG_DAYS = 30;
@@ -126,6 +129,9 @@ if (planTime && sourceTime) {
     warnings.push(`plan: docs/plan.md is ${lagDays} days older than the newest change in src/`);
   }
 }
+
+// 6. the grootboek registers hold each record id once, and the files match
+errors.push(...checkRecords(ROOT));
 
 for (const warning of warnings) {
   console.warn(`warning  ${warning}`);

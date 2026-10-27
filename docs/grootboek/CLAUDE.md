@@ -22,9 +22,10 @@ decision or status change.
 ## Numbering across parallel branches
 
 Branches booking records in parallel hand out the same next number. The branch that merges
-second renumbers its own records, in its own branch, after merging `arc/arc-main` into it and
-before its pull request; merged records keep their number (HDR-005). `npm run docs:check`
-does not catch duplicate ids, so check each register by hand.
+second renumbers its own records, in its own branch, **before** merging `arc/arc-main` or
+`main` into it: run `npm run docs:renumber`, review, commit (HDR-005, order changed by
+HDR-007). The `guard-merge-renumber` hook holds back such a merge from Claude Code until it
+has run, and `npm run docs:check` fails on a duplicated id. Merged records keep their number.
 
 ## Writing conventions
 
@@ -35,5 +36,4 @@ does not catch duplicate ids, so check each register by hand.
 
 ## Duty to communicate
 
-When a balance document or CLAUDE.md changes: say what changes and why, and ask the human
-to check it.
+See the root `CLAUDE.md`: it holds the list of leading documents and the rule.

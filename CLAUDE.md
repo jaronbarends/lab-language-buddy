@@ -29,8 +29,13 @@ requirement.
   contradicts the plan still updates the plan in the same commit.
 - **Language.** Grootboek documents are written in English, like everything else in
   this repo. That overrides the skill's own "Documentatie: Nederlands" convention.
-- **Duty to communicate:** when a document in `docs/grootboek/` or this file changes,
-  say what changes and why, and ask for a check. No silent edits.
+- **Duty to communicate.** Leading documents: every `CLAUDE.md` in the repo,
+  `docs/grootboek/software-architectuur.md` (the only balance so far; a new balance joins
+  this list when it is created) and `docs/code-architectuur.md`. When one changes: say what
+  changes and why, show the concrete change, and ask for a check. No silent edits. This also
+  holds when a record leads to an update of a leading document. Records (ADR, HDR, PDR, DFT,
+  JNL), `docs/plan.md` (it has its own rule: same commit as the code) and the README are
+  outside this duty.
 - A decision without a register line does not exist for the next session. Update the
   register in the same commit as the record.
 
@@ -92,7 +97,9 @@ say so rather than following either blindly.
   version is what's actually built; see `docs/code-architectuur.md`'s REQ-AH-13 note.
 - **Checks before you call something done.** `npm run lint`, then
   `npx next typegen && npx tsc --noEmit`, `npm run docs:check` (drift between docs and
-  repo), then `npm run build`. Anything touching audio,
+  repo), `npm run test:scripts` (the tests of the scripts that rewrite documents),
+  `npm run register:check` (the code-architecture register has not drifted), then
+  `npm run build`. Anything touching audio,
   recording or layout also needs a test on a real iPhone: Safari is a hard requirement.
 - **Folders.** `src/app` routes and global CSS, `src/components` screens and UI,
   `src/hooks` session context and effect drivers, `src/lib` state machine, provider

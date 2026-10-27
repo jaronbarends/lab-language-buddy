@@ -1,0 +1,9 @@
+{
+  "fileNames": ["CLAUDE.md"],
+  "paths": [
+    "docs/grootboek/software-architectuur.md",
+    "docs/code-architectuur.md"
+  ],
+  "leadMessage": "Duty to communicate: {path} is a leading document and was just changed. Before you continue, tell Jaron what changed and why, show the concrete change, and ask him to check it. If you already did this for this change, say nothing more.",
+  "subagentMessage": "Duty to communicate: {path} is a leading document and was just changed. You cannot ask Jaron yourself. List this change under open points in your report: what changed, why, and the concrete change. The lead thread passes it on and asks for the check."
+}

@@ -60,6 +60,23 @@ patronen:
       - datum: 2026-10-27
         wat: "A fresh agent edited README.md directly on arc/arc-main, uncommitted, and said only afterwards that a branch and PR are needed"
         bron: "cold-start run, phase 2 (JNL-002)"
+  - patroon: document-not-fully-read
+    titel: "A claim about a document is made without reading it in full"
+    maatregel:
+    incidenten:
+      - datum: 2026-10-27
+        wat: "Said the README lists only lint and build, from a search for npm run that misses lines starting with npx; it also listed the typecheck"
+        bron: "cold-start run 1, found when the agent's diff came back"
+      - datum: 2026-10-27
+        wat: "Wrote in the journal that no occasion had arisen to test the AI-or-self rule, without reading the global instruction that asks for a verdict before any new task"
+        bron: "found while preparing cold-start run 2"
+  - patroon: date-assumed
+    titel: "A date is assumed instead of read from the clock"
+    maatregel: HDR-012
+    incidenten:
+      - datum: 2026-10-27
+        wat: "Wrote 2026-10-28 in 22 places in eight files, a day ahead of the clock and of every commit"
+        bron: "found in the reflog of cold-start run 2"
   - patroon: ai-vs-self-advice
     titel: "Global instructions and the project disagree, and only private memory settles it"
     maatregel:

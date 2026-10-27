@@ -63,6 +63,9 @@ documents:
   - path: docs/grootboek/journaal/jnl-002-cold-start-onboarding.md
     what: Cold-start journal (REQ-GG-10): what a fresh agent with only the repo got right and where the repo does not describe itself; six issues, two decided in HDR-011.
     read_when: running the next cold-start round; judging whether onboarding works; deciding the open issues (checks not run, the private README link, the AI-or-self rule).
+  - path: docs/grootboek/hdr/hdr-012-no-record-dated-after-today.md
+    what: Why docs:check fails on a record dated after today (read in Europe/Amsterdam), what it reads and what it cannot catch; the maatregel of the date-assumed incident pattern.
+    read_when: writing a date in a record or register; a docs:check error about a date after today; changing the timezone constant.
   - path: docs/grootboek/adr/adr-001-environment-and-deployment-topology.md
     what: main is production, other branches preview by default, secret env vars Production-only; configured in Vercel, not in the repo.
     read_when: changing branch or env-var setup in Vercel.

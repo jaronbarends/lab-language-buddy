@@ -1,7 +1,7 @@
 # HDR-010: A name is checked against what it promises
 
 - **Status:** implemented
-- **Date:** 2026-10-28
+- **Date:** 2026-10-27
 - **Implementation:** 100
 - **Type:** Harness Decision Record (HOW do we work)
 

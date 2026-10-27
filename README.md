@@ -46,7 +46,7 @@ These were specified up front and are not open questions:
 | Framework | Next.js 16 (App Router) + TypeScript |
 | Conversation AI | Google Gemini (`@google/genai`) |
 | Speech-to-text | **Live streaming**, not record-then-transcribe: the browser's native `SpeechRecognition` by default, Deepgram `nova-2` and ElevenLabs Scribe v2 Realtime as the alternatives, chosen by env var |
-| Text-to-speech | Behind a provider abstraction, selected by env var. Azure AI Speech is the default; Google and ElevenLabs are also to be implemented, so the abstraction is actually exercised |
+| Text-to-speech | Behind a provider abstraction, selected by env var. Azure AI Speech is the default; Google and ElevenLabs are implemented too, so the abstraction is actually exercised |
 | Live STT architecture (Deepgram, ElevenLabs) | Browser connects to the vendor's WebSocket **directly**, with a short-lived token minted by one of our own REST routes — no WebSocket server on our side |
 | Persistence | None. Session state is in memory |
 
@@ -68,16 +68,26 @@ table of [`docs/plan.md`](docs/plan.md).
 │   ├── hooks/              session context, effect drivers
 │   └── lib/                state machine, registries, pure helpers
 ├── spikes/ai-voice-demo/   reference spike — separate app, excluded from lint/typecheck
-└── resources/              reference screenshots
+├── docs/                   plan, decision records, code-architecture doctrine and register;
+│                           start at docs/index.yml
+├── scripts/                the docs:* and register:* tooling, with node:test tests
+├── resources/              reference screenshots
+├── public/                 static assets
+├── .claude/                agent rules, hooks, skills and agents for working in this repo
+├── .github/workflows/      CI: the checks below, on every pull request
+└── .husky/                 pre-commit hook (syncs the code-architecture register)
 ```
 
-`spikes/ai-voice-demo/findings.md` is the most valuable document in the repo. It records
-the provider comparison and four non-obvious bugs already paid for: Safari's recording
-format, Safari's audio-playback unlock, Deepgram's short-lived tokens needing a different
+`spikes/ai-voice-demo/findings.md` (written in Dutch) is the most valuable document in the
+repo. It records the provider comparison and the non-obvious bugs already paid for: Google
+and Azure speech-to-text failing silently on Safari recordings, Safari's recording format,
+Safari's audio-playback unlock, Deepgram's short-lived tokens needing a different
 WebSocket auth scheme than the permanent API key, and a stale-closure bug in turn
 tracking. Read it before touching the voice code.
 
 ## Getting started
+
+Needs Node 20.9 or newer (Next 16's minimum; CI runs Node 22).
 
 ```bash
 npm install
@@ -120,9 +130,14 @@ dev origin; without that, Next blocks the request.
 
 ### Checks
 
+The same list runs in CI on every pull request (`.github/workflows/checks.yml`):
+
 ```bash
 npm run lint
 npx next typegen && npx tsc --noEmit    # typegen first — v16 generates route types
+npm run docs:check                      # drift between docs and repo
+npm run test:scripts                    # tests of the scripts that rewrite documents
+npm run register:check                  # code-architecture register has not drifted
 npm run build
 ```
 
@@ -149,5 +164,9 @@ one commit.
 Read it before changing anything structural — several things that look arbitrary (no Stop
 button, `editing` as its own state, the live transcript living outside the thread) are
 deliberate and the reasoning is recorded there.
+
+Working agreements for contributors and AI agents (branches, commits, hooks, the subagent
+working model) are in [`CLAUDE.md`](CLAUDE.md); `docs/index.yml` is the table of contents
+for everything under `docs/`.
 
 As of 20-10-2026, we're using Arc with a Grootboek for keeping track of planning and decisions. [Principles described here](https://claude.ai/artifact/HvsnLkFpHyWXknynSejorb) (private link, for my own reference only)

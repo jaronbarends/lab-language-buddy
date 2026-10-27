@@ -95,8 +95,8 @@ hdrs:
     versie: "1.0"
     implementatie: 100
     omgeving: geen
-    datum: 2026-10-28
-    implementatie-datum: 2026-10-28
+    datum: 2026-10-27
+    implementatie-datum: 2026-10-27
     beslissing: "An incident register grouped by pattern (no ids, one line per incident); npm run docs:incidents and docs:check count it and warn at three without a maatregel; at three the pattern is codified (rule, hook or skill) and an HDR books it; a logging duty in CLAUDE.md"
     notitie: "REQ-GG-06. Threshold three (the requirement), not more than three (the skill's HDR guide). Seeded from six memory notes. Logging depends on the agent: no hook sees a human correction. Numbering: arc/bubble-animation holds its own HDR-008 and renumbers via docs:renumber (HDR-007)"
     bestand: hdr-009-incident-register.md
@@ -106,8 +106,8 @@ hdrs:
     versie: "1.0"
     implementatie: 100
     omgeving: geen
-    datum: 2026-10-28
-    implementatie-datum: 2026-10-28
+    datum: 2026-10-27
+    implementatie-datum: 2026-10-27
     beslissing: "A rule in .claude/rules/code-style.md: a name says what the function returns or does and uses its neighbours' word; a correction is accepted without defence, with a reason and a better proposal"
     notitie: "First pattern codified through the incident register (naming-precision, seven incidents). A rule cannot be checked mechanically: success is no further naming incident"
     bestand: hdr-010-names-checked-against-what-they-promise.md
@@ -117,8 +117,19 @@ hdrs:
     versie: "1.0"
     implementatie: 100
     omgeving: geen
-    datum: 2026-10-28
-    implementatie-datum: 2026-10-28
+    datum: 2026-10-27
+    implementatie-datum: 2026-10-27
     beslissing: "The Branches line of the root CLAUDE.md names arc/arc-main as the base for arc work (and main as production) and says the branch is created before the first edit; no hook for the second half (one incident)"
     notitie: "From the first cold-start run (JNL-002, K1 and K2). The sentence is time-bound: update it when arc/arc-main merges into main. Proof is a second cold-start round"
     bestand: hdr-011-arc-base-branch-and-branch-first.md
+  - id: "HDR-012"
+    titel: "No record may be dated after today"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-27
+    implementatie-datum: 2026-10-27
+    beslissing: "docs:check fails when a grootboek register or record carries a date after today (read in Europe/Amsterdam, not UTC); structured fields only"
+    notitie: "Maatregel of the incident pattern date-assumed (22 dates written a day ahead). Catches only future dates; a wrong date in the past or in prose passes. Covered by record-dates.test.mjs"
+    bestand: hdr-012-no-record-dated-after-today.md

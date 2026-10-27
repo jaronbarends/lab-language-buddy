@@ -15,12 +15,13 @@
 //      its code has not changed since the document did           (warning)
 //   8. the incident register is well formed (error), and no pattern
 //      has three incidents without a codified fix                (warning)
+//   9. no grootboek record or register is dated after today      (error)
 import { execFileSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import { findDrift } from "./drift-signal.mjs";
 import { analyseIncidents } from "./incidents.mjs";
-import { checkRecords } from "./records.mjs";
+import { checkRecordDates, checkRecords } from "./records.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1");
 const MAX_PLAN_LAG_DAYS = 30;
@@ -150,6 +151,9 @@ for (const document of drift.documents) {
     );
   }
 }
+
+// 9. no record is dated after today
+errors.push(...checkRecordDates(ROOT));
 
 // 8. recurring faults: a pattern at the threshold must be codified in an HDR
 const incidents = analyseIncidents(ROOT);

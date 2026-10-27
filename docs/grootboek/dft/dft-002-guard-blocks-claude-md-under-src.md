@@ -1,6 +1,6 @@
 # DFT-002: The subagent-tenzij guard blocks CLAUDE.md files under src/, the working agreement says it should not
 
-- **Status:** open
+- **Status:** resolved (2026-10-27)
 - **Date:** 2026-10-24
 - **Trigger:** found while designing the communication-duty hook (REQ-GG-04, Implementeer de
   communicatieplicht bij documentwijzigingen): `src/components/CLAUDE.md` and
@@ -39,20 +39,31 @@ a second hook turns out to differ from its description.
 
 ## Decisions
 
-Open. The choice is Jaron's; two options, neither booked:
+Decided by Jaron on 2026-10-27: **change the hook** (option 1 of the two that were open; the
+other was to tighten the agreement).
 
-1. **Change the hook.** Allow the lead thread to edit `*.md` under `src/`; keep denying code.
-   The hook then matches the agreement as written.
-2. **Change the agreement.** Say that the carve-out ends at `src/` and `spikes/`, including
-   their `CLAUDE.md` files. The hook stays as it is.
+`guard-kenniswerker.cjs` no longer guards Markdown files. A file with the extension `.md` (any
+case) under `src/` or `spikes/` is allowed for the lead thread. Code and every other file
+type under those folders stays guarded, a CSS module or a JSON file included. The working
+agreement needed no change: it already said that non-code files are a carve-out.
 
-Whichever is chosen lands in `CLAUDE.md` (the working-model line) or in the hook script, and
-this DFT moves to `resolved` with a line saying which.
+Tested on 2026-10-27 with simulated lead-thread calls:
+
+| Path | Lead thread |
+|---|---|
+| `src/lib/CLAUDE.md`, `src/components/CLAUDE.md` | allowed (was denied) |
+| `spikes/ai-voice-demo/findings.md`, `src/lib/NOTES.MD` | allowed |
+| `src/lib/foo.ts`, `src/app/page.tsx`, `src/components/x.module.css`, `spikes/ai-voice-demo/app.js`, `src/lib/notes.md.ts` | denied (unchanged) |
+| `CLAUDE.md`, `docs/plan.md` | allowed (unchanged) |
+
+A subagent edit of code passes as before, and the time-boxed override still works.
 
 ## Consequences
 
-- Until decided, the communication-duty hook (REQ-GG-04) treats `src/components/CLAUDE.md`
-  and `src/lib/CLAUDE.md` as leading documents like any other; it does not depend on who edits
-  them.
-- A change to `CLAUDE.md` is a leading-document change: when this DFT is resolved, the duty
-  to communicate applies.
+- The lead thread can now edit `src/components/CLAUDE.md` and `src/lib/CLAUDE.md` itself, so
+  the duty to communicate (HDR-006) reaches it directly, no longer through a builder's report.
+- This is the first drift report in the grootboek that ran the whole chain: booked (DFT-002),
+  decided, changed in the harness, and closed. It is evidence for REQ-GG-05 (Richt
+  drift-detectie in) that a finding is followed up and not only signalled.
+- No record is needed besides this one: a hook changed to match an existing agreement is a
+  correction, not a new decision.

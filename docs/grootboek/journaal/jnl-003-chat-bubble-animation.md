@@ -436,10 +436,11 @@ or expanding-ring indicator; the searches only found general motion guides (`mot
 `individual-transform-properties`, `spinner`). It agreed with the baseline on animating only
 `scale` and `opacity` (the compositor), on not applying `animation-duration: 0.01ms` globally,
 and on handling reduced motion per rule. Differences: (1) it mandates an identity base `scale: 1`
-on an element that animates `scale`, which the baseline did not have; this time the builder
-APPLIED it, on the `::after` ring (unlike the bubbles in K11, where it was left out). The ring
-is a childless pseudo-element, so the cost, a permanent stacking context, is nil here, but it is
-a different outcome from K11 and the human may want one rule for both. (2) It prefers "default to
+on an element that animates `scale`, which the baseline did not have. The builder applied it on
+the `::after` ring (the bubbles in K11 had left it out); the human decided it is not needed here
+and had it removed again (2026-10-28). So none of the three animations has it: nothing visible
+went wrong on the device without it, the ring is a childless pseudo-element, and the rule would
+make each of them a permanent stacking context. (2) It prefers "default to
 static, opt in to motion", and its `spinner` guide says to slow a persistent animation down under
 reduced motion instead of stopping it, so the user can still tell it is active. That contradicts
 decision 3 (no pulse under reduced motion). K13 was followed; the plain dot already says the
@@ -474,6 +475,8 @@ microphone is live.
 - **2026-10-27 — K13 decided and built.** The listening dot pulses while the microphone is live
   (a ring, as in the original app); no pulse under reduced motion. Test 3 of the HDR-013 trial.
   Tested on the iPhone by the human, all points passed. Next: the human's verdict on the trial.
+- **2026-10-28 — the guidance's identity `scale: 1` removed from the ring.** The human decided it
+  is not needed there. Consistent now across the three animations of the trial: not used.
 
 **Where to pick up (written for the next session):**
 

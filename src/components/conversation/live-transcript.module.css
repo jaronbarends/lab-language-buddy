@@ -41,9 +41,6 @@
     inset: 0;
     border-radius: inherit;
     background: inherit;
-    /* Identity scale on the base element, so the animation does not change the
-       stacking context mid-run (Modern Web Guidance, individual transform properties). */
-    scale: 1;
     animation: listening-pulse 1.6s infinite;
 
     @media (prefers-reduced-motion: reduce) {

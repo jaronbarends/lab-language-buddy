@@ -1,5 +1,7 @@
-/* Layout only. The frame is the shared Bubble's, the same as the settled draft, so
-   nothing shifts when recording ends — the indicator dot is the only difference. */
+/* Layout only. The frame is the shared Bubble's, the same as the settled draft, and so is
+   the minimum width, which keeps the bubble the same width for short text when recording
+   ends. The text itself starts one dot plus one gap (20px) further right while the dot
+   is shown, and moves back when it goes. */
 .listening {
   display: flex;
   align-items: flex-start;
@@ -12,17 +14,51 @@
  * is the answer to "is it still hearing me?" — which is why the settled draft bubble
  * has no dot at all.
  *
- * Kept as its own element rather than a ::before so a pulse animation can be added
- * here later without touching the bubble.
+ * Kept as its own element rather than a ::before so the pulse lives here without
+ * touching the bubble. The pulse is a ring (::after, same circle over the dot) that widens
+ * and fades while the dot itself stays put (JNL-003 K13). At 2.2 x 12px the ring reaches
+ * 7.2px beyond the dot: inside the bubble's overflow clip (the dot is 16px from the
+ * left edge of it) and 0.8px short of the 8px gap to the text, where it is nearly
+ * transparent. With reduced motion the ring is not shown at all, so only the plain dot
+ * remains.
  */
 .listeningIndicator {
+  --size: var(--size-12);
+  position: relative;
   flex-shrink: 0;
-  width: var(--size-8);
-  height: var(--size-8);
-  /* Lines the dot up with the first line of text rather than the padding box. */
-  margin-top: var(--size-8);
+  width: var(--size);
+  height: var(--size);
+  /* Centres the dot on the first line of text rather than the padding box: half of what
+     is left of the line (`1lh`, the line-height this element inherits from the Bubble)
+     once the dot is in it. */
+  margin-top: calc((1lh - var(--size)) / 2);
   border-radius: var(--radius-circle);
   background: var(--color-bg-primary);
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: inherit;
+    animation: listening-pulse 1.6s infinite;
+
+    @media (prefers-reduced-motion: reduce) {
+      display: none;
+    }
+  }
+}
+
+@keyframes listening-pulse {
+  0% {
+    scale: 1;
+    opacity: 0.8;
+  }
+
+  100% {
+    scale: 2.2;
+    opacity: 0;
+  }
 }
 
 .interim {

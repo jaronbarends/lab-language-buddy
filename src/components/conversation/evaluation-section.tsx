@@ -21,13 +21,23 @@ type EvaluationSectionProps = {
 export function EvaluationSection({
   evaluation,
   conversationLang,
-}: EvaluationSectionProps) {
+  contentClassName,
+}: EvaluationSectionProps & {
+  /** Extra class for the evaluation text, e.g. its fade-in at send time. */
+  contentClassName?: string;
+}) {
   return (
     <BubbleAttachment className={styles.section} lang="en">
-      <EvaluationContent
-        evaluation={evaluation}
-        conversationLang={conversationLang}
-      />
+      {/* One inline span that stays mounted while the status changes, so a class on it
+          (the send-time fade) runs once at mount and never replays. Inline inside a
+          block attachment, so it changes nothing in the flow of the text and the <i>
+          segments. */}
+      <span className={contentClassName}>
+        <EvaluationContent
+          evaluation={evaluation}
+          conversationLang={conversationLang}
+        />
+      </span>
     </BubbleAttachment>
   );
 }

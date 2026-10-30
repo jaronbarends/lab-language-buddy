@@ -133,3 +133,13 @@ hdrs:
     beslissing: "docs:check fails when a grootboek register or record carries a date after today (read in Europe/Amsterdam, not UTC); structured fields only"
     notitie: "Maatregel of the incident pattern date-assumed (22 dates written a day ahead). Catches only future dates; a wrong date in the past or in prose passes. Covered by record-dates.test.mjs"
     bestand: hdr-012-no-record-dated-after-today.md
+  - id: "HDR-013"
+    titel: "Try Modern Web Guidance on the bubble animation, baseline written first"
+    status: in-progress
+    versie: "1.0"
+    implementatie: 50
+    omgeving: geen
+    datum: 2026-10-23
+    beslissing: "Trial of Modern Web Guidance for JNL-003 K3: the agent's own baseline is written before the guidance is consulted, compared after the iPhone spike; the human then keeps, switches off or adjusts it"
+    notitie: "Pre-install findings are in the record (no install scripts, unpinned @latest, telemetry per README); installed 2026-10-23 (scope local, v0.0.195); decisions taken: telemetry off via .claude/settings.json env, per-run approval, default Baseline, reply section kept, /plugin route; trial extended 2026-10-23 to several CSS tasks (baseline first, then guidance; trial log inside the record); ends after three tests in total. Source: JNL-003 K10"
+    bestand: hdr-013-modern-web-guidance-trial.md

@@ -4,6 +4,10 @@ import styles from "./bubble.module.css";
 
 type BubbleProps = HTMLAttributes<HTMLDivElement> & {
   author: "ai" | "user";
+  /** The shared minimum width of the bubbles the user's words pass through (see CSS). */
+  hasMinimumWidth?: boolean;
+  /** React 19: a normal prop. It stays in `rest` and reaches the div untouched. */
+  ref?: Ref<HTMLDivElement>;
 };
 
 /**
@@ -21,6 +25,7 @@ type BubbleProps = HTMLAttributes<HTMLDivElement> & {
  */
 export function Bubble({
   author,
+  hasMinimumWidth,
   className,
   children,
   ...rest
@@ -28,6 +33,7 @@ export function Bubble({
   const classNames = [
     styles.bubble,
     author === "ai" ? styles.ai : styles.user,
+    hasMinimumWidth && styles.minimumWidth,
     className,
   ]
     .filter(Boolean)

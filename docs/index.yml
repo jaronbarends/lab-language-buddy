@@ -66,6 +66,9 @@ documents:
   - path: docs/grootboek/hdr/hdr-012-no-record-dated-after-today.md
     what: Why docs:check fails on a record dated after today (read in Europe/Amsterdam), what it reads and what it cannot catch; the maatregel of the date-assumed incident pattern.
     read_when: writing a date in a record or register; a docs:check error about a date after today; changing the timezone constant.
+  - path: docs/grootboek/hdr/hdr-013-modern-web-guidance-trial.md
+    what: Trial of Modern Web Guidance on the bubble animation; the agent's baseline is written before the guidance is consulted, then the human keeps, switches off or adjusts it.
+    read_when: considering web-platform guidance tooling for the agent; closing JNL-003 K10.
   - path: docs/grootboek/adr/adr-001-environment-and-deployment-topology.md
     what: main is production, other branches preview by default, secret env vars Production-only; configured in Vercel, not in the repo.
     read_when: changing branch or env-var setup in Vercel.
@@ -84,6 +87,9 @@ documents:
   - path: docs/grootboek/journaal/jnl-001-instap-software-balans.md
     what: Onboarding journal for the software balance trial; eight issues (balance vs plan, environments, route auth and its follow-up, CI and its follow-up, model choice, Google key).
     read_when: accepting or discarding the balance; answering one of its open questions.
+  - path: docs/grootboek/journaal/jnl-003-chat-bubble-animation.md
+    what: Discovery journal for animating the chat bubbles (plan open question 11): the surviving element, growing in height and width, scroll, read-along, roles; ten issues.
+    read_when: working on bubble or thread animation; answering one of its open issues.
   - path: docs/grootboek/dft/dft-001-eerste-reconciliatie-software-balans.md
     what: First drift reconciliation of the software balance; no drift found, because no code changed since the balance was written. Tested the process, not detection.
     read_when: running or interpreting the next reconciliation of the balance.

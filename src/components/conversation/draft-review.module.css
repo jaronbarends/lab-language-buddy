@@ -1,9 +1,8 @@
 .editor {
   /* Typed line breaks stay line breaks. The wrapping of long words is the bubble's. */
   white-space: pre-wrap;
-  /* An empty editable block would have no height and almost no width, so the bubble
-     would collapse to its padding and the caret would have nowhere to be. */
-  min-width: 4ch;
+  /* An empty editable block would have no height, so the caret would have nowhere to be.
+     Its width comes from the bubble's shared minimum width (see bubble.module.css). */
   min-height: 1lh;
 }
 

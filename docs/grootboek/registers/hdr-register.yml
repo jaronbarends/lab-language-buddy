@@ -143,3 +143,13 @@ hdrs:
     beslissing: "Trial of Modern Web Guidance for JNL-003 K3: the agent's own baseline is written before the guidance is consulted, compared after the iPhone spike; the human then keeps, switches off or adjusts it"
     notitie: "Pre-install findings are in the record (no install scripts, unpinned @latest, telemetry per README); installed 2026-10-23 (scope local, v0.0.195); decisions taken: telemetry off via .claude/settings.json env, per-run approval, default Baseline, reply section kept, /plugin route; trial extended 2026-10-23 to several CSS tasks (baseline first, then guidance; trial log inside the record); ends after three tests in total. Source: JNL-003 K10"
     bestand: hdr-013-modern-web-guidance-trial.md
+  - id: "HDR-014"
+    titel: "Documentatie is Nederlands; code, UI en commits blijven Engels"
+    status: in-progress
+    versie: "1.0"
+    implementatie: 50
+    omgeving: geen
+    datum: 2026-10-30
+    beslissing: "Alle documentatie die geen code is (grootboek, CLAUDE.md-bestanden, rules, agent- en skill-instructies, hook-meldingen, docs/) is Nederlands; code, code-comments, UI-teksten, commitberichten, README.md en spikes/ blijven Engels; bestaande Engelse documenten worden vertaald"
+    notitie: "Regel staat in de drie taalregels van de leidende documenten; de vertaalronde is nog niet gedaan, daarom 50. Vertalen is geen nieuwe beslissing (HDR-001). De labels Status/Date/Implementation blijven Engels omdat scripts/records.mjs ze leest (HDR-012). Geen check op taal: pas bouwen bij herhaling"
+    bestand: hdr-014-documentatie-nederlands.md

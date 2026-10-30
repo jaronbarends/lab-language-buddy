@@ -29,7 +29,8 @@ has run, and `npm run docs:check` fails on a duplicated id. Merged records keep 
 
 ## Writing conventions
 
-- Documentation: English (the repo's language rule; the skill's own templates are Dutch)
+- Documentation: Dutch, as the skill's own templates are; code and code comments stay English
+  (HDR-014)
 - Files: kebab-case
 - Every feature or bugfix gets a spec in `docs/grootboek/specs/`
 - Specs are throwaway: after delivery the code is the truth

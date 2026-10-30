@@ -27,8 +27,6 @@ requirement.
   Only decisions from the `arc/*` experiments are booked in the grootboek
   (HDR-001 says why). It does not replace the plan rule above: a change that
   contradicts the plan still updates the plan in the same commit.
-- **Language.** Grootboek documents are written in English, like everything else in
-  this repo. That overrides the skill's own "Documentatie: Nederlands" convention.
 - **Duty to communicate.** Leading documents: every `CLAUDE.md` in the repo,
   `docs/grootboek/software-architectuur.md` (the only balance so far; a new balance joins
   this list when it is created) and `docs/code-architectuur.md`. When one changes: say what
@@ -56,7 +54,12 @@ conversation in a foreign language against an AI persona. Details and ambition: 
 These describe what the codebase and its history already do. If you find a counter-example,
 say so rather than following either blindly.
 
-- **Language.** Code, comments, UI copy, commit messages and docs are in English.
+- **Language** (HDR-014). Code, code comments, UI copy and commit messages are in English, and
+  so are `README.md` and `spikes/`. All other documentation is in Dutch: the grootboek and its
+  registers, every `CLAUDE.md`, the rules, agent and skill instructions, hook messages and the
+  rest of `docs/`. Existing English documents are being translated; new documents are written
+  in Dutch from the start. Translate prose only, never keys, ids, file names or the
+  `Status`/`Date`/`Implementation` labels of a record.
 - **No AI-or-self verdicts.** This project is an experiment in building with an AI that writes
   most of the code. Skip the one-line "let AI generate this / write this yourself"
   recommendation and the Next.js/TypeScript learning-goal framing from the global

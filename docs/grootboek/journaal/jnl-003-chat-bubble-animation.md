@@ -47,6 +47,7 @@ plan predates 2026-10-20 and carries a pointer here, so the two places do not dr
 | K11 | The user's bubble when it is sent: what animates | decided and built 2026-10-27, iPhone test open; shrink in the bar and the thinking-bubble delay come after |
 | K12 | Speech start against the end of the reveal | parked 2026-10-27 |
 | K13 | The listening indicator pulses while the microphone is live | decided and built 2026-10-27, tested on the iPhone |
+| K15 | The thinking bubble waits 800ms after a Retry too | parked 2026-10-30 |
 | K14 | The AI's thinking bubble appears with the same reveal, after a delay when it follows a sent turn | decided and built 2026-10-28; the reply grows from the thinking bubble's size (spike 2026-10-30); tested on the iPhone |
 
 ### K1 — Scope
@@ -542,6 +543,28 @@ size is measured once, so a font or viewport change during the wait would leave 
 slightly off; a reply smaller than the dots bubble makes the ratio exceed 1 and the bubble shrinks
 to its size.
 
+### K15 — The thinking bubble waits 800ms after a Retry too
+
+Found in the review of K14 (2026-10-28), parked by the human on 2026-10-30 as not important.
+
+The problem: after an error the user presses Retry and the session enters `aiThinking` again. The
+error state had removed the waiting bubble, so it mounts fresh, and the last turn is still the
+user's, so `followsSentTurn` (`turns.at(-1)?.author === "user"`) is true and the bubble waits
+800ms, invisible, for an "Evaluating…" moment that passed long ago. The user sees nothing for
+800ms after pressing Retry. The same holds when the thread remounts during `aiThinking`.
+
+The simple fix, when picked up: in `conversation-thread.tsx` apply the delay only when the last
+user turn's evaluation is still pending (`evaluation.status === "pending"`), which a fresh send
+always is and a retry usually is not. Caveats: it is an approximation (if the chat fails faster
+than the evaluation, the evaluation is still pending at Retry and the delay returns, a rarer
+case); the retry path in the reducer was not traced; and the prop name `followsSentTurn` then
+overpromises, so rename it with the change (for example `followsFreshTurn`; two files).
+
+Left open with it from the same review, both cosmetic and dev-only or latent: after the user
+preview was moved before the AI preview, a leftover AI-preview reply shows above a new "sent user
+bubble"; and `.waiting` in `bubble-reveal.module.css` hardcodes `transform-origin: top left`
+where `.reveal` reads `--reveal-origin`, which would drift if the AI bubble's anchor ever changed.
+
 ## Decision log
 
 - **2026-10-23 — journal opened.** Issues K1 to K10 from a read of the plan and the code. The
@@ -595,5 +618,6 @@ to its size.
   force another rename; the agent had proposed `ThinkingDots`).
 - Not written yet: the ADR for K2 (after K3 is settled), the spec, the K10 verdict and the
   decision on HDR-013 (keep, switch off or adjust).
+- Parked: K6 (VoiceOver), K12 (speech start after the reveal) and K15 (the Retry delay).
 
 This journal closes when K1 to K9 are decided or parked and the ADR (K2) and the spec exist.

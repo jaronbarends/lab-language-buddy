@@ -6,6 +6,8 @@ type BubbleProps = HTMLAttributes<HTMLDivElement> & {
   author: "ai" | "user";
   /** The shared minimum width of the bubbles the user's words pass through (see CSS). */
   hasMinimumWidth?: boolean;
+  /** React 19: a normal prop. It stays in `rest` and reaches the div untouched. */
+  ref?: Ref<HTMLDivElement>;
 };
 
 /**

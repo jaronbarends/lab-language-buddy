@@ -47,7 +47,7 @@ plan predates 2026-10-20 and carries a pointer here, so the two places do not dr
 | K11 | The user's bubble when it is sent: what animates | decided and built 2026-10-27, iPhone test open; shrink in the bar and the thinking-bubble delay come after |
 | K12 | Speech start against the end of the reveal | parked 2026-10-27 |
 | K13 | The listening indicator pulses while the microphone is live | decided and built 2026-10-27, tested on the iPhone |
-| K14 | The AI's thinking bubble appears with the same reveal, after a delay when it follows a sent turn | decided 2026-10-28; build open |
+| K14 | The AI's thinking bubble appears with the same reveal, after a delay when it follows a sent turn | decided and built 2026-10-28; the reply grows from the thinking bubble's size (spike 2026-10-30); tested on the iPhone |
 
 ### K1 — Scope
 
@@ -520,6 +520,28 @@ motion stays a compositor transform. Open from the start: the borders and corner
 while the two axes differ (the text is hidden then), and Safari. The bubble's size is read with
 `offsetWidth`/`offsetHeight` (unaffected by transforms) in a layout effect at the swap.
 
+**Spike built and accepted (2026-10-30).** `AiBubble` measures the waiting bubble once, while it
+waits, and the reply's bubble in a layout effect at the swap. The start scale per axis is old
+size / new size (`--grow-from-x`, `--grow-from-y`, set as inline custom properties); the `grow`
+keyframes are `from { scale: var(--grow-from-x, 0) var(--grow-from-y, 0) }`, so everything without
+the variables (the user's bubble, an AI reply that was never a thinking bubble) still starts at 0
+as before. Order, by construction and not by timing: the reply first renders WITHOUT the reveal
+class, the layout effect reads the sizes (which forces a layout while nothing animates) and sets
+state, and the synchronous re-render before paint adds the class, the text classes and the
+variables in one commit, so the animation cannot start without them. Layout stays at its final
+size at once (K4(A)); the scroll effect is untouched. **Tested on the iPhone by the human: all
+five points good** (the first frame at the swap has the dots bubble's size, the borders and
+corners while the axes differ, the overshoot, a very short and a very long reply, the scroll
+position; the user bubble unchanged).
+
+Known limitations, not fixed: the "was the thinking bubble ever visible" check uses the time since
+it mounted, not the animation's own clock (the swap commit has already removed that animation), so
+a reply just after the delay grows from a bubble that was barely visible, and for the opening turn
+(no delay) a very quick reply grows from a bubble that is still in its own entry; the waiting
+size is measured once, so a font or viewport change during the wait would leave the start size
+slightly off; a reply smaller than the dots bubble makes the ratio exceed 1 and the bubble shrinks
+to its size.
+
 ## Decision log
 
 - **2026-10-23 — journal opened.** Issues K1 to K10 from a read of the plan and the code. The
@@ -554,6 +576,10 @@ while the two axes differ (the text is hidden then), and Safari. The bubble's si
 - **2026-10-28 — K14 decided and built.** The thinking bubble enters with scale and fade, 800ms
   after a sent turn and at once for the opening turn; the timing variables moved to the thread;
   a combined dev preview was added. Next: the iPhone test.
+- **2026-10-30 — the reply grows from the thinking bubble's size.** The human corrected the
+  agent's reading of decision 2 (the reply must not start from scale 0); a non-uniform scale from
+  the measured sizes was built as a spike and accepted after the iPhone test (all five points).
+  The last open wish of the original question 11 in `docs/plan.md` is thereby built.
 
 **Where to pick up (written for the next session):**
 

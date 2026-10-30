@@ -9,8 +9,10 @@
  * The layout is already at its final size; scale is a transform, so it does not affect
  * layout and the thread's scroll effect sees the final size and needs no change (K4(A)).
  *
- * Deliberate (Jaron): the AI bubble no longer starts at the size of the thinking dots;
- * the dots vanish at once and the bubble grows from nothing.
+ * The AI bubble that replaces the thinking bubble sets --grow-from-x and --grow-from-y
+ * (old size / new size, measured in AiBubble), so it grows from the size of the dots
+ * bubble to its own. Without them (the user's bubble, an AI reply that was never a
+ * thinking bubble) the scale starts at 0 on both axes, as it always did.
  *
  * The animation has no fill, so no transform remains afterwards and the bubble's focus
  * ring, which sits outside its box, is not affected.
@@ -83,7 +85,7 @@
 
 @keyframes grow {
   from {
-    scale: 0;
+    scale: var(--grow-from-x, 0) var(--grow-from-y, 0);
   }
 }
 

@@ -16,6 +16,12 @@ type AiBubbleProps = {
   /** Non-null only while this turn is being read aloud. */
   spokenWordCount: number | null;
   conversationLang: string;
+  /**
+   * Only read while waiting. True when the waiting bubble follows a sent user turn: its
+   * entry then starts after the thinking delay. False for the AI's opening turn, which
+   * enters at once (JNL-003, K14).
+   */
+  followsSentTurn?: boolean;
 };
 
 /**
@@ -34,6 +40,7 @@ export function AiBubble({
   turn,
   spokenWordCount,
   conversationLang,
+  followsSentTurn = false,
 }: AiBubbleProps) {
   // Whether this element started life as the dots. Only then is there something to
   // reveal from; an AI turn that mounts with its text (no thinking state before it)
@@ -43,8 +50,18 @@ export function AiBubble({
   if (turn === null) {
     // Role and label as the old ThinkingBubble had them (JNL-003, K6 parked).
     return (
-      <Bubble author="ai" role="status" aria-label="Waiting for a reply">
-        <ThinkingIndicator />
+      <Bubble
+        author="ai"
+        role="status"
+        aria-label="Waiting for a reply"
+        className={[
+          revealStyles.waiting,
+          followsSentTurn ? revealStyles.waitingAfterSentTurn : undefined,
+        ]
+          .filter(Boolean)
+          .join(" ")}
+      >
+        <ThinkingIndicator className={revealStyles.waitingDots} />
       </Bubble>
     );
   }

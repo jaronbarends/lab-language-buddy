@@ -11,8 +11,6 @@ import {
   subscribeToAiBubblePreview,
 } from "./ai-bubble-preview-store";
 
-const DOTS_DURATION_MS = 1500;
-
 type AiBubblePreviewProps = {
   conversationLang: string;
 };
@@ -35,6 +33,9 @@ export function AiBubblePreview({ conversationLang }: AiBubblePreviewProps) {
     getServerAiBubblePreviewState,
   );
   const { phase, runId } = preview;
+  // Only a thinking run has a duration; the effect below returns early otherwise.
+  const thinkingDurationMs =
+    preview.phase === "thinking" ? preview.thinkingDurationMs : 0;
 
   // Decided here: the timer lives in the component, so unmounting always clears it.
   useEffect(() => {
@@ -43,11 +44,11 @@ export function AiBubblePreview({ conversationLang }: AiBubblePreviewProps) {
     }
     const timer = setTimeout(() => {
       showAiBubblePreviewReply(runId);
-    }, DOTS_DURATION_MS);
+    }, thinkingDurationMs);
     return () => {
       clearTimeout(timer);
     };
-  }, [phase, runId]);
+  }, [phase, runId, thinkingDurationMs]);
 
   if (process.env.NODE_ENV !== "development" || preview.phase === "idle") {
     return null;
@@ -61,6 +62,7 @@ export function AiBubblePreview({ conversationLang }: AiBubblePreviewProps) {
       turn={preview.phase === "replied" ? preview.turn : null}
       conversationLang={conversationLang}
       spokenWordCount={null}
+      followsSentTurn={preview.followsSentTurn}
     />
   );
 }

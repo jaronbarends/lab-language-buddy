@@ -123,12 +123,17 @@ export function ConversationThread({
   });
 
   if (turnState.name === "aiThinking") {
+    // After a sent turn the waiting bubble enters after a visual delay; the AI's opening
+    // turn (no turns yet) enters at once (JNL-003, K14). Purely visual: the request is
+    // not delayed.
+    const waitingFollowsSentTurn = turns.at(-1)?.author === "user";
     items.push(
       <AiBubble
         key={aiBubbleKey(countAiTurns(turns, turns.length))}
         turn={null}
         conversationLang={conversationLang}
         spokenWordCount={null}
+        followsSentTurn={waitingFollowsSentTurn}
       />,
     );
   }
@@ -145,11 +150,12 @@ export function ConversationThread({
       {items}
       {/* Gated here, not only inside the component: NODE_ENV is replaced at build time,
           so in production this branch and the import are dead code. */}
-      {process.env.NODE_ENV === "development" && (
-        <AiBubblePreview conversationLang={conversationLang} />
-      )}
+      {/* The user preview first: the AI preview's dots may follow a sent turn. */}
       {process.env.NODE_ENV === "development" && (
         <UserBubblePreview conversationLang={conversationLang} />
+      )}
+      {process.env.NODE_ENV === "development" && (
+        <AiBubblePreview conversationLang={conversationLang} />
       )}
     </div>
   );

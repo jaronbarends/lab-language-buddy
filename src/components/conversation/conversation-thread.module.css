@@ -14,6 +14,26 @@
      child's offsetTop as a position within the scroll container. */
   position: relative;
   scrollbar-color: var(--scrollbar-color);
+
+  /*
+   * The timing of the bubble reveals (bubble-reveal.module.css), defined once here
+   * because the thread is the one ancestor of every bubble that reads them: the sent
+   * user bubble, the AI's reply, the waiting bubble and the dev previews. Custom
+   * properties inherit. Kept out of src/app/tokens/: these are animation timings of
+   * this one feature, not design tokens (JNL-003, K14).
+   */
+  /* One number for the growth and for the text fade's delay, so they cannot drift. */
+  --reveal-duration: 350ms;
+  /* One number for every fade, so the text and the strip after it cannot drift. */
+  --fade-duration: 200ms;
+  /* The pause between the end of the user's text fade and the start of the evaluation text. */
+  --evaluation-pause: 250ms;
+  /* The moment the "Evaluating…" text starts (growth, text fade, a beat): 800ms. The
+     thinking bubble starts its entry then after a sent turn, so the order reads: your
+     text, the evaluation, then the AI starts thinking. */
+  --thinking-delay: calc(
+    var(--reveal-duration) + var(--fade-duration) + var(--evaluation-pause)
+  );
 }
 
 .thread:hover {

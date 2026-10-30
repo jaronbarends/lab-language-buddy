@@ -16,12 +16,8 @@
  * ring, which sits outside its box, is not affected.
  */
 .reveal {
-  /* One number for the growth and for the text fade's delay, so they cannot drift. */
-  --reveal-duration: 350ms;
-  /* One number for every fade, so the text and the strip after it cannot drift. */
-  --fade-duration: 200ms;
-  /* The pause between the end of the user's text fade and the start of the evaluation text. */
-  --evaluation-pause: 250ms;
+  /* --reveal-duration, --fade-duration, --evaluation-pause and --thinking-delay are
+     defined on the thread (conversation-thread.module.css) and inherited. */
   transform-origin: var(--reveal-origin, top left);
   animation: grow var(--reveal-duration) cubic-bezier(0.34, 1.56, 0.64, 1);
 }
@@ -54,12 +50,44 @@
  */
 .afterText {
   animation: fade-in var(--fade-duration) ease-out backwards;
-  animation-delay: calc(
-    var(--reveal-duration) + var(--fade-duration) + var(--evaluation-pause)
-  );
+  animation-delay: var(--thinking-delay);
+}
+
+/*
+ * The waiting bubble's entry (JNL-003, K14): the same growth as `.reveal`, then the dots
+ * fade in. It is rendered from the start and held at scale 0 by the backwards fill
+ * through its delay, so it stays one element with the reply that replaces it (K2).
+ * Its own keyframes name (`grow-waiting`): an animation only restarts when its name
+ * changes, so swapping to `.reveal` when the text arrives starts the reply's reveal
+ * from scale 0, even in the middle of this one or during its delay (then the dots are
+ * never seen).
+ */
+.waiting {
+  transform-origin: top left;
+  animation: grow-waiting var(--reveal-duration) cubic-bezier(0.34, 1.56, 0.64, 1)
+    backwards;
+  animation-delay: var(--entry-delay, 0ms);
+}
+
+/* After a sent turn the entry waits for the moment "Evaluating…" starts. The opening
+   turn has no such class and starts at once. */
+.waitingAfterSentTurn {
+  --entry-delay: var(--thinking-delay);
+}
+
+/* The dots, hidden until the growth ends and then faded in, like the text elsewhere. */
+.waitingDots {
+  animation: fade-in var(--fade-duration) ease-out backwards;
+  animation-delay: calc(var(--entry-delay, 0ms) + var(--reveal-duration));
 }
 
 @keyframes grow {
+  from {
+    scale: 0;
+  }
+}
+
+@keyframes grow-waiting {
   from {
     scale: 0;
   }
@@ -75,7 +103,9 @@
 @media (prefers-reduced-motion: reduce) {
   .reveal,
   .text,
-  .afterText {
+  .afterText,
+  .waiting,
+  .waitingDots {
     animation: none;
   }
 }

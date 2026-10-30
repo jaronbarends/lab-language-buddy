@@ -4,8 +4,27 @@ type AiTurn = Extract<Turn, { author: "ai" }>;
 
 export type AiBubblePreviewState =
   | { phase: "idle"; runId: number }
-  | { phase: "thinking"; runId: number; text: string }
-  | { phase: "replied"; runId: number; turn: AiTurn };
+  | {
+      phase: "thinking";
+      runId: number;
+      text: string;
+      followsSentTurn: boolean;
+      /** How long the waiting bubble stays before the reply, from the press. */
+      thinkingDurationMs: number;
+    }
+  | { phase: "replied"; runId: number; turn: AiTurn; followsSentTurn: boolean };
+
+export type AiBubblePreviewOptions = {
+  /** True when a sent user bubble stands above: the dots then enter after the delay. */
+  followsSentTurn: boolean;
+  thinkingDurationMs: number;
+};
+
+/** The two plain reply buttons: opening-style entry, no delay, dots for 1.5s. */
+const DEFAULT_OPTIONS: AiBubblePreviewOptions = {
+  followsSentTurn: false,
+  thinkingDurationMs: 1500,
+};
 
 /**
  * Development-only. A tiny module-level store (read with `useSyncExternalStore`) that
@@ -49,11 +68,14 @@ export function getServerAiBubblePreviewState(): AiBubblePreviewState {
 }
 
 /** Starts a run: the dots now, the reply once `showAiBubblePreviewReply` is called. */
-export function startAiBubblePreview(text: string) {
+export function startAiBubblePreview(
+  text: string,
+  options: AiBubblePreviewOptions = DEFAULT_OPTIONS,
+) {
   if (state.phase === "thinking") {
     return;
   }
-  setState({ phase: "thinking", runId: state.runId + 1, text });
+  setState({ phase: "thinking", runId: state.runId + 1, text, ...options });
 }
 
 export function showAiBubblePreviewReply(runId: number) {
@@ -63,6 +85,7 @@ export function showAiBubblePreviewReply(runId: number) {
   setState({
     phase: "replied",
     runId,
+    followsSentTurn: state.followsSentTurn,
     turn: {
       id: crypto.randomUUID(),
       author: "ai",

@@ -46,7 +46,8 @@ plan predates 2026-10-20 and carries a pointer here, so the two places do not dr
 | K10 | Modern Web Guidance: does it give a better answer for K3? | trial agreed, outcome open |
 | K11 | The user's bubble when it is sent: what animates | decided and built 2026-10-27, iPhone test open; shrink in the bar and the thinking-bubble delay come after |
 | K12 | Speech start against the end of the reveal | parked 2026-10-27 |
-| K13 | The listening indicator pulses while the microphone is live | decided 2026-10-27; build open |
+| K13 | The listening indicator pulses while the microphone is live | decided and built 2026-10-27, tested on the iPhone |
+| K14 | The AI's thinking bubble appears with the same reveal, after a delay when it follows a sent turn | decided 2026-10-28; build open |
 
 ### K1 — Scope
 
@@ -446,6 +447,79 @@ reduced motion instead of stopping it, so the user can still tell it is active. 
 decision 3 (no pulse under reduced motion). K13 was followed; the plain dot already says the
 microphone is live.
 
+### K14 — The thinking bubble appears with the same reveal, after a delay
+
+Wanted (the human, 2026-10-28): the order is visible. First the user's text, then the AI seems to
+start thinking. Today the waiting bubble with the dots is rendered at once, right under the sent
+bubble, and has no entry animation of its own.
+
+How it works today (read from the code): `USER_TURN_SENT` puts the session in `aiThinking` at
+once and the chat request leaves at once; the waiting `AiBubble` (`turn={null}`, key
+`ai-<position>`) is in the thread's item list immediately (K2). The reply then reveals in the
+same element, scale 0 to 1 at its final size (K4(A)).
+
+**Decisions (2026-10-28, the human):**
+
+1. The delay is 800ms: the thinking bubble appears 800ms after the sent turn, the moment the
+   "Evaluating…" text starts (350 + 200 + the 250ms pause).
+2. The thinking bubble gets the same entry as the other bubbles: it scales 0 to 1 (anchored
+   top-left, 350ms, the same curve), and the dots fade in after that (200ms, like the text of the
+   other bubbles). When the AI's text arrives, the bubble scales up again to the size it then
+   has. (The agent reads this as the reveal that exists today: the reply reveals from scale 0 at
+   its final size. If the human meant growing from the dots bubble's size, that is a different
+   thing and has to be said.)
+3. After a sent turn the entry starts after the 800ms delay. For the AI's opening turn the
+   thinking bubble gets the same scale and fade but WITHOUT a delay: it starts as soon as the
+   chat screen is shown.
+4. A preview of the whole sequence: the sent bubble, the thinking bubble after the delay, then
+   the reply.
+
+Constraints the agent sees: the delay is purely visual (the request is not delayed); the bubble
+must stay rendered during the delay, at scale 0, because K2 needs the waiting bubble and the
+reply to be one element (a bubble that mounts only after the delay would be a new element if the
+reply came first, with no reveal); the timing variables live on the user bubble's `.reveal`, so
+the thinking bubble cannot read them and they need one shared home; and a CSS animation only
+restarts when its `animation-name` changes, so the dots entry and the reply reveal need
+different keyframe names.
+
+**Built (2026-10-28), not yet tested on the iPhone.** The waiting bubble has its own entry:
+`.waiting` runs `grow-waiting` (scale 0 to 1, top-left, 350ms, the usual curve) with a
+`backwards` fill and `animation-delay: var(--entry-delay, 0ms)`; `.waitingAfterSentTurn` sets
+`--entry-delay` to `--thinking-delay`; the dots (`.waitingDots`, a class passed to
+`ThinkingIndicator`) fade in over 200ms after the bubble's scale. When the reply arrives the
+class becomes `.reveal` (`grow`), a different animation name, so the reply reveal restarts from
+scale 0 as before; its rules are unchanged. `AiBubble` has a boolean prop `followsSentTurn`; the
+thread passes `turns.at(-1)?.author === "user"`. Timeline in ms from the sent turn: user bubble
+scale 0-350, user text 350-550, "Evaluating…" 800-1000, thinking bubble scale 800-1150, dots
+fade 1150-1350; for the opening turn the thinking bubble scales 0-350 and the dots fade 350-550.
+If the reply arrives during the delay the bubble is still at scale 0, the class swap starts the
+reply reveal at once and the dots are gone: they are never seen (reasoned, not seen).
+
+The timing variables (`--reveal-duration` 350ms, `--fade-duration` 200ms, `--evaluation-pause`
+250ms and `--thinking-delay`, their sum, 800ms) moved from `.reveal` to `.thread` in
+`conversation-thread.module.css`, the one ancestor of every bubble that reads them; each number
+exists once, and they stay out of `src/app/tokens/` (timings of one feature, not design tokens).
+Dev preview: a third button, "sent turn + thinking + reply", plays the sent bubble, the delayed
+thinking bubble and, about 3s after the press, a short reply; the user preview now renders before
+the AI preview. Not done: the draft shrinking in the control bar first (still wanted later).
+
+**Clarification of decision 2 (2026-10-30, the human, after seeing it on the device):** when the
+AI's text arrives the bubble must NOT shrink to nothing and grow again from scale 0; it must grow
+from the size the thinking bubble has to the size it then gets (this was the open question about
+"the bubble grows to the size of the text" in `docs/plan.md`, item 11). The agent had read
+"scale up again" as the reveal from 0 and said so; the human corrected it. Originally this was
+the K3 question and the first spike (a `clip-path`) answered it without overshoot.
+
+Considered: the reference app animates `width`/`height` with a `transition` between an explicit
+pending size and `fit-content`/`auto` (only the rules about size were read, on the human's
+pointer). Not taken over: a length to a keyword cannot be interpolated in plain CSS (it needs
+`interpolate-size`, which Safari does not have), and it would animate the layout, against K4(A).
+Decided for a spike instead: a non-uniform `scale` (x and y) from the thinking bubble's measured
+size to the reply's measured size, so the layout stays at its final size at once (K4(A)) and the
+motion stays a compositor transform. Open from the start: the borders and corner radii distort
+while the two axes differ (the text is hidden then), and Safari. The bubble's size is read with
+`offsetWidth`/`offsetHeight` (unaffected by transforms) in a layout effect at the swap.
+
 ## Decision log
 
 - **2026-10-23 — journal opened.** Issues K1 to K10 from a read of the plan and the code. The
@@ -477,6 +551,9 @@ microphone is live.
   Tested on the iPhone by the human, all points passed. Next: the human's verdict on the trial.
 - **2026-10-28 — the guidance's identity `scale: 1` removed from the ring.** The human decided it
   is not needed there. Consistent now across the three animations of the trial: not used.
+- **2026-10-28 — K14 decided and built.** The thinking bubble enters with scale and fade, 800ms
+  after a sent turn and at once for the opening turn; the timing variables moved to the thread;
+  a combined dev preview was added. Next: the iPhone test.
 
 **Where to pick up (written for the next session):**
 

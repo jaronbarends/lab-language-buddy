@@ -171,6 +171,16 @@ export function StateStepper({ config, turns, turnState }: StateStepperProps) {
     },
   ];
 
+  // The whole sequence after a send: the sent bubble now, the waiting bubble after the
+  // thinking delay, the reply about 3s from the press (a real reply takes 2.6 to 3.8s).
+  function handleSentTurnSequence() {
+    showUserBubblePreview(sampleUserLine);
+    startAiBubblePreview(mockAiLine(config.language, 0), {
+      followsSentTurn: true,
+      thinkingDurationMs: 3000,
+    });
+  }
+
   return (
     <div className={styles.wrapper}>
       {panelIsOpen && (
@@ -212,6 +222,14 @@ export function StateStepper({ config, turns, turnState }: StateStepperProps) {
             onClick={() => showUserBubblePreview(sampleUserLine)}
           >
             sent user bubble
+          </button>
+          <button
+            type="button"
+            disabled={previewIsPending}
+            className={styles.option}
+            onClick={handleSentTurnSequence}
+          >
+            sent turn + thinking + reply
           </button>
         </div>
       )}

@@ -38,11 +38,12 @@ requirement.
   outside this duty.
 - A decision without a register line does not exist for the next session. Update the
   register in the same commit as the record.
-- **Incident register.** When Jaron corrects the agent, or a tool fails in a way that has
-  happened before, add one entry to `docs/grootboek/registers/incident-register.yml` (a new
-  pattern if none fits) and say so in one sentence. At three incidents in a pattern without a
-  `maatregel`, `docs:check` warns: codify it as a rule, hook or skill and book an HDR
-  (HDR-009).
+- **Incident register** (HDR-009): counts repeated faults so they can become rules. When
+  Jaron corrects the agent, or a tool fails the same way again, add one line under a
+  matching pattern in `docs/grootboek/registers/incident-register.yml` (or start a new
+  pattern) and say so in one sentence. When `docs:check` warns that a pattern reached three,
+  fix the cause with a rule, hook or skill, book an HDR and put its id in the pattern's
+  `maatregel`.
 
 # What this is
 

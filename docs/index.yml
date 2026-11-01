@@ -72,6 +72,15 @@ documents:
   - path: docs/grootboek/hdr/hdr-014-documentatie-nederlands.md
     what: Welke taal waar geldt (documentatie Nederlands; code, UI, commits, README, AGENTS.md en spikes Engels), dat vertalen geen nieuwe beslissing is, en welke labels niet vertaald worden.
     read_when: je een document schrijft of vertaalt; je twijfelt over de taal van een tekst; je de taalregels in een CLAUDE.md wijzigt.
+  - path: docs/grootboek/hdr/hdr-015-plan-vervalt-als-bron.md
+    what: Waarom plan.md als bron vervalt en hoe de inhoud naar het grootboek gaat (keuzes, controle op volledigheid, bevriezen en verwijderen); vervangt ADR 0001.
+    read_when: je een beslissing zoekt die vroeger in plan.md stond; je aan de overzetting werkt; je verwijzingen naar plan.md bijwerkt.
+  - path: docs/grootboek/hdr/hdr-016-bestaande-repo-geen-bron.md
+    what: De regel dat de agent de bestaande Language Buddy-repo niet als bron gebruikt tenzij Jaron een bestand aanwijst, met de reden en het archief van wat de agent eerder zag.
+    read_when: je overweegt in de bestaande repo te kijken; Jaron wijst naar een bestand daaruit; je de werkafspraken in CLAUDE.md wijzigt.
+  - path: docs/grootboek/pdr/pdr-001-app-in-gebruik-en-werkwijze-experiment.md
+    what: Waarvoor het project bestaat (een app voor dagelijks gebruik en een experiment in werkwijze) en dat de bestaande Language Buddy-app geen bron meer is.
+    read_when: je twijfelt over het doel van het project; je de README of het experiment-kader in CLAUDE.md aanpast; je afweegt of je de bestaande app moet raadplegen.
   - path: docs/grootboek/adr/adr-001-environment-and-deployment-topology.md
     what: main is production, other branches preview by default, secret env vars Production-only; configured in Vercel, not in the repo.
     read_when: changing branch or env-var setup in Vercel.

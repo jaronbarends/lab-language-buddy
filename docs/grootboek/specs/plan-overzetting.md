@@ -56,7 +56,7 @@ De regelnummers zijn die van de koppen in `docs/plan.md`, nu.
 | Verification | 800–818 | Overlapt met de bullet "Checks before you call something done" in `CLAUDE.md`. Het verschil gaat naar een HDR, de rest vervalt. |
 | Open questions | 819–1053 | Drie zijn beslist (1, 3, 5) en worden ADR/PDR. Twee staan al in het grootboek: punt 9 in ADR-002 (routes zonder authenticatie) en JNL-001 (instap software-balans), punt 11 in JNL-003 (animatie chatbubbels). De overige negen gaan als kwesties in één nieuw JNL. |
 | Decision log | 1054–1278 | Zie keuze 2. |
-| Keeping the experiment honest | 1279–1334 | Vervalt als regel (keuze 6). Het logboek van wat de agent zag gaat als archief mee in het record. |
+| Keeping the experiment honest | 1279–1334 | Eén HDR in kortere vorm (keuze 6): de bestaande repo is geen bron, tenzij Jaron een specifiek bestand aanwijst. Het logboek van wat de agent zag gaat als archief mee. |
 
 ## Wat jij beslist
 
@@ -87,11 +87,12 @@ De regelnummers zijn die van de koppen in `docs/plan.md`, nu.
 5. **Wat gebeurt er met `plan.md`?** *Besloten:* bevriezen met een kop bovenaan ("niet meer
    bijwerken, zie het grootboek") tot de volledigheidscontrole slaagt, en daarna verwijderen
    in een aparte commit. Git bewaart het.
-6. **Het experiment en de referentie-app.** *Besloten:* de bestaande app is geen referentie
-   meer; deze app staat op zichzelf en wordt verder uitgebouwd. Het experiment blijft, maar
+6. **Het experiment en de referentie-app.** *Besloten:* de bestaande app is geen bron
+   meer, tenzij Jaron een specifiek bestand aanwijst; deze app staat op zichzelf en wordt
+   verder uitgebouwd. Het experiment blijft, maar
    als experiment in werkwijze (hoe werk je met een AI die de code schrijft), niet als
    vergelijking met de referentie, en met als doel een app die daadwerkelijk gebruikt wordt.
-   De regel "Keeping the experiment honest" vervalt. *Nog open:* de README ("Why this repo
+   De regel "Keeping the experiment honest" blijft, korter, als HDR. *Nog open:* de README ("Why this repo
    exists") past hier niet meer bij; dat is Jaron's eigen tekst.
 
 ## Werkwijze

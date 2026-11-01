@@ -153,3 +153,24 @@ hdrs:
     beslissing: "Alle documentatie die geen code is (grootboek, CLAUDE.md-bestanden, rules, agent- en skill-instructies, hook-meldingen, docs/) is Nederlands; code, code-comments, UI-teksten, commitberichten, README.md, AGENTS.md en spikes/ blijven Engels; bestaande Engelse documenten worden vertaald"
     notitie: "Regel staat in de drie taalregels van de leidende documenten; de vertaalronde is nog niet gedaan, daarom 50. Vertalen is geen nieuwe beslissing (HDR-001). De labels Status/Date/Implementation blijven Engels omdat scripts/records.mjs ze leest (HDR-012). Geen check op taal: pas bouwen bij herhaling"
     bestand: hdr-014-documentatie-nederlands.md
+  - id: "HDR-015"
+    titel: "plan.md vervalt als bron; beslissingen leven in het grootboek"
+    status: accepted
+    versie: "1.0"
+    implementatie: 0
+    omgeving: geen
+    datum: 2026-11-01
+    beslissing: "docs/plan.md wordt niet meer bijgewerkt of gebruikt; beslissingen, open vragen en werkafspraken staan als records in het grootboek, direct in het Nederlands; een script controleert dat geen rij uit Decisions, het decision log en Open questions zonder bestemming blijft; plan.md wordt bevroren en later verwijderd"
+    notitie: "Vervangt ADR 0001 en de bepaling in HDR-001 dat plan.md de bron blijft voor beslissingen van voor 2026-10-20. Het veld Source komt niet terug. Uitwerking in de spec plan-overzetting. Implementatie loopt naar 100 als plan.md is verwijderd en de verwijzingen zijn bijgewerkt"
+    bestand: hdr-015-plan-vervalt-als-bron.md
+  - id: "HDR-016"
+    titel: "De bestaande Language Buddy-repo is geen bron, tenzij Jaron een bestand aanwijst"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-11-01
+    implementatie-datum: 2026-11-01
+    beslissing: "De agent gebruikt de bestaande Language Buddy-repo niet als bron (niet doorzoeken, geen boomlijst, niet even kijken); wijst Jaron een specifiek bestand aan dan mag het gelezen worden en noemt de agent wat hij leest; per ongeluk gezien materiaal meldt hij"
+    notitie: "Korte vorm van Keeping the experiment honest uit plan.md; de reden Het experiment meetbaar houden is vervallen (PDR-001), de reden Jaron leidt de correctieronde blijft. Proza, geen hook; bij herhaling via het incident-register (HDR-009). Staat als bullet in de root-CLAUDE.md (akkoord van Jaron 2026-11-01); het archief van wat de agent zag staat in het record"
+    bestand: hdr-016-bestaande-repo-geen-bron.md

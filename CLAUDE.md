@@ -66,6 +66,10 @@ say so rather than following either blindly.
   most of the code. Skip the one-line "let AI generate this / write this yourself"
   recommendation and the Next.js/TypeScript learning-goal framing from the global
   instructions. Flagging a vague prompt or spec is still welcome.
+- **The existing app is not a source** (HDR-016, PDR-001). Do not read, list or search the
+  existing Language Buddy repo (`jaronbarends/language-buddy`) unless Jaron points at a
+  specific file. If reading a file would save real time, ask first; name out loud anything
+  you do read. If you hit its material by accident, say so instead of using it quietly.
 - **Code style** in one line: TypeScript strict, function declarations, braced `if`s with
   early returns, booleans that read as a sentence (`microphoneIsLive`), lowercase-dashed
   file names. The full list loads when you touch `src/` (`.claude/rules/code-style.md`).

@@ -52,3 +52,25 @@ adrs:
     implementatie-datum: 2026-10-21
     beslissing: "GOOGLE_CLOUD_API_KEY moves to the x-goog-api-key header; confirmed working against the live endpoint before the change"
     bestand: adr-004-google-tts-key-as-header.md
+  - id: "ADR-005"
+    titel: "De taalkiezer is overgenomen uit de bestaande app"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-28
+    implementatie-datum: 2026-09-28
+    beslissing: "De taalkiezer is in zijn geheel overgenomen uit de bestaande app: native radio in een label, fieldset met legend, kolomaantallen met :has(), style container query voor de richting van het label"
+    notitie: "Overgezet uit plan.md (HDR-015): decision log, rij van 09-28 (in het plan gemarkeerd als ported). Vervangt de role=radio-knoppen van de agent. Proefrecord van de overzetting"
+    bestand: adr-005-taalkiezer-uit-de-bestaande-app.md
+  - id: "ADR-006"
+    titel: "`editing` is een eigen beurtstatus met `draftBeforeEdit`"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-24
+    implementatie-datum: 2026-09-24
+    beslissing: "editing is een eigen beurtstatus met draftBeforeEdit, omdat Cancel edit de tekst van vóór het bewerken moet terugzetten en alleen die state een plek heeft om die te bewaren"
+    notitie: "Overgezet uit plan.md (HDR-015): decision log, rij van 09-24. Hoort bij PDR-003 (de bediening). Proefrecord van de overzetting"
+    bestand: adr-006-editing-eigen-beurtstatus.md

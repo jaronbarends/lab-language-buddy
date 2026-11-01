@@ -15,5 +15,38 @@ pdrs:
     datum: 2026-11-01
     implementatie-datum: 2026-11-01
     beslissing: "Het project is een app die Jaron dagelijks gebruikt en een experiment in werkwijze (AI schrijft het grootste deel van de code); de bestaande Language Buddy-app is geen bron meer (de agent gebruikt de repo niet, tenzij Jaron een specifiek bestand aanwijst); er is geen vergelijking of synchronisatie meer"
-    notitie: "README (Why this repo exists) is op 2026-11-01 door Jaron aangepast; CLAUDE.md liep al gelijk. De regel Keeping the experiment honest uit plan.md wordt in kortere vorm een eigen HDR"
+    notitie: "README (Why this repo exists) is op 2026-11-01 door Jaron aangepast; CLAUDE.md liep al gelijk. De regel Keeping the experiment honest uit plan.md staat in kortere vorm als HDR-016"
     bestand: pdr-001-app-in-gebruik-en-werkwijze-experiment.md
+  - id: "PDR-002"
+    titel: "Geen persistentie"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-23
+    implementatie-datum: 2026-09-23
+    beslissing: "De app bewaart niets: sessiestate in het geheugen, gespreksgeschiedenis bij Google via previous_interaction_id; het sluiten van de tab beëindigt de sessie"
+    notitie: "Overgezet uit plan.md (HDR-015): Decisions-tabel, rij Persistence"
+    bestand: pdr-002-geen-persistentie.md
+  - id: "PDR-003"
+    titel: "Eén set bediening zonder Stop, het live transcript in de control bar"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-24
+    implementatie-datum: 2026-09-24
+    beslissing: "Het live transcript staat in de control bar, niet in de thread; listening, reviewing en editing delen één set bediening zonder Stop"
+    notitie: "Overgezet uit plan.md (HDR-015): decision log, twee rijen van 09-24; de derde rij (editing als eigen beurtstatus) is ADR-006. Proefrecord van de overzetting"
+    bestand: pdr-003-een-set-bediening-zonder-stop.md
+  - id: "PDR-004"
+    titel: "Tekst in spraakbubbels: regelhoogte 1.25 en gewicht medium"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-30
+    implementatie-datum: 2026-09-30
+    beslissing: "Alle spraakbubbels gebruiken --line-height-body-tight (1.25) en --font-weight-medium; de conceptbubbel komt daarmee overeen met het live transcript; de foutbox is geen bubbel"
+    notitie: "Overgezet uit plan.md (HDR-015): decision log, drie rijen van 09-30, met 1.3 als ingehaalde tussenstap. Proefrecord van de overzetting"
+    bestand: pdr-004-tekst-in-spraakbubbels.md

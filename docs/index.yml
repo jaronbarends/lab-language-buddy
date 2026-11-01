@@ -81,6 +81,21 @@ documents:
   - path: docs/grootboek/pdr/pdr-001-app-in-gebruik-en-werkwijze-experiment.md
     what: Waarvoor het project bestaat (een app voor dagelijks gebruik en een experiment in werkwijze) en dat de bestaande Language Buddy-app geen bron meer is.
     read_when: je twijfelt over het doel van het project; je de README of het experiment-kader in CLAUDE.md aanpast; je afweegt of je de bestaande app moet raadplegen.
+  - path: docs/grootboek/pdr/pdr-002-geen-persistentie.md
+    what: Waarom de app niets bewaart (sessiestate in het geheugen, geschiedenis bij Google) en wat dat kost; overgezet uit plan.md.
+    read_when: je overweegt opslag, accounts of een gespreksgeschiedenis toe te voegen.
+  - path: docs/grootboek/pdr/pdr-003-een-set-bediening-zonder-stop.md
+    what: Waarom het live transcript in de control bar staat en er geen Stop-knop is; overgezet uit plan.md (proefrecord).
+    read_when: je de bediening, de control bar of het live transcript wijzigt; iets in de bediening willekeurig lijkt.
+  - path: docs/grootboek/pdr/pdr-004-tekst-in-spraakbubbels.md
+    what: Regelhoogte 1.25 en gewicht medium voor alle spraakbubbels, met de ingehaalde stap naar 1.3; overgezet uit plan.md (proefrecord).
+    read_when: je de typografie van bubbels, de conceptbubbel of de regelhoogte-token wijzigt.
+  - path: docs/grootboek/adr/adr-006-editing-eigen-beurtstatus.md
+    what: Waarom editing een eigen beurtstatus is met draftBeforeEdit (Cancel edit moet de oude tekst terugzetten); overgezet uit plan.md (proefrecord).
+    read_when: je de beurtstatussen of de reducer wijzigt; je overweegt editing samen te voegen met een andere state.
+  - path: docs/grootboek/adr/adr-005-taalkiezer-uit-de-bestaande-app.md
+    what: Waarom de taalkiezer in zijn geheel uit de bestaande app is overgenomen (native radio, fieldset, :has()); overgezet uit plan.md (proefrecord).
+    read_when: je de taalkiezer of zijn markup wijzigt.
   - path: docs/grootboek/adr/adr-001-environment-and-deployment-topology.md
     what: main is production, other branches preview by default, secret env vars Production-only; configured in Vercel, not in the repo.
     read_when: changing branch or env-var setup in Vercel.

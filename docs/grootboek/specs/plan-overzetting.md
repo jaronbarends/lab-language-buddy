@@ -125,6 +125,13 @@ zeven comments in code (`src`, `scripts`, `.claude`), veertien grootboekdocument
 `docs/code-architectuur.md`, `docs/ios-stt-runs.md`, twee agent-bestanden, de skill
 `stage-review`, `.claude/rules` en `scripts/check-docs.mjs`.
 
+## Vervalt
+
+Rijen van het plan die niet als record meegaan, met de reden.
+
+- L13 (09-25) This plan moved into the repo as `docs/plan.md` — het plan zelf vervalt als bron (HDR-015, plan.md vervalt als bron)
+- L23 (09-28) This Source column added, filled retroactively — het veld Source komt niet terug (HDR-015, plan.md vervalt als bron)
+
 ## Bronnen
 
 - `docs/plan.md`: de bron van de overzetting; regelnummers hierboven zijn van de koppen.

@@ -8,11 +8,12 @@
 pdrs:
   - id: "PDR-001"
     titel: "Een app voor dagelijks gebruik, en een experiment in werkwijze"
-    status: accepted
+    status: implemented
     versie: "1.0"
-    implementatie: 0
+    implementatie: 100
     omgeving: geen
     datum: 2026-11-01
+    implementatie-datum: 2026-11-01
     beslissing: "Het project is een app die Jaron dagelijks gebruikt en een experiment in werkwijze (AI schrijft het grootste deel van de code); de bestaande Language Buddy-app is geen bron meer (de agent gebruikt de repo niet, tenzij Jaron een specifiek bestand aanwijst); er is geen vergelijking of synchronisatie meer"
-    notitie: "Landt pas als README (Why this repo exists) en CLAUDE.md (What this is, No AI-or-self verdicts) hiermee gelijklopen; de README is Jaron's tekst en nog niet besproken. De regel Keeping the experiment honest uit plan.md wordt in kortere vorm een eigen HDR"
+    notitie: "README (Why this repo exists) is op 2026-11-01 door Jaron aangepast; CLAUDE.md liep al gelijk. De regel Keeping the experiment honest uit plan.md wordt in kortere vorm een eigen HDR"
     bestand: pdr-001-app-in-gebruik-en-werkwijze-experiment.md

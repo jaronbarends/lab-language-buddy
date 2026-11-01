@@ -6,24 +6,18 @@ and get feedback on how you did.
 
 ## Why this repo exists
 
-**The point of this project is to experiment with having AI generate the vast majority
-of the code.** The app itself is real and the requirements are genuine, but the reason
-for building it here — rather than in the existing Language Buddy codebase — is to see
-what comes out when the architecture and implementation are left to an AI agent working
-from a written brief, instead of being specified up front.
+This repo has two aims, and the first carries the second.
 
-So a few things are deliberate:
+1. **An app I use myself.** A live spoken conversation with an AI persona, in the language
+   and level I pick, with a short correction after every turn. It has to be reliable enough
+   for daily use, on an iPhone first.
+2. **An experiment in how to work with an AI that writes most of the code.** The written
+   brief, the review conversation, the decision ledger in `docs/grootboek/` and the checks
+   are the real input. What's being tried is the *workflow*: how well a fairly involved app
+   can be scoped, staged and reviewed when someone else writes the code.
 
-- **This is a from-scratch rebuild.** No code is carried over from the existing Language
-  Buddy app. The structure, state model, styling approach and component boundaries are
-  the agent's own choices, not a port of decisions already made elsewhere.
-- **The written brief and the review conversation are the real input.** Where a decision
-  was made by the agent rather than specified, the code says so in a comment — including
-  where it diverges from the visual reference on purpose.
-
-What's being tested is the *workflow*: how well a fairly involved app can be scoped,
-staged and reviewed when someone else writes the code. Judge the repo on that as much as
-on the app.
+It started as a from-scratch rebuild of an earlier Language Buddy app. No code was carried
+over, and that app is no longer a source for this one (see PDR-001).
 
 ## Who it is for and what it aims at
 

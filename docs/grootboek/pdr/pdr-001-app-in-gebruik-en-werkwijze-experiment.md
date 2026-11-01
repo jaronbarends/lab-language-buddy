@@ -1,8 +1,8 @@
 # PDR-001: Een app voor dagelijks gebruik, en een experiment in werkwijze
 
-- **Status:** accepted
+- **Status:** implemented
 - **Date:** 2026-11-01
-- **Implementation:** 0
+- **Implementation:** 100
 - **Type:** Product Decision Record (WHY this way)
 
 ## Besluit
@@ -46,9 +46,8 @@ beslissingen te bewaren voor een vergelijking die niemand meer maakt.
 
 - `docs/plan.md` vervalt als bron (HDR-015, plan.md vervalt als bron). De regel over de
   bestaande repo blijft bestaan, in een kortere vorm, als HDR-016 (de bestaande repo is geen bron).
-- **Nog open:** de README ("Why this repo exists") noemt nog het oude doel en de bestaande app
-  als "visual reference". Dat is Jaron's eigen tekst; deze PDR wordt pas `implemented` als
-  hij en `CLAUDE.md` ("What this is", "No AI-or-self verdicts") hiermee gelijklopen.
+- **De README** ("Why this repo exists") is op 2026-11-01 door Jaron aangepast aan dit besluit.
+  `CLAUDE.md` ("What this is", "No AI-or-self verdicts") liep al gelijk.
 
 ## Gevolgen
 

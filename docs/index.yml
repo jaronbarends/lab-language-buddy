@@ -70,7 +70,7 @@ documents:
     what: Trial of Modern Web Guidance on the bubble animation; the agent's baseline is written before the guidance is consulted, then the human keeps, switches off or adjusts it.
     read_when: considering web-platform guidance tooling for the agent; closing JNL-003 K10.
   - path: docs/grootboek/hdr/hdr-014-documentatie-nederlands.md
-    what: Welke taal waar geldt (documentatie Nederlands; code, UI, commits, README en spikes Engels), dat vertalen geen nieuwe beslissing is, en welke labels niet vertaald worden.
+    what: Welke taal waar geldt (documentatie Nederlands; code, UI, commits, README, AGENTS.md en spikes Engels), dat vertalen geen nieuwe beslissing is, en welke labels niet vertaald worden.
     read_when: je een document schrijft of vertaalt; je twijfelt over de taal van een tekst; je de taalregels in een CLAUDE.md wijzigt.
   - path: docs/grootboek/adr/adr-001-environment-and-deployment-topology.md
     what: main is production, other branches preview by default, secret env vars Production-only; configured in Vercel, not in the repo.

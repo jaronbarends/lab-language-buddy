@@ -14,7 +14,9 @@ registers, alle `CLAUDE.md`-bestanden, `.claude/rules`, de instructies van agent
 de meldingen die een hook aan de agent geeft, en de overige documenten onder `docs/`.
 
 **Engels:** code en de comments in code (scripts en hook-scripts horen daarbij), alle
-UI-teksten van de app, commitberichten, `README.md` en de map `spikes/`.
+UI-teksten van de app, commitberichten, `README.md`, `AGENTS.md` en de map `spikes/`.
+`AGENTS.md` wordt door `next dev` zelf geschreven en teruggezet; een vertaling zou na de
+volgende start weer verdwijnen.
 
 Bestaande Engelstalige documenten worden vertaald. De inhoud van `docs/plan.md` wordt niet
 vertaald maar overgezet naar het grootboek, en wordt dan meteen in het Nederlands geschreven.

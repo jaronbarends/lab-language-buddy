@@ -55,11 +55,13 @@ These describe what the codebase and its history already do. If you find a count
 say so rather than following either blindly.
 
 - **Language** (HDR-014). Code, code comments, UI copy and commit messages are in English, and
-  so are `README.md` and `spikes/`. All other documentation is in Dutch: the grootboek and its
+  so are `README.md`, `AGENTS.md` and `spikes/`. All other documentation is in Dutch: the grootboek and its
   registers, every `CLAUDE.md`, the rules, agent and skill instructions, hook messages and the
   rest of `docs/`. Existing English documents are being translated; new documents are written
   in Dutch from the start. Translate prose only, never keys, ids, file names or the
-  `Status`/`Date`/`Implementation` labels of a record.
+  `Status`/`Date`/`Implementation` labels of a record. Keep technical terms in English
+  instead of coining Dutch ones (hook, worktree, branch, dryrun; not "werkboom" or
+  "droogloop").
 - **No AI-or-self verdicts.** This project is an experiment in building with an AI that writes
   most of the code. Skip the one-line "let AI generate this / write this yourself"
   recommendation and the Next.js/TypeScript learning-goal framing from the global

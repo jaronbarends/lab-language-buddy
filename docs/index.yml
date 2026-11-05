@@ -96,6 +96,18 @@ documents:
   - path: docs/grootboek/adr/adr-005-taalkiezer-uit-de-bestaande-app.md
     what: Waarom de taalkiezer in zijn geheel uit de bestaande app is overgenomen (native radio, fieldset, :has()); overgezet uit plan.md (proefrecord).
     read_when: je de taalkiezer of zijn markup wijzigt.
+  - path: docs/grootboek/adr/adr-007-evaluatie-per-beurt-eigen-call.md
+    what: De evaluatie per gebruikersbeurt in een eigen call naar /api/evaluation, met de drie-weg-vergelijking, de metingen en de keuze om de corrector het hele gesprek te geven; overgezet uit plan.md.
+    read_when: je de evaluatie-route, de twee parallelle calls of de context van de corrector wilt begrijpen of wijzigen.
+  - path: docs/grootboek/pdr/pdr-005-hoe-de-correctie-eruitziet.md
+    what: Uiterlijk en inhoud van de correctie onder de gebruikersbubbel: kleur, segmenttypes, cursief en achtergrond, placeholders en markup; overgezet uit plan.md.
+    read_when: je het correctiegedeelte (evaluation-section) of de vorm van correction wijzigt.
+  - path: docs/grootboek/adr/adr-008-prompts-van-de-corrector.md
+    what: Opbouw en regels van de prompts van chat en corrector (spelling, null-regel, message-verpakking, geen code-guard); overgezet uit plan.md.
+    read_when: je de prompts in src/lib/prompt.ts of de evaluatie-call wijzigt.
+  - path: docs/grootboek/pdr/pdr-006-antwoord-pas-na-de-correctie.md
+    what: Het antwoord van de AI verschijnt pas nadat de correctie is getoond (pendingReply), met de time-out van 10 seconden en geen vooraf ophalen van TTS-audio; overgezet uit plan.md.
+    read_when: je de volgorde van correctie en antwoord, de pendingReply-regel of het begin van TTS-weergave wilt wijzigen.
   - path: docs/grootboek/adr/adr-001-environment-and-deployment-topology.md
     what: main is production, other branches preview by default, secret env vars Production-only; configured in Vercel, not in the repo.
     read_when: changing branch or env-var setup in Vercel.

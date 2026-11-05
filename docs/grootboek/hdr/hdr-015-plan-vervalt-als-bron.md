@@ -56,5 +56,10 @@ want het is één bestand van ruim 1300 regels dat je moet doorzoeken.
 - **Wat verloren gaat:** `git blame` op de rijen van het plan, en het veld Source (wie
   bedacht het). Beide zijn bewust opgegeven.
 - **De records worden direct in het Nederlands geschreven** en hoeven dus niet meer vertaald.
+- **De rijnummers zijn steigerwerk.** De ids L, D en Q en de secties `## Herkomst` verwijzen naar
+  `docs/plan.md` en verdwijnen samen met het plan. Ook verwijzingen naar zulke ids in lopende tekst
+  worden dan omgeschreven naar de datum of de inhoud van de rij. Dat verandert geen besluit, alleen
+  de verwijzing, dus het raakt de status van de records niet. De volledigheidscontrole en de spec
+  gaan op hetzelfde moment weg.
 - **Dit record staat op `accepted` met implementatie 0.** Het gaat naar 100 als `plan.md` is
   verwijderd en de verwijzingen zijn bijgewerkt.

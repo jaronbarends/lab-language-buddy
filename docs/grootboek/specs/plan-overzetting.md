@@ -125,6 +125,63 @@ zeven comments in code (`src`, `scripts`, `.claude`), veertien grootboekdocument
 `docs/code-architectuur.md`, `docs/ios-stt-runs.md`, twee agent-bestanden, de skill
 `stage-review`, `.claude/rules` en `scripts/check-docs.mjs`.
 
+## Groepering van de rijen
+
+Voorstel van 1 november 2026, gemaakt na het lezen van alle 237 rijen (16 Decisions, 207 logrijen,
+14 open vragen). Elke rij staat op precies één plek; dat is mechanisch gecontroleerd. De Decisions
+zijn hierin opgenomen bij het thema waar ze bij horen, zodat een record zowel de beslissing als de
+latere rijen over hetzelfde onderwerp draagt. Jaron beslist per regel: record, samenvoegen met een
+ander record, of vervalt. Dit is een voorstel, geen besluit.
+
+Het levert 35 nieuwe records op, plus één JNL, bovenop de vijf van de proef.
+
+| Nr | Voorstel | Type | Rijen | Opmerking |
+|---|---|---|---|---|
+| R1 | Next.js 16 met TypeScript strict | ADR | D1 |  |
+| R2 | Hosting: Vercel | ADR | D2 | Overlapt met ADR-001 (omgevingen en deployment); dit record draagt de reden van de keuze |
+| R3 | Styling: CSS Modules over het overgenomen design system | ADR | D4 |  |
+| R4 | Sessiestate: één reducer, beurtstatus als discriminated union | ADR | D5-D7, L24, L26, L28, L101, L150 | L101 en L150 zijn codeniveau; schrap ze als je de reducer-comments genoeg vindt. Neem op: de lege-tekstcontroles in de reducer (`USER_TURN_SENT`) en in `ComposingControls` blijven bewust naast `composedTextOf` bestaan (uit L61) |
+| R5 | Chat-API en gespreksgeschiedenis | ADR | D8-D9, L72, L75, L78, L81, L83 | D9 (response shape stage 2) is later ingehaald door de evaluatie; komt als voorgeschiedenis |
+| R6 | TTS-providers en stemmen | ADR | D10, D12-D13, L92-L95, L106, L109, L180 |  |
+| R7 | STT: providerkeuze en configuratie | ADR | D11, L161-L164, L168, L177, L181-L182, L187, L192-L193 | L177 is ingehaald door L181 (voorgeschiedenis); L161 vervangt een vaste randvoorwaarde |
+| R8 | Vlaggen: flag-icons | ADR | D14, L4 |  |
+| R9 | Fouten en herstel | ADR | D15, L25, L79-L80, L82, L86, L97, L103-L105, L110, L130, L149 | Groot (13 rijen); kan in twee: server en browser |
+| R10 | Geen testsuite, behalve scripts die documenten herschrijven | HDR | D16, L202 | Q2 (tests) gaat naar het JNL |
+| R11 | Persona van de AI | PDR | Q3 | Beslist voor stage 2; één open vraag van het plan |
+| R12 | Sessieflow en schermen | PDR | L5, L8-L9, L16, L71 | L71 (Reply tijdens aiSpeaking) is gedrag, geen scherm |
+| R13 | Knoppen | PDR | L6-L7, L55 |  |
+| R14 | De luisterstip | PDR | L14-L15, L205 |  |
+| R15 | Scroll en tekstvakken | PDR | L3, L63-L65, L138, L147 |  |
+| R16 | De bubbel en het bewerkvak | ADR | L51-L54, L59, L137 |  |
+| R17 | Markering van het gesproken woord | PDR | L46, L48-L49, L68, L98 | Hoort bij PDR-004 (L46 en L48 zijn daar al genoemd) |
+| R18 | Design system overgenomen uit de bestaande app | ADR | L17-L18, L30 | Eenmalige overname, geen afwijkingenlijst (keuze 4) |
+| R19 | Keuzes in reset.css en elements.css | ADR | L31-L34 | Mogelijk Vervalt: de redenen staan in de CSS-comments; jij beslist |
+| R20 | Typografie en iconen | PDR | L21, L43, L50, L56 | Kan in twee: typografie en iconen |
+| R21 | Setup-formulier | PDR | L35-L39, L42 |  |
+| R22 | Contrast en forced-colors: bewust geaccepteerd | PDR | L20, L40-L41, L57, L70, Q5 | Q5 (open vraag 5) is dezelfde zaak |
+| R23 | Safari/iPhone: safe area en geaccepteerde beperkingen | ADR | L66-L67, L69 | Q7 en Q8 staan in het JNL |
+| R24 | Native engine op iPhone: twee mitigaties | ADR | L178-L179, L183-L185 | Q14 (niet begrepen) staat in het JNL |
+| R25 | Native engine: herstart en snelle einden | ADR | L166-L167, L173 | Kan samen met het vorige record |
+| R26 | Deepgram-provider | ADR | L88-L90, L111, L165, L175 |  |
+| R27 | ElevenLabs Scribe-provider | ADR | L188-L189, L191, L194-L197, L199 | Deels codeniveau |
+| R28 | Taalregistry | ADR | L58, L169, L174, L190 |  |
+| R29 | Evaluatie per beurt, in een eigen call | ADR | L112, L115-L116, L121, L123, L131-L132, L135, L145-L146, L154, Q1 | Heeft ingehaalde stappen (één call, stateless); de metingen blijven |
+| R30 | Hoe de correctie eruitziet | PDR | L113-L114, L117-L119, L128-L129, L136, L140 | L114 is ingehaald door L117 |
+| R31 | Prompts van de corrector | ADR | L120, L124-L126, L133, L153, L171 |  |
+| R32 | Antwoord pas na de correctie | PDR | L127, L134, L141-L142 |  |
+| R33 | Mockmodus voor ontwikkeling | ADR | L73-L74, L84-L85, L91, L96, L107, L122, L139, L155, L157, L203 | Veel dev-tooling; kan deels naar Vervalt |
+| R34 | Animatie van bubbels (stand 30 oktober) | PDR | L204, L206-L207 | JNL-003 (animatie chatbubbels) bevat de ontdekking; Q11 staat daar al |
+| R35 | Logo en favicons | PDR | L159-L160 |  |
+
+| Overig | Type | Rijen | Opmerking |
+|---|---|---|---|
+| Nieuw JNL: openstaande kwesties uit het plan | JNL | Q2, Q4, Q6-Q8, Q10, Q12-Q14 | Negen open vragen, elk een kwestie |
+| Staat al elders | — | L1, L102, L200-L201, Q9, Q11 | Q9: ADR-002 en JNL-001. Q11: JNL-003. L1: HDR-014. L102: Q10. L200: README en PDR-001. L201: HDR-008 (drift-signaal), twijfel |
+| Vervalt: staat in code of code-commentaar | — | L27, L29, L60-L62, L77, L100, L143, L151-L152, L170 |  |
+| Vervalt: historie van een afgesloten stap | — | L87, L99, L108, L148, L156, L158, L172, L176, L186, L198 | Reviews en stage-afsluitingen; de uitkomsten staan in de records hierboven |
+| Vervalt: tijdelijk of overbodig | — | L2, L22, L76, L144 |  |
+| Al gedaan in de proef | — | D3, L10-L13, L19, L23, L44-L45, L47 | PDR-002, PDR-003, ADR-005, ADR-006, PDR-004 en de Vervalt van de spec |
+
 ## Vervalt
 
 Rijen van het plan die niet als record meegaan, met de reden.

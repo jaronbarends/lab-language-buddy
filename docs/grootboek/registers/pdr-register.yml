@@ -50,3 +50,25 @@ pdrs:
     beslissing: "Alle spraakbubbels gebruiken --line-height-body-tight (1.25) en --font-weight-medium; de conceptbubbel komt daarmee overeen met het live transcript; de foutbox is geen bubbel"
     notitie: "Overgezet uit plan.md (HDR-015): decision log, drie rijen van 09-30, met 1.3 als ingehaalde tussenstap. Proefrecord van de overzetting"
     bestand: pdr-004-tekst-in-spraakbubbels.md
+  - id: "PDR-005"
+    titel: "Hoe de correctie eruitziet"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-06
+    implementatie-datum: 2026-10-06
+    beslissing: "De correctie hangt als blauw-50 gedeelte onderaan de gebruikersbubbel, met Engelse uitleg, doeltaalcitaten als segmenten (text, userInput, suggestion) en vaste placeholders voor laden, geen fouten en mislukt"
+    notitie: "Overgezet uit plan.md (HDR-015): L114 (aparte gele bubbel onder de beurt) is ingehaald door L117; ook de gewone-string-correctie (door L119) en de regel die beide citaten markeerde (door L129) staan in Voorgeschiedenis"
+    bestand: pdr-005-hoe-de-correctie-eruitziet.md
+  - id: "PDR-006"
+    titel: "Antwoord pas na de correctie"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-08
+    implementatie-datum: 2026-10-08
+    beslissing: "Het antwoord van de AI verschijnt pas nadat de correctie is getoond (de reducer houdt het vast als pendingReply), een correctie-call van meer dan 10 seconden wordt afgebroken, en TTS-audio wordt niet vooraf opgehaald"
+    notitie: "Overgezet uit plan.md (HDR-015): vier rijen (L127, L134, L141, L142) over de volgorde van correctie en antwoord, de time-out, gelijktijdig tonen en het niet vooraf ophalen van audio. Geen ingehaalde stappen"
+    bestand: pdr-006-antwoord-pas-na-de-correctie.md

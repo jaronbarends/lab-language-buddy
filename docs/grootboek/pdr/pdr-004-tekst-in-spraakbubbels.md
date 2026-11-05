@@ -32,8 +32,7 @@ Dezelfde dag is de regelhoogte nog heen en weer gegaan:
    letterlijk gelijk aan het origineel; de afwijking van de vorige stap is weg.
 
 Het probleem van de elkaar rakende banden is niet via de regelhoogte opgelost maar via de
-markering zelf: die werd een `linear-gradient` met een transparante strook boven en onder (de
-rijen L46 en L48 van het plan), zodat banden op naastliggende regels bij 1.25 uit elkaar
+markering zelf: die werd een `linear-gradient` met een transparante strook boven en onder, zodat banden op naastliggende regels bij 1.25 uit elkaar
 blijven zonder de regelhoogte aan te raken.
 
 ## Herkomst

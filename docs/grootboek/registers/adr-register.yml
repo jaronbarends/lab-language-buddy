@@ -74,3 +74,25 @@ adrs:
     beslissing: "editing is een eigen beurtstatus met draftBeforeEdit, omdat Cancel edit de tekst van vóór het bewerken moet terugzetten en alleen die state een plek heeft om die te bewaren"
     notitie: "Overgezet uit plan.md (HDR-015): decision log, rij van 09-24. Hoort bij PDR-003 (de bediening). Proefrecord van de overzetting"
     bestand: adr-006-editing-eigen-beurtstatus.md
+  - id: "ADR-007"
+    titel: "Evaluatie per beurt, in een eigen call"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-06
+    implementatie-datum: 2026-10-06
+    beslissing: "De evaluatie is een correctie per gebruikersbeurt uit een eigen, parallelle call (/api/evaluation) die het hele gesprek te zien krijgt, zonder Evaluate-knop of samenvatting aan het einde"
+    notitie: "Overgezet uit plan.md (HDR-015): vier ingehaalde stappen in Voorgeschiedenis (correctie in de chatrespons, één call in de keten, eigen stateless call, eigen call met het hele gesprek); de metingen zijn exact overgenomen. Q1 (Evaluation design) is hiermee beslist. L146 klopt niet meer met de code (zie het record)"
+    bestand: adr-007-evaluatie-per-beurt-eigen-call.md
+  - id: "ADR-008"
+    titel: "Prompts van de corrector"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-06
+    implementatie-datum: 2026-10-06
+    beslissing: "De prompts hebben een gedeeld deel en een deel per persona, de corrector verbiedt alle spelling-feedback en verzint geen correctie, het bericht gaat verpakt in <message>-tags naar de corrector, en er is geen code-guard op spelling-only correcties"
+    notitie: "Overgezet uit plan.md (HDR-015): zeven rijen uit het decision log. De spellingregel is verbreed van spaties, leestekens en diakrieten naar alle spelling (L120); de <message>-verpakking (L171) kwam erbij nadat prompt-regels alleen het lekken van eerdere berichten niet stopten"
+    bestand: adr-008-prompts-van-de-corrector.md

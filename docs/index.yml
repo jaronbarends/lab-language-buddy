@@ -120,6 +120,30 @@ documents:
   - path: docs/grootboek/adr/adr-012-elevenlabs-scribe-provider.md
     what: De ElevenLabs Scribe-provider: PCM via AudioWorklet, tokenroute, fatale berichttypes, streamingAudioHasStarted en wat op de iPhone wel en niet is getest; overgezet uit plan.md.
     read_when: je de ElevenLabs STT-provider of zijn tokenroute wijzigt.
+  - path: docs/grootboek/adr/adr-013-nextjs-16-met-typescript-strict.md
+    what: De keuze voor Next.js 16 (App Router) met TypeScript strict en React 19; overgezet uit plan.md.
+    read_when: je het framework, de TypeScript-strictheid of de reden voor de serverroutes onder src/app/api wilt weten.
+  - path: docs/grootboek/adr/adr-014-hosting-vercel.md
+    what: De keuze om de app op Vercel te hosten, met de reden; overgezet uit plan.md.
+    read_when: je wilt weten waarom Vercel is gekozen en waarom de app geen langlevend serverproces of WebSocket-server nodig heeft.
+  - path: docs/grootboek/adr/adr-015-styling-css-modules.md
+    what: De keuze om te stylen met CSS Modules over het overgenomen design system, niet met Tailwind; overgezet uit plan.md.
+    read_when: je twijfelt of je Tailwind of een andere styling-aanpak moet gebruiken.
+  - path: docs/grootboek/adr/adr-016-vlaggen-flag-icons.md
+    what: De vlaggen komen uit flag-icons, met alleen de zes benodigde SVG's geïmporteerd; overgezet uit plan.md.
+    read_when: je vlaggen of talen in de UI toevoegt of de import van flag-icons aanraakt.
+  - path: docs/grootboek/hdr/hdr-017-geen-testsuite-behalve-scripts.md
+    what: De app heeft geen testsuite, maar scripts die documenten herschrijven krijgen wel een node:test-test; overgezet uit plan.md.
+    read_when: je overweegt tests toe te voegen of een script schrijft dat documenten herschrijft.
+  - path: docs/grootboek/pdr/pdr-007-persona-van-de-ai.md
+    what: De AI is een algemene vriendelijke kennis met vrij onderwerp, 2 tot 4 zinnen en hooguit één vraag per beurt; overgezet uit plan.md.
+    read_when: je de persona, de toon of de prompt-opbouw uit benoemde secties wijzigt of een nieuwe persona toevoegt.
+  - path: docs/grootboek/pdr/pdr-008-knoppen.md
+    what: Twee knopvarianten met eigen uitgeschakelde stijl, Reply als primaire knop en horizontale padding 16px; overgezet uit plan.md.
+    read_when: je de knopvarianten, de kleur van Reply of de breedte en padding van knoppen op een telefoon wijzigt.
+  - path: docs/grootboek/pdr/pdr-009-de-luisterstip.md
+    what: De stip in de luisterbubbel duidt de live microfoon aan, pulseert via een ring en vervangt de gestippelde rand; overgezet uit plan.md.
+    read_when: je het live transcript, de stip of de puls-animatie wijzigt.
   - path: docs/grootboek/adr/adr-001-environment-and-deployment-topology.md
     what: main is production, other branches preview by default, secret env vars Production-only; configured in Vercel, not in the repo.
     read_when: changing branch or env-var setup in Vercel.

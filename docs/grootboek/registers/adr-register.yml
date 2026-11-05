@@ -140,3 +140,47 @@ adrs:
     beslissing: "ElevenLabs Scribe is de derde STT-provider, met PCM uit een AudioWorklet via een Blob URL, een eigen tokenroute en een door de event reference van ElevenLabs bepaalde set fatale berichttypes"
     notitie: "Overgezet uit plan.md (HDR-015): de AudioContext-plaatsing is op 10-19 gecorrigeerd (in de effect, niet in de tap); de gedeelde lifecycle-helper (F2) is uitgesteld en nog niet gebouwd; bevat de testuitkomsten van Jaron op desktop Chrome en iPhone zoals vastgelegd, met de ontbrekende gegevens genoemd"
     bestand: adr-012-elevenlabs-scribe-provider.md
+  - id: "ADR-013"
+    titel: "Next.js 16 met TypeScript strict"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-23
+    implementatie-datum: 2026-09-23
+    beslissing: "Het framework is Next.js 16 (App Router) met TypeScript strict en React 19, met een paar kleine serverroutes die API-keys van de client houden"
+    notitie: "Overgezet uit plan.md (HDR-015): rij uit de Decisions-tabel; de plan-sectie over Next 16 specifics is niet overgezet. Het plan zegt dat er verder niets op de server staat; in de code staan inmiddels meer routes (gemarkeerd in het record)"
+    bestand: adr-013-nextjs-16-met-typescript-strict.md
+  - id: "ADR-014"
+    titel: "Hosting: Vercel"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-23
+    implementatie-datum: 2026-09-23
+    beslissing: "De app wordt gehost op Vercel, een gratis omgeving die automatisch uit GitHub deployt; elke serverroute is een gewone stateless Request/Response-handler, dus er is geen langlevend serverproces of WebSocket-server nodig"
+    notitie: "Overgezet uit plan.md (HDR-015): rij uit de Decisions-tabel; geen ingehaalde stappen. Verwijst naar ADR-001 voor de inrichting van omgevingen en deployment"
+    bestand: adr-014-hosting-vercel.md
+  - id: "ADR-015"
+    titel: "Styling: CSS Modules over het overgenomen design system"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-23
+    implementatie-datum: 2026-09-23
+    beslissing: "De styling is CSS Modules, over het design system dat uit de bestaande app is overgenomen, en niet Tailwind"
+    notitie: "Overgezet uit plan.md (HDR-015): rij uit de Decisions-tabel; de code is gecontroleerd en wijkt niet af"
+    bestand: adr-015-styling-css-modules.md
+  - id: "ADR-016"
+    titel: "Vlaggen: flag-icons"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-23
+    implementatie-datum: 2026-09-23
+    beslissing: "De vlaggen komen uit het pakket flag-icons, met alleen de zes benodigde SVG's geïmporteerd en niet de stylesheet"
+    notitie: "Overgezet uit plan.md (HDR-015): twee rijen (Decisions-tabel en decision log) over hetzelfde besluit, samengevoegd. Vervangt de emoji-vlaggen"
+    bestand: adr-016-vlaggen-flag-icons.md

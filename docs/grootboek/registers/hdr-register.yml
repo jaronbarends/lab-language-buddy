@@ -174,3 +174,14 @@ hdrs:
     beslissing: "De agent gebruikt de bestaande Language Buddy-repo niet als bron (niet doorzoeken, geen boomlijst, niet even kijken); wijst Jaron een specifiek bestand aan dan mag het gelezen worden en noemt de agent wat hij leest; per ongeluk gezien materiaal meldt hij"
     notitie: "Korte vorm van Keeping the experiment honest uit plan.md; de reden Het experiment meetbaar houden is vervallen (PDR-001), de reden Jaron leidt de correctieronde blijft. Proza, geen hook; bij herhaling via het incident-register (HDR-009). Staat als bullet in de root-CLAUDE.md (akkoord van Jaron 2026-11-01); het archief van wat de agent zag staat in het record"
     bestand: hdr-016-bestaande-repo-geen-bron.md
+  - id: "HDR-017"
+    titel: "Geen testsuite, behalve scripts die documenten herschrijven"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-23
+    implementatie-datum: 2026-09-23
+    beslissing: "De app heeft geen testsuite (handmatige verificatie); scripts onder scripts/ die documenten herschrijven krijgen wel een node:test-test"
+    notitie: "Overgezet uit plan.md (HDR-015): het besluit van 09-23 (geen tests) is op 10-27 versmald met de uitzondering voor scripts; de huidige stand staat in Besluit, de eerste stand in Voorgeschiedenis"
+    bestand: hdr-017-geen-testsuite-behalve-scripts.md

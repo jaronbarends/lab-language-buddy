@@ -72,3 +72,36 @@ pdrs:
     beslissing: "Het antwoord van de AI verschijnt pas nadat de correctie is getoond (de reducer houdt het vast als pendingReply), een correctie-call van meer dan 10 seconden wordt afgebroken, en TTS-audio wordt niet vooraf opgehaald"
     notitie: "Overgezet uit plan.md (HDR-015): vier rijen (L127, L134, L141, L142) over de volgorde van correctie en antwoord, de time-out, gelijktijdig tonen en het niet vooraf ophalen van audio. Geen ingehaalde stappen"
     bestand: pdr-006-antwoord-pas-na-de-correctie.md
+  - id: "PDR-007"
+    titel: "Persona van de AI"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-03
+    implementatie-datum: 2026-10-03
+    beslissing: "De AI is een algemene, vriendelijke kennis met een vrij onderwerp, 2 tot 4 zinnen per beurt en hooguit één vraag; benoemde persona's of scenariokaarten zijn een andere feature"
+    notitie: "Overgezet uit plan.md (HDR-015): open vraag die voor stage 2 is beslist. De datum (2026-10-03) is een aanname, de vraag noemt er geen. De prompt wordt uit benoemde secties opgebouwd zodat latere persona's onderdelen kunnen delen"
+    bestand: pdr-007-persona-van-de-ai.md
+  - id: "PDR-008"
+    titel: "Knoppen"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-24
+    implementatie-datum: 2026-09-24
+    beslissing: "De knop heeft twee varianten (primary, secondary) met elk een eigen uitgeschakelde stijl, Reply is een primaire knop, en de horizontale padding is 16px"
+    notitie: "Overgezet uit plan.md (HDR-015): drie logrijen (09-24, 09-24, 09-30). De 320px-breuk van Cancel edit staat nog open en komt in het JNL met open kwesties"
+    bestand: pdr-008-knoppen.md
+  - id: "PDR-009"
+    titel: "De luisterstip"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-25
+    implementatie-datum: 2026-09-25
+    beslissing: "De stip in de luisterbubbel is een indicator dat de microfoon live is, staat er precies zolang de microfoon live is en pulseert via een ring (::after); de gestippelde rand is weggelaten"
+    notitie: "Overgezet uit plan.md (HDR-015): drie rijen (09-25, 09-25, 10-27); de puls was op 09-25 gepland en is op 10-27 gebouwd, getest op iPhone"
+    bestand: pdr-009-de-luisterstip.md

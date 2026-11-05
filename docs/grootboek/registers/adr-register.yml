@@ -96,3 +96,47 @@ adrs:
     beslissing: "De prompts hebben een gedeeld deel en een deel per persona, de corrector verbiedt alle spelling-feedback en verzint geen correctie, het bericht gaat verpakt in <message>-tags naar de corrector, en er is geen code-guard op spelling-only correcties"
     notitie: "Overgezet uit plan.md (HDR-015): zeven rijen uit het decision log. De spellingregel is verbreed van spaties, leestekens en diakrieten naar alle spelling (L120); de <message>-verpakking (L171) kwam erbij nadat prompt-regels alleen het lekken van eerdere berichten niet stopten"
     bestand: adr-008-prompts-van-de-corrector.md
+  - id: "ADR-009"
+    titel: "STT: providerkeuze en configuratie"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-23
+    implementatie-datum: 2026-09-23
+    beslissing: "STT is een providerkeuze via de env var NEXT_PUBLIC_STT_PROVIDER (native default, deepgram en elevenlabs als alternatieven), zonder UI-keuze en zonder automatische fallback; een onbekende waarde gooit bij het laden van de pagina"
+    notitie: "Overgezet uit plan.md (HDR-015): de vaste randvoorwaarde never the Web Speech API en de eerste keuze alleen Deepgram staan in Voorgeschiedenis, net als de ontwikkelomgeving op deepgram, die is ingehaald door de terugkeer naar native. Bevat ook de hernoeming engine naar provider en de gelijkgetrokken namen in beide providers"
+    bestand: adr-009-stt-providerkeuze-en-configuratie.md
+  - id: "ADR-010"
+    titel: "Native engine op iPhone: herstart en twee mitigaties"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-12
+    implementatie-datum: 2026-10-12
+    beslissing: "De native engine start een nieuwe sessie en houdt de gehoorde woorden vast als de browser zelf een sessie beëindigt, en draait op de iPhone twee mitigaties in elke browser: de speech van de AI 0,15 s eerder pauzeren en een gehouden getUserMedia-stream"
+    notitie: "Overgezet uit plan.md (HDR-015): geen ingehaalde stappen. De oorzaak van de iPhone-problemen is niet begrepen; de mitigaties zijn geen fix. Het onderzoek zelf staat niet in dit record"
+    bestand: adr-010-native-engine-op-iphone.md
+  - id: "ADR-011"
+    titel: "Deepgram-provider"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-03
+    implementatie-datum: 2026-10-03
+    beslissing: "De Deepgram-provider mint zijn token in de route zelf, weigert andere opnameformaten dan webm of ogg (gecontroleerd bij het start-event van de recorder), flusht niet bij het verlaten van listening, staat in een eigen module met gedeelde callbacks-vorm en breekt een lopende tokenaanvraag af met een AbortController"
+    notitie: "Overgezet uit plan.md (HDR-015): zes rijen (10-03 t/m 10-13) tot één besluit samengevoegd. De formaatcheck is op 10-05 van direct na start() naar het start-event verplaatst (Voorgeschiedenis), en de code is op 10-12 uit de hook naar src/lib/stt/deepgram.ts gehaald. De tokenroute heet nu deepgram-token. De abort moet nog op een iPhone worden nagelopen"
+    bestand: adr-011-deepgram-provider.md
+  - id: "ADR-012"
+    titel: "ElevenLabs Scribe-provider"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-16
+    implementatie-datum: 2026-10-16
+    beslissing: "ElevenLabs Scribe is de derde STT-provider, met PCM uit een AudioWorklet via een Blob URL, een eigen tokenroute en een door de event reference van ElevenLabs bepaalde set fatale berichttypes"
+    notitie: "Overgezet uit plan.md (HDR-015): de AudioContext-plaatsing is op 10-19 gecorrigeerd (in de effect, niet in de tap); de gedeelde lifecycle-helper (F2) is uitgesteld en nog niet gebouwd; bevat de testuitkomsten van Jaron op desktop Chrome en iPhone zoals vastgelegd, met de ontbrekende gegevens genoemd"
+    bestand: adr-012-elevenlabs-scribe-provider.md

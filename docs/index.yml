@@ -108,6 +108,18 @@ documents:
   - path: docs/grootboek/pdr/pdr-006-antwoord-pas-na-de-correctie.md
     what: Het antwoord van de AI verschijnt pas nadat de correctie is getoond (pendingReply), met de time-out van 10 seconden en geen vooraf ophalen van TTS-audio; overgezet uit plan.md.
     read_when: je de volgorde van correctie en antwoord, de pendingReply-regel of het begin van TTS-weergave wilt wijzigen.
+  - path: docs/grootboek/adr/adr-009-stt-providerkeuze-en-configuratie.md
+    what: STT als providerkeuze (native, deepgram, elevenlabs) via NEXT_PUBLIC_STT_PROVIDER, met default, foutgedrag en naamgeving; overgezet uit plan.md.
+    read_when: je de STT-provider wilt kiezen of wijzigen, of wilt weten waarom native de default is.
+  - path: docs/grootboek/adr/adr-010-native-engine-op-iphone.md
+    what: Wat de native STT-engine doet als de browser een sessie zelf beëindigt (herstart, snelle einden) en de twee iPhone-mitigaties (vroege pauze van 0,15 s, gehouden microfoonstream); overgezet uit plan.md.
+    read_when: je het native STT-gedrag of de iPhone-mitigaties in use-audio-playback.ts of native.ts wijzigt, of vraagt waarom de speech 0,15 s eerder stopt.
+  - path: docs/grootboek/adr/adr-011-deepgram-provider.md
+    what: De Deepgram-provider: token-mint in de route, alleen webm of ogg, geen flush, eigen module in src/lib/stt en een afbreekbare tokenaanvraag; overgezet uit plan.md.
+    read_when: je Deepgram-transcriptie, de tokenroute of het opnameformaat wijzigt.
+  - path: docs/grootboek/adr/adr-012-elevenlabs-scribe-provider.md
+    what: De ElevenLabs Scribe-provider: PCM via AudioWorklet, tokenroute, fatale berichttypes, streamingAudioHasStarted en wat op de iPhone wel en niet is getest; overgezet uit plan.md.
+    read_when: je de ElevenLabs STT-provider of zijn tokenroute wijzigt.
   - path: docs/grootboek/adr/adr-001-environment-and-deployment-topology.md
     what: main is production, other branches preview by default, secret env vars Production-only; configured in Vercel, not in the repo.
     read_when: changing branch or env-var setup in Vercel.

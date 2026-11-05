@@ -133,7 +133,8 @@ zijn hierin opgenomen bij het thema waar ze bij horen, zodat een record zowel de
 latere rijen over hetzelfde onderwerp draagt. Jaron beslist per regel: record, samenvoegen met een
 ander record, of vervalt. Dit is een voorstel, geen besluit.
 
-Het levert 35 nieuwe records op, plus één JNL, bovenop de vijf van de proef.
+Het levert 33 nieuwe records op (R19 vervalt, R25 gaat in R24), plus één JNL, bovenop de vijf van de
+proef en de vier van batch 1.
 
 | Nr | Voorstel | Type | Rijen | Opmerking |
 |---|---|---|---|---|
@@ -155,13 +156,13 @@ Het levert 35 nieuwe records op, plus één JNL, bovenop de vijf van de proef.
 | R16 | De bubbel en het bewerkvak | ADR | L51-L54, L59, L137 |  |
 | R17 | Markering van het gesproken woord | PDR | L46, L48-L49, L68, L98 | Hoort bij PDR-004 (L46 en L48 zijn daar al genoemd) |
 | R18 | Design system overgenomen uit de bestaande app | ADR | L17-L18, L30 | Eenmalige overname, geen afwijkingenlijst (keuze 4) |
-| R19 | Keuzes in reset.css en elements.css | ADR | L31-L34 | Mogelijk Vervalt: de redenen staan in de CSS-comments; jij beslist |
+| R19 | (vervalt, zie sectie Vervalt) | — | L31-L34 | De redenen staan in de CSS-comments en er is geen afwijkingenlijst meer (besloten) |
 | R20 | Typografie en iconen | PDR | L21, L43, L50, L56 | Kan in twee: typografie en iconen |
 | R21 | Setup-formulier | PDR | L35-L39, L42 |  |
 | R22 | Contrast en forced-colors: bewust geaccepteerd | PDR | L20, L40-L41, L57, L70, Q5 | Q5 (open vraag 5) is dezelfde zaak |
 | R23 | Safari/iPhone: safe area en geaccepteerde beperkingen | ADR | L66-L67, L69 | Q7 en Q8 staan in het JNL |
-| R24 | Native engine op iPhone: twee mitigaties | ADR | L178-L179, L183-L185 | Q14 (niet begrepen) staat in het JNL |
-| R25 | Native engine: herstart en snelle einden | ADR | L166-L167, L173 | Kan samen met het vorige record |
+| R24 | Native engine op iPhone: herstart en twee mitigaties | ADR | L166-L167, L173, L178-L179, L183-L185 | Q14 (niet begrepen) staat in het JNL. Samengevoegd met R25 (besloten) |
+| R25 | (samengevoegd met R24) | — | — | |
 | R26 | Deepgram-provider | ADR | L88-L90, L111, L165, L175 |  |
 | R27 | ElevenLabs Scribe-provider | ADR | L188-L189, L191, L194-L197, L199 | Deels codeniveau |
 | R28 | Taalregistry | ADR | L58, L169, L174, L190 |  |
@@ -188,6 +189,10 @@ Rijen van het plan die niet als record meegaan, met de reden.
 
 - L13 (09-25) This plan moved into the repo as `docs/plan.md` — het plan zelf vervalt als bron (HDR-015, plan.md vervalt als bron)
 - L23 (09-28) This Source column added, filled retroactively — het veld Source komt niet terug (HDR-015, plan.md vervalt als bron)
+- L31 (09-30) Body line-height, heading line-height and `:focus-visible` moved from `reset.css` to `elements.css` — de reden staat in de CSS-comments en er is geen afwijkingenlijst meer (PDR-001, een app voor dagelijks gebruik en een experiment in werkwijze)
+- L32 (09-30) `legend { padding: 0 }` added to the reset — idem
+- L33 (09-30) `main { padding-bottom }` not taken over; no `fieldset` `min-inline-size` reset — idem
+- L34 (09-30) `legend` in `elements.css` uses `--color-text-label` and `--font-weight-label` — idem
 
 ## Bronnen
 

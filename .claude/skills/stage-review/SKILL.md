@@ -1,6 +1,6 @@
 ---
 name: stage-review
-description: End-of-stage review with fresh eyes. Builds a cold worktree, has a reviewer subagent that has never seen the plan judge the stage for maintainability, then walks the user through the findings one at a time and hands the agreed fixes to executor subagents. Run it when a stage is finished and before it is merged.
+description: End-of-stage review with fresh eyes. Builds a cold worktree, has a reviewer subagent that has never seen the decisions judge the stage for maintainability, then walks the user through the findings one at a time and hands the agreed fixes to executor subagents. Run it when a stage is finished and before it is merged.
 disable-model-invocation: true
 argument-hint: "<name> [ref] [base]"
 allowed-tools: Bash(bash ${CLAUDE_SKILL_DIR}/scripts/review-worktree.sh *)
@@ -18,7 +18,7 @@ is generic.
 
 ## Rules that hold throughout
 
-- The reviewer stays cold: it gets only the prompt file, never this conversation, the plan,
+- The reviewer stays cold: it gets only the prompt file, never this conversation, the decision records,
   or external review comments.
 - No code is edited in the review worktree. Fixes happen in the real repo, by executors.
 - Do not commit or push without the owner's explicit go-ahead. Follow the owner's own
@@ -98,11 +98,10 @@ belong to the other.
 Read the diff yourself, new files in full. Run the verify command from `project.conf`.
 Report to the owner: what each executor decided by itself, and what no automated check
 covered (calls to real external services, devices) so the owner can test it. Make sure the
-plan and its decision log are updated in the same working tree, with the Source column
-filled as `project.conf` describes.
+grootboek records that a fix invalidates are updated in the same working tree.
 
 ### 8. Commit
-Propose commits (one per concern, plan changes with their code) and wait for the go-ahead.
+Propose commits (one per concern, record changes with their code) and wait for the go-ahead.
 Push only when asked.
 
 ### 9. Close

@@ -6,7 +6,7 @@ with it effectively. It is the doctrine side of the agentic harness (ARC's
 Those live in `docs/code-architectuur-register.json` and are read, not re-decided, by whoever
 builds.
 
-`docs/plan.md` stays the single source for *what* this app is and *why* it is shaped the way
+The grootboek (`docs/grootboek/`) is the source for *what* this app is and *why* it is shaped the way
 it is. This document is the complementary *how*: how code should be organized so the agents
 building it stay effective.
 

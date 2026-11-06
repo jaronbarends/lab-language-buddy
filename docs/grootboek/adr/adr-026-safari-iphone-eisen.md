@@ -26,7 +26,7 @@ Safari op iPhone wordt ingebouwd, niet achteraf toegevoegd. Zes eisen:
    `env(safe-area-inset-top)` en `env(safe-area-inset-bottom)`. In home-screen-modus houdt de
    kolom de knoppen niet boven het toetsenbord; zie ADR-023.
 4. **Een vloer van 16px op elke focusbare control**, anders zoomt iOS de viewport in bij focus.
-   Ingehaald: zie Voorgeschiedenis.
+   Zie Voorgeschiedenis voor de basislettergrootte van 18px.
 5. **Device testing is onderdeel van elke fase**, geen eindronde: `next dev` met een ngrok-tunnel
    (HTTPS is hoe dan ook nodig voor `getUserMedia`).
 6. **Een bewerkbare bubbel is een `contenteditable="plaintext-only"`-div, geen textarea.** Zie
@@ -60,9 +60,9 @@ de live STT van de spike is op de echte iPhone gedraaid en het transcript versch
 
 ## Voorgeschiedenis
 
-De eis van een 16px-vloer op focusbare controls is op 09-28 ingehaald: met de basislettergrootte van
-18px zijn die 16px-controles vervallen (zie PDR-016). De eis hierboven is de stand van het
-oorspronkelijke plan.
+Op 09-28 is de basislettergrootte 18px geworden en zijn de 16px-controles vervallen (zie PDR-016):
+met 18px voldoet elke control vanzelf aan de vloer. Jaron (2026-11-06): de eis blijft gelden voor de
+iPhone, ook als de basislettergrootte ooit anders wordt.
 
 ## Gevolgen
 

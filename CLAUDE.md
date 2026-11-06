@@ -1,21 +1,20 @@
 @AGENTS.md
 
-# Project plan
+# Decisions
 
-`docs/plan.md` is the living plan and decision record for this app: state model,
-component layout, design decisions with their reasoning, build stages, and a dated log of
-everything that changed after the plan was first approved.
+Decisions live in the grootboek (`docs/grootboek/`): ADR (what), PDR (why, product) and HDR
+(how we work), indexed by registers in `docs/grootboek/registers/`. Read the register first,
+then only the record you need: several choices that look arbitrary in the code are
+deliberate, and the reasoning lives there rather than in the diff. `docs/index.yml` is the
+table of contents.
 
-Read it before making structural changes — several choices that look arbitrary in the code
-are deliberate, and the reasoning lives there rather than in the diff.
-
-**Keep it current in the same commit as the code.** If a change contradicts the plan,
-update the plan and add a decision-log line in that same commit. Left as a separate chore
-it will not happen, and a stale plan is worse than none.
+**Keep records current in the same commit as the code.** If a change contradicts a record,
+update or supersede the record in that same commit. Left as a separate chore it will not
+happen, and a stale record is worse than none.
 
 # Grootboek (experiment, `arc/*` branches)
 
-An experiment next to the plan: numbered decision records (ADR, HDR, PDR), drift
+Numbered decision records (ADR, HDR, PDR), drift
 reports (DFT) and discovery journals (JNL) under `docs/grootboek/`, indexed by YAML
 registers in `docs/grootboek/registers/`. Read a register first, then only the
 document you need. `docs/grootboek/CLAUDE.md` loads by itself in that folder and has
@@ -23,17 +22,12 @@ the document types and conventions. Start the `grootboek` skill
 (`.claude/skills/grootboek/`) for any grootboek document: its writing guides are a hard
 requirement.
 
-- **`docs/plan.md` stays the source for every decision made before 2026-10-20.**
-  Only decisions from the `arc/*` experiments are booked in the grootboek
-  (HDR-001 says why). It does not replace the plan rule above: a change that
-  contradicts the plan still updates the plan in the same commit.
 - **Duty to communicate.** Leading documents: every `CLAUDE.md` in the repo,
   `docs/grootboek/software-architectuur.md` (the only balance so far; a new balance joins
   this list when it is created) and `docs/code-architectuur.md`. When one changes: say what
   changes and why, show the concrete change, and ask for a check. No silent edits. This also
   holds when a record leads to an update of a leading document. Records (ADR, HDR, PDR, DFT,
-  JNL), `docs/plan.md` (it has its own rule: same commit as the code) and the README are
-  outside this duty.
+  JNL) and the README are outside this duty.
 - A decision without a register line does not exist for the next session. Update the
   register in the same commit as the record.
 - **Incident register** (HDR-009): counts repeated faults so they can become rules. When
@@ -75,11 +69,11 @@ say so rather than following either blindly.
   file names. The full list loads when you touch `src/` (`.claude/rules/code-style.md`).
 - **Commits.** One short imperative sentence that says what changed ("Handle all documented
   Scribe error types"), no prefixes except the rare `chore:`. No `Co-Authored-By` trailer.
-  The plan goes in the same commit as the code that invalidates it (see above).
+  A record that the change invalidates goes in the same commit (see Decisions).
 - **Branches.** One branch per piece of work, merged into `main` through a pull request:
   `stage/N-name` for build stages, a descriptive name for fixes and features, `spike-*` for
   experiments. Review fixes get their own commits on the branch under review. Code goes
-  through a branch and a PR; only small notes in the plan or tooling tweaks have been
+  through a branch and a PR; only small notes in the docs or tooling tweaks have been
   committed straight to `main`, and only on Jaron's go-ahead. Create the branch before the
   first edit, not after. Work in the grootboek experiment (`arc/*`) branches from
   `arc/arc-main` and goes back into it through a PR, while `arc/arc-main` is the integration
@@ -107,7 +101,7 @@ say so rather than following either blindly.
   keeps the full contract.
 - **Fork mode.** On by default, no setup needed. Use it for conversation-fed synthesis work — a
   spec, a draft, a write-up where the dialogue itself is the source. Living documents and
-  registers (`docs/plan.md`, the grootboek registers) stay lead-thread work; they are not fork
+  registers (the grootboek registers) stay lead-thread work; they are not fork
   material.
 - **Refactor loop.** Before the lead thread pushes, a `guard-push-sweep` hook sweeps `src/`
   for files past the doorbell/hard-limit with no register decision. If it finds any new ones,
@@ -138,7 +132,7 @@ machine-readable table of contents: read it first, then open only the document y
 | Safari / iPhone | `.claude/rules/safari-ios.md` | when components, hooks or STT code are touched |
 | Design system, components | `src/components/CLAUDE.md` | when working in `src/components/` |
 | Providers, state machine | `src/lib/CLAUDE.md` | when working in `src/lib/` |
-| Plan and decisions | `docs/plan.md`, `docs/adr/` | on demand, via `docs/index.yml` |
+| Decisions | `docs/grootboek/` (ADR, PDR, HDR), via the registers and `docs/index.yml` | on demand |
 | Code architecture | `docs/code-architectuur.md` + `docs/code-architectuur-register.json` | on demand; before splitting or growing a file |
 | Grootboek | `docs/grootboek/`, via `registers/` | on demand; `docs/grootboek/CLAUDE.md` loads when working there |
 | Procedures | `.claude/skills/` | when invoked (`/stage-review`, `/grootboek`) |

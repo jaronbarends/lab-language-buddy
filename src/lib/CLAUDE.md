@@ -14,4 +14,4 @@
   `Bearer` WebSocket subprotocol, not `token`.
 - **API keys are server-only.** Never put one in a `NEXT_PUBLIC_` variable.
 - A new provider is not done until it is in `.env.example`, the README table and
-  `docs/plan.md`.
+  a record in the grootboek.

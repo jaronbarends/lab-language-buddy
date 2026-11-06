@@ -8,7 +8,7 @@ paths:
 
 # Safari on iPhone is a hard requirement
 
-Full reasoning and the numbered list: "Safari/iPhone requirements" in `docs/plan.md`.
+Full reasoning: ADR-026 (Safari/iPhone-eisen).
 The short form:
 
 1. Never hardcode a recording mimeType. Ask `MediaRecorder.isTypeSupported`, then read

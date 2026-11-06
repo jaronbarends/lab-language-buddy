@@ -18,8 +18,8 @@ refactor beyond the task.
 Every agent in this repo works from the same context, so you need no briefing on the
 house rules. `CLAUDE.md` is already loaded. Read `docs/index.yml` and open only the
 documents your task touches. Rules and the `CLAUDE.md` of `src/components/` and `src/lib/`
-load when you touch those paths. `docs/plan.md` has the reasons behind choices that look
-arbitrary: read the relevant section before changing a structural choice.
+load when you touch those paths. The grootboek records (via the registers) have the reasons behind choices that look
+arbitrary: read the relevant record before changing a structural choice.
 
 ## Regime
 
@@ -47,9 +47,8 @@ before touching anything, and report `NEEDS_CONTEXT` if the answer does not come
 
 - Edit only inside your boundary. If you see something outside it, put it under open
   questions in your report; do not fix it.
-- `docs/plan.md` is one shared file, so it is the one place parallel builders collide.
-  Do not edit it. Put the decision, and the log row you would add (date, Source, Change,
-  Why), in your report; the lead writes them in one pass.
+- Do not edit the grootboek registers or `docs/index.yml`: shared files, where parallel builders
+  collide. Put the decision in your report; the lead books it.
 - Do not commit. The lead commits, and only on Jaron's go-ahead.
 
 ## Verifying

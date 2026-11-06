@@ -26,8 +26,8 @@ You may be handed the builder's report as context, but you read the actual code.
 ("tested", "complete") is true when you see it in the code or in command output.
 
 1. **Against the assignment.** Is everything in it implemented? Is something built that it
-   did not ask for? Was anything changed outside the boundary, including `docs/plan.md`
-   (builders do not edit it)?
+   did not ask for? Was anything changed outside the boundary, including the grootboek registers and
+   `docs/index.yml` (builders do not edit them)?
 2. **Checks.** Run `npm run lint`, `npx next typegen && npx tsc --noEmit` and
    `npm run docs:check`. Not `npm run build` and not `next dev`: those belong to the
    lead's checkout. Real output counts.

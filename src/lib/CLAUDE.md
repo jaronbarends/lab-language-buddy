@@ -1,17 +1,19 @@
-# State machine and providers
+# State machine en providers
 
-- **One session reducer** (`session-reducer.ts`). Turn states are a discriminated union
-  that carries per-state data. Add a state by extending the union, not by adding a flag.
-- **Providers sit behind a registry in `index.ts`** (`tts/`, `stt/`). A provider is one
-  module; switching is an env var and nothing else. An unknown value throws and lists the
-  valid names; it never falls back, so a typo cannot quietly select another provider.
-- **TTS** (`TTS_PROVIDER`, server-side): every provider returns MP3 bytes. Voice tables
-  live inside each provider module, not in the shared language registry.
-- **STT** (`NEXT_PUBLIC_STT_PROVIDER`, read in the browser, so it must be a `NEXT_PUBLIC_`
-  literal read as `process.env.NEXT_PUBLIC_...`). Live streaming only. Deepgram and
-  ElevenLabs are called by the browser directly with a short-lived token from our own
-  route; there is no WebSocket server on our side. A short-lived Deepgram token uses the
-  `Bearer` WebSocket subprotocol, not `token`.
-- **API keys are server-only.** Never put one in a `NEXT_PUBLIC_` variable.
-- A new provider is not done until it is in `.env.example`, the README table and
-  a record in the grootboek.
+- **Eén session reducer** (`session-reducer.ts`). Beurtstatussen zijn een discriminated union
+  die per state data meedraagt. Voeg een state toe door de union uit te breiden, niet door een
+  vlag toe te voegen.
+- **Providers zitten achter een registry in `index.ts`** (`tts/`, `stt/`). Een provider is één
+  module; wisselen is een env var en verder niets. Een onbekende waarde gooit en noemt de
+  geldige namen; er is nooit een fallback, zodat een typefout niet stilletjes een andere
+  provider kiest.
+- **TTS** (`TTS_PROVIDER`, server-side): elke provider geeft MP3-bytes terug. Stemtabellen
+  staan in elke providermodule zelf, niet in de gedeelde taalregistry.
+- **STT** (`NEXT_PUBLIC_STT_PROVIDER`, in de browser gelezen, dus het moet een `NEXT_PUBLIC_`-literal
+  zijn, gelezen als `process.env.NEXT_PUBLIC_...`). Alleen live streaming. Deepgram en
+  ElevenLabs worden door de browser rechtstreeks aangeroepen met een kortlevend token uit onze
+  eigen route; aan onze kant is er geen WebSocket-server. Een kortlevend Deepgram-token gebruikt
+  het WebSocket-subprotocol `Bearer`, niet `token`.
+- **API-sleutels zijn alleen voor de server.** Zet er nooit een in een `NEXT_PUBLIC_`-variabele.
+- Een nieuwe provider is pas af als hij in `.env.example`, de README-tabel en
+  een record in het grootboek staat.

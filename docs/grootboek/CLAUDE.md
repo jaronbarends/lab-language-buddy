@@ -1,43 +1,44 @@
-# Grootboek — domain context
+# Grootboek — domeincontext
 
-## Start the grootboek skill
+## Start de grootboek-skill
 
-When creating or resuming any grootboek document: start the grootboek skill. Its writing
-guide is a hard requirement — without that context you write a form to fill in instead of
-a living document.
+Maak of hervat je een grootboekdocument, start dan de grootboek-skill. De schrijfgids daarvan is een
+harde eis — zonder die context schrijf je een formulier om in te vullen in plaats van een levend
+document.
 
-## Document types
+## Documenttypen
 
-| Type | Prefix | Question |
-|------|--------|----------|
-| ADR | adr-NNN | WHAT do we build? |
-| HDR | hdr-NNN | HOW do we work? |
-| PDR | pdr-NNN | WHY this way? |
-| DFT | dft-NNN | IS IT STILL TRUE? |
-| JNL | jnl-NNN | WHAT ARE WE DISCOVERING? |
+| Type | Prefix | Vraag |
+|------|--------|-------|
+| ADR | adr-NNN | WAT bouwen we? |
+| HDR | hdr-NNN | HOE werken we? |
+| PDR | pdr-NNN | WAAROM zo? |
+| DFT | dft-NNN | KLOPT HET NOG? |
+| JNL | jnl-NNN | WAT ONTDEKKEN WE? |
 
-Registers live in `docs/grootboek/registers/` (YAML). Update the register with every new
-decision or status change.
+Registers staan in `docs/grootboek/registers/` (YAML). Werk het register bij bij elke nieuwe
+beslissing of statuswijziging.
 
-## Numbering across parallel branches
+## Nummering over parallelle branches
 
-Branches booking records in parallel hand out the same next number. The branch that merges
-second renumbers its own records, in its own branch, **before** merging `arc/arc-main` or
-`main` into it: run `npm run docs:renumber`, review, commit (HDR-005, order changed by
-HDR-007). The `guard-merge-renumber` hook holds back such a merge from Claude Code until it
-has run, and `npm run docs:check` fails on a duplicated id. Merged records keep their number.
+Branches die parallel records boeken, delen hetzelfde volgende nummer uit. De branch die als
+tweede merget, hernummert zijn eigen records, in zijn eigen branch, **voordat** `arc/arc-main` of
+`main` erin wordt gemerged: draai `npm run docs:renumber`, review, commit (HDR-005, volgorde
+gewijzigd door HDR-007). De hook `guard-merge-renumber` houdt zo'n merge vanuit Claude Code tegen
+tot dat is gebeurd, en `npm run docs:check` faalt op een dubbel id. Gemergede records houden hun
+nummer.
 
-## Writing conventions
+## Schrijfafspraken
 
-- Documentation: Dutch, as the skill's own templates are; code and code comments stay English
-  (HDR-014)
-- Files: kebab-case
-- Every feature or bugfix gets a spec in `docs/grootboek/specs/`
-- Specs are throwaway: after delivery the code is the truth
-- A leading document that describes code, a new balance included, declares its `werkgebied`
-  (the files and folders it is about) in its front matter; `npm run docs:drift` and
-  `npm run docs:check` use it to signal drift (HDR-008)
+- Documentatie: Nederlands, zoals de templates van de skill zelf; code en commentaar in code
+  blijven Engels (HDR-014)
+- Bestanden: kebab-case
+- Elke feature of bugfix krijgt een spec in `docs/grootboek/specs/`
+- Specs zijn wegwerp: na oplevering is de code de waarheid
+- Een leidend document dat code beschrijft, een nieuwe balans inbegrepen, declareert zijn
+  `werkgebied` (de bestanden en mappen waar het over gaat) in zijn front matter; `npm run docs:drift`
+  en `npm run docs:check` gebruiken dat om drift te signaleren (HDR-008)
 
-## Duty to communicate
+## Communicatieplicht
 
-See the root `CLAUDE.md`: it holds the list of leading documents and the rule.
+Zie de root-`CLAUDE.md`: daar staat de lijst met leidende documenten en de regel.

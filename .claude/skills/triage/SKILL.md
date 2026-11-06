@@ -16,7 +16,7 @@ description: >
 Eén uniform, zwaar verificatieregime is zowel traag als onbetrouwbaar: in de grootste
 faalstudie van multi-agent-systemen (MAST) is *onjuiste* verificatie een grotere faalcategorie
 dan *afwezige* verificatie. De industrie (Meta, Prime Video) classificeert de wijziging zelf en
-staffelt de borging daarnaar. Deze skill doet dat voor onze opzet: jij, de aansturende agent,
+staffelt de borging daarnaar. Deze skill doet dat voor onze opzet: jij, de lead agent,
 beantwoordt vier vragen over de taak en geeft het oordeel mee aan de builder. Omvang is
 bewust geen van de vragen: de gevaarlijkste wijzigingen zijn vaak de kleinste (twaalf regels
 in een schema), de veiligste vaak de grootste (duizenden regels gegenereerde catalogus).
@@ -70,7 +70,7 @@ Eén regel: het regime plus de redenering. De builder leest hieruit welk contrac
 de regime-sectie in `builder.md`); de guard-hook weigert een builder-start zonder deze regel.
 
 **De grens van de guard — wees daar eerlijk over.** De guard vangt alleen builder-starts vanuit
-de hoofdthread. Een builder die door een workflowscript of een team-lead-agent wordt gestart
+de lead thread. Een builder die door een workflowscript of een team-lead-agent wordt gestart
 (een aanroep die zelf van een agent komt) passeert de guard altijd. Orkestreer je op een
 dieper niveau, dan ben jij zelf de borging: zet het regime-oordeel in de prompt van elke
 agent-opdracht; de guard controleert het daar niet.

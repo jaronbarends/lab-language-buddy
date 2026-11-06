@@ -85,29 +85,29 @@ dan in plaats van een van beide blind te volgen.
   een procedure draagt (een checklist, een release-ritueel) bewaart die procedure in een eigen
   bestand naast het script en injecteert haar op het juiste moment — de checklist is data, de hook
   is bezorging, dus een wijziging van de procedure betekent nooit een codewijziging.
-- **Werkmodel: subagent-tenzij.** De hoofdthread stuurt aan en beslist; hij schrijft zelf geen
+- **Werkmodel: subagent-tenzij.** De lead thread stuurt aan en beslist; hij schrijft zelf geen
   broncode. Bewerkingen in `src/` of `spikes/` gaan via een builder-subagent — een
-  `guard-kenniswerker`-hook dwingt dit af voor de hoofdthread (aanroepen van subagents komen
+  `guard-kenniswerker`-hook dwingt dit af voor de lead thread (aanroepen van subagents komen
   erdoor; `docs/`, `.claude/` en andere bestanden die geen code zijn vormen een uitzondering, dus
   dit bestand of een hookscript kan nog direct worden bewerkt). Er is een tijdgebonden override
-  voor als Jarón uitdrukkelijk vraagt dat de hoofdthread één wijziging zelf doet: die maakt
+  voor als Jarón uitdrukkelijk vraagt dat de lead thread één wijziging zelf doet: die maakt
   `.claude/.hoofdthread-override.json` aan
   (`{"activatedAt": "<ISO timestamp>", "durationMinutes": 15}`, 15 minuten tenzij Jarón een langere
   duur noemt), en de hook honoreert het alleen tot het verloopt.
 - **Staffel.** Laad vóór je een builder start de skill `triage` en classificeer de taak —
   trivial / normal / risky, op type, nooit op omvang — en zet het eenregelige oordeel
   (`regime: ... — <reden>`) op de eerste regel van de opdracht aan de builder. Een
-  `triage-guard`-hook weigert een builderstart vanuit de hoofdthread zonder die regel (een builder
+  `triage-guard`-hook weigert een builderstart vanuit de lead thread zonder die regel (een builder
   die door een andere agent wordt gestart komt erdoor — de aansturende agent is daar de borging,
   volgens de skill). `trivial` krijgt een opdracht van één regel en een rapport van drie regels,
   geen reviewer; al het andere houdt het volledige contract.
 - **Fork mode.** Standaard aan, geen setup nodig. Gebruik hem voor synthesewerk waarbij het gesprek
   de bron is — een spec, een concept, een verslag waarbij de dialoog zelf de bron is. Levende
-  documenten en registers (de grootboekregisters) blijven werk voor de hoofdthread; ze zijn geen
+  documenten en registers (de grootboekregisters) blijven werk voor de lead thread; ze zijn geen
   materiaal voor een fork.
-- **Refactor loop.** Voordat de hoofdthread pusht, doorzoekt een `guard-push-sweep`-hook `src/` op
+- **Refactor loop.** Voordat de lead thread pusht, doorzoekt een `guard-push-sweep`-hook `src/` op
   bestanden voorbij de doorbell/hard-limit zonder registerbeslissing. Vindt hij nieuwe, dan weigert
-  hij de push en noemt ze; de hoofdthread start de agent `refactor-werkplaats` voor die bestanden
+  hij de push en noemt ze; de lead thread start de agent `refactor-werkplaats` voor die bestanden
   en probeert het dan opnieuw. Een pending-marker (`docs/.refactor-pending.json`, 24 uur TTL)
   voorkomt dat de volgende push een bestand opnieuw markeert waarvoor al een voorstel op review
   wacht. Een hook op git-niveau die dit onbewaakt start, naar ARC's eigen conventie, werd geweigerd

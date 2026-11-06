@@ -49,7 +49,7 @@ function main() {
         permissionDecision: 'deny',
         permissionDecisionReason:
           `Subagents (agent_type: "${input.agent_type}") mogen niet committen of pushen. ` +
-          'Meld wat er veranderd is terug aan de hoofdthread; alleen de hoofdthread commit, en alleen na Jaróns go-ahead.',
+          'Meld wat er veranderd is terug aan de lead thread; alleen de lead thread commit, en alleen na Jaróns go-ahead.',
       },
     };
     process.stdout.write(JSON.stringify(output));

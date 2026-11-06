@@ -110,8 +110,8 @@ function main() {
   }
 
   deny(
-    'De hoofdthread schrijft niet rechtstreeks naar src/ of spikes/ (CLAUDE.md, "subagent-tenzij"). ' +
-      'Delegeer deze wijziging aan een builder subagent, of, als Jarón de hoofdthread uitdrukkelijk ' +
+    'De lead thread schrijft niet rechtstreeks naar src/ of spikes/ (CLAUDE.md, "subagent-tenzij"). ' +
+      'Delegeer deze wijziging aan een builder subagent, of, als Jarón de lead thread uitdrukkelijk ' +
       'heeft gevraagd deze wijziging zelf te maken, maak ' +
       OVERRIDE_FILE +
       ' aan met {"activatedAt": "<ISO timestamp>", "durationMinutes": 15} en probeer het opnieuw.'

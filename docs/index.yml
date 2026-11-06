@@ -144,6 +144,24 @@ documents:
   - path: docs/grootboek/pdr/pdr-009-de-luisterstip.md
     what: De stip in de luisterbubbel duidt de live microfoon aan, pulseert via een ring en vervangt de gestippelde rand; overgezet uit plan.md.
     read_when: je het live transcript, de stip of de puls-animatie wijzigt.
+  - path: docs/grootboek/pdr/pdr-010-sessieflow-en-schermen.md
+    what: Besluiten over de sessieflow: geen ended-fase, lastConfig als nieuwe standaard, Start conversation als eerste beurt, Reply tijdens aiSpeaking; overgezet uit plan.md.
+    read_when: je de overgang tussen setup en gesprek, het label van de eerste knop of het onderbreken van de AI-spraak wilt begrijpen of wijzigen.
+  - path: docs/grootboek/pdr/pdr-011-scroll-en-tekstvakken.md
+    what: Hoe de thread scrolt bij een te hoge bubbel, de hoogtebegrenzing van de tekst in de bediening en flex-shrink 0 op .bubble; overgezet uit plan.md.
+    read_when: je het scrollgedrag van de thread, de hoogtebegrenzing van live transcript, concept of editor, of het klippen van bubbels aanraakt.
+  - path: docs/grootboek/adr/adr-017-de-bubbel-en-het-bewerkvak.md
+    what: Het gedeelde Bubble-frame, het ongecontroleerde contenteditable-bewerkvak, wit bij bewerken en pre-line voor regeleinden; overgezet uit plan.md.
+    read_when: je het frame van een spraakbubbel, het bewerkvak of de witruimte in bubbels wijzigt.
+  - path: docs/grootboek/pdr/pdr-012-setup-formulier.md
+    what: Hoe het setup-scherm is opgebouwd: één form, fieldset en legend per veld, aria-labelledby op de select, native radio's met anchor-indicator, mask-pijl, breedte van Start chat; overgezet uit plan.md.
+    read_when: je het setup-scherm, de starter-toggle, de niveau-select of de breedte van de Start chat-knop wijzigt.
+  - path: docs/grootboek/pdr/pdr-013-animatie-van-bubbels.md
+    what: Hoe bubbels inanimeren (gebruiker, denkbubbel, antwoord) met scale, en waarom zo; overgezet uit plan.md.
+    read_when: je de animatie, de timings of de variabelen van de bubbelonthulling aanpast.
+  - path: docs/grootboek/pdr/pdr-014-logo-en-favicons.md
+    what: Favicons en manifest uit de bestaande app en het logo als inline SVG-component zonder SVGR; overgezet uit plan.md.
+    read_when: je favicons, het manifest of het logo op het setup-scherm wijzigt, of overweegt een SVG-loader toe te voegen.
   - path: docs/grootboek/adr/adr-001-environment-and-deployment-topology.md
     what: main is production, other branches preview by default, secret env vars Production-only; configured in Vercel, not in the repo.
     read_when: changing branch or env-var setup in Vercel.

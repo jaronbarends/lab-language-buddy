@@ -184,3 +184,14 @@ adrs:
     beslissing: "De vlaggen komen uit het pakket flag-icons, met alleen de zes benodigde SVG's geïmporteerd en niet de stylesheet"
     notitie: "Overgezet uit plan.md (HDR-015): twee rijen (Decisions-tabel en decision log) over hetzelfde besluit, samengevoegd. Vervangt de emoji-vlaggen"
     bestand: adr-016-vlaggen-flag-icons.md
+  - id: "ADR-017"
+    titel: "De bubbel en het bewerkvak"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-30
+    implementatie-datum: 2026-09-30
+    beslissing: "Eén gedeelde Bubble (altijd een div met overflow: hidden) houdt het frame van elke spraakbubbel, het bewerkvak is een ongecontroleerde contenteditable=plaintext-only div daarin, een bubbel met bewerkbaar gebied wordt wit, en bubbels gebruiken white-space: pre-line"
+    notitie: "Overgezet uit plan.md (HDR-015): het bewerkvak is twee keer gebouwd (textarea op verborgen kopie faalde op iPhone, toen contenteditable); de as-prop van Bubble uit de eerste rij is later vervallen"
+    bestand: adr-017-de-bubbel-en-het-bewerkvak.md

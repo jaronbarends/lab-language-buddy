@@ -9,7 +9,7 @@
 
 - De knop heeft twee varianten, `primary` en `secondary`, elk met een eigen uitgeschakelde
   stijl. De grijze vulling is de uitgeschakelde stand van `primary`, geen aparte variant.
-- Reply is een primaire knop, dus magenta zodra je erop kunt tikken.
+- Reply is een primaire knop, dus roze zodra je erop kunt tikken.
 - De horizontale padding van een knop is 16px (`padding: var(--size-16)`), eerder 32px.
 
 ## Waarom
@@ -32,7 +32,6 @@
   hetzelfde gebleven.
 - Bij 320px breekt het label van "Cancel edit" nog steeds over twee regels: het ontbreekt 2,2px.
   Dit is niet opgelost.
-- (uit de code, niet uit het plan: de kleur van de primaire knop is `--color-pink-500`)
 
 ## Herkomst
 

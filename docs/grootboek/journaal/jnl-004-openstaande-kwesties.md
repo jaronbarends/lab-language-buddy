@@ -132,7 +132,7 @@ Verwant: ADR-018 (Sessiestate: één reducer, beurtstatus als discriminated unio
 
 ### K8 — De twee Gemini-wrappers en -routes zijn bijna-kopieën
 
-**Wat er open staat.** `askGemini` en `askGeminiForEvaluation` herhalen de sleutelcontrole, de
+**Wat er open staat.** `askGemini` en `askGeminiForEvaluation` herhalen de key-controle, de
 aanroep van `interactions.create`, de controle op lege uitvoer en het parsen van de JSON; de twee
 `route.ts`-handlers herhalen het foutpad.
 

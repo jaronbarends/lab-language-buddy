@@ -225,7 +225,7 @@ documents:
   - path: docs/grootboek/adr/adr-003-gemini-flash-lite-op-prijs.md
     what: Why gemini-3.1-flash-lite, and that it was chosen on price without an extensive model comparison.
     read_when: considering a different model for chat or evaluation.
-  - path: docs/grootboek/adr/adr-004-google-tts-sleutel-als-header.md
+  - path: docs/grootboek/adr/adr-004-google-tts-key-als-header.md
     what: GOOGLE_CLOUD_API_KEY moved from a URL query parameter to the x-goog-api-key header; confirmed against the live endpoint first.
     read_when: touching src/lib/tts/google.ts or its auth.
   - path: docs/grootboek/software-architectuur.md

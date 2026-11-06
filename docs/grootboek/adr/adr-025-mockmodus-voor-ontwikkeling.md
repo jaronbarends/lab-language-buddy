@@ -7,7 +7,7 @@
 
 ## Besluit
 
-Ontwikkelen kan zonder sleutel of quota, met een mockmodus die op de echte fetch-paden meeloopt.
+Ontwikkelen kan zonder key of quota, met een mockmodus die op de echte fetch-paden meeloopt.
 
 **De schakelaars en de mockroutes**
 
@@ -44,14 +44,14 @@ Ontwikkelen kan zonder sleutel of quota, met een mockmodus die op de echte fetch
 
 ## Waarom
 
-- **Schakelaar:** ontwikkelen blijft mogelijk zonder sleutel of quota, terwijl het echte fetch-pad in gebruik
+- **Schakelaar:** ontwikkelen blijft mogelijk zonder key of quota, terwijl het echte fetch-pad in gebruik
   blijft. De vlag is client-side omdat de client de URL kiest; alternatief was een server-side `if` in één route.
 - **Scriptpositie in het id:** voorgesteld om een beurtteller in het request te vermijden, door Jarón goedgekeurd.
   Deterministisch, geordend, en een retry krijgt dezelfde regel.
 - **Duidelijke 404:** een lege 404 liet niet zien dat de modus de mock uitzette, en niet een ontbrekende route.
 - **Eén schakelaar:** Jarón stemde in en zei dat de bestandsnamen nu niet moesten veranderen. **Eén `enabled` voor
   TTS:** precies één van de twee speelt de beurt van de AI af, en de vlaggen kunnen elkaar niet tegenspreken.
-- **`[fail]` en `[slow]`:** zo zijn de mislukte en de verlopen evaluatie te zien zonder een sleutel te breken.
+- **`[fail]` en `[slow]`:** zo zijn de mislukte en de verlopen evaluatie te zien zonder een key te breken.
   Voorgesteld door de agent als optie (a) van drie, gekozen door Jarón.
 - **Citeren van het bericht:** een vaste zin hoeft niet in het bericht te staan, en dat is in strijd met het
   contract. Citeren houdt de hele sectie zichtbaar voor elke invoer; `null` teruggeven als de zin ontbrak, niet.

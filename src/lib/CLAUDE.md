@@ -5,7 +5,7 @@
   vlag toe te voegen.
 - **Providers vallen onder een registry in `index.ts`** (`tts/`, `stt/`). Een provider is één
   module; wisselen is een env var en verder niets. Een onbekende waarde gooit en noemt de
-  geldige namen; er is nooit een fallback, zodat een typefout niet stilletjes een andere
+  geldige namen; er is nooit een fallback, zodat een typfout niet stilletjes een andere
   provider kiest.
 - **TTS** (`TTS_PROVIDER`, server-side): elke provider geeft MP3-bytes terug. Stemtabellen
   staan in elke providermodule zelf, niet in de gedeelde taalregistry.
@@ -14,6 +14,6 @@
   ElevenLabs worden door de browser rechtstreeks aangeroepen met een kortlevend token uit onze
   eigen route; aan onze kant is er geen WebSocket-server. Een kortlevend Deepgram-token gebruikt
   het WebSocket-subprotocol `Bearer`, niet `token`.
-- **API-sleutels zijn alleen voor de server.** Zet er nooit een in een `NEXT_PUBLIC_`-variabele.
+- **API-keys zijn alleen voor de server.** Zet er nooit een in een `NEXT_PUBLIC_`-variabele.
 - Een nieuwe provider is pas af als hij in `.env.example`, de README-tabel en
   een record in het grootboek staat.

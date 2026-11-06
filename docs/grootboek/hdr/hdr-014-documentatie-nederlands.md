@@ -25,7 +25,7 @@ nog Engels is.
 
 **Vertalen is geen nieuwe beslissing.** Een geïmplementeerd record verandert niet (HDR-001);
 bij vertalen verandert alleen de taal, nooit het besluit, de status, de datum of het id. Niet
-vertaald worden: sleutels in front matter en registers, id's, code-identifiers, kopteksten
+vertaald worden: keys in front matter en registers, id's, code-identifiers, kopteksten
 waar een script of `docs/index.yml` naar verwijst, en de labels `Status`, `Date` en
 `Implementation` bovenaan een record. Bestandsnamen van documenten volgen de taal van hun
 inhoud: een Nederlands document krijgt een Nederlandse kebab-case naam, met het id-voorvoegsel

@@ -43,7 +43,7 @@ adrs:
     beslissing: "gemini-3.1-flash-lite for chat and evaluation, chosen on price without an extensive model comparison"
     bestand: adr-003-gemini-flash-lite-op-prijs.md
   - id: "ADR-004"
-    titel: "De Google TTS-sleutel verhuist van de URL naar een header"
+    titel: "De Google TTS-key verhuist van de URL naar een header"
     status: implemented
     versie: "1.0"
     implementatie: 100
@@ -51,7 +51,7 @@ adrs:
     datum: 2026-10-21
     implementatie-datum: 2026-10-21
     beslissing: "GOOGLE_CLOUD_API_KEY moves to the x-goog-api-key header; confirmed working against the live endpoint before the change"
-    bestand: adr-004-google-tts-sleutel-als-header.md
+    bestand: adr-004-google-tts-key-als-header.md
   - id: "ADR-005"
     titel: "De taalkiezer is overgenomen uit de bestaande app"
     status: implemented
@@ -237,7 +237,7 @@ adrs:
     datum: 2026-09-23
     implementatie-datum: 2026-09-23
     beslissing: "Fouten zijn herstelbaar en de weg terug hangt af van waar het misging; een mislukte AI-call wordt opnieuw geprobeerd, een mislukte opname brengt de gebruiker terug, een TTS-fout degradeert naar alleen tekst"
-    notitie: "Overgezet uit plan.md (HDR-015): 13 rijen (Decisions-rij Errors plus foutflow, lege reply, request.signal, ontbrekende API-sleutel, abort-logging, TTS-fout, LIVE_CONNECT_TIMEOUT_MS, recorder- en WebSocket-fouten, unlockAudio bij Try again, retry van alleen de chat-call, EVALUATION_TIMEOUT_MS). Voorgeschiedenis: de foutflow van vóór de herziening van 09-29"
+    notitie: "Overgezet uit plan.md (HDR-015): 13 rijen (Decisions-rij Errors plus foutflow, lege reply, request.signal, ontbrekende API-key, abort-logging, TTS-fout, LIVE_CONNECT_TIMEOUT_MS, recorder- en WebSocket-fouten, unlockAudio bij Try again, retry van alleen de chat-call, EVALUATION_TIMEOUT_MS). Voorgeschiedenis: de foutflow van vóór de herziening van 09-29"
     bestand: adr-021-fouten-en-herstel.md
   - id: "ADR-022"
     titel: "Design system overgenomen uit de bestaande app"
@@ -280,7 +280,7 @@ adrs:
     omgeving: geen
     datum: 2026-10-03
     implementatie-datum: 2026-10-03
-    beslissing: "Ontwikkelen kan zonder sleutel of quota via mockschakelaars (NEXT_PUBLIC_USE_MOCK_CHAT voor chat en evaluatie, NEXT_PUBLIC_USE_MOCK_TTS voor TTS), mockroutes met een scriptpositie in het interaction-id, en een dev-stepper in de interface"
+    beslissing: "Ontwikkelen kan zonder key of quota via mockschakelaars (NEXT_PUBLIC_USE_MOCK_CHAT voor chat en evaluatie, NEXT_PUBLIC_USE_MOCK_TTS voor TTS), mockroutes met een scriptpositie in het interaction-id, en een dev-stepper in de interface"
     notitie: "Overgezet uit plan.md (HDR-015): twaalf rijen, vooral ontwikkelgereedschap. De eerste mockversie van de chatroute gaf een correctie mee; die stap is ingehaald doordat de mockevaluatie nu uit het bericht zelf citeert (Voorgeschiedenis)"
     bestand: adr-025-mockmodus-voor-ontwikkeling.md
   - id: "ADR-026"

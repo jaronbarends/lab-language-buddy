@@ -61,7 +61,7 @@ de agent en is niet besproken. De waarde `elevenlabs` is eveneens een voorstel v
 Jarón geaccepteerd.
 
 **Fout bij onbekende waarde.** Jarón zei eerst dat een onbekende waarde de native engine kon
-gebruiken, en koos daarna de fout. Een typefout zou de app anders op een andere engine laten dan
+gebruiken, en koos daarna de fout. Een typfout zou de app anders op een andere engine laten dan
 degene waar om gevraagd is, wat `getTtsProvider` ook voorkomt.
 
 **Geen fallback.** Niet gewenst voor nu; zonder spraakherkenning in de browser kan de native

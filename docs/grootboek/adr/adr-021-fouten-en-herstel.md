@@ -28,7 +28,7 @@ wordt opnieuw geprobeerd, een mislukte opname brengt de gebruiker terug naar zic
   `output_text` is een fout.
 - De `request.signal` van de route gaat door naar de Gemini-call. De server heeft zelf geen
   deadline.
-- Een ontbrekende API-sleutel wordt server-side gelogd; de client krijgt de generieke melding
+- Een ontbrekende API-key wordt server-side gelogd; de client krijgt de generieke melding
   "The chat request failed". De Zod-tekst bij 400 en de statuscodes blijven ongewijzigd.
 - Een request die de browser afbreekt, blijft in de serverlog staan als "Chat request failed".
   Afbreken krijgt geen speciaal geval.
@@ -58,7 +58,7 @@ wordt opnieuw geprobeerd, een mislukte opname brengt de gebruiker terug naar zic
   op.
 - Een afbreking door de client moet de betaalde call stoppen. De 30 seconden deadline van de
   client beëindigt al elke request waarop iemand wacht.
-- De client wint niets bij te weten dat de sleutel ontbreekt. Of een falen herhaalbaar is, blijft
+- De client wint niets bij te weten dat de key ontbreekt. Of een falen herhaalbaar is, blijft
   open tot de client er iets mee kan.
 - Door `request.signal` door te geven gooit elke afbreking in `askGemini`: het verlaten van
   `aiThinking`, de client-deadline, en in dev de dubbele effect van Strict Mode. De server kan

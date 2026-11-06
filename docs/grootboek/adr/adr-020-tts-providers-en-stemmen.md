@@ -74,5 +74,5 @@ veel korter.
   een request body, geen request, zoals bij `ChatRequestBody`; de routevariabele hield een
   parse-resultaat en is daarnaar genoemd. De reviewrij van fase 3 noemt nog `TtsRequest`.
 
-Verwant: ADR-004 (De Google TTS-sleutel verhuist van de URL naar een header)
+Verwant: ADR-004 (De Google TTS-key verhuist van de URL naar een header)
 Verwant: ADR-009 (STT: providerkeuze en configuratie)

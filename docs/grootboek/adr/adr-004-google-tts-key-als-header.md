@@ -1,4 +1,4 @@
-# ADR-004: De Google TTS-sleutel verhuist van de URL naar een header
+# ADR-004: De Google TTS-key verhuist van de URL naar een header
 
 - **Status:** implemented
 - **Date:** 2026-10-21

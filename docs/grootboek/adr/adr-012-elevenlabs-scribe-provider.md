@@ -15,7 +15,7 @@ providerkeuze en configuratie).
   `pcm-worklet.ts`, geladen via een Blob URL. De `AudioContext` wordt aangemaakt in de effect
   die de klik op Reply triggert, en niet doorgegeven vanuit die klik.
 - **Tokenroute.** Een tweede tokenroute, `/api/stt/elevenlabs-token`, geeft `{ accessToken }`
-  terug en gebruikt `ELEVENLABS_API_KEY`, de TTS-sleutel; er is dus geen nieuwe variabele.
+  terug en gebruikt `ELEVENLABS_API_KEY`, de TTS-key; er is dus geen nieuwe variabele.
 - **Fatale Scribe-berichttypes.** De set in `elevenlabs.ts` volgt de event reference van
   ElevenLabs (https://elevenlabs.io/docs/eleven-api/guides/how-to/speech-to-text/realtime/event-reference.md,
   2026-10-19) en is aangevuld met `invalid_request`, `unaccepted_terms`, `queue_overflow`,
@@ -36,7 +36,7 @@ providerkeuze en configuratie).
   (op de iPhone geprobeerd in de spike); een bestand onder `public/` voegt een tweede pad toe
   dat gelijk moet blijven. Al het andere volgt `deepgram.ts`: de connect-timeout, de
   afbreekbare tokenfetch en de handlers die losgekoppeld worden voordat de socket sluit.
-- **Een route per vendor** houdt elke sleutel en elke grant-call in een eigen bestand, en de
+- **Een route per vendor** houdt elke key en elke grant-call in een eigen bestand, en de
   vorm van het antwoord komt overeen met de Deepgram-route, zodat de clientcode gelijk leest. De
   route vergroot de open vraag over publieke deployment (geen authenticatie of rate limit op de
   serverroutes) met één endpoint; zie ADR-002 (De serverroutes hebben geen authenticatie van de aanroeper, voorlopig geaccepteerd).

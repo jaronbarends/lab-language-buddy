@@ -70,7 +70,7 @@ Bestaan er meerdere implementaties van dezelfde rol (een TTS-provider, een STT-p
 vallen ze onder één registrymodule die op basis van configuratie tussen ze kiest — nooit via
 verspreide `if (provider === ...)`-controles op elke aanroepplek. Wisselen is één env var
 veranderen en verder niets. Een onbekende waarde gooit een fout en noemt de geldige; er is nooit
-een stille fallback, zodat een typefout de app niet ongemerkt op de verkeerde provider kan laten.
+een stille fallback, zodat een typfout de app niet ongemerkt op de verkeerde provider kan laten.
 
 *Praktijkvoorbeeld:* `getConfiguredStartFunction` in `src/lib/stt/index.ts` — één getypte map,
 één expliciete throw bij een onbekende `NEXT_PUBLIC_STT_PROVIDER`. `src/lib/tts/` heeft dezelfde

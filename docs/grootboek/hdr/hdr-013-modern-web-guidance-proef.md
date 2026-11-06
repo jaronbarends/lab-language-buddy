@@ -1,4 +1,4 @@
-# HDR-013: Try Modern Web Guidance on the bubble animation, with the baseline written first
+# HDR-013: Modern Web Guidance proberen op de bubbelanimatie, met eerst de eigen baseline
 
 - **Status:** in-progress
 - **Date:** 2026-10-23

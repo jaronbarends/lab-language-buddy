@@ -1,4 +1,4 @@
-# HDR-002: Keep the software balance next to `plan.md`, as a drift-detection trial
+# HDR-002: De software-balans naast `plan.md` houden, als proef voor driftdetectie
 
 - **Status:** in-progress
 - **Date:** 2026-10-20

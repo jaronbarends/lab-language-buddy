@@ -1,5 +1,5 @@
 ---
-titel: "A drift signal for leading documents"
+titel: "Een driftsignaal voor leidende documenten"
 type: spec
 soort: plan van aanpak
 status: concept
@@ -7,7 +7,7 @@ datum: 27 oktober 2026
 auteurs: Jarón, Mama Claude
 ---
 
-# A drift signal for leading documents
+# Een driftsignaal voor leidende documenten
 
 **The point.** REQ-GG-05 (Richt drift-detectie in) wants drift to be signalled, booked and
 followed up. DFT-001 proved the *process* of a reconciliation; nothing tells anyone *when* one

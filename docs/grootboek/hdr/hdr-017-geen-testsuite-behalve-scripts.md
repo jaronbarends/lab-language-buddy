@@ -10,7 +10,7 @@
 De app heeft geen testsuite; die wordt met de hand geverifieerd. Een script onder `scripts/` dat
 documenten herschrijft zonder dat iemand het resultaat leest, krijgt wel een test, geschreven met
 `node:test` (zit in Node, geen dependency). De eerste test is voor het script dat records
-hernummert (spec `docs/grootboek/specs/automatic-renumbering-on-merge.md`).
+hernummert (spec `docs/grootboek/specs/automatisch-hernummeren-bij-merge.md`).
 
 ## Waarom
 

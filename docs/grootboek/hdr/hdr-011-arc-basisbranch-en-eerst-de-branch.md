@@ -1,4 +1,4 @@
-# HDR-011: Arc work branches from `arc/arc-main`, and the branch exists before the first edit
+# HDR-011: Arc-werk vertakt van `arc/arc-main`, en de branch bestaat vóór de eerste bewerking
 
 - **Status:** implemented
 - **Date:** 2026-10-27

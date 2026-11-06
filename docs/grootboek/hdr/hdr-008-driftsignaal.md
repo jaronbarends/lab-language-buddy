@@ -1,4 +1,4 @@
-# HDR-008: A drift signal tells when the code a leading document describes has moved on
+# HDR-008: Een driftsignaal meldt wanneer de code die een leidend document beschrijft is doorgegroeid
 
 - **Status:** implemented
 - **Date:** 2026-10-27

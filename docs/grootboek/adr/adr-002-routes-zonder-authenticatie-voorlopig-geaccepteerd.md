@@ -1,4 +1,4 @@
-# ADR-002: The server routes have no caller authentication, accepted for now
+# ADR-002: De serverroutes hebben geen authenticatie van de aanroeper, voorlopig geaccepteerd
 
 - **Status:** accepted
 - **Date:** 2026-10-20

@@ -1,4 +1,4 @@
-# HDR-006: A hook reminds the agent of the duty to communicate
+# HDR-006: Een hook herinnert de agent aan de communicatieplicht
 
 - **Status:** implemented
 - **Date:** 2026-10-24

@@ -1,4 +1,4 @@
-# DFT-002: The subagent-tenzij guard blocks CLAUDE.md files under src/, the working agreement says it should not
+# DFT-002: De subagent-tenzij-guard blokkeert CLAUDE.md-bestanden onder src/, terwijl de werkafspraak zegt van niet
 
 - **Status:** resolved (2026-10-27)
 - **Date:** 2026-10-24

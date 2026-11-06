@@ -13,7 +13,7 @@
 
 adrs:
   - id: "ADR-001"
-    titel: "Environment and deployment topology"
+    titel: "Omgeving en deployment-topologie"
     status: accepted
     versie: "1.0"
     implementatie: 100
@@ -21,9 +21,9 @@ adrs:
     datum: 2026-10-20
     beslissing: "main is production; other branches (incl. arc/*) deploy as Vercel previews by default; secret env vars are Production-only"
     notitie: "Configured in the Vercel dashboard, not in the repo; no drift check covers it"
-    bestand: adr-001-environment-and-deployment-topology.md
+    bestand: adr-001-omgeving-en-deployment-topologie.md
   - id: "ADR-002"
-    titel: "Routes unauthenticated, accepted for now"
+    titel: "De serverroutes hebben geen authenticatie van de aanroeper, voorlopig geaccepteerd"
     status: accepted
     versie: "1.0"
     implementatie: 0
@@ -31,9 +31,9 @@ adrs:
     datum: 2026-10-20
     beslissing: "No caller authentication or rate limit on any server route; risk accepted for now, fix wanted soon"
     notitie: "Provisional; superseded by a new ADR once K7 lands a protection mechanism"
-    bestand: adr-002-routes-unauthenticated-for-now.md
+    bestand: adr-002-routes-zonder-authenticatie-voorlopig-geaccepteerd.md
   - id: "ADR-003"
-    titel: "Gemini flash-lite, chosen on price"
+    titel: "Gemini `flash-lite` als model, gekozen op prijs"
     status: implemented
     versie: "1.0"
     implementatie: 100
@@ -41,9 +41,9 @@ adrs:
     datum: 2026-10-20
     implementatie-datum: 2026-10-20
     beslissing: "gemini-3.1-flash-lite for chat and evaluation, chosen on price without an extensive model comparison"
-    bestand: adr-003-gemini-flash-lite-on-price.md
+    bestand: adr-003-gemini-flash-lite-op-prijs.md
   - id: "ADR-004"
-    titel: "Google TTS key as a header, not a URL query parameter"
+    titel: "De Google TTS-sleutel verhuist van de URL naar een header"
     status: implemented
     versie: "1.0"
     implementatie: 100
@@ -51,7 +51,7 @@ adrs:
     datum: 2026-10-21
     implementatie-datum: 2026-10-21
     beslissing: "GOOGLE_CLOUD_API_KEY moves to the x-goog-api-key header; confirmed working against the live endpoint before the change"
-    bestand: adr-004-google-tts-key-as-header.md
+    bestand: adr-004-google-tts-sleutel-als-header.md
   - id: "ADR-005"
     titel: "De taalkiezer is overgenomen uit de bestaande app"
     status: implemented

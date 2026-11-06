@@ -6,7 +6,7 @@
 
 hdrs:
   - id: "HDR-001"
-    titel: "Introduction of the grootboek system"
+    titel: "Invoering van het grootboekstelsel"
     status: implemented
     versie: "1.0"
     implementatie: 100
@@ -16,16 +16,16 @@ hdrs:
     beslissing: "Every architecture, harness, product and drift decision gets a numbered document and a register line; plan.md stays the source for decisions before 2026-10-20"
     bestand: hdr-001-grootboek-stelsel.md
   - id: "HDR-002"
-    titel: "Balance next to plan.md, as a drift-detection trial"
+    titel: "De software-balans naast `plan.md` houden, als proef voor driftdetectie"
     status: in-progress
     versie: "1.0"
     implementatie: 50
     omgeving: geen
     datum: 2026-10-20
     beslissing: "Keep software-architectuur.md to try the grootboek's drift mechanism; plan.md stays the source until the trial is settled"
-    bestand: hdr-002-balance-next-to-plan-drift-trial.md
+    bestand: hdr-002-balans-naast-plan-driftproef.md
   - id: "HDR-003"
-    titel: "CI checks on pull requests to main and arc/arc-main"
+    titel: "De checks van de repo draaien op pull requests naar `main` en `arc/arc-main`"
     status: implemented
     versie: "1.0"
     implementatie: 100
@@ -34,9 +34,9 @@ hdrs:
     implementatie-datum: 2026-10-22
     beslissing: "Lint, typecheck, docs:check, the script tests (npm run test:scripts), the register drift check (REQ-AH-12) and build run on every PR to main or arc/arc-main (K8)"
     notitie: "Amended 2026-10-27 with Jarón's go-ahead, although the record had landed: test:scripts added (HDR-007)"
-    bestand: hdr-003-ci-checks-wanted-on-pull-requests.md
+    bestand: hdr-003-ci-checks-op-pull-requests.md
   - id: "HDR-004"
-    titel: "Session-scoped refactor loop instead of an unattended push-hook"
+    titel: "Sessiegebonden refactor loop in plaats van een onbewaakte push-hook"
     status: implemented
     versie: "1.0"
     implementatie: 100
@@ -44,9 +44,9 @@ hdrs:
     datum: 2026-10-21
     implementatie-datum: 2026-10-21
     beslissing: "ARC's unattended git-level push-hook for the refactor loop (REQ-AH-13) was refused by Claude Code's own safety classifier; a session-scoped guard-push-sweep hook is built instead"
-    bestand: hdr-004-session-scoped-refactor-loop.md
+    bestand: hdr-004-sessiegebonden-refactor-loop.md
   - id: "HDR-005"
-    titel: "The branch that merges second renumbers its records"
+    titel: "De branch die als tweede merget hernummert zijn records"
     status: implemented
     versie: "1.0"
     implementatie: 100
@@ -55,9 +55,9 @@ hdrs:
     implementatie-datum: 2026-10-23
     beslissing: "Parallel arc/* branches book the same next number; whichever merges second renumbers its own records in its own branch, after merging arc/arc-main into it and before its PR. Merged records keep their number"
     notitie: "docs:check does not detect duplicate ids; the check is manual. arc/bubble-animation's HDR-005 is the first to be renumbered"
-    bestand: hdr-005-renumber-on-merge-when-numbers-collide.md
+    bestand: hdr-005-hernummeren-bij-merge-bij-botsende-nummers.md
   - id: "HDR-006"
-    titel: "A hook reminds the agent of the duty to communicate"
+    titel: "Een hook herinnert de agent aan de communicatieplicht"
     status: implemented
     versie: "1.0"
     implementatie: 100
@@ -66,9 +66,9 @@ hdrs:
     implementatie-datum: 2026-10-24
     beslissing: "A PostToolUse hook on Edit and Write reminds the agent (lead thread and subagents, with different wording) when a leading document changes; the list of leading documents and the wording are data in .claude/hooks/leading-documents.json"
     notitie: "Never blocks. Blind spots: shell-made changes, edits outside Claude Code. No de-duplication. The list is kept in two places (root CLAUDE.md and the json). Numbering: arc/bubble-animation holds HDR-006 for the Modern Web Guidance trial, so one of the two renumbers when it merges second (HDR-005)"
-    bestand: hdr-006-communication-duty-hook.md
+    bestand: hdr-006-communicatieplicht-hook.md
   - id: "HDR-007"
-    titel: "Renumbering is mechanical: a check, a script and a guard hook"
+    titel: "Hernummeren is mechanisch: een check, een script en een guard-hook"
     status: implemented
     versie: "1.0"
     implementatie: 100
@@ -77,9 +77,9 @@ hdrs:
     implementatie-datum: 2026-10-27
     beslissing: "Records are renumbered before the merge, not after: npm run docs:renumber renumbers the branch's colliding records, docs:check fails on a duplicated id, and a guard hook holds back a merge of arc/arc-main or main until the script has run"
     notitie: "Reverses the order in HDR-005 (renumber before merging) and replaces its manual check. First automated test in the repo, for scripts only (plan, log 10-27). Tried on a throwaway worktree of arc/bubble-animation: HDR-006 to HDR-007"
-    bestand: hdr-007-mechanical-renumbering.md
+    bestand: hdr-007-mechanisch-hernummeren.md
   - id: "HDR-008"
-    titel: "A drift signal tells when the code a leading document describes has moved on"
+    titel: "Een driftsignaal meldt wanneer de code die een leidend document beschrijft is doorgegroeid"
     status: implemented
     versie: "1.0"
     implementatie: 100
@@ -88,9 +88,9 @@ hdrs:
     implementatie-datum: 2026-10-27
     beslissing: "A leading document declares its werkgebied in its front matter; npm run docs:drift lists the code changes in that scope since the document was last touched, docs:check warns on drift and fails on a missing path; a signal is followed by a reconciliation and a DFT"
     notitie: "REQ-GG-05. Signal, not verdict. Proved on a throwaway checkout of arc/bubble-animation (750dc49, four files); the reconciliation that follows a real signal is still open. Numbering: arc/bubble-animation holds its own HDR-008 and renumbers via docs:renumber (HDR-007)"
-    bestand: hdr-008-drift-signal.md
+    bestand: hdr-008-driftsignaal.md
   - id: "HDR-009"
-    titel: "Recurring faults are logged by pattern and codified at three"
+    titel: "Terugkerende fouten worden per patroon gelogd en bij drie vastgelegd als regel"
     status: implemented
     versie: "1.0"
     implementatie: 100
@@ -99,9 +99,9 @@ hdrs:
     implementatie-datum: 2026-10-27
     beslissing: "An incident register grouped by pattern (no ids, one line per incident); npm run docs:incidents and docs:check count it and warn at three without a maatregel; at three the pattern is codified (rule, hook or skill) and an HDR books it; a logging duty in CLAUDE.md"
     notitie: "REQ-GG-06. Threshold three (the requirement), not more than three (the skill's HDR guide). Seeded from six memory notes. Logging depends on the agent: no hook sees a human correction. Numbering: arc/bubble-animation holds its own HDR-008 and renumbers via docs:renumber (HDR-007)"
-    bestand: hdr-009-incident-register.md
+    bestand: hdr-009-incidentregister.md
   - id: "HDR-010"
-    titel: "A name is checked against what it promises"
+    titel: "Een naam wordt getoetst aan wat hij belooft"
     status: implemented
     versie: "1.0"
     implementatie: 100
@@ -110,9 +110,9 @@ hdrs:
     implementatie-datum: 2026-10-27
     beslissing: "A rule in .claude/rules/code-style.md: a name says what the function returns or does and uses its neighbours' word; a correction is accepted without defence, with a reason and a better proposal"
     notitie: "First pattern codified through the incident register (naming-precision, seven incidents). A rule cannot be checked mechanically: success is no further naming incident"
-    bestand: hdr-010-names-checked-against-what-they-promise.md
+    bestand: hdr-010-namen-getoetst-aan-wat-ze-beloven.md
   - id: "HDR-011"
-    titel: "Arc work branches from arc/arc-main, and the branch exists before the first edit"
+    titel: "Arc-werk vertakt van `arc/arc-main`, en de branch bestaat vóór de eerste bewerking"
     status: implemented
     versie: "1.0"
     implementatie: 100
@@ -121,9 +121,9 @@ hdrs:
     implementatie-datum: 2026-10-27
     beslissing: "The Branches line of the root CLAUDE.md names arc/arc-main as the base for arc work (and main as production) and says the branch is created before the first edit; no hook for the second half (one incident)"
     notitie: "From the first cold-start run (JNL-002, K1 and K2). The sentence is time-bound: update it when arc/arc-main merges into main. Proof is a second cold-start round"
-    bestand: hdr-011-arc-base-branch-and-branch-first.md
+    bestand: hdr-011-arc-basisbranch-en-eerst-de-branch.md
   - id: "HDR-012"
-    titel: "No record may be dated after today"
+    titel: "Geen record mag na vandaag gedateerd zijn"
     status: implemented
     versie: "1.0"
     implementatie: 100
@@ -132,9 +132,9 @@ hdrs:
     implementatie-datum: 2026-10-27
     beslissing: "docs:check fails when a grootboek register or record carries a date after today (read in Europe/Amsterdam, not UTC); structured fields only"
     notitie: "Maatregel of the incident pattern date-assumed (22 dates written a day ahead). Catches only future dates; a wrong date in the past or in prose passes. Covered by record-dates.test.mjs"
-    bestand: hdr-012-no-record-dated-after-today.md
+    bestand: hdr-012-geen-record-gedateerd-na-vandaag.md
   - id: "HDR-013"
-    titel: "Try Modern Web Guidance on the bubble animation, baseline written first"
+    titel: "Modern Web Guidance proberen op de bubbelanimatie, met eerst de eigen baseline"
     status: in-progress
     versie: "1.0"
     implementatie: 50
@@ -142,7 +142,7 @@ hdrs:
     datum: 2026-10-23
     beslissing: "Trial of Modern Web Guidance for JNL-003 K3: the agent's own baseline is written before the guidance is consulted, compared after the iPhone spike; the human then keeps, switches off or adjusts it"
     notitie: "Pre-install findings are in the record (no install scripts, unpinned @latest, telemetry per README); installed 2026-10-23 (scope local, v0.0.195); decisions taken: telemetry off via .claude/settings.json env, per-run approval, default Baseline, reply section kept, /plugin route; trial extended 2026-10-23 to several CSS tasks (baseline first, then guidance; trial log inside the record); ends after three tests in total. Source: JNL-003 K10"
-    bestand: hdr-013-modern-web-guidance-trial.md
+    bestand: hdr-013-modern-web-guidance-proef.md
   - id: "HDR-014"
     titel: "Documentatie is Nederlands; code, UI en commits blijven Engels"
     status: in-progress

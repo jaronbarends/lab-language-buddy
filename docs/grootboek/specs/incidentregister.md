@@ -1,5 +1,5 @@
 ---
-titel: "An incident register: recurring faults are counted and codified at three"
+titel: "Een incidentregister: terugkerende fouten worden geteld en bij drie vastgelegd"
 type: spec
 soort: plan van aanpak
 status: concept
@@ -7,7 +7,7 @@ datum: 27 oktober 2026
 auteurs: Jarón, Mama Claude
 ---
 
-# An incident register: recurring faults are counted and codified at three
+# Een incidentregister: terugkerende fouten worden geteld en bij drie vastgelegd
 
 **The point.** REQ-GG-06 (Bouw het immuunsysteem) wants recurring faults to become a rule, hook
 or skill in the harness: once is an incident, twice is chance, three times is a weakness of the

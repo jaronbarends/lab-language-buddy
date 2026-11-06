@@ -1,4 +1,4 @@
-# HDR-009: Recurring faults are logged by pattern and codified at three
+# HDR-009: Terugkerende fouten worden per patroon gelogd en bij drie vastgelegd als regel
 
 - **Status:** implemented
 - **Date:** 2026-10-27

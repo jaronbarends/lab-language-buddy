@@ -39,7 +39,7 @@ providerkeuze en configuratie).
 - **Een route per vendor** houdt elke sleutel en elke grant-call in een eigen bestand, en de
   vorm van het antwoord komt overeen met de Deepgram-route, zodat de clientcode gelijk leest. De
   route vergroot de open vraag over publieke deployment (geen authenticatie of rate limit op de
-  serverroutes) met één endpoint; zie ADR-002 (The server routes have no caller authentication, accepted for now).
+  serverroutes) met één endpoint; zie ADR-002 (De serverroutes hebben geen authenticatie van de aanroeper, voorlopig geaccepteerd).
 - **Lifecycle-helper uitgesteld.** De helper zou `deepgram.ts` en `native.ts` wijzigen, allebei
   op de iPhone gecontroleerd, in dezelfde wijziging als een nieuwe engine. Bij een regressie
   zou niet te zien zijn welke wijziging de oorzaak was. De agent stelde voor het als aparte

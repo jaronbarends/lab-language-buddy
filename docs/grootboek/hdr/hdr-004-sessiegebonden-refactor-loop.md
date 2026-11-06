@@ -1,4 +1,4 @@
-# HDR-004: Session-scoped refactor loop instead of an unattended push-hook
+# HDR-004: Sessiegebonden refactor loop in plaats van een onbewaakte push-hook
 
 - **Status:** implemented
 - **Date:** 2026-10-21

@@ -1,4 +1,4 @@
-# ADR-003: Gemini `flash-lite` as the model, chosen on price
+# ADR-003: Gemini `flash-lite` als model, gekozen op prijs
 
 - **Status:** implemented
 - **Date:** 2026-10-20

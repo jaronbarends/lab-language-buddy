@@ -1,4 +1,4 @@
-# DFT-001: First reconciliation of the software balance — no drift found
+# DFT-001: Eerste reconciliatie van de software-balans — geen drift gevonden
 
 - **Status:** resolved
 - **Date:** 2026-10-21

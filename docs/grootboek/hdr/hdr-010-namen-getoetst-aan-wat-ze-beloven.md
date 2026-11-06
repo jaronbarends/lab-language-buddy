@@ -1,4 +1,4 @@
-# HDR-010: A name is checked against what it promises
+# HDR-010: Een naam wordt getoetst aan wat hij belooft
 
 - **Status:** implemented
 - **Date:** 2026-10-27

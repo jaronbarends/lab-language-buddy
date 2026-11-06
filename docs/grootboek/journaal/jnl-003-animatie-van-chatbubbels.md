@@ -1,5 +1,5 @@
 ---
-titel: Chat bubble animation
+titel: "Animatie van chatbubbels"
 status: discovery
 datum: 2026-10-23
 kernvraag: How does an AI bubble go from thinking dots to its text as one element that grows, without breaking the scroll, the read-along highlight or the screen reader?
@@ -10,7 +10,7 @@ doel-records:
   - "a PDR only if the human treats the motion behaviour as a product promise"
 ---
 
-# JNL-003 — Chat bubble animation
+# JNL-003 — Animatie van chatbubbels
 
 **Core question.** How does an AI bubble go from thinking dots to its text as one element that
 grows, without breaking the scroll, the read-along highlight or the screen reader?

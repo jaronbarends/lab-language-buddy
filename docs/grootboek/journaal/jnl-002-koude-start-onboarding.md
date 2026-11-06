@@ -1,5 +1,5 @@
 ---
-titel: Cold-start journal — can a newcomer work from the repo alone?
+titel: "Koude-startjournaal: kan een nieuwkomer werken met alleen de repo?"
 status: afgerond
 datum: 2026-10-27
 kernvraag: Where does the repo not describe itself well enough for an agent that has nothing but the repo?
@@ -7,7 +7,7 @@ doel-records:
   - "HDR-011 (K1, K2)"
 ---
 
-# JNL-002 — Cold-start journal: can a newcomer work from the repo alone?
+# JNL-002 — Koude-startjournaal: kan een nieuwkomer werken met alleen de repo?
 
 **Core question.** REQ-GG-10 (Stroomlijn onboarding tot zelfde-dag-productief) asks that a new
 agent or teammate is productive the same day. Where does the repo not describe itself well

@@ -1,4 +1,4 @@
-# DFT-003: The renumber script leaves record ids in source comments unchanged, HDR-005 says it should not
+# DFT-003: Het hernummerscript laat record-ids in broncommentaar ongewijzigd, terwijl HDR-005 zegt van wel
 
 - **Status:** in_progress
 - **Date:** 2026-10-27

@@ -1,5 +1,5 @@
 ---
-titel: "Automatic renumbering of grootboek records on merge"
+titel: "Automatisch hernummeren van grootboekrecords bij een merge"
 type: spec
 soort: plan van aanpak
 status: concept
@@ -7,7 +7,7 @@ datum: 27 oktober 2026
 auteurs: Jarón, Mama Claude
 ---
 
-# Automatic renumbering of grootboek records on merge
+# Automatisch hernummeren van grootboekrecords bij een merge
 
 **The point.** HDR-005 says the branch that merges second renumbers its own records, before
 the merge. Today that rests on someone remembering it. This feature makes it mechanical, in

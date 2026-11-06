@@ -1,4 +1,4 @@
-# HDR-007: Renumbering is mechanical: a check, a script and a guard hook
+# HDR-007: Hernummeren is mechanisch: een check, een script en een guard-hook
 
 - **Status:** implemented
 - **Date:** 2026-10-27

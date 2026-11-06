@@ -206,7 +206,7 @@ agree on a secret: none found.
 | Vercel hosting | ADR-014 (Hosting: Vercel) | a long-lived server process |
 | CSS Modules | ADR-015 (Styling: CSS Modules over het overgenomen design system) | Tailwind |
 | `useReducer` + dispatch context | ADR-018 (Sessiestate: één reducer, beurtstatus als discriminated union) | a state-management library |
-| Gemini for chat and correction | The provider was specified up front; the model (`flash-lite`) was chosen on price, without an extensive comparison (ADR-003, Gemini `flash-lite` as the model, chosen on price) | other models were not compared |
+| Gemini for chat and correction | The provider was specified up front; the model (`flash-lite`) was chosen on price, without an extensive comparison (ADR-003, Gemini `flash-lite` als model, gekozen op prijs) | other models were not compared |
 | Azure TTS as default | ADR-020 (TTS-providers en stemmen) | — |
 | Native Web Speech as default STT | ADR-009 (STT: providerkeuze en configuratie) | Google Cloud STT and Azure STT, ruled out in the spike (ADR-009, Voorgeschiedenis) |
 | No persistence | PDR-002 (Geen persistentie) | storing conversations |

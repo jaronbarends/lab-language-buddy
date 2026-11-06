@@ -1,4 +1,4 @@
-# HDR-001: Introduction of the grootboek system
+# HDR-001: Invoering van het grootboekstelsel
 
 - **Status:** implemented
 - **Date:** 2026-10-20

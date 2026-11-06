@@ -1,4 +1,4 @@
-# ADR-001: Environment and deployment topology
+# ADR-001: Omgeving en deployment-topologie
 
 - **Status:** accepted
 - **Date:** 2026-10-20

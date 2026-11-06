@@ -1,5 +1,5 @@
 ---
-titel: Onboarding journal — the software balance
+titel: "Instapjournaal: de software-balans"
 status: discovery
 datum: 2026-10-20
 kernvraag: What is the technical architecture of language-buddy, and which parts of it are decisions nobody has written down?
@@ -9,7 +9,7 @@ doel-records:
   - "HDR-002, HDR-003 (K1, K4)"
 ---
 
-# JNL-001 — Onboarding journal: the software balance
+# JNL-001 — Instapjournaal: de software-balans
 
 **Core question.** What is the technical architecture of language-buddy, and which parts of
 it are decisions nobody has written down?

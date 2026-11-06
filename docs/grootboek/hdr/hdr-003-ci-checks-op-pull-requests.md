@@ -1,4 +1,4 @@
-# HDR-003: Run the repo's checks on pull requests to `main` and `arc/arc-main`
+# HDR-003: De checks van de repo draaien op pull requests naar `main` en `arc/arc-main`
 
 - **Status:** implemented
 - **Date:** 2026-10-20

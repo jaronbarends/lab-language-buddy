@@ -31,11 +31,11 @@ De tekst verschuift 20 px opzij als de stip verschijnt en verdwijnt. Jarón vond
 Daarom delen het live transcript, het afgeronde concept en de editorbubbel één `min-width: 17ch`,
 berekend op "Preparing mic…" (een schatting), eenmaal gedefinieerd in `bubble.module.css` en gezet
 met `hasMinimumWidth` van `Bubble`. Bij langere tekst blijft de verschuiving van 20 px, dat is
-geaccepteerd. Een concept van één woord is nu 17ch breed (JNL-003 — Chat bubble animation, de kwestie over de pulserende stip).
+geaccepteerd. Een concept van één woord is nu 17ch breed (JNL-003 — Animatie van chatbubbels, de kwestie over de pulserende stip).
 
 De identiteitswaarde `scale: 1` uit de richtlijn is bij de ring weggelaten, net als bij de bubbels.
 Hij is eerst aan de ring toegevoegd en op Jaróns besluit weer verwijderd, omdat niets zichtbaars hem
-nodig had (proef HDR-013: Try Modern Web Guidance on the bubble animation, with the baseline written first, test 3).
+nodig had (proef HDR-013: Modern Web Guidance proberen op de bubbelanimatie, met eerst de eigen baseline, test 3).
 
 ## Voorgeschiedenis
 

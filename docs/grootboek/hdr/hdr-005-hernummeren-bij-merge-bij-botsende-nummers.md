@@ -1,4 +1,4 @@
-# HDR-005: The branch that merges second renumbers its records
+# HDR-005: De branch die als tweede merget hernummert zijn records
 
 - **Status:** implemented
 - **Date:** 2026-10-23

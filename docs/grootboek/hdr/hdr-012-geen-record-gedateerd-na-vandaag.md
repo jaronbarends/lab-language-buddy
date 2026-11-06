@@ -1,4 +1,4 @@
-# HDR-012: No record may be dated after today
+# HDR-012: Geen record mag na vandaag gedateerd zijn
 
 - **Status:** implemented
 - **Date:** 2026-10-27

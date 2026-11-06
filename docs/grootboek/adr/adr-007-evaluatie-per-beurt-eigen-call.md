@@ -49,7 +49,7 @@ niet wordt doorgegeven.
 **`store: false`.** Review B10. Getest tegen de echte API: het werkt samen met
 `previous_interaction_id`, het antwoord heeft dan geen id, en de keten loopt door. Niet bekend: hoe
 lang Gemini bewaart wat het opslaat, en of het kosten of quotum verandert. Open vraag 9 van het plan
-(openbare deployment) blijft open; zie ADR-002 (The server routes have no caller authentication, accepted for now).
+(openbare deployment) blijft open; zie ADR-002 (De serverroutes hebben geen authenticatie van de aanroeper, voorlopig geaccepteerd).
 
 ## Voorgeschiedenis
 

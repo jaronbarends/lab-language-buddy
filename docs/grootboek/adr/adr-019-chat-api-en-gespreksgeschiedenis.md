@@ -59,4 +59,4 @@ Verwant: ADR-008 (Prompts van de corrector)
 
 Verwant: PDR-002 (Geen persistentie)
 
-Verwant: ADR-003 (Gemini `flash-lite` as the model, chosen on price)
+Verwant: ADR-003 (Gemini `flash-lite` als model, gekozen op prijs)

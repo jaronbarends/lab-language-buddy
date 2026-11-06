@@ -54,12 +54,3 @@ vulling, bij beide bedieningselementen. De modus is vanuit de tooling niet te op
 controle was van hem.
 
 Verwant: ADR-022 (Design system overgenomen uit de bestaande app)
-
-## Herkomst
-
-- Q5 (Two text/background pairs fall below 4.5:1)
-- L20 (09-28) White on the primary button stays at 4.05:1
-- L40 (09-30) Found: white on `--color-bg-secondary` is 3.16:1
-- L41 (09-30) White on `--color-bg-secondary` stays at 3.16:1
-- L57 (09-30) In forced-colours mode the selected AI/Me option and the selected language card are `Highlight`/`HighlightText`
-- L70 (10-02) The contrast of control borders is knowingly accepted: language cards, level select and starter toggle use `--color-border-input` at about 1.48:1 on white

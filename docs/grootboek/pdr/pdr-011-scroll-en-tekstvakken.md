@@ -68,12 +68,3 @@ URL-balk niet. De tekst is één `BubbleText`-span in `bubble.tsx`, door CSS blo
   thread overliep: 0 van 10 geklipt mét, 10 van 10 zonder; op de iPhone verholpen, volgens
   Jaron.
 - Verwant: PDR-003 (Eén set bediening zonder Stop, het live transcript in de control bar) plaatst het live transcript in de control bar.
-
-## Herkomst
-
-- L3 (09-24) Auto-scroll aligns the **top** of a new bubble too tall to fit
-- L63 (10-01) The text of the live transcript, the settled draft and the editor is capped at `max-height: 40vh`
-- L64 (10-01) While `listening`, the live transcript follows its newest words
-- L65 (10-01) The settled draft and the editor start scrolled to the end of their text
-- L138 (10-08) The thread scrolls again when the evaluation of the last user turn settles
-- L147 (10-10) `.bubble` has `flex-shrink: 0`, next to its `overflow: hidden`

@@ -69,9 +69,3 @@ agent "scale up again" als een onthulling vanaf 0 had gelezen en Jaron dat corri
 
 - Bekende grenzen: of de denkbubbel ooit zichtbaar was, wordt beoordeeld aan de tijd sinds hij
   mountte, niet aan zijn animatieklok; de maat van de wachtbubbel wordt één keer gemeten.
-
-## Herkomst
-
-- L204 (10-27) The user's bubble grows in when it is sent, with the AI bubble's reveal mirrored
-- L206 (10-28) The AI's thinking bubble enters like the other bubbles
-- L207 (10-30) When the AI's text arrives, the bubble grows from the size the thinking bubble had

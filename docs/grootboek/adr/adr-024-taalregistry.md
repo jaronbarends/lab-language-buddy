@@ -42,10 +42,3 @@ ondersteunt, met Noors en nova-2 als voorbeeld. Die waarschuwing staat als algem
 
 Verwant: ADR-009 (STT: providerkeuze en configuratie)
 Verwant: ADR-012 (ElevenLabs Scribe-provider)
-
-## Herkomst
-
-- L58 (09-30) Conversation text carries `lang` from `LANGUAGES[…].htmlLang`
-- L169 (10-12) The language registry's `deepgram` field is renamed `deepgramLang`
-- L174 (10-13) The note in `languages.ts` about nova-2 and Norwegian becomes a general one
-- L190 (10-16) A field `elevenLabsLang` in the language registry

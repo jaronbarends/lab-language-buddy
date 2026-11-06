@@ -1,8 +1,8 @@
 # HDR-015: plan.md vervalt als bron; beslissingen leven in het grootboek
 
-- **Status:** accepted
+- **Status:** implemented
 - **Date:** 2026-11-01
-- **Implementation:** 0
+- **Implementation:** 100
 - **Type:** Harness Decision Record (HOW do we work)
 
 ## Besluit
@@ -12,7 +12,7 @@ beslissing, open vraag of werkafspraak is, staat voortaan als record in het groo
 PDR, HDR, JNL), in het Nederlands (HDR-014). Wat alleen beschrijft hoe de code in elkaar zit,
 gaat niet mee: de code is de waarheid.
 
-De overzetting volgt deze keuzes, uitgewerkt in de spec `plan-overzetting`:
+De overzetting volgt deze keuzes, uitgewerkt in de spec `plan-overzetting` (inmiddels verwijderd; git bewaart haar):
 
 - **Decisions-tabel:** 11 records (verwante rijen samen).
 - **Decision log (207 rijen):** gegroepeerd per thema; elk record noemt de rijen waar het uit
@@ -61,5 +61,6 @@ want het is één bestand van ruim 1300 regels dat je moet doorzoeken.
   worden dan omgeschreven naar de datum of de inhoud van de rij. Dat verandert geen besluit, alleen
   de verwijzing, dus het raakt de status van de records niet. De volledigheidscontrole en de spec
   gaan op hetzelfde moment weg.
-- **Dit record staat op `accepted` met implementatie 0.** Het gaat naar 100 als `plan.md` is
-  verwijderd en de verwijzingen zijn bijgewerkt.
+- **Uitgevoerd op 2026-11-06.** `plan.md`, de spec `plan-overzetting`, de volledigheidscontrole
+  en de `## Herkomst`-secties in de records zijn verwijderd; git bewaart ze. De verwijzingen zijn
+  bijgewerkt.

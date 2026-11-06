@@ -66,15 +66,3 @@ markeerde beide soorten citaten en liet open of ze verschilden (nu alleen `sugge
 - Het antwoord wacht op de correctie: PDR-006 (Antwoord pas na de correctie).
 - Code: `src/components/conversation/evaluation-section.tsx` en `evaluation-section.module.css`.
   De segmenttypes staan in `src/lib/chat-schema.ts`.
-
-## Herkomst
-
-- L113 (10-06) `null` means no mistake and the client shows the fixed text
-- L114 (10-06) The correction is a separate bubble under the user's turn
-- L117 (10-06) **Supersedes the separate yellow bubble above:** the correction is attached to the bottom
-- L118 (10-06) The correction's explanation is in English, but the user's words
-- L119 (10-06) `correction` is a list of segments typed `text`, `userInput` or `suggestion`
-- L128 (10-08) The correction section reads "Evaluating…" while the call runs
-- L129 (10-08) `userInput` and `suggestion` are italic; only `suggestion` has a background
-- L136 (10-08) The correction section's background is the primitive `--color-blue-50`
-- L140 (10-08) The quoted phrases are `<i lang="…">`, the explanation `lang="en"`

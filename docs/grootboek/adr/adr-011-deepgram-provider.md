@@ -68,12 +68,3 @@ hernoemd naar `deepgram-token`, zie ADR-009 (STT: providerkeuze en configuratie)
 - De keuze van provider en model staat in ADR-009 (STT: providerkeuze en configuratie); de
   herstart van de native engine op iPhone in ADR-010 (Native engine op iPhone: herstart en twee
   mitigaties); de tweede provider met dezelfde vorm in ADR-012 (ElevenLabs Scribe-provider).
-
-## Herkomst
-
-- L88 (10-03) `mintLiveToken` lives in `api/stt/token/route.ts` itself
-- L89 (10-03) `use-live-transcription` refuses a recording format that is not webm or ogg
-- L90 (10-03) Leaving `listening` drops whatever Deepgram has not flushed; no `CloseStream`
-- L111 (10-05) The recording format is checked, and `MICROPHONE_STARTED` sent, at the recorder's `start` event
-- L165 (10-12) The Deepgram code moves out of `use-live-transcription.ts` into `src/lib/stt/deepgram.ts`
-- L175 (10-13) `startDeepgramTranscription` has an `AbortController` that `stop()` aborts

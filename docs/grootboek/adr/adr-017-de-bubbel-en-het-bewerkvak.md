@@ -86,12 +86,3 @@ De rij van 09-30 over `Bubble` kende een `as`-prop (`p` of `div`). Die is op 10-
 - `thinking-bubble.tsx` bestaat niet meer; de denkbubbel staat nu in `ai-bubble.tsx` (uit de
   code, niet uit het plan).
 - Verwant: PDR-004 (Tekst in spraakbubbels: regelhoogte 1.25 en gewicht medium).
-
-## Herkomst
-
-- L51 (09-30) One shared `Bubble` component holds the frame of every speech bubble, and each leaf keeps its own styles
-- L52 (09-30) The editor is an uncontrolled `contenteditable="plaintext-only"` div inside a `Bubble`, replacing the full-width bordered textarea
-- L53 (09-30) A bubble containing an editable region goes white, with the focus ring on the bubble
-- L54 (09-30) Bubbles use `white-space: pre-line`
-- L59 (09-30) The draft editor turns off `spellCheck`, `autoCorrect` and `autoCapitalize`
-- L137 (10-08) `Bubble` is always a `div` (the `as` prop is gone) and always has `overflow: hidden`; the text inside a bubble can be a `<p>`, which `TurnBubble` now uses

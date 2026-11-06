@@ -102,19 +102,3 @@ Verwant: PDR-006 (Antwoord pas na de correctie)
 Verwant: ADR-011 (Deepgram-provider)
 
 Verwant: ADR-018 (Sessiestate: één reducer, beurtstatus als discriminated union)
-
-## Herkomst
-
-- D15 (Decisions) Errors — Recoverable, and the way back depends on where it failed: a failed AI call is retried, a failed recording returns to the user
-- L25 (09-29) Error flow reworked: `FAILED` only from `aiThinking`/`listening`, error state carries `from` and optional `detail`, dismiss retries a failed AI call; new `AI_SPEECH_FAILED`
-- L79 (10-03) An empty or whitespace-only reply is a failure, and a Gemini response without `output_text` is an error
-- L80 (10-03) The route's `request.signal` is passed to the Gemini call; the server has no deadline of its own
-- L82 (10-03) A missing API key is logged server side and the client gets the generic "The chat request failed"; Zod text at 400 and the status codes are unchanged
-- L86 (10-03) A request the browser aborts stays in the server log as "Chat request failed"; aborts get no special case
-- L97 (10-03) A TTS failure (fetch, playback, or audio never unlocked) is logged in the browser and degrades to text-only via `AI_SPEECH_FAILED`
-- L103 (10-05) `LIVE_CONNECT_TIMEOUT_MS` (10 s) ends a connect that has not produced a live microphone with `FAILED` and the existing connection message; the clock starts after `getUserMedia` has resolved. No deadline on the TTS fetch
-- L104 (10-05) An exception when the recorder starts now ends in `FAILED` like every other failure of the hook
-- L105 (10-05) Try again calls `unlockAudio()`
-- L110 (10-05) Constructing the Deepgram WebSocket is inside a `try` that ends in `FAILED`, like the recorder start
-- L130 (10-08) Try again after a failed chat call repeats the chat call only; a correction that has arrived is kept, and a failed correction is not retried
-- L149 (10-10) The evaluation deadline is `EVALUATION_TIMEOUT_MS` in `src/lib/evaluation-deadline.ts`, imported by the evaluation driver and the mock route (`MOCK_SLOW_LATENCY_MS = EVALUATION_TIMEOUT_MS + 5_000`); the reducer's comment for `pendingReply` names it and says the driver must always settle

@@ -48,12 +48,3 @@ bedoeld wordt.
   had die regel overgeslagen.
 - **Breedte van de knop.** De knop was volledig breed: de port liet de `.actions`-regel van het
   origineel weg. Gemeten in iframes van 320 tot 700px; de omslag valt precies tussen 479 en 480px.
-
-## Herkomst
-
-- L35 (09-30) The setup screen is one `<form>`; each field is a `fieldset` with a `legend` owned by the screen
-- L36 (09-30) The level select gets `aria-labelledby` pointing at its legend
-- L37 (09-30) The starter toggle is native radios with a sliding indicator (CSS anchor positioning)
-- L38 (09-30) The indicator is feature-tested and falls back to painting the selected option itself
-- L39 (09-30) The select's arrow is a `mask` filled with `currentcolor`
-- L42 (09-30) "Start chat" is half the form wide, four fifths below 30rem, centred

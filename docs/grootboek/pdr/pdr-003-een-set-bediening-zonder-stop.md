@@ -29,8 +29,3 @@ Dat `editing` een eigen beurtstatus is, staat in ADR-006 (`editing` is een eigen
 - Dit zijn keuzes die in de code willekeurig lijken (geen Stop, een transcript buiten de thread,
   en met ADR-006 een aparte `editing`-state). Wie ze wil veranderen, begint hier.
 - De bediening zelf staat in de conversation-componenten.
-
-## Herkomst
-
-- L10 (09-24) Live transcript moved from the thread into the control bar
-- L11 (09-24) One shared set of controls across listening/reviewing/editing; Stop removed

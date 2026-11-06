@@ -24,7 +24,3 @@ plek om die te bewaren.
   waar *Cancel edit* de oude tekst vandaan haalt.
 - De bediening die hiervan afhangt, staat in PDR-003 (eén set bediening zonder Stop, het live
   transcript in de control bar).
-
-## Herkomst
-
-- L12 (09-24) `editing` became its own turn state with `draftBeforeEdit`

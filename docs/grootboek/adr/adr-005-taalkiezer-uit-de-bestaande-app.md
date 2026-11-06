@@ -27,7 +27,3 @@ het plan als `ported`.
   met afwijkingen (PDR-001, een app voor dagelijks gebruik en een experiment in werkwijze).
 - De regel dat de agent de bestaande repo niet als bron gebruikt (HDR-016) laat dit onverlet:
   het onderdeel kwam erin doordat Jaron naar dat bestand wees.
-
-## Herkomst
-
-- L19 (09-28) Language picker ported whole: native radio in a label, `fieldset`/`legend`, `:has()` column counts, style container query for label orientation

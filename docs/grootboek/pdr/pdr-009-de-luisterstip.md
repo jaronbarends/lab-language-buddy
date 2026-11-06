@@ -50,9 +50,3 @@ Getest op een iPhone door Jaron op 2026-10-27: geslaagd.
 (Uit de code, niet uit het plan:) de stip staat in `src/components/conversation/live-transcript.tsx`
 en wordt alleen getoond bij `microphoneIsLive`; de puls staat in `live-transcript.module.css` en de
 gedeelde `min-width: 17ch` in `bubble.module.css`.
-
-## Herkomst
-
-- L14 (09-25) The dot is a microphone-active indicator, not draft decoration
-- L15 (09-25) Dashed border dropped from the listening bubble
-- L205 (10-27) The listening dot in the live transcript pulses while the microphone is live

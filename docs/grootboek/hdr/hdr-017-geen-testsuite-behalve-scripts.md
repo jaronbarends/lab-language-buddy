@@ -30,8 +30,3 @@ met `node:test`.
 
 - De vraag of er tests voor de app komen (bijvoorbeeld Vitest op de reducer en `word-timing.ts`)
   blijft open. "Geen testsuite" is dus geen definitief besluit voor de app.
-
-## Herkomst
-
-- D16 (Decisions) No test suite
-- L202 (10-27) **Narrows "no test suite":** the app still has none

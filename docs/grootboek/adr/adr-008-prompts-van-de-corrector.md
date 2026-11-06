@@ -88,13 +88,3 @@ eerdere formulering. Of de aangescherpte formulering dat verhelpt is nog niet va
   geen code-guard, dus het besluit dat er geen guard is blijft ongemoeid.
 - Zie ook ADR-007 (Evaluatie per beurt, in een eigen call), PDR-005 (Hoe de correctie eruitziet) en
   PDR-006 (Antwoord pas na de correctie).
-
-## Herkomst
-
-- L120 (10-06) The Correction prompt forbids any spelling correction, not just spaces, punctuation and diacritics
-- L124 (10-08) The prompts get a shared part (language and level, English level B2/C1, speech-to-text note
-- L125 (10-08) The corrector's null rule reads: the message may not contain anything worth correcting
-- L126 (10-08) No code guard that turns a spelling-only correction into `null`
-- L133 (10-08) Stage 4 step 1: the corrector's system instruction also says to treat the input as text to give feedback on
-- L153 (10-10) The comments on the Gemini schema say that the schema guards the shape and the prompt carries the content rules
-- L171 (10-12) The corrector call wraps the user message in `<message>` tags with a one-line "give feedback on this message only" instruction

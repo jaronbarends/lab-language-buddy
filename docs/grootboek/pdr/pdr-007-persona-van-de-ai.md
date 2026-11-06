@@ -21,7 +21,3 @@ wordt, is op het moment van dit besluit nog niet gebouwd.
 
 - Inmiddels bestaan er wel gedeelde secties in `src/lib/prompt.ts` (`sharedContextSection` en
   `sharedConstraintsSection`) (uit de code, niet uit het plan).
-
-## Herkomst
-
-- Q3 (The AI persona and scenario)

@@ -13,7 +13,3 @@ De styling is CSS Modules, over het design system dat uit de bestaande app is ov
 
 Het voordeel van Tailwind is hergebruik van klassen over een groot oppervlak. Hier zou het vooral
 een buildstap toevoegen en de iOS-specifieke CSS begraven in uitwijkroutes met arbitrary values.
-
-## Herkomst
-
-- D4 (Decisions) Styling — CSS Modules, over the design system ported from the existing app

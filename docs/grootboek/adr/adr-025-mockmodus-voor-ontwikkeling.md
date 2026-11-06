@@ -72,18 +72,3 @@ van die taal citeren, daarna `null`), en geen correctie op de openingsbeurt: die
 niets te corrigeren. De eerste versie citeerde Engelse zinnen, wat dat uitsluit.
 
 Verwant: ADR-007 (Evaluatie per beurt, in een eigen call)
-
-## Herkomst
-
-- L73 (10-03) Chat can be mocked via `NEXT_PUBLIC_USE_MOCK_CHAT`, which selects the route
-- L74 (10-03) The mock route encodes its script position in the interaction id (`mock-<n>`)
-- L84 (10-03) The mock route says why it answers 404, and `.env.example` notes that the flag only works under `next dev`
-- L85 (10-03) The dev stepper forcing `aiThinking` on an AI turn now ends in `FAILED` instead of sending a request
-- L91 (10-03) `mockUserLine` and `mockTranscriptAt` stay in `mock-conversation.ts` as sample text for the dev stepper
-- L96 (10-03) `NEXT_PUBLIC_USE_MOCK_TTS` is read once in `LanguageBuddy` and passed as `enabled`
-- L107 (10-05) The dev state stepper gets a "listening (mic not live)" entry and a "speech fails" entry
-- L122 (10-06) The mock chat route returns a per-language correction
-- L139 (10-08) The mock evaluation route fails for a message containing `[fail]`
-- L155 (10-10) The mock evaluation quotes the first four words of the message as `userInput`
-- L157 (10-10) One mock switch, `NEXT_PUBLIC_USE_MOCK_CHAT`, serves the chat and the evaluation
-- L203 (10-27) The dev state stepper gets two buttons, "short reply" and "long reply", under "Preview bubbles"

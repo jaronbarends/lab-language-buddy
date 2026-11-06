@@ -76,16 +76,3 @@ veel korter.
 
 Verwant: ADR-004 (Google TTS key moves from the URL to a header)
 Verwant: ADR-009 (STT: providerkeuze en configuratie)
-
-## Herkomst
-
-- D10 (Decisions) TTS providers — All three from the spike: Azure (default), Google, ElevenLabs
-- D12 (Decisions) Provider interface — `synthesize({ text, language, gender }, signal)`
-- D13 (Decisions) Voice tables — Inside each provider module, not in the shared language registry
-- L92 (10-03) Every provider takes a `gender` and the app has one switch, `VOICE_GENDER` in `lib/tts/index.ts`, set to `"female"`
-- L93 (10-03) `synthesize` takes one object `{ text, language, gender }` plus the request's `AbortSignal`, instead of positional arguments
-- L94 (10-03) Voices: one per language and gender, GA Neural for Azure, Chirp3-HD `Aoede` (female) and `Charon` (male) for Google
-- L95 (10-03) The ElevenLabs voices are constants in `elevenlabs.ts` (`VOICE_IDS`, one per gender), not an environment variable
-- L106 (10-05) `TTS_PROVIDER` is checked with a type guard on `Object.hasOwn`; Google's response is validated with zod
-- L109 (10-05) The text of a `/api/tts` request is capped at 1500 characters, down from 2000
-- L180 (10-14) The TTS body follows the 10-08 naming: `TtsRequest` is `TtsRequestBody`

@@ -110,18 +110,3 @@ koffietest hierboven.
 - Hoe de correctie eruitziet: PDR-005 (Hoe de correctie eruitziet). De prompts van de corrector:
   ADR-008 (Prompts van de corrector). Wanneer het antwoord verschijnt: PDR-006 (Antwoord pas na de
   correctie).
-
-## Herkomst
-
-- Q1 (Evaluation design)
-- L112 (10-06) Stage 4 evaluation is **per turn**: the chat response becomes `{ interactionId, reply, correction }`
-- L115 (10-06) The corrections stay in the Gemini conversation chain (one call)
-- L116 (10-06) The `correction` field costs about 265 ms on the chat round trip
-- L121 (10-06) Segments cost about +255 ms on the chat round trip
-- L123 (10-08) **Supersedes "one call":** the correction comes from its own call to a separate prompt
-- L131 (10-08) The route is `/api/evaluation`
-- L132 (10-08) Measured with one call (A), one call with a second role (C) and a separate call (D)
-- L135 (10-08) What the code calls a request is a request **body**
-- L145 (10-10) **Supersedes "stateless":** the corrector gets the whole conversation
-- L146 (10-10) The evaluation driver derives `previousInteractionId` itself
-- L154 (10-10) The evaluation call is made with `store: false`

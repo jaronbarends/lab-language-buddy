@@ -60,13 +60,3 @@ Verwant: ADR-008 (Prompts van de corrector)
 Verwant: PDR-002 (Geen persistentie)
 
 Verwant: ADR-003 (Gemini `flash-lite` as the model, chosen on price)
-
-## Herkomst
-
-- D8 (Decisions) Conversation history — Gemini `previous_interaction_id` chaining
-- D9 (Decisions) Chat response shape in stage 2 — `{ interactionId, reply }` — no per-turn `correction`
-- L72 (10-03) The AI turn carries Gemini's `interactionId`, and `previous_interaction_id` is read from the last AI turn
-- L75 (10-03) The system instruction is built on the server from `{ language, level }` on every call
-- L78 (10-03) The chat request is a discriminated union on `kind` (`aiStarts`, `userTurn`)
-- L81 (10-03) The error body has a schema (`ChatErrorSchema`), and reading the request is shared by both routes
-- L83 (10-03) The Gemini schema and call moved to `api/chat/gemini-chat.ts` (`askGemini`)

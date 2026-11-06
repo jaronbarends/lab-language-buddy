@@ -73,14 +73,3 @@ bericht laten aftakken van dezelfde beurt, en niets dwong dat af.
 
 Verwant: ADR-006 (`editing` is een eigen beurtstatus met `draftBeforeEdit`)
 Verwant: PDR-003 (Eén set bediening zonder Stop, het live transcript in de control bar)
-
-## Herkomst
-
-- D5 (Decisions) State — One `useReducer` session machine + a dispatch context, side effects in hooks
-- D6 (Decisions) Turn states — A discriminated union carrying per-state data
-- D7 (Decisions) Turn identity — `crypto.randomUUID()` per turn, never an array index
-- L24 (09-29) State context, `useSession` and `useConversation` removed; state stays props, only dispatch is context
-- L26 (09-29) `AI_SPEECH_PROGRESSED`, `AI_SPEECH_FINISHED` and `AI_SPEECH_FAILED` carry a `turnId`; the reducer ignores them when it is not the turn being spoken
-- L28 (09-29) `USER_TURN_SENT` and `AI_TURN_RECEIVED` take `{ id, text }`, not a whole `Turn`; the reducer sets `author`
-- L101 (10-05) `listening` carries `microphoneIsLive`; `MICROPHONE_STARTED` sets it once the recorder has started
-- L150 (10-10) `getPreviousInteractionId(turns, turn)` in the reducer is the one place that works out which AI turn a request continues from

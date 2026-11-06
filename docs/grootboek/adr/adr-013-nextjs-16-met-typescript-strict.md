@@ -20,7 +20,3 @@ houden, en verder niets op de server. Next 16 verschilt van eerdere versies.
 - (Uit de code, niet uit het plan.) De routes uit de rij staan onder `src/app/api/`; daar staan ook
   een route voor evaluation en mock-routes (`/api/evaluation`, `/api/mock/chat`,
   `/api/mock/evaluation`).
-
-## Herkomst
-
-- D1 (Decisions) Framework — Next.js 16 (App Router) + TypeScript strict, React 19

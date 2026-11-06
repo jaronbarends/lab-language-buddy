@@ -34,9 +34,3 @@ Dezelfde dag is de regelhoogte nog heen en weer gegaan:
 Het probleem van de elkaar rakende banden is niet via de regelhoogte opgelost maar via de
 markering zelf: die werd een `linear-gradient` met een transparante strook boven en onder, zodat banden op naastliggende regels bij 1.25 uit elkaar
 blijven zonder de regelhoogte aan te raken.
-
-## Herkomst
-
-- L44 (09-30) Speech bubbles use `--line-height-body-tight` and `--font-weight-medium`
-- L45 (09-30) `--line-height-body-tight` changed from 1.25 to 1.3, in the token itself (ingehaald door L47)
-- L47 (09-30) `--line-height-body-tight` back to 1.25, the original's value

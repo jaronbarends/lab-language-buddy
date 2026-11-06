@@ -21,7 +21,3 @@ oefenen gebeurt in de sessie zelf, en een opgeslagen gesprek zou daar niets aan 
 - **De prijs:** het sluiten van de tab beëindigt de sessie.
 - Het sluit aan bij PDR-001 (een app voor dagelijks gebruik en een experiment in werkwijze):
   één gebruiker, geen accounts, niets dat bewaard hoeft te worden.
-
-## Herkomst
-
-- D3 (Decisions) Persistence — None. Session state lives in memory, and history at Google via `previous_interaction_id`

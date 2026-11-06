@@ -118,18 +118,3 @@ levenscyclus-helper uit de review.
   ingelijnd (uit de code, niet uit het plan).
 - De ontwikkelomgeving (`.env.local`) staat weer op `native` (stand van 10-14).
 - De providers zelf: ADR-011 (Deepgram-provider) en ADR-012 (ElevenLabs Scribe-provider).
-
-## Herkomst
-
-- D11 (Decisions) STT providers — Native Web Speech API (default), Deepgram `nova-2` live streaming and ElevenLabs Scribe v2 Realtime (alternatives); chosen by `NEXT_PUBLIC_STT_PROVIDER`; no automatic fallback
-- L161 (10-12) **Supersedes the fixed constraint "never the Web Speech API":** STT becomes a provider choice like TTS.
-- L162 (10-12) The choice is an env var only, not in the UI
-- L163 (10-12) No automatic fallback to Deepgram when the browser has no speech recognition (Firefox)
-- L164 (10-12) The env var is `NEXT_PUBLIC_STT_PROVIDER`
-- L168 (10-12) An unknown `NEXT_PUBLIC_STT_PROVIDER` **throws when the page loads**, listing the valid names; empty or unset is `native`
-- L177 (10-13) The development environment (`.env.local`) uses `NEXT_PUBLIC_STT_PROVIDER=deepgram` for now (ingehaald door L181)
-- L181 (10-14) The development environment (`.env.local`) is back on `NEXT_PUBLIC_STT_PROVIDER=native`; **supersedes the 10-13 row**
-- L182 (10-14) **Native stays the default STT provider**, also after the iPhone problems of open question 14
-- L187 (10-16) ElevenLabs Scribe v2 Realtime is a third speech recognition engine, chosen with `NEXT_PUBLIC_STT_PROVIDER=elevenlabs`; native stays the default
-- L192 (10-19) The Deepgram token route moved from `/api/stt/token` to `/api/stt/deepgram-token`
-- L193 (10-19) In the STT code and in the plan's description of the current structure, "engine" is replaced by "provider"

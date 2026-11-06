@@ -32,10 +32,3 @@
 ## Voorgeschiedenis
 
 Het foutico was eerst verticaal gecentreerd gebouwd, met 8px tot de tekst; na het bekijken is het bovenaan uitgelijnd en 12px geworden.
-
-## Herkomst
-
-- L21 (09-28) Base font size 18px
-- L43 (09-30) Icons are Font Awesome 6 Free via `react-icons/fa6`, replacing the hand-drawn SVGs
-- L50 (09-30) The error box gets `FaTriangleExclamation` (`WarningIcon`) to the left of the whole text block
-- L56 (09-30) Picker labels and the level select are semibold (`--font-weight-label`), the open option list regular

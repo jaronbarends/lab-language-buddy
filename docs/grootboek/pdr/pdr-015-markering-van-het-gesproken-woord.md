@@ -65,11 +65,3 @@ stompje achter.
 Verwant: PDR-004 (Tekst in spraakbubbels: regelhoogte 1.25 en gewicht medium)
 
 Verwant: PDR-017 (Contrast en forced-colors: bewust geaccepteerd)
-
-## Herkomst
-
-- L46 (09-30) The spoken-word highlight loses its `padding: 1px 0`
-- L48 (09-30) The spoken-word highlight is a `linear-gradient` background-image with a 1px transparent strip at top and bottom
-- L49 (09-30) A `@media (forced-colors: active)` rule drops the highlight gradient
-- L68 (10-02) The whitespace between two spoken words gets the read-along highlight too
-- L98 (10-05) The word timings are made on the first `timeupdate` with a finite `audio.duration`

@@ -26,7 +26,3 @@ Het past ook bij wat de code laat zien:
 
 - Hoe omgevingen en deployment zijn ingericht staat in ADR-001 (Environment and deployment
   topology). Dit record draagt alleen de reden voor de keuze van Vercel zelf.
-
-## Herkomst
-
-- D2 (Decisions) Hosting — Vercel

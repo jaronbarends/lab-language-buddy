@@ -91,14 +91,3 @@ controls-componenten.
 - **Nog open.** De gedeelde lifecycle-helper is nog niet gebouwd. Het wisselen en configureren
   van de provider staat in ADR-009; de herstart en mitigaties van de native engine staan in
   ADR-010 (Native engine op iPhone: herstart en twee mitigaties).
-
-## Herkomst
-
-- L188 (10-16) The ElevenLabs engine gets its audio from an `AudioWorklet` that averages the microphone down to 16 kHz 16-bit PCM
-- L189 (10-16) A second token route, `/api/stt/elevenlabs-token`, returning `{ accessToken }`
-- L191 (10-16) The shared lifecycle helper for the engines (review point F2, "built when there is a third engine") is still not built
-- L194 (10-19) The ElevenLabs provider and the Deepgram provider, after the renames of the same day, were tried in the app on desktop Chrome and on an iPhone
-- L195 (10-19) The AudioContext comment in `elevenlabs.ts` is corrected and the code is not changed
-- L196 (10-19) The set of fatal Scribe message types in `elevenlabs.ts` follows ElevenLabs' event reference
-- L197 (10-19) `startStreamingAudio` in `elevenlabs.ts` is guarded by a flag, `streamingAudioHasStarted`
-- L199 (10-19) The three things the ElevenLabs review left open were tried by Jaron

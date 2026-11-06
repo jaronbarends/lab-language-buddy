@@ -255,15 +255,3 @@ iOS toch standaard Deepgram moet gebruiken. De native standaard van 2026-10-12 r
 indruk uit de spike; Jaron liet hem op 2026-10-14 staan.
 
 Verwant: ADR-010 (Native engine op iPhone: herstart en twee mitigaties). De runs: `docs/ios-stt-runs.md`.
-
-## Herkomst
-
-- Q2 (Tests)
-- Q4 (Spain's flag is 81 KB)
-- Q6 (Ending a session is one tap and unrecoverable)
-- Q7 ("Cancel edit" still wraps at a 320px viewport)
-- Q8 (Edit, Cancel edit and Send are partly or fully covered by the keyboard while editing)
-- Q10 (Buffering the audio while the Deepgram socket opens)
-- Q12 (The held reply's invariant has no single owner)
-- Q13 (The two Gemini wrappers and routes are near copies)
-- Q14 (The native engine on an iPhone: quiet speech, and no recording on the second turn)

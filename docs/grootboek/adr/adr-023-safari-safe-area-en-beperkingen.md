@@ -52,9 +52,3 @@
 - **Open vraag:** de bediening kan onder het toetsenbord vallen. Onbevestigde ideeën om op terug te
   komen: een hoogte op basis van `visualViewport` (als spike) of de knoppen boven de editor tijdens
   het bewerken.
-
-## Herkomst
-
-- L66 (10-01) Landscape phones are not supported, so the capped text has no minimum height
-- L67 (10-02) With the keyboard open in `editing`, Edit, Cancel edit and Send being covered on an iPhone is accepted for now
-- L69 (10-02) The top safe-area inset is handled: `--safe-top` (`env(safe-area-inset-top, 0px)`) in `globals.css`

@@ -22,8 +22,3 @@ Twee keuzes over de merkbeelden van de app:
 - **Geen SVGR.** Eén SVG rechtvaardigt geen loader-dependency plus bundler-configuratie. De loader
   van de oorspronkelijke app werkt alleen met webpack, en Next 16 bouwt met Turbopack. Heroverweeg
   dit als de app veel SVG's krijgt.
-
-## Herkomst
-
-- L159 (10-12) Favicon set (`favicon.ico`/`.svg`, `favicon-96x96.png`, `apple-icon.png`), the two web-app-manifest PNGs and `manifest.ts` taken from the existing app
-- L160 (10-12) `Logo` is the original app's SVG inlined as a component, replacing the `ChatIcon` square on the setup screen; no SVGR

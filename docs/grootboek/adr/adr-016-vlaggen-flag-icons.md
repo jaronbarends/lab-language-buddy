@@ -14,8 +14,3 @@ geïmporteerd. Ze vervangen de emoji-vlaggen. De stylesheet van het pakket wordt
 
 Emoji-vlaggen verschijnen op Windows als kale landletters. De stylesheet van het pakket zou alle
 ongeveer 260 vlaggen binnenhalen; zes SVG's importeren houdt het bij de zes die nodig zijn.
-
-## Herkomst
-
-- D14 (Decisions) Flags — `flag-icons`, importing only the six SVGs needed
-- L4 (09-24) `flag-icons` replaces emoji flags

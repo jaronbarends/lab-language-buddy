@@ -30,7 +30,3 @@ opzet komt uit de ARC-requirements van `projectidentiteit`.
   als bron).
 
 Verwant: HDR-015 (plan.md vervalt als bron; beslissingen leven in het grootboek)
-
-## Herkomst
-
-- L201 (10-20) Context layering and a drift check added, from the ARC `projectidentiteit` requirements

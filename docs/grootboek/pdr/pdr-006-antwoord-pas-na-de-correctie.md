@@ -57,10 +57,3 @@ Dezelfde dag, 10-08, is één punt teruggedraaid:
 - De stand van 10-08, ten tijde van het besluit (het record is inmiddels `implemented`): de 13
   reducer-scenario's waren gedraaid met een wegwerpscript via de type stripping van Node; de
   drivers en de time-out van 10 seconden waren toen nog niet in een browser gedraaid.
-
-## Herkomst
-
-- L127 (10-08) The AI's reply is shown only after the correction has been shown
-- L134 (10-08) Stage 4 step 2: the ordering rule is in the reducer
-- L141 (10-08) The reply and the correction may appear in the same render
-- L142 (10-08) TTS audio is not fetched ahead while the reply waits for the evaluation

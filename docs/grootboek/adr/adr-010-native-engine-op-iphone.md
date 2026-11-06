@@ -89,14 +89,3 @@ juist voorkomt, heeft die redenering omgekeerd. Waarom hij werkt is niet bekend.
   `openUnusedMicrophoneStream`) en `src/hooks/use-audio-playback.ts` (`EARLY_END_SECONDS`,
   `EARLY_END_CHECK_MS`). Gecontroleerd: beide kloppen met bovenstaande. De runs staan in
   `docs/ios-stt-runs.md`.
-
-## Herkomst
-
-- L166 (10-12) When the browser ends a native session by itself while the turn is `listening` (silence, a time-out), the engine **starts a new session**
-- L167 (10-12) A session that ends within 1.5 s counts as a quick end, and three quick ends in a row end in `FAILED`
-- L173 (10-13) `service-not-allowed` gets its own text, *Speech recognition isn't allowed or is switched off on this device.*
-- L178 (10-14) The AI's speech is **paused 0.15 s before its end** (a 50 ms check in `use-audio-playback.ts`)
-- L179 (10-14) The native engine holds a **`getUserMedia({ audio: true })` stream open** (nothing reads it)
-- L183 (10-14) The two mitigations (the early pause and the held microphone stream) stay on in **every browser**
-- L184 (10-14) The 0.10 to 0.15 s that the early pause cuts off the end of every speech is accepted
-- L185 (10-14) Desktop Chrome with the Bluetooth headset no longer drops in volume with the two mitigations in place

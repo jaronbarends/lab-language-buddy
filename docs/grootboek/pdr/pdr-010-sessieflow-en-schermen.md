@@ -41,11 +41,3 @@ De sessie loopt zonder tussenscherm van setup naar gesprek en terug:
 - Gecontroleerd met `tsc` en eslint; niet in de browser uitgeprobeerd.
 - Verwant: PDR-003 (Eén set bediening zonder Stop, het live transcript in de control bar) en
   PDR-008 (Knoppen).
-
-## Herkomst
-
-- L5 (09-24) Session config line removed from the conversation screen
-- L8 (09-24) The `ended` phase removed; End session returns to setup
-- L9 (09-24) `lastConfig` carried into setup as the new defaults
-- L16 (09-25) First turn reads "Start conversation" when the user opens
-- L71 (10-03) Reply is enabled in `aiSpeaking`; tapping it stops the speech and goes to `listening`

@@ -32,9 +32,3 @@
   hetzelfde gebleven.
 - Bij 320px breekt het label van "Cancel edit" nog steeds over twee regels: het ontbreekt 2,2px.
   Dit is niet opgelost.
-
-## Herkomst
-
-- L6 (09-24) Button variants reduced to `primary` and `secondary`, each with its own disabled look
-- L7 (09-24) Reply is a primary button, so magenta when tappable
-- L55 (09-30) Buttons' horizontal padding is 16px, down from 32px (`padding: var(--size-16)`)

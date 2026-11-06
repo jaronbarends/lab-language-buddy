@@ -68,7 +68,8 @@ of claiming success.
 1. **Status**: `DONE`, `DONE_WITH_CONCERNS`, `NEEDS_CONTEXT` or `BLOCKED`
 2. **What changed**, 2 to 4 sentences, in terms of what can be done now
 3. **Files touched**, path and one sentence each
-4. **Decisions**: what you chose and what you rejected, with why
+4. **Decisions**: what you chose and what you rejected, with why. Include the choices you
+   made yourself because the assignment did not settle them; the lead books them.
 5. **Verification**: the commands and their actual result
 6. **Open questions and concerns**
 7. **Scope**: confirm that nothing outside the boundary was touched, or what was and why

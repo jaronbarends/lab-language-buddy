@@ -197,7 +197,7 @@ hdrs:
     notitie: "Overgezet uit plan.md (HDR-015): één logrij van 10-20. De regel dat parallelle builders plan.md niet bewerken is vervallen met het plan"
     bestand: hdr-018-contextlagen-en-drift-check.md
   - id: "HDR-019"
-    titel: "Een STT-provider verifiëren op de iPhone"
+    titel: "Elke stage verifiëren op de iPhone"
     status: implemented
     versie: "1.0"
     implementatie: 100
@@ -206,7 +206,7 @@ hdrs:
     implementatie-datum: 2026-09-23
     beslissing: "Elke bouwstap wordt op iPhone Safari (via ngrok) geverifieerd; de stap met live STT controleert ook een uiting van meer dan 20 seconden, de lengte waarop Google STT brak"
     notitie: "Overgezet uit plan.md (HDR-015): punt 4 van de sectie Verification. De datum is die van de goedkeuring van het plan, niet uit de bron"
-    bestand: hdr-019-stt-provider-verifieren-op-iphone.md
+    bestand: hdr-019-stage-verifieren-op-iphone.md
   - id: "HDR-020"
     titel: "Faalpaden bewust proberen"
     status: implemented

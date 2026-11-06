@@ -1,4 +1,4 @@
-# HDR-019: Een STT-provider verifiëren op de iPhone
+# HDR-019: Elke stage verifiëren op de iPhone
 
 - **Status:** implemented
 - **Date:** 2026-09-23

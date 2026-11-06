@@ -138,7 +138,7 @@ documents:
   - path: docs/grootboek/hdr/hdr-018-contextlagen-en-drift-check.md
     what: Waarom de context van het project gelaagd is (rules, CLAUDE.md per map, register, agents) en hoe npm run docs:check drift in de documentatie afdwingt; overgezet uit plan.md.
     read_when: je de lagen van de context wijzigt, een nieuw document registreert of de docs:check aanpast.
-  - path: docs/grootboek/hdr/hdr-019-stt-provider-verifieren-op-iphone.md
+  - path: docs/grootboek/hdr/hdr-019-stage-verifieren-op-iphone.md
     what: Elke bouwstap wordt op iPhone Safari geverifieerd, met voor live STT een uiting van meer dan 20 seconden; overgezet uit plan.md.
     read_when: je een STT-provider toevoegt of wisselt en wilt weten wat er op de telefoon gecontroleerd moet worden.
   - path: docs/grootboek/hdr/hdr-020-faalpaden-bewust-proberen.md
@@ -205,8 +205,11 @@ documents:
     what: Waarom cacheComponents in Next.js 16 uitgeschakeld blijft; overgezet uit plan.md.
     read_when: je cacheComponents of PPR wilt aanzetten, of buildfouten over data buiten Suspense tegenkomt.
   - path: docs/grootboek/adr/adr-028-reducer-negeert-late-acties.md
-    what: De reducer negeert late acties in plaats van te gooien, en de evaluatie is een veld van de gebruikersbeurt; overgezet uit plan.md.
-    read_when: je een actie of state aan de reducer toevoegt, of wilt weten waarom evaluatie geen beurtstatus is.
+    what: De reducer negeert late acties in plaats van te gooien; overgezet uit plan.md.
+    read_when: je een actie of state aan de reducer toevoegt.
+  - path: docs/grootboek/adr/adr-030-evaluatie-is-een-veld-van-de-beurt.md
+    what: De evaluatie van een gebruikersbeurt is een veld van de beurt in plaats van een beurtstatus, met pendingReply voor de volgorderegel; overgezet uit plan.md.
+    read_when: je het evaluatieveld of de volgorde tussen correctie en antwoord in de reducer wijzigt, of wilt weten waarom evaluatie geen beurtstatus is.
   - path: docs/grootboek/adr/adr-029-geen-mock-stt.md
     what: Besluit dat er geen mock voor speech-to-text komt, omdat de Edit-bediening getypte invoer dekt; overgezet uit plan.md.
     read_when: je een mock-STT-schakelaar of -route wilt toevoegen naast de mocks voor chat en TTS.

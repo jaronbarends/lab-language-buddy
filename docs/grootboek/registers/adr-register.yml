@@ -306,15 +306,15 @@ adrs:
     notitie: "Overgezet uit plan.md (HDR-015): uit de sectie Next.js 16 specifics, alleen dit besluit. De datum is die van de verhuizing van het plan naar de repo, niet per se van het besluit"
     bestand: adr-027-cachecomponents-blijft-uit.md
   - id: "ADR-028"
-    titel: "De reducer negeert late acties; evaluatie is een veld van de beurt"
+    titel: "De reducer negeert late acties"
     status: implemented
     versie: "1.0"
     implementatie: 100
     omgeving: geen
     datum: 2026-09-29
     implementatie-datum: 2026-09-29
-    beslissing: "De reducer is puur en negeert acties die niet bij de huidige state passen in plaats van te gooien; de evaluatie van een gebruikersbeurt is een veld evaluation van de beurt, geen beurtstatus"
-    notitie: "Overgezet uit plan.md (HDR-015): sectie State model zonder rij-ids; twee besluiten. Overlapt deels met ADR-018 en ADR-021. De datum is afgeleid van de vroegste logrij over het negeren van late acties"
+    beslissing: "De reducer is puur en negeert acties die niet bij de huidige state passen in plaats van te gooien"
+    notitie: "Overgezet uit plan.md (HDR-015): sectie State model zonder rij-ids; het andere besluit uit die sectie staat in ADR-030. Overlapt deels met ADR-018 en ADR-021. De datum is afgeleid van de vroegste logrij over het negeren van late acties"
     bestand: adr-028-reducer-negeert-late-acties.md
   - id: "ADR-029"
     titel: "Geen mock-STT"
@@ -327,3 +327,14 @@ adrs:
     beslissing: "Er is geen mock voor speech-to-text; de Edit-bediening dekt getypte invoer"
     notitie: "Overgezet uit plan.md (HDR-015): één regel in het stage 2-gedeelte. De datum is een aanname (de mockkeuzes van stage 2)"
     bestand: adr-029-geen-mock-stt.md
+  - id: "ADR-030"
+    titel: "Evaluatie is een veld van de beurt"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-08
+    implementatie-datum: 2026-10-08
+    beslissing: "De evaluatie van een gebruikersbeurt is een veld evaluation van de beurt (pending, ready of failed), geen beurtstatus; het antwoord wacht in de reducer als pendingReply tot de correctie is afgehandeld"
+    notitie: "Overgezet uit plan.md (HDR-015): sectie State model zonder rij-ids, afgesplitst van ADR-028. De datum is die van stage 4, stap 2"
+    bestand: adr-030-evaluatie-is-een-veld-van-de-beurt.md

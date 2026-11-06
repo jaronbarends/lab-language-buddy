@@ -12,7 +12,7 @@ building it stay effective.
 
 ## 1. The thesis: code quality IS agent productivity
 
-This codebase is built and maintained almost entirely by Claude Code. Jaron reviews and
+This codebase is built and maintained almost entirely by Claude Code. Jarón reviews and
 decides; he does not write most of it. That makes code quality a question of
 **productivity**, not aesthetics: how well can an agent read, understand and safely change
 the code?

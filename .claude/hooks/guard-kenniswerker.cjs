@@ -3,7 +3,7 @@
 
 // PreToolUse guard for REQ-AH-08 ("subagent-tenzij"): the main/lead thread may
 // not write to source code directly. Subagent calls pass through unchanged.
-// A time-boxed override lets Jaron explicitly allow a main-thread edit.
+// A time-boxed override lets Jarón explicitly allow a main-thread edit.
 
 const fs = require('fs');
 const path = require('path');
@@ -111,7 +111,7 @@ function main() {
 
   deny(
     'The lead thread does not write to src/ or spikes/ directly (CLAUDE.md, "subagent-tenzij"). ' +
-      'Delegate this change to a builder subagent, or, if Jaron has explicitly asked the lead ' +
+      'Delegate this change to a builder subagent, or, if Jarón has explicitly asked the lead ' +
       'thread to make this edit itself, create ' +
       OVERRIDE_FILE +
       ' with {"activatedAt": "<ISO timestamp>", "durationMinutes": 15} and retry.'

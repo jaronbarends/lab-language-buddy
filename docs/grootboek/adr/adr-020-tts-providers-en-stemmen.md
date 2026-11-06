@@ -38,7 +38,7 @@ tekst van een `/api/tts`-verzoek is begrensd op 1500 tekens.
 niet doen; zie de stemtabellen hieronder.
 
 **Interface.** De spike had `nb-NO` hardgecodeerd. De taal moet de grens over, en elke provider
-lost hem anders op. Het geslacht kwam er op 10-03 bij, omdat Jaron één geslacht voor alle talen
+lost hem anders op. Het geslacht kwam er op 10-03 bij, omdat Jarón één geslacht voor alle talen
 wil en beide wil kunnen testen.
 
 **Stemtabellen binnen de provider.** Azure en Google hebben elk een stemnaam per taal nodig.
@@ -70,7 +70,7 @@ veel korter.
   aangekaart door CodeRabbit op de PR.
 - **Namen van de body.** Op 10-14 volgde de TTS-body de naamgeving van 10-08: `TtsRequest` werd
   `TtsRequestBody` en `TtsRequestSchema` werd `TtsRequestBodySchema`; in de `/api/tts`-route
-  werd het `safeParse`-resultaat `parsedRequest` hernoemd naar `bodyParseResult`. Jaron: het is
+  werd het `safeParse`-resultaat `parsedRequest` hernoemd naar `bodyParseResult`. Jarón: het is
   een request body, geen request, zoals bij `ChatRequestBody`; de routevariabele hield een
   parse-resultaat en is daarnaar genoemd. De reviewrij van fase 3 noemt nog `TtsRequest`.
 

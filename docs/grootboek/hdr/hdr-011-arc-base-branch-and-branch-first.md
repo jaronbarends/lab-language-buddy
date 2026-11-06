@@ -35,6 +35,6 @@ actually done.
 - `branch-before-edit` is logged in the incident register with this record as its `maatregel`.
   If it recurs after the sentence, the rule was not enough and the pattern escalates; a hook that
   refuses edits on `arc/arc-main` and `main` is the obvious next step, not a thing to build first.
-- The root `CLAUDE.md` is a leading document: the change was reported to Jaron and checked.
+- The root `CLAUDE.md` is a leading document: the change was reported to Jarón and checked.
 - Proof is a second cold-start round (JNL-002): the base-branch question should now be answered
   and the edit should start on a branch. Until then this is a decision, not a result.

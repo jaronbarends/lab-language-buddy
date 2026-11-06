@@ -14,8 +14,8 @@ pdrs:
     omgeving: geen
     datum: 2026-11-01
     implementatie-datum: 2026-11-01
-    beslissing: "Het project is een app die Jaron dagelijks gebruikt en een experiment in werkwijze (AI schrijft het grootste deel van de code); de bestaande Language Buddy-app is geen bron meer (de agent gebruikt de repo niet, tenzij Jaron een specifiek bestand aanwijst); er is geen vergelijking of synchronisatie meer"
-    notitie: "README (Why this repo exists) is op 2026-11-01 door Jaron aangepast; CLAUDE.md liep al gelijk. De regel Keeping the experiment honest uit plan.md staat in kortere vorm als HDR-016"
+    beslissing: "Het project is een app die Jarón dagelijks gebruikt en een experiment in werkwijze (AI schrijft het grootste deel van de code); de bestaande Language Buddy-app is geen bron meer (de agent gebruikt de repo niet, tenzij Jarón een specifiek bestand aanwijst); er is geen vergelijking of synchronisatie meer"
+    notitie: "README (Why this repo exists) is op 2026-11-01 door Jarón aangepast; CLAUDE.md liep al gelijk. De regel Keeping the experiment honest uit plan.md staat in kortere vorm als HDR-016"
     bestand: pdr-001-app-in-gebruik-en-werkwijze-experiment.md
   - id: "PDR-002"
     titel: "Geen persistentie"
@@ -147,7 +147,7 @@ pdrs:
     datum: 2026-10-27
     implementatie-datum: 2026-10-27
     beslissing: "Bubbels groeien in met scale (gebruiker vanuit rechtsonder, AI vanuit linksboven, 350 ms, overshoot-curve); de denkbubbel start 800 ms na een verstuurde beurt, en het antwoord groeit vanaf de grootte van de denkbubbel"
-    notitie: "Overgezet uit plan.md (HDR-015): drie rijen (10-27, 10-28, 10-30) over één onderwerp. Ingehaald is de eerste spike met clip-path zonder overshoot (Voorgeschiedenis). De denkbubbel en de groei naar het antwoord zijn op een iPhone getest en slagen (denkbubbel: door Jaron bevestigd op 2026-11-06)"
+    notitie: "Overgezet uit plan.md (HDR-015): drie rijen (10-27, 10-28, 10-30) over één onderwerp. Ingehaald is de eerste spike met clip-path zonder overshoot (Voorgeschiedenis). De denkbubbel en de groei naar het antwoord zijn op een iPhone getest en slagen (denkbubbel: door Jarón bevestigd op 2026-11-06)"
     bestand: pdr-013-animatie-van-bubbels.md
   - id: "PDR-014"
     titel: "Logo en favicons"
@@ -169,7 +169,7 @@ pdrs:
     datum: 2026-09-30
     implementatie-datum: 2026-09-30
     beslissing: "De gesproken-woordmarkering is een linear-gradient met een transparante strook van 1px boven en onder (in forced-colours mode weggelaten), met gemarkeerde witruimte tussen gesproken woorden, en woordtimings die op de eerste timeupdate met een eindige duur worden gemaakt"
-    notitie: "Overgezet uit plan.md (HDR-015): de eerste oplossing (padding 1px 0 weghalen) is ingehaald door de gradient en staat in Voorgeschiedenis; de forced-colours-kwestie was eerst open en is later door Jaron getest"
+    notitie: "Overgezet uit plan.md (HDR-015): de eerste oplossing (padding 1px 0 weghalen) is ingehaald door de gradient en staat in Voorgeschiedenis; de forced-colours-kwestie was eerst open en is later door Jarón getest"
     bestand: pdr-015-markering-van-het-gesproken-woord.md
   - id: "PDR-016"
     titel: "Typografie en iconen"

@@ -46,19 +46,19 @@ Ontwikkelen kan zonder sleutel of quota, met een mockmodus die op de echte fetch
 
 - **Schakelaar:** ontwikkelen blijft mogelijk zonder sleutel of quota, terwijl het echte fetch-pad in gebruik
   blijft. De vlag is client-side omdat de client de URL kiest; alternatief was een server-side `if` in één route.
-- **Scriptpositie in het id:** voorgesteld om een beurtteller in het request te vermijden, door Jaron goedgekeurd.
+- **Scriptpositie in het id:** voorgesteld om een beurtteller in het request te vermijden, door Jarón goedgekeurd.
   Deterministisch, geordend, en een retry krijgt dezelfde regel.
 - **Duidelijke 404:** een lege 404 liet niet zien dat de modus de mock uitzette, en niet een ontbrekende route.
-- **Eén schakelaar:** Jaron stemde in en zei dat de bestandsnamen nu niet moesten veranderen. **Eén `enabled` voor
+- **Eén schakelaar:** Jarón stemde in en zei dat de bestandsnamen nu niet moesten veranderen. **Eén `enabled` voor
   TTS:** precies één van de twee speelt de beurt van de AI af, en de vlaggen kunnen elkaar niet tegenspreken.
 - **`[fail]` en `[slow]`:** zo zijn de mislukte en de verlopen evaluatie te zien zonder een sleutel te breken.
-  Voorgesteld door de agent als optie (a) van drie, gekozen door Jaron.
+  Voorgesteld door de agent als optie (a) van drie, gekozen door Jarón.
 - **Citeren van het bericht:** een vaste zin hoeft niet in het bericht te staan, en dat is in strijd met het
   contract. Citeren houdt de hele sectie zichtbaar voor elke invoer; `null` teruggeven als de zin ontbrak, niet.
 - **Voorbeeldtekst blijft:** het plan zei dat de gebruikersregels verdwenen, maar de stepper gebruikt ze nog.
 - **`aiThinking` afdwingen:** er is geen gebruikersbeurt om te beantwoorden, en het request dat eerder werd
   verstuurd, had geen invoer. **Nieuwe ingangen:** de terugval naar alleen tekst was alleen te zien met een echte,
-  falende provider; Jaron vroeg om de eerste ingang.
+  falende provider; Jarón vroeg om de eerste ingang.
 - **Preview-knoppen:** de animatie was alleen te zien door een echt gesprek te voeren. Een eerste poging dwong
   `aiThinking` af en werd in review afgewezen: dat start `useChatDriver`, die met een AI-beurt als laatste `FAILED`
   stuurt (de sessie komt in `error`) en met een gebruikersbeurt als laatste een echt chatrequest. De preview scrolt

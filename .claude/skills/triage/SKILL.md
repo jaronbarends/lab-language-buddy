@@ -52,7 +52,7 @@ look at what the change *is*.
 |---|---|---|
 | **trivial** | all five: localized · reversible · no contract · covered path · known pattern | builder-light (one-line assignment, three-line report), no reviewer — the mechanical gates are the assurance |
 | **normal** | real behavior change, no hard trigger | full builder contract + fresh-eyes reviewer, as usual |
-| **risky** | one or more hard triggers | full regime plus extra care; flag the approach to Jaron if there's doubt |
+| **risky** | one or more hard triggers | full regime plus extra care; flag the approach to Jarón if there's doubt |
 
 **Guardrail:** when in doubt → normal. The staffel saves time on the clear cases; doubtful
 cases are by definition not clear.

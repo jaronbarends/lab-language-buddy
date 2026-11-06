@@ -31,7 +31,7 @@ TTS-audio wordt niet vooraf opgehaald terwijl het antwoord op de evaluatie wacht
 - Een pure transitie in de reducer kan los worden uitgevoerd, in plaats van twee hooks die op
   elkaar wachten. De evaluation driver volgt de beurt, niet `aiThinking`: een mislukte chat-call
   laat de evaluatie dus doorlopen, en Try again herhaalt haar niet.
-- Samen in dezelfde render verschijnen is goed genoeg; Jaron: de timing kan in een latere fase
+- Samen in dezelfde render verschijnen is goed genoeg; Jarón: de timing kan in een latere fase
   worden bijgesteld.
 - Vooraf ophalen van audio vraagt extra state en levert alleen winst op als de corrector
   langzamer is dan de chat-call (zie Voorgeschiedenis).

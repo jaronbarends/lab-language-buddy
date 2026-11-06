@@ -41,7 +41,7 @@ de ARC-documenten waarop die rust zijn Nederlands, en de uitzondering moest op d
 worden vastgelegd: de grootboekregel in de root-`CLAUDE.md`, de algemene taalregel daar, en
 `docs/grootboek/CLAUDE.md`.
 
-Het besluit om dat om te draaien is van Jaron, genomen op 2026-10-30, om twee redenen. Hij
+Het besluit om dat om te draaien is van Jarón, genomen op 2026-10-30, om twee redenen. Hij
 wil de werkwijze van ARC volgen, en daarin is Nederlands de standaard. En hij gaat zelf over
 op Nederlands in het gesprek met Claude, omdat hij zich daarin beter kan uitdrukken.
 
@@ -58,5 +58,5 @@ op Nederlands in het gesprek met Claude, omdat hij zich daarin beter kan uitdruk
 - **De plan-overzetting begint in het Nederlands.** Records uit `docs/plan.md` worden direct in
   het Nederlands geschreven, zodat ze niet nog een keer vertaald hoeven te worden.
 - **Drie leidende documenten wijzigen:** de root-`CLAUDE.md` (twee regels) en
-  `docs/grootboek/CLAUDE.md` (één regel). De wijziging is vóór de commit aan Jaron getoond.
+  `docs/grootboek/CLAUDE.md` (één regel). De wijziging is vóór de commit aan Jarón getoond.
   De rest van die bestanden blijft Engels tot de vertaalronde.

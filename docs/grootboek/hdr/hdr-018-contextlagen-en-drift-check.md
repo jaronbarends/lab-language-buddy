@@ -16,7 +16,7 @@ opzet komt uit de ARC-requirements van `projectidentiteit`.
 ## Waarom
 
 - `CLAUDE.md` was een verwijzing naar het plan zonder werkafspraken; die stonden alleen in het
-  globale bestand van Jaron.
+  globale bestand van Jarón.
 - De gelaagdheid laat een sessie laden wat nodig is, en het register is de goedkope index vóór het
   plan van 1.300 regels (dat plan is inmiddels vervangen).
 - De check maakt van drift een falend commando. De eerste run vond verouderde env-documentatie in

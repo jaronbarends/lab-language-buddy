@@ -61,7 +61,7 @@ de live STT van de spike is op de echte iPhone gedraaid en het transcript versch
 ## Voorgeschiedenis
 
 Op 09-28 is de basislettergrootte 18px geworden en zijn de 16px-controles vervallen (zie PDR-016):
-met 18px voldoet elke control vanzelf aan de vloer. Jaron (2026-11-06): de eis blijft gelden voor de
+met 18px voldoet elke control vanzelf aan de vloer. Jarón (2026-11-06): de eis blijft gelden voor de
 iPhone, ook als de basislettergrootte ooit anders wordt.
 
 ## Gevolgen

@@ -81,7 +81,7 @@ Verwant: PDR-008 (Knoppen)
 **Wat er open staat.** Edit, Cancel edit en Send worden tijdens het bewerken deels of geheel
 bedekt door het toetsenbord.
 
-**Wat de bron zegt.** Jaron zag dit op een iPhone met een lang concept, met de app aan het
+**Wat de bron zegt.** Jarón zag dit op een iPhone met een lang concept, met de app aan het
 beginscherm toegevoegd. Met het toetsenbord open in de staat `editing` komen Edit en Cancel edit
 onder het toetsenbord te liggen en wordt Send deels bedekt door de accessoirebalk van het
 toetsenbord (de pijltjes en het vinkje). Bij heel korte concepten wordt een kleiner deel
@@ -111,7 +111,7 @@ volgorde bewaren (de eerste draagt de WebM-header) en ze versturen zodra de sock
 verloren woorden en geen wachttijd voor het spreken. Het kost code voor de volgorde en voor
 sneller-dan-realtime doorsturen, en het eerste transcript komt in één golf. Nog niet gebouwd.
 Gemeten op een iPhone na die review: het opzetten van de microfoonverbinding duurt ongeveer 1,5
-seconde, wat Jaron te lang vindt; dit moet daarom op een later moment worden gebouwd.
+seconde, wat Jarón te lang vindt; dit moet daarom op een later moment worden gebouwd.
 
 Verwant: ADR-011 (Deepgram-provider)
 
@@ -210,7 +210,7 @@ Uitgesloten door runs:
 De mitigatie zit in de playback-hook: de spraak wordt 0,15 s vóór het einde gepauzeerd en
 `AI_SPEECH_FINISHED` wordt van daaruit verstuurd, zodat het element nooit eindigt; het derde
 AI-bericht speelde nog. Met het controle-interval van 50 ms snijdt dit 0,10 tot 0,15 s van het
-einde van elke spraak. Jaron luisterde op een iPhone en op desktop Chrome: de audio heeft aan het
+einde van elke spraak. Jarón luisterde op een iPhone en op desktop Chrome: de audio heeft aan het
 einde genoeg stilte, zodat er geen gesproken tekst verloren ging (welke TTS-providers en zinnen
 zijn gecontroleerd is niet vastgelegd).
 
@@ -223,7 +223,7 @@ na ongeveer een zin. Met de Windows-instelling "andere geluiden verminderen wann
 communicatie-activiteit wordt gedetecteerd" op "Do nothing" zakte het nog steeds; met de headset
 uit was het beter (volume niet gemeten). De waarschijnlijke oorzaak is dat de headset naar zijn
 belprofiel (HFP) schakelt zodra de microfoon opent, wat buiten de app valt. Niet geprobeerd: de
-headset voor uitvoer en een andere microfoon voor invoer. Op 2026-10-14 testte Jaron desktop
+headset voor uitvoer en een andere microfoon voor invoer. Op 2026-10-14 testte Jarón desktop
 Chrome met dezelfde headset met beide mitigaties (de vroege pauze en de vastgehouden
 microfoonstream) aanwezig, en de daling trad niet op. Dat verzwakt de HFP-verklaring (een headset
 die naar zijn belprofiel schakelt had met een open stream ook moeten dalen); de oorzaak blijft
@@ -245,13 +245,13 @@ opgemerkt.
 
 **Beide mitigaties draaien in elke browser, zonder platformcontrole.** De problemen zijn op de
 iPhone gezien; op desktop werd de spraak ook zachter en de mitigatie voorkwam dat ook, en dat de
-herkenning niet start is op desktop niet gezien. Jaron koos ervoor geen onderscheid tussen
+herkenning niet start is op desktop niet gezien. Jarón koos ervoor geen onderscheid tussen
 platforms te maken, om de code eenvoudig te houden. Als de mitigatie op de iPhone niet meer nodig
 is, is ze op desktop waarschijnlijk ook niet nodig.
 
 **Als dit wordt opgepakt (richting uit de bron, geen besluit).** Draai de native engine op een
 iPhone met beide mitigaties langer dan deze runs (de mislukte eerste beurten), en maak uit of
 iOS toch standaard Deepgram moet gebruiken. De native standaard van 2026-10-12 rustte op een
-indruk uit de spike; Jaron liet hem op 2026-10-14 staan.
+indruk uit de spike; Jarón liet hem op 2026-10-14 staan.
 
 Verwant: ADR-010 (Native engine op iPhone: herstart en twee mitigaties). De runs: `docs/ios-stt-runs.md`.

@@ -3,7 +3,7 @@
 
 // PreToolUse guard for REQ-AH-05: subagents (builder, reviewer, ...) may never
 // run `git commit` / `git push`. Only the lead thread commits, and only on
-// Jaron's go-ahead (builder.md already says so in prose; this makes it
+// Jarón's go-ahead (builder.md already says so in prose; this makes it
 // deterministic regardless of whether an agent reads or follows that line).
 
 const fs = require('fs');
@@ -34,7 +34,7 @@ function main() {
   }
 
   // Absent agent_type means this call came from the main/lead thread, where
-  // commits happen on Jaron's explicit go-ahead in the conversation.
+  // commits happen on Jarón's explicit go-ahead in the conversation.
   if (!input.agent_type) {
     process.exit(0);
   }
@@ -49,7 +49,7 @@ function main() {
         permissionDecision: 'deny',
         permissionDecisionReason:
           `Subagents (agent_type: "${input.agent_type}") may not commit or push. ` +
-          "Report what changed back to the lead thread; only the lead commits, and only on Jaron's go-ahead.",
+          "Report what changed back to the lead thread; only the lead commits, and only on Jarón's go-ahead.",
       },
     };
     process.stdout.write(JSON.stringify(output));

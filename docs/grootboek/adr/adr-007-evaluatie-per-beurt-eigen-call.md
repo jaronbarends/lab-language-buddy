@@ -37,10 +37,10 @@ huidige productie-app doet. Gekozen is optie 1.
 
 **Eigen call.** Een aparte corrector kende de segmenttypes in 0 van 30 gevallen verkeerd toe, tegen
 4 tot 7 van 30 in één call, ook met een expliciete tweede rol in de prompt. Hij houdt de correcties
-buiten de gespreksketen, zoals Jaron verkoos, en vertraagt TTS niet meer. De prijs is twee
+buiten de gespreksketen, zoals Jarón verkoos, en vertraagt TTS niet meer. De prijs is twee
 Gemini-calls per beurt, een tweede route, en een wacht- en foutstatus in de UI.
 
-**De corrector krijgt het gesprek.** Jaron's test: op de vraag hoe hij zijn koffie drinkt kreeg het
+**De corrector krijgt het gesprek.** Jarón's test: op de vraag hoe hij zijn koffie drinkt kreeg het
 antwoord `Ik vind zwart het lekkerst.` een correctie naar *mooist*, wat niet gebeurt als de vraag
 zichtbaar is. Gemeten: 6 van 6 van zulke correcties zonder de geschiedenis, 0 van 6 met. De
 correcties blijven buiten de keten omdat de evaluatiecall een zijtak is van de chatcall en zijn id
@@ -59,7 +59,7 @@ correction }` met `correction: string | null`.
 Daarna bleven de correcties in de Gemini-keten, in één call (10-06); een aparte stateless
 evaluatiecall was de terugvaloptie. Een keten kan geen velden weglaten, dus ze erbuiten houden
 vraagt een tweede call, een tweede route en een wacht- en foutstatus in de UI. Eerst simpel
-beginnen en latency en drift meten. Jaron had ze liever buiten de keten gehad; dit was de prijs van
+beginnen en latency en drift meten. Jarón had ze liever buiten de keten gehad; dit was de prijs van
 de simpele start. Het veld `correction` kostte ongeveer 265 ms op de ronde reis van de chat (mediaan
 2273 → 2538 ms, 10 runs per variant): de extra outputtokens vertragen het hele chatantwoord, en
 daarmee TTS. Dus streaming en de parallelle call bleven terugvalopties. Ruis bij n=10: de bereiken
@@ -72,7 +72,7 @@ grammaticale uitleg was soms warrig, een kwestie van modelkwaliteit, niet van de
 **Op 10-08 ingehaald door de eigen call.** De metingen: 0 van 30 verkeerde types in de eigen call
 tegen 4 tot 7 van 30 in één call, de correcties buiten de keten, TTS niet vertraagd. Deze eigen call
 was eerst stateless: `{ language, level, input }`, zonder geschiedenis. De route heette eerst
-`/api/evaluate`; Jaron wilde het zelfstandig naamwoord, want wat wordt gevraagd is een evaluatie.
+`/api/evaluate`; Jarón wilde het zelfstandig naamwoord, want wat wordt gevraagd is een evaluatie.
 Of de corrector context krijgt (een zijtak van de keten, zoals in de originele app) bleef ongetest,
 omdat context geen deel van de meting was.
 
@@ -102,7 +102,7 @@ koffietest hierboven.
 - **Stand ten tijde van het besluit (10-10):** de evaluation driver leidde `previousInteractionId`
   zelf af, met dezelfde `findLast` op de AI-beurten als `createChatRequestBody`, in plaats van één
   helper te delen. Delen had de reducer en de chat driver ook geraakt, meer dan de bestanden
-  waarnaar Jaron had gevraagd; een kandidaat voor een kleine vervolgstap. **Sindsdien ingehaald (uit
+  waarnaar Jarón had gevraagd; een kandidaat voor een kleine vervolgstap. **Sindsdien ingehaald (uit
   de code, niet uit het plan):** beide drivers, `use-chat-driver.ts` en `use-evaluation-driver.ts`,
   gebruiken nu de ene gedeelde helper `getPreviousInteractionId` uit `src/lib/session-reducer.ts`.
 - De route en het schema leven in `src/app/api/evaluation/` (`route.ts`, `gemini-evaluation.ts`) en

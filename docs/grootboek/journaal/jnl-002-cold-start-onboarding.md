@@ -22,7 +22,7 @@ first edit.
 **How this was made.** A fresh clone in `repo-cold` (no memory, no local settings, pushing
 disabled) on `arc/arc-main` at bd508d5, and a new Claude Code session. Two prompts, no hints:
 four orientation questions with nothing to change, then "the README says which checks you run:
-check that and fix it". Scored from the working tree and from Jaron's transcript. One round,
+check that and fix it". Scored from the working tree and from Jarón's transcript. One round,
 so it measures the first hour and not the day. One prediction of mine was wrong: the README
 listed three checks, not one; I had read a search that misses `npx` lines.
 
@@ -62,7 +62,7 @@ not what happens: it branches from `arc/arc-main` and goes back into it. That is
 workflow. The fresh agent's answer to "what do I do before a change" followed the root exactly:
 `stage/N-name`, a descriptive name or `spike-*`, and never commit to `main`. No base branch.
 
-**Decided (Jaron, 2026-10-27):** one sentence in the root `Branches` line, naming
+**Decided (Jarón, 2026-10-27):** one sentence in the root `Branches` line, naming
 `arc/arc-main` as the base while it is the integration branch, and `main` as production.
 **Booked as HDR-011.** The sentence has to change when `arc/arc-main` merges into `main`.
 
@@ -70,9 +70,9 @@ workflow. The fresh agent's answer to "what do I do before a change" followed th
 
 "One branch per piece of work" is true but not when. The agent edited on `arc/arc-main` and
 reported correctly that it needs a branch and a PR. Nothing was committed, so no rule was
-broken; Jaron expected the branch first.
+broken; Jarón expected the branch first.
 
-**Decided (Jaron, 2026-10-27):** the same sentence says the branch is created before the first
+**Decided (Jarón, 2026-10-27):** the same sentence says the branch is created before the first
 edit. **No hook for it.** It is one incident and the rule is not even written yet; if it
 recurs after the rule, the pattern escalates (HDR-010 gives the reasoning). Logged as the
 pattern `branch-before-edit` in the incident register. **Booked as HDR-011.**
@@ -90,7 +90,7 @@ No rule change.
 
 The README's Arc paragraph points at a private artifact, marked "for my own reference only". A
 newcomer cannot open it. The run did not test this: the agent never read that paragraph. Whether
-the principles should be reachable for a newcomer is Jaron's call. **Decided (Jaron,
+the principles should be reachable for a newcomer is Jarón's call. **Decided (Jarón,
 2026-10-27):** the link stays. In round two the agent noticed it, left it alone and said that a
 newcomer cannot open it.
 
@@ -104,7 +104,7 @@ comes out better. That happened on 2026-10-27, see round two below.
 
 ### K6 — Does the "no AI-or-self verdict" rule hold?
 
-Weak evidence that it does. Jaron's global instructions say to give a one-line "let AI generate
+Weak evidence that it does. Jarón's global instructions say to give a one-line "let AI generate
 this / write it yourself" recommendation before any new task, and the second prompt was a new
 task. The agent had read those instructions (it cited their Co-Authored-By rule against the
 session's request) and gave no verdict. **Decided (2026-10-27):** it held again in round two, on a
@@ -133,7 +133,7 @@ An automatic safety check refused the agent's first attempt to stop the dev serv
 on every node process); it then stopped only its own server. `npm install` reported four
 vulnerabilities (one critical, three high); the agent did not look into them and neither was
 this journal's scope. By the rule set in K5, the criterion for REQ-GG-10 is met. What that
-proves is limited: two runs of the same kind of agent, with Jaron's global instructions loaded,
+proves is limited: two runs of the same kind of agent, with Jarón's global instructions loaded,
 on the first hour, on a task that points the agent at a document that points at everything else.
 A human newcomer, a different model and "the same day" are untested.
 
@@ -144,6 +144,6 @@ The README changes of round two were adopted from the clone's diff on `arc/cold-
 - **2026-10-27 — K1 and K2 decided and booked as HDR-011.** One sentence in the root `Branches`
   line. The incident `branch-before-edit` is logged. K5 decided: a first-hour measure.
 - **2026-10-27 — Round two, and K3, K4 and K6 decided.** K3 did not recur, the link in the
-  README stays (Jaron), and the AI-or-self rule held a second time. Every issue is decided and
+  README stays (Jarón), and the AI-or-self rule held a second time. Every issue is decided and
   HDR-011 exists and points back, so the journal is `afgerond`. REQ-GG-10 meets the criterion of
   K5, with the limits above.

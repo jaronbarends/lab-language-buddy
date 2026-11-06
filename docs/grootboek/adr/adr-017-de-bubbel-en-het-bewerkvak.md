@@ -45,9 +45,9 @@ is `:has([contenteditable])`, niet focus.
   het bewerkvak alleen bestaat in de editing-state.
 - **Spellingscontrole uit.** De tekst is in de oefentaal, niet die van het toetsenbord, dus
   iOS-correcties en rode onderstrepingen werken de gebruiker tegen. Op een iPhone is gecontroleerd
-  dat het uitzetten van autocorrect goed werkt (door Jaron bevestigd op 2026-11-06; dit staat niet
+  dat het uitzetten van autocorrect goed werkt (door Jarón bevestigd op 2026-11-06; dit staat niet
   in het plan).
-- **Wit met `:has([contenteditable])`.** Het wit-bij-bewerken is een idee van Jaron. De
+- **Wit met `:has([contenteditable])`.** Het wit-bij-bewerken is een idee van Jarón. De
   voorwaarde in plaats van focus is een verfijning van de agent, door hem aanvaard: het bewerkvak
   bestaat alleen in de editing-state, terwijl een klik elders de focus laat vallen terwijl je nog
   bewerkt. Getest: na wegklikken is het bewerkvak zonder focus, blijft de bubbel wit zonder ring,
@@ -67,7 +67,7 @@ is `:has([contenteditable])`, niet focus.
 Het bewerkvak is twee keer gebouwd. De eerste versie was een textarea gestapeld op een verborgen
 kopie van zijn eigen tekst, gekozen boven `field-sizing: content` (pas in Safari 26.2). Op een
 iPhone nam die textarea de volle breedte en legde hij zijn regels anders uit dan de kopie: dat
-nodigt een constructie uit die twee elementen nodig heeft om tekst gelijk te leggen. Jaron stelde
+nodigt een constructie uit die twee elementen nodig heeft om tekst gelijk te leggen. Jarón stelde
 `contenteditable` voor. Getest in Chrome met echt typen: Enter geeft `\n` in een tekstnode zonder
 `<br>` of `<div>`, geplakte opmaak komt als platte tekst binnen, Send verstuurt precies wat is
 getypt, Cancel edit herstelt de tekst van vóór het bewerken, en een leeggemaakt bewerkvak houdt

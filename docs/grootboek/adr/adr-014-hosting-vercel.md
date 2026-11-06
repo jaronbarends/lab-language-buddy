@@ -11,7 +11,7 @@ De app wordt gehost op Vercel.
 
 ## Waarom
 
-Het was Jarons keuze: een gratis omgeving die automatisch deployt vanuit GitHub, en hij kende
+Het was Jaróns keuze: een gratis omgeving die automatisch deployt vanuit GitHub, en hij kende
 Vercel al uit eerdere projecten.
 
 Het past ook bij wat de code laat zien:

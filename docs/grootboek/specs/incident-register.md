@@ -4,14 +4,14 @@ type: spec
 soort: plan van aanpak
 status: concept
 datum: 27 oktober 2026
-auteurs: Jaron, Mama Claude
+auteurs: Jarón, Mama Claude
 ---
 
 # An incident register: recurring faults are counted and codified at three
 
 **The point.** REQ-GG-06 (Bouw het immuunsysteem) wants recurring faults to become a rule, hook
 or skill in the harness: once is an incident, twice is chance, three times is a weakness of the
-harness. Today nothing counts. The corrections Jaron gives live in Claude's private memory,
+harness. Today nothing counts. The corrections Jarón gives live in Claude's private memory,
 outside the repo, and no builder or other clone sees them. This feature adds the front half of
 the immune system: a place where incidents are logged by pattern, a counter that shouts at
 three, and a rule for what happens then.
@@ -36,7 +36,7 @@ patronen:
   decisions). Without ids the register cannot collide across parallel branches the way record
   numbers do (HDR-007). Two branches that both log still conflict on the same lines: keep both.
 - A pattern is a slug. When a new fault looks like an existing pattern, it joins it; the
-  judgment whether it is "the same fault" is the agent's, checked by Jaron.
+  judgment whether it is "the same fault" is the agent's, checked by Jarón.
 - **`maatregel`** names the HDR that codified the pattern. The HDR names the place: a rule, a
   hook, a skill, a line in `CLAUDE.md`.
 
@@ -57,7 +57,7 @@ patronen:
 
 ## Part 4: the logging duty
 
-A line in the root `CLAUDE.md`: when Jaron corrects the agent, or a tool fails in a way that
+A line in the root `CLAUDE.md`: when Jarón corrects the agent, or a tool fails in a way that
 has happened before, add one entry to the incident register and say so in a sentence. No hook
 can see a human correction, so **logging depends on the agent**. The register makes repetition
 visible and countable once it is logged; it does not make the agent log. That limit goes in the
@@ -84,7 +84,7 @@ its neighbours, and a correction is accepted without defence). The rule file is 
 document, so no duty to communicate; it is shown before it is committed anyway.
 
 **`ai-vs-self-advice` is a different kind of fault.** It is not a repeated mistake but a
-conflict: Jaron's global instructions ask for a verdict, this project says to skip it, and the
+conflict: Jarón's global instructions ask for a verdict, this project says to skip it, and the
 project says so only in Claude's private memory. A session without that memory gives the verdict
 again. One incident is enough to fix that, because the fix is a line in the project
 `CLAUDE.md`. Decided separately, not by the counter.

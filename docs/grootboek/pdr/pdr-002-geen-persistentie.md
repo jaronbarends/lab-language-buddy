@@ -13,7 +13,7 @@ dan is de sessie weg.
 
 ## Waarom
 
-Dit stond zo in de brief. Jaron ziet geen waarde in het bewaren van eerdere gesprekken: het
+Dit stond zo in de brief. Jarón ziet geen waarde in het bewaren van eerdere gesprekken: het
 oefenen gebeurt in de sessie zelf, en een opgeslagen gesprek zou daar niets aan toevoegen.
 
 ## Gevolgen

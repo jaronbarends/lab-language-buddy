@@ -9,13 +9,13 @@
 
 A rule in `.claude/rules/code-style.md`, loaded whenever a `.ts` or `.tsx` file in `src/` is
 touched: a name says what the function returns or does, not what it is used for, and uses the
-same word as its neighbours. When Jaron points at a name, the agent agrees, says plainly why it
+same word as its neighbours. When Jarón points at a name, the agent agrees, says plainly why it
 was wrong, proposes a better one with the reason, and lets him decide; a rename across files is
 cheap, and the files are listed once it passes about five.
 
 ## Why
 
-**Kernprincipe:** Jaron reads names as the specification and reviews them as part of the work.
+**Kernprincipe:** Jarón reads names as the specification and reviews them as part of the work.
 A name that promises more or less than the code does costs him review time, and a code base
 only reads well if one word means one thing.
 
@@ -38,5 +38,5 @@ camelCase), not what they have to *promise*.
   line of text.
 - The rule loads for TypeScript in `src/` only. Names in documents, scripts and CSS files are
   not covered by it.
-- `.claude/rules/code-style.md` is not a leading document; the change is shown to Jaron before it
+- `.claude/rules/code-style.md` is not a leading document; the change is shown to Jarón before it
   is committed all the same.

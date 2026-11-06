@@ -4,7 +4,7 @@ type: spec
 soort: plan van aanpak
 status: concept
 datum: 27 oktober 2026
-auteurs: Jaron, Mama Claude
+auteurs: Jarón, Mama Claude
 ---
 
 # A drift signal for leading documents

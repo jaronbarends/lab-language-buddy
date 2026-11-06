@@ -8,7 +8,7 @@
 ## Decision
 
 REQ-GG-06 (Bouw het immuunsysteem) wants a fault that keeps coming back to become a rule, hook
-or skill in the harness. Until now nothing counted: the corrections Jaron gave lived in
+or skill in the harness. Until now nothing counted: the corrections Jarón gave lived in
 Claude's private memory, outside the repo, where no builder or other clone could see them and
 nobody could tell whether a fault had happened twice or seven times. This record adds the
 front half of the immune system.
@@ -24,7 +24,7 @@ front half of the immune system.
 - **What happens at three:** the pattern is codified (a rule, a hook or a skill), an HDR books
   the decision (its source is the immune system, as the HDR guide describes), and the HDR's id
   goes in the pattern's `maatregel`. The warning then stops.
-- **A logging duty** in the root `CLAUDE.md`: when Jaron corrects the agent, or a tool fails in
+- **A logging duty** in the root `CLAUDE.md`: when Jarón corrects the agent, or a tool fails in
   a way that has happened before, add one entry and say so in a sentence.
 
 ## Why
@@ -45,14 +45,14 @@ The threshold is three, as the requirement says. The grootboek skill's HDR guide
 - **First codification:** `naming-precision` stood at seven on day one, so the register warned
   immediately. It was codified in HDR-010, which is the proof that the chain runs from
   incident through count to rule.
-- **`ai-vs-self-advice` is not a repeated fault but a conflict** between Jaron's global
+- **`ai-vs-self-advice` is not a repeated fault but a conflict** between Jarón's global
   instructions and this project, settled only in private memory. It was fixed once, with a line
   in the project `CLAUDE.md`, without waiting for a count.
 - **Logging depends on the agent.** No hook can see a human correction. The register makes
   repetition countable once it is logged; it does not make the agent log. Whether it does is
   known only after weeks of use, and this record does not claim it.
 - **Judgment stays human.** Whether a new fault is "the same" as an existing pattern is the
-  agent's call, checked by Jaron. A wrong match skews a count.
+  agent's call, checked by Jarón. A wrong match skews a count.
 - **Parallel branches** that both log still conflict on the same lines of the register; the
   resolution is to keep both sides.
 - The memory notes are not deleted. They remain the source of the first incidents; the

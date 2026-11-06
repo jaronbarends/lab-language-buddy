@@ -38,7 +38,7 @@ De Deepgram-provider doet live transcriptie met een eigen set keuzes:
   type tot het `start`-event leeg kan zijn, zodat de vroege check een browser kon weigeren waarvan
   het standaardformaat werkt. Een recorder stopt ook zelf als zijn tracks eindigen (een headset
   die eruit gaat, een iOS-onderbreking) en niets merkte dat. De bewoording van de melding is van
-  Jaron.
+  Jarón.
 - **Eigen module:** stap 1 van het toevoegen van de native engine: beide engines krijgen dezelfde
   vorm en de hook weet niet meer welke draait. Vóór de bouw is de effect-start op een iPhone
   getest: de native engine, gestart vanuit een `useEffect` na een state-wijziging, werkt daar
@@ -46,7 +46,7 @@ De Deepgram-provider doet live transcriptie met een eigen set keuzes:
   niet.
 - **Abort.** Een geannuleerde of verlopen start liet de tokenaanvraag doorlopen, en de check
   was het enige tussen een late token en een socket. Het advies van de review, en van de agent,
-  was alleen een commentaar; Jaron koos de abort. De Deepgram-route moest op een iPhone worden
+  was alleen een commentaar; Jarón koos de abort. De Deepgram-route moest op een iPhone worden
   nagelopen. Kruisverwijzing, niet uit de rijen van dit record: op 10-19 is dat geprobeerd, zie
   ADR-012 (ElevenLabs Scribe-provider).
 

@@ -37,13 +37,13 @@ URL-balk niet. De tekst is één `BubbleText`-span in `bubble.tsx`, door CSS blo
   item uit beeld kan duwen zonder nieuwe beurt of beurtstatus.
 - **Begrenzing op de tekst.** Bij review bleek dat een lang transcript, concept of lange bewerking
   de bar liet groeien tot de knoppen en de thread van het scherm werden gedrukt. De begrenzing
-  zelf was een voorstel van de agent, eerst op de hele control bar; Jaron veranderde dat naar een
+  zelf was een voorstel van de agent, eerst op de hele control bar; Jarón veranderde dat naar een
   begrenzing op alleen de tekst en koos de 40vh. De begrenzing zit op de tekst en niet op de bar,
   zodat het frame (padding, hoek, focusring) nooit binnen het scrollende gebied valt en de knoppen
   in beeld blijven; de bar groeit met de begrensde tekst plus de knoppen.
-- **Volgen van het live transcript.** Voorgesteld bij review en door Jaron goedgekeurd. Met de
+- **Volgen van het live transcript.** Voorgesteld bij review en door Jarón goedgekeurd. Met de
   begrensde tekst vallen de nieuwste woorden anders onder de rand.
-- **Einde van de tekst bij het concept en de editor.** Voorgesteld bij review en door Jaron
+- **Einde van de tekst bij het concept en de editor.** Voorgesteld bij review en door Jarón
   goedgekeurd. Het concept vervangt een live transcript waarvan de gebruiker het einde las en mag
   niet springen als de opname stopt; de editor zet de caret aan het einde, en bij een lang concept
   ligt dat onder de rand van de begrensde tekst. Beide zijn in een layout effect gezet, zodat
@@ -52,7 +52,7 @@ URL-balk niet. De tekst is één `BubbleText`-span in `bubble.tsx`, door CSS blo
   zolang het niet klipt; met `overflow: hidden` is die 0. In de thread (een flex-kolom die scrolt)
   werden de bubbels daardoor samengedrukt en hun tekst geklipt zodra de thread langer was dan het
   scherm, in plaats van dat de thread scrolde. Gezien op een iPhone en in de DevTools-preview.
-  Jaron vroeg eerst om `min-height: min-content` en gaf daarna de voorkeur aan `flex-shrink: 0`
+  Jarón vroeg eerst om `min-height: min-content` en gaf daarna de voorkeur aan `flex-shrink: 0`
   als schonere manier om het te zeggen.
 
 ## Gevolgen
@@ -61,10 +61,10 @@ URL-balk niet. De tekst is één `BubbleText`-span in `bubble.tsx`, door CSS blo
   ingevoegd: tekst 364px, bar 575px, thread 336px. Niet getest op een iPhone.
 - Het volgen is alleen logica en niet beproefd: de tekst van de dev stepper groeit nooit, dus
   volgen, stoppen en hervatten zijn niet werkend gezien. Niet getest op een iPhone.
-- Caret tijdens het typen in een lange editor is met echt typen door Jaron in desktop Chrome
+- Caret tijdens het typen in een lange editor is met echt typen door Jarón in desktop Chrome
   getest en werkt. Het scrollen bij binnenkomst is niet met een lang concept gezien, omdat het
   concept van de dev stepper één regel is. Niet getest op een iPhone.
 - `flex-shrink: 0` is gecontroleerd in Chrome bij 377px met de echte bubbels gekopieerd tot de
   thread overliep: 0 van 10 geklipt mét, 10 van 10 zonder; op de iPhone verholpen, volgens
-  Jaron.
+  Jarón.
 - Verwant: PDR-003 (Eén set bediening zonder Stop, het live transcript in de control bar) plaatst het live transcript in de control bar.

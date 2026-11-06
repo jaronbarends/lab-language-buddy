@@ -49,13 +49,13 @@ before touching anything, and report `NEEDS_CONTEXT` if the answer does not come
   questions in your report; do not fix it.
 - Do not edit the grootboek registers or `docs/index.yml`: shared files, where parallel builders
   collide. Put the decision in your report; the lead books it.
-- Do not commit. The lead commits, and only on Jaron's go-ahead.
+- Do not commit. The lead commits, and only on Jarón's go-ahead.
 
 ## Verifying
 
 There is no test suite. The checks are `npm run lint`, `npx next typegen && npx tsc --noEmit`,
 `npm run docs:check`, and `npm run build` for anything that could break the build. Do not
-run `next dev`: Jaron's dev server may already use port 3000. Anything touching audio,
+run `next dev`: Jarón's dev server may already use port 3000. Anything touching audio,
 recording or layout cannot be verified from here; say so in the report, because it needs a
 real iPhone.
 

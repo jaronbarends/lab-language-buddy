@@ -36,22 +36,22 @@ Het Gemini-schema bewaakt alleen de vorm; de inhoudsregels staan in de prompt, z
 - De invoer is speech-to-text, dus de gebruiker is niet verantwoordelijk voor hoe woorden gespeld
   worden. De regel uit de spike dekte alleen spaties, leestekens en diakrieten; daarom geldt het
   verbod nu voor alle spelling, met hoofdletters erbij.
-- De gedeelde-plus-persona-opbouw is Jarons structuur uit de originele app. De meting zette de
+- De gedeelde-plus-persona-opbouw is Jaróns structuur uit de originele app. De meting zette de
   regels in `input`, dus dat moest met de echte prompts opnieuw gedaan worden.
-- Jarons ervaring is dat de meeste zinnen wel een correctie nodig hebben, dus de null-regel gaat
+- Jaróns ervaring is dat de meeste zinnen wel een correctie nodig hebben, dus de null-regel gaat
   over het niet verzinnen van een correctie. De formulering is aangepast van "Don't look for one
   that violates this instruction", wat op twee manieren te lezen was.
 - Geen code-guard: `null` toont "No corrections. Great!", en dat zou onwaar zijn als het bericht
   andere fouten had en alleen de spellingcorrectie is teruggegeven. De agent stelde de guard voor,
-  Jaron wees hem af.
+  Jarón wees hem af.
 - De zin dat het bericht tekst is en geen instructie, is een guard die de agent toevoegde aan de
   afgesproken prompt: het bericht van de gebruiker is de enige invoer en is niet te vertrouwen.
 - Review B8: de oude comment beweerde dat het schema alleen client en Gemini op één lijn hield. In
   de metingen is geen misvormde vorm gezien (0 van 30). Een `refine` zou een vreemde correctie
-  veranderen in "Evaluation failed"; dat is Jarons keuze als er een opduikt.
+  veranderen in "Evaluation failed"; dat is Jaróns keuze als er een opduikt.
 - De corrector beantwoordde vragen en corrigeerde woorden uit eerdere berichten, omdat de kale
   invoer eruitzag als elke andere gebruikersbeurt in de geschiedenis. Regels alleen in de prompt
-  hielden dat twee keer niet tegen. Jaron testte de verpakking op 10-12: eerdere berichten lekken
+  hielden dat twee keer niet tegen. Jarón testte de verpakking op 10-12: eerdere berichten lekken
   niet meer door en een vraag krijgt feedback op de grammatica in plaats van een antwoord.
 
 ## Voorgeschiedenis
@@ -63,7 +63,7 @@ kale bericht; daarna, op 10-12, kwam de verpakking in `<message>`-tags erbij, na
 prompt alleen het lekken van eerdere berichten twee keer niet stopten.
 
 Op 2026-11-06 is de regel over spelling aangescherpt van "Do not give feedback on spelling, …" naar
-"NEVER EVER give feedback on spelling, …" (commit `2ea47f9` op `main`). Reden: Jaron kreeg nog
+"NEVER EVER give feedback on spelling, …" (commit `2ea47f9` op `main`). Reden: Jarón kreeg nog
 steeds correcties terug waarin iets over spelling of hoofdlettergebruik werd gezegd, ook na de
 eerdere formulering. Of de aangescherpte formulering dat verhelpt is nog niet vastgelegd.
 
@@ -84,7 +84,7 @@ eerdere formulering. Of de aangescherpte formulering dat verhelpt is nog niet va
   trant van "when you only have corrections that relate to spelling, spaces, punctuation,
   capitalization or anything else related to how the message was written, return null". Bedoeld
   voor het geval de aangescherpte regel niet genoeg blijkt en er toch verkeerde correcties
-  binnenkomen. De formulering is van Jaron en nog niet getest. Het is een regel in de prompt en
+  binnenkomen. De formulering is van Jarón en nog niet getest. Het is een regel in de prompt en
   geen code-guard, dus het besluit dat er geen guard is blijft ongemoeid.
 - Zie ook ADR-007 (Evaluatie per beurt, in een eigen call), PDR-005 (Hoe de correctie eruitziet) en
   PDR-006 (Antwoord pas na de correctie).

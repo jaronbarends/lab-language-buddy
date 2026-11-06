@@ -38,8 +38,8 @@ een AI-antwoord zonder denkfase ongewijzigd blijven). Het antwoord rendert eerst
 onthullingsklasse, zodat de animatie niet kan starten voor de variabelen bestaan.
 
 Nog niet gedaan: het concept dat eerst krimpt in de bedieningsbalk, en de eigen groei van de
-evaluatie. De groei van de denkbubbel naar het antwoord is door Jaron op een iPhone getest en
-slaagt. De denkbubbel zelf is inmiddels ook op een iPhone getest en goed bevonden (door Jaron
+evaluatie. De groei van de denkbubbel naar het antwoord is door Jarón op een iPhone getest en
+slaagt. De denkbubbel zelf is inmiddels ook op een iPhone getest en goed bevonden (door Jarón
 bevestigd op 2026-11-06; dit staat niet in het plan).
 
 ## Waarom
@@ -63,7 +63,7 @@ animeert.
 
 De eerste spike groeide de bubbel naar de grootte van de tekst met een `clip-path` en zonder
 overshoot. Die is ingehaald door de `scale`-animatie vanaf de grootte van de denkbubbel, omdat de
-agent "scale up again" als een onthulling vanaf 0 had gelezen en Jaron dat corrigeerde.
+agent "scale up again" als een onthulling vanaf 0 had gelezen en Jarón dat corrigeerde.
 
 ## Gevolgen
 

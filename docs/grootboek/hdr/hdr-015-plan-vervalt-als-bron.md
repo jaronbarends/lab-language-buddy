@@ -37,7 +37,7 @@ Dit record vervangt ADR 0001 (decisions live in the plan) en de bepaling in HDR-
 dat twee plekken kunnen driften, en eiste dat ADR 0001 geregeld zou zijn vóór de merge naar
 `main`. Dit record regelt dat.
 
-Jaron wil de werkwijze van ARC volgen en ook de oude beslissingen op die manier beschikbaar
+Jarón wil de werkwijze van ARC volgen en ook de oude beslissingen op die manier beschikbaar
 hebben: vindbaar via de registers, met type, status en reden. Het plan kan dat niet zijn,
 want het is één bestand van ruim 1300 regels dat je moet doorzoeken.
 
@@ -47,7 +47,7 @@ want het is één bestand van ruim 1300 regels dat je moet doorzoeken.
   `.claude`), veertien grootboekdocumenten, `README.md`, `docs/index.yml` (`plan_sections` en
   `decisions`), `docs/code-architectuur.md`, `docs/ios-stt-runs.md`, twee agent-bestanden, de
   skill `stage-review`, `.claude/rules` en `scripts/check-docs.mjs` (de plan-check).
-- **Leidende documenten wijzigen** en worden elk eerst aan Jaron getoond: de root-`CLAUDE.md`
+- **Leidende documenten wijzigen** en worden elk eerst aan Jarón getoond: de root-`CLAUDE.md`
   (de alinea "Project plan", de bullet over `plan.md` als bron, de tabelrij "Plan and
   decisions"), `src/components/CLAUDE.md` (de zinnen over re-sync en de lijst in `plan.md`) en
   mogelijk `docs/code-architectuur.md`.

@@ -138,7 +138,7 @@ adrs:
     datum: 2026-10-16
     implementatie-datum: 2026-10-16
     beslissing: "ElevenLabs Scribe is de derde STT-provider, met PCM uit een AudioWorklet via een Blob URL, een eigen tokenroute en een door de event reference van ElevenLabs bepaalde set fatale berichttypes"
-    notitie: "Overgezet uit plan.md (HDR-015): de AudioContext-plaatsing is op 10-19 gecorrigeerd (in de effect, niet in de tap); de gedeelde lifecycle-helper (F2) is uitgesteld en nog niet gebouwd; bevat de testuitkomsten van Jaron op desktop Chrome en iPhone zoals vastgelegd, met de ontbrekende gegevens genoemd"
+    notitie: "Overgezet uit plan.md (HDR-015): de AudioContext-plaatsing is op 10-19 gecorrigeerd (in de effect, niet in de tap); de gedeelde lifecycle-helper (F2) is uitgesteld en nog niet gebouwd; bevat de testuitkomsten van Jarón op desktop Chrome en iPhone zoals vastgelegd, met de ontbrekende gegevens genoemd"
     bestand: adr-012-elevenlabs-scribe-provider.md
   - id: "ADR-013"
     titel: "Next.js 16 met TypeScript strict"

@@ -4,7 +4,7 @@ type: spec
 soort: plan van aanpak
 status: concept
 datum: 27 oktober 2026
-auteurs: Jaron, Mama Claude
+auteurs: Jarón, Mama Claude
 ---
 
 # Automatic renumbering of grootboek records on merge
@@ -16,14 +16,14 @@ hook that stops a merge of `arc/arc-main` or `main` until the script has run.
 
 ## The flow
 
-1. Jaron asks Claude Code to merge `arc/arc-main` (or `main`) into a branch.
+1. Jarón asks Claude Code to merge `arc/arc-main` (or `main`) into a branch.
 2. The hook sees the merge, checks the branch's records against that ref, and finds ids that
    collide. It denies the merge and names them.
 3. Claude runs `npm run docs:renumber`. The branch's own records get the next free numbers.
    One commit.
 4. Claude retries the merge. The registers still conflict where both sides appended, but they
    now hold different ids, so the fix is to keep both sides.
-5. In a plain terminal there is no hook. Jaron runs the script before every such merge; with
+5. In a plain terminal there is no hook. Jarón runs the script before every such merge; with
    nothing to renumber it does nothing. The duplicate check is the net if it is forgotten.
 
 ## Part 1: duplicate-id check in `docs:check`

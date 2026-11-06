@@ -50,7 +50,7 @@ documents:
     read_when: logging an incident; touching the incident register or its counter; a docs:check warning about a pattern.
   - path: docs/grootboek/hdr/hdr-010-names-checked-against-what-they-promise.md
     what: The naming rule in code-style.md and why: seven naming corrections in the stage 4 review, the first pattern codified through the incident register.
-    read_when: naming a function, status or type in src/; a naming correction from Jaron.
+    read_when: naming a function, status or type in src/; a naming correction from Jarón.
   - path: docs/grootboek/hdr/hdr-011-arc-base-branch-and-branch-first.md
     what: Why the root CLAUDE.md names arc/arc-main as the base for arc work and says the branch comes before the first edit; found in the first cold-start run.
     read_when: starting work on an arc branch; updating the Branches line when arc/arc-main merges into main.
@@ -70,8 +70,8 @@ documents:
     what: Waarom plan.md als bron vervalt en hoe de inhoud naar het grootboek gaat (keuzes, controle op volledigheid, bevriezen en verwijderen); vervangt ADR 0001.
     read_when: je een beslissing zoekt die vroeger in plan.md stond; je aan de overzetting werkt; je verwijzingen naar plan.md bijwerkt.
   - path: docs/grootboek/hdr/hdr-016-bestaande-repo-geen-bron.md
-    what: De regel dat de agent de bestaande Language Buddy-repo niet als bron gebruikt tenzij Jaron een bestand aanwijst, met de reden en het archief van wat de agent eerder zag.
-    read_when: je overweegt in de bestaande repo te kijken; Jaron wijst naar een bestand daaruit; je de werkafspraken in CLAUDE.md wijzigt.
+    what: De regel dat de agent de bestaande Language Buddy-repo niet als bron gebruikt tenzij Jarón een bestand aanwijst, met de reden en het archief van wat de agent eerder zag.
+    read_when: je overweegt in de bestaande repo te kijken; Jarón wijst naar een bestand daaruit; je de werkafspraken in CLAUDE.md wijzigt.
   - path: docs/grootboek/pdr/pdr-001-app-in-gebruik-en-werkwijze-experiment.md
     what: Waarvoor het project bestaat (een app voor dagelijks gebruik en een experiment in werkwijze) en dat de bestaande Language Buddy-app geen bron meer is.
     read_when: je twijfelt over het doel van het project; je de README of het experiment-kader in CLAUDE.md aanpast; je afweegt of je de bestaande app moet raadplegen.
@@ -290,7 +290,7 @@ documents:
     read_when: delegating a build task, alone or in parallel with other builders.
   - path: .claude/agents/reviewer.md
     what: Read-only agent that checks a builder diff against its assignment.
-    read_when: after each task that matters, before the work reaches Jaron.
+    read_when: after each task that matters, before the work reaches Jarón.
   - path: scripts/check-docs.mjs
     what: Drift check between docs and repo (env vars, paths, register, plan staleness).
     read_when: `npm run docs:check` fails or a new kind of drift needs checking.

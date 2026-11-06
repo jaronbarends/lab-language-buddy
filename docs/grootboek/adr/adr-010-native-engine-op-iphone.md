@@ -50,7 +50,7 @@ speech van de AI vanzelf was geëindigd; met de vroege pauze nam hij wel op en s
 AI-bericht. De oorzaak is niet begrepen en de fout is intermitterend, dus dit is een mitigatie en
 geen fix (beurt 2 nam op in 4 van 4 runs mét en 2 van 13 zonder). Niet beperkt tot iOS omdat een browsercheck een tweede pad zou toevoegen
 dat getest moet worden. De kosten zijn maximaal 0,15 s van het einde van elk bericht, vermoedelijk
-stilte, niet gemeten. Jaron controleerde op 10-14: desktop Chrome klinkt ongewijzigd, het einde van
+stilte, niet gemeten. Jarón controleerde op 10-14: desktop Chrome klinkt ongewijzigd, het einde van
 een bericht wordt niet hoorbaar afgekapt, en Deepgram als STT-engine werkt op de iPhone (de stem
 van de AI is TTS, los van Deepgram).
 
@@ -61,10 +61,10 @@ opname van de tweede beurt niet op, dus beide zijn nodig. Waarom het werkt is ni
 
 **In elke browser.** De problemen werden op de iPhone gezien; op desktop werd de speech ook
 zachter en de mitigatie voorkwam dat ook, en dat de herkenning niet startte is op desktop niet
-gezien. Jaron koos ervoor geen platformen te onderscheiden, om de code simpel te houden. Is de
+gezien. Jarón koos ervoor geen platformen te onderscheiden, om de code simpel te houden. Is de
 mitigatie op de iPhone niet meer nodig, dan is ze op desktop vermoedelijk ook niet nodig.
 
-**Het afgesneden einde.** Jaron luisterde op een iPhone en op desktop Chrome: de audio heeft
+**Het afgesneden einde.** Jarón luisterde op een iPhone en op desktop Chrome: de audio heeft
 genoeg stilte aan het einde, er ging geen gesproken tekst verloren. Welke TTS-providers en zinnen
 zijn gecontroleerd is niet vastgelegd.
 
@@ -79,7 +79,7 @@ juist voorkomt, heeft die redenering omgekeerd. Waarom hij werkt is niet bekend.
 - De stream wordt geopend vóór de eerste sessie, dus `onMicrophoneStarted` komt in elke browser
   later, met de duur van de `getUserMedia`-stap (niet gemeten).
 - Desktop Chrome met de Bluetooth-headset zakt met de twee mitigaties niet meer in volume (door
-  Jaron op 10-14 op het gehoor waargenomen, niet gemeten). Dat verzwakt de hypothese dat een
+  Jarón op 10-14 op het gehoor waargenomen, niet gemeten). Dat verzwakt de hypothese dat een
   headset naar zijn belprofiel schakelt (HFP); die zou met een open stream ook moeten zakken. De
   oorzaak blijft onbekend.
 - Dat native de standaard-STT-engine blijft staat in ADR-009 (STT: providerkeuze en

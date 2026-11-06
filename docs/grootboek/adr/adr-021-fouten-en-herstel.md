@@ -67,7 +67,7 @@ wordt opnieuw geprobeerd, een mislukte opname brengt de gebruiker terug naar zic
 - Gevonden in de review van stage 3: het ophalen van het token en het openen van de socket
   konden blijven hangen zonder teken. De permissiedialoog telt niet mee in de connect-klok,
   want de gebruiker kan erop blijven zitten. De TTS-fetch blijft zonder deadline omdat de tekst
-  al op het scherm staat en *Reply* werkt. Jaron koos de 10 s en het weglaten van de
+  al op het scherm staat en *Reply* werkt. Jarón koos de 10 s en het weglaten van de
   TTS-deadline.
 - Gevonden in de review van stage 3: het starten van de recorder gooide binnen de
   `onopen`-handler van de socket, buiten elke `try`, en liet `listening` open zonder melding.

@@ -30,14 +30,14 @@ ondersteunt, met Noors en nova-2 als voorbeeld. Die waarschuwing staat als algem
 - **`htmlLang`:** schermlezers kiezen de stem op basis van `lang`, en `<html lang="en">` zorgde
   ervoor dat een Noorse bubbel met een Engelse stem werd voorgelezen. Het is een prop en geen
   context, omdat de state-context bewust is verwijderd. Het `lang="en"` op de placeholder is
-  Jarons verfijning van het voorstel van de agent.
+  Jaróns verfijning van het voorstel van de agent.
 - **`webSpeechLang`:** de native engine heeft een tag met regio nodig, en `htmlLang` heeft die
-  niet. Jaron: elk veld noemen naar zijn leverancier plus `Lang` is consequenter.
+  niet. Jarón: elk veld noemen naar zijn leverancier plus `Lang` is consequenter.
 - **Algemene opmerking:** dezelfde waarschuwing stond op twee plekken, en die in de tabel
-  bewaakte een wijziging die in `deepgram.ts` wordt gedaan. Jaron stelde de algemene formulering
+  bewaakte een wijziging die in `deepgram.ts` wordt gedaan. Jarón stelde de algemene formulering
   voor; de agent had afgeraden.
 - **`elevenLabsLang`:** Scribe's `language_code`, naast `deepgramLang`. De codes komen uit de
-  talenlijst van ElevenLabs; Jaron probeerde alle zes tegen de live API (19 oktober, op het
+  talenlijst van ElevenLabs; Jarón probeerde alle zes tegen de live API (19 oktober, op het
   gehoor, zonder telling van fouten).
 
 Verwant: ADR-009 (STT: providerkeuze en configuratie)

@@ -21,11 +21,11 @@ What is built:
   `docs/grootboek/CLAUDE.md` points to the root instead of repeating it.
 - **A PostToolUse hook** (`.claude/hooks/notify-leading-document.cjs`) runs after every `Edit`
   and `Write`. If the file is a leading document it returns the reminder as context; otherwise
-  it stays silent. It never blocks: the change is made, and Jaron's check comes before the
+  it stays silent. It never blocks: the change is made, and Jarón's check comes before the
   commit.
 - **The list and the wording live in `.claude/hooks/leading-documents.json`** next to the
   script. A new balance, or a different sentence, is a change to that file, not to the code.
-- **Subagents get their own wording.** A subagent cannot ask Jaron, so it is told to list the
+- **Subagents get their own wording.** A subagent cannot ask Jarón, so it is told to list the
   change under open points in its report; the lead thread passes it on and asks for the check.
 
 ## Why
@@ -38,7 +38,7 @@ already use: the procedure is data, the hook is delivery.
 The hook fires after the edit and does not deny it, unlike the other hooks in this harness
 (`guard-kenniswerker`, `triage-guard`). Before the edit it cannot know what changed, and the
 change is cheap to undo until it is committed. Blocking would also turn a small correction into
-a stop-and-wait for a check that Jaron makes on the whole change anyway.
+a stop-and-wait for a check that Jarón makes on the whole change anyway.
 
 It also fires for subagents. First idea was to leave them out, as the other hooks do. That would
 make a silent edit possible exactly where the duty is hardest to keep: a builder whose file

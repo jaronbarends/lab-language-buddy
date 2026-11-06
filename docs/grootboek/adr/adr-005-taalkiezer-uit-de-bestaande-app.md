@@ -26,4 +26,4 @@ het plan als `ported`.
 - Het is een eenmalige overname. Er is geen synchronisatie met de bestaande app en geen lijst
   met afwijkingen (PDR-001, een app voor dagelijks gebruik en een experiment in werkwijze).
 - De regel dat de agent de bestaande repo niet als bron gebruikt (HDR-016) laat dit onverlet:
-  het onderdeel kwam erin doordat Jaron naar dat bestand wees.
+  het onderdeel kwam erin doordat Jarón naar dat bestand wees.

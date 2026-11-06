@@ -18,7 +18,7 @@ geen automatische fallback.
   met de geldige namen erin.
 - Geen automatische fallback naar Deepgram als de browser geen spraakherkenning heeft (Firefox):
   voor nu niet gewenst. Zo'n browser kan met de native provider simpelweg niet luisteren.
-- Native blijft de default, ook na de iPhone-problemen met de native provider, omdat Jaron de
+- Native blijft de default, ook na de iPhone-problemen met de native provider, omdat Jarón de
   Noorse transcriptie ervan beter vindt dan die van Deepgram. ElevenLabs Scribe veranderde de
   default niet.
 - In de code heet het begrip "provider", niet "engine": `PROVIDER_START_FUNCTIONS`, `ProviderName`,
@@ -34,7 +34,7 @@ geen automatische fallback.
 
 ## Waarom
 
-**Providerkeuze.** De spike van Jaron (`stt-compare`-pagina, resultaten in
+**Providerkeuze.** De spike van Jarón (`stt-compare`-pagina, resultaten in
 `spikes/ai-voice-demo/findings.md`) draaide beide engines tegelijk op dezelfde microfoon van zijn
 iPhone: de native engine leek iets beter, zonder wachttijd voor het starten van de microfoon. Zijn
 Noorse test in Chrome desktop: Deepgram bleef Noors maar maakte eigen fouten (*språkaktig tekst*,
@@ -42,10 +42,10 @@ Noorse test in Chrome desktop: Deepgram bleef Noors maar maakte eigen fouten (*s
 naar het Zweeds (*ska*, *vilken*, *funkar*, *bättre*, *Jag*). Op de iPhone niet gezien. Eén
 spreker, één zin: een indruk en geen meting.
 
-Native blijft de default omdat het Jarons oordeel is, niet een meting: het bewijs is die spike. Deepgram
+Native blijft de default omdat het Jaróns oordeel is, niet een meting: het bewijs is die spike. Deepgram
 blijft het alternatief en vermijdt de twee iPhone-problemen zonder mitigatie.
 
-ElevenLabs Scribe is door Jaron in de spike beoordeeld (`/stt-compare`, "Scribe v2 Realtime") en
+ElevenLabs Scribe is door Jarón in de spike beoordeeld (`/stt-compare`, "Scribe v2 Realtime") en
 beter bevonden dan Deepgram en de native engine, in Chrome desktop en op een iPhone (iOS 26.6.2).
 In de iPhone-beurttest gaf het woorden in beide beurten in 11 van 11 runs, met hetzelfde volume in
 elke beurt, waar de native engine in beurt 2 faalde. Dat is een spike met één spreker en een vaste
@@ -58,9 +58,9 @@ veranderen is een apart besluit.
 browser gemaakt, waar alleen `NEXT_PUBLIC_`-variabelen zichtbaar zijn, anders dan de server-side
 `TTS_PROVIDER`; hetzelfde voorvoegsel als `NEXT_PUBLIC_USE_MOCK_CHAT`. De naam was een voorstel van
 de agent en is niet besproken. De waarde `elevenlabs` is eveneens een voorstel van de agent, door
-Jaron geaccepteerd.
+Jarón geaccepteerd.
 
-**Fout bij onbekende waarde.** Jaron zei eerst dat een onbekende waarde de native engine kon
+**Fout bij onbekende waarde.** Jarón zei eerst dat een onbekende waarde de native engine kon
 gebruiken, en koos daarna de fout. Een typefout zou de app anders op een andere engine laten dan
 degene waar om gevraagd is, wat `getTtsProvider` ook voorkomt.
 
@@ -68,14 +68,14 @@ degene waar om gevraagd is, wat `getTtsProvider` ook voorkomt.
 provider simpelweg niet luisteren.
 
 **"Provider" in plaats van "engine".** De code gebruikte beide woorden voor hetzelfde: de env var is
-`NEXT_PUBLIC_STT_PROVIDER` (naar `TTS_PROVIDER`), de code zei "engine". Jaron koos één term boven
+`NEXT_PUBLIC_STT_PROVIDER` (naar `TTS_PROVIDER`), de code zei "engine". Jarón koos één term boven
 het wijzigen van de env var, wat `.env.local`, de documentatie en de foutmelding had geraakt.
 "Provider" is niet exact voor `native`, dat de browser is en geen leverancier; geaccepteerd. De
 eerdere logrijen en de open vraag over de iPhone-problemen houden het woord "engine": ze leggen vast
 wat toen geschreven werd. De eigen rijen van de agent van 10-16 en 10-19 houden het woord "engine"
 ook.
 
-**Namen.** Jarons punt: een naam beschrijft wat iets doet of van wie het is, niet een product, en
+**Namen.** Jaróns punt: een naam beschrijft wat iets doet of van wie het is, niet een product, en
 dezelfde functie van twee providers moet hetzelfde lezen. `/api/stt/token` was de enige
 asymmetrische naam, generiek naast `elevenlabs-token` (zie ADR-012, ElevenLabs Scribe-provider). `startRecording` in
 `deepgram.ts` (zie ADR-011, Deepgram-provider) werd `startStreamingAudio`, omdat er in het
@@ -101,9 +101,9 @@ levenscyclus-helper uit de review.
    de default in de code (`native`) bleef ongewijzigd. Reden: op een iPhone maakt de native engine de
    spraak van de AI zachter zodra de microfoon is gebruikt en neemt hij niets op in de tweede
    gebruikersbeurt; Deepgram liet geen volumeverschil zien en de tweede-beurtfout is alleen voor
-   native gemeld. Jaron ontwikkelt vooral in Chrome en wil daar dezelfde engine zien.
+   native gemeld. Jarón ontwikkelt vooral in Chrome en wil daar dezelfde engine zien.
 4. **Terug op native.** Met de vroege pauze en de vastgehouden microfoonstream zijn de twee
-   problemen gemitigeerd. Jaron controleerde dit op een iPhone met de opgeschoonde code (geen
+   problemen gemitigeerd. Jarón controleerde dit op een iPhone met de opgeschoonde code (geen
    debuglogging, geen vaste testzin): de native engine herkende in beide beurten terwijl de AI
    uitsprak, de AI was in beurt 2 even hard als in beurt 1 en de microfoonprompt kwam één keer, zoals eerder. Eén
    sessie; de mislukte eerste beurten die nu en dan in de runs voorkwamen zijn niet uitgesloten.

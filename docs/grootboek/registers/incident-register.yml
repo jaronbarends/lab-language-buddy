@@ -4,7 +4,7 @@
 # HDR, whose id goes in `maatregel`. `npm run docs:check` warns until it is.
 #
 # An incident is a line, not a decision: no ids, no documents (HDR-001 books decisions).
-# Add an entry when Jaron corrects the agent, or a tool fails in a way that has happened
+# Add an entry when Jarón corrects the agent, or a tool fails in a way that has happened
 # before, and say so in a sentence. Append-only, like the other registers.
 #
 # Fields:

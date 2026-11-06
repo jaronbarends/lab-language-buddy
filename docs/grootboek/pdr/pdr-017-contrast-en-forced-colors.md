@@ -46,10 +46,10 @@ ongemeten bewering, geen ontwerpwijziging. Sindsdien zijn gemeten en geslaagd: d
 taalkaart (8,00:1), de secundaire knop (7,75:1), bodytekst op de gebruikersbubbel (12,27:1),
 fouten (5,33:1) en de bijschriften (6,22:1).
 
-De eerste versie van de forced-colors-regel was fout, te zien in een screenshot van Jaron: de
+De eerste versie van de forced-colors-regel was fout, te zien in een screenshot van Jarón: de
 vulling klopte, maar het label stond in een wit vak, witte tekst op wit. De browser schildert een
 Canvas-backplate achter tekst in forced-colors-modus; `forced-color-adjust: none` haalt die weg.
-Daarna controleerde Jaron het opnieuw in forced-colors-modus: witte tekst op de donkerpaarse
+Daarna controleerde Jarón het opnieuw in forced-colors-modus: witte tekst op de donkerpaarse
 vulling, bij beide bedieningselementen. De modus is vanuit de tooling niet te openen, dus die
 controle was van hem.
 

@@ -49,7 +49,7 @@ alleen in de component.
 `microphoneIsLive` komt uit de review van stage 3. De recorder start pas in de `onopen` van de
 socket, dus woorden die werden gezegd terwijl het token en de socket nog werden opgezet, gingen
 verloren, terwijl het scherm al "Listening…" met een levende stip toonde. Dat was in strijd met de
-definitie van de stip van 09-25. De formulering is van Jaron; de vlag en de actie zijn door de
+definitie van de stip van 09-25. De formulering is van Jarón; de vlag en de actie zijn door de
 agent voorgesteld.
 
 `getPreviousInteractionId` komt uit een review: de server rekent erop dat beide aanroepen een

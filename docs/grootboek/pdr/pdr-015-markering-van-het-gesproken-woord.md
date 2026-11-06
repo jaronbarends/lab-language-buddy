@@ -16,7 +16,7 @@ tweede positie van elke colour stop 0 is en de browser die optrekt naar de vorig
 Een `@media (forced-colors: active)`-regel haalt de gradient weg. In forced-colours mode wordt
 `background-color` vervangen, maar `background-image` blijft voor zover bekend ongemoeid; het geel
 zou dan achter herkleurde tekst blijven staan en kan onleesbaar zijn. De markering wordt in die
-modus dus gewoon niet getekend. Jaron testte het in forced-colours mode: daar wordt geen
+modus dus gewoon niet getekend. Jarón testte het in forced-colours mode: daar wordt geen
 markering getekend, en dat vond hij acceptabel.
 
 De witruimte tussen twee gesproken woorden krijgt dezelfde markering, zodat de band doorloopt. De
@@ -34,7 +34,7 @@ De gradient houdt de banden op naastliggende regels uit elkaar bij 1.25 zonder d
 te raken.
 
 Whitespace: de markering liet een gat tussen gesproken woorden, wat nooit een bewuste keuze was,
-want alleen woordtokens werden gemarkeerd. Jaron vroeg om een versie met gemarkeerde spaties,
+want alleen woordtokens werden gemarkeerd. Jarón vroeg om een versie met gemarkeerde spaties,
 vergeleek beide door `HIGHLIGHT_SPACES` om te zetten en koos `true`. De constante blijft met
 opzet staan, zodat dit heroverwogen kan worden.
 

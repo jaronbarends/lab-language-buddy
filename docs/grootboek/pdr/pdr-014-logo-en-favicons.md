@@ -18,7 +18,7 @@ Twee keuzes over de merkbeelden van de app:
 
 ## Waarom
 
-- **Favicons en manifest.** Het zijn merkbeelden, geen engineering. Jaron wees deze bestanden aan.
+- **Favicons en manifest.** Het zijn merkbeelden, geen engineering. Jarón wees deze bestanden aan.
 - **Geen SVGR.** Eén SVG rechtvaardigt geen loader-dependency plus bundler-configuratie. De loader
   van de oorspronkelijke app werkt alleen met webpack, en Next 16 bouwt met Turbopack. Heroverweeg
   dit als de app veel SVG's krijgt.

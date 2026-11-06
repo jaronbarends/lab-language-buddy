@@ -33,14 +33,14 @@ hem niet.
 - **Taalverdeling:** leermateriaal is de zin in de doeltaal; alleen de uitleg is voor de eigen
   taal van de leerling.
 - **Segmenten:** drie soorten tekst moeten er verschillend uitzien, en een scheidingsteken binnen
-  één string kan dat niet dragen. Jaron koos eerst "A" (scheidingsteken) maar beschreef deze
+  één string kan dat niet dragen. Jarón koos eerst "A" (scheidingsteken) maar beschreef deze
   vorm; het onderscheid in drie soorten gaf de doorslag.
 - **Cursief en achtergrond:** het herziene referentiescreenshot.
 - **Vaste tekst bij `null`:** bespaart tokens en houdt de zin uit de gespreksketen, waar hij als
   voorbeeld zou werken dat het model herhaalt.
 - **Placeholders:** een placeholder houdt de hoogte vast, zodat de bubbel niet verspringt.
   "Evaluating…" in plaats van de denkpuntjes, en een zo kort mogelijke foutmelding, zijn de
-  formulering van Jaron.
+  formulering van Jarón.
 - **`--color-blue-50`:** het semantische token komt toevallig op dezelfde kleur uit, maar "info" is
   hiervoor te algemeen. De agent had het semantische token aanbevolen.
 - **Markup:** `<i>` is het element voor tekst in een andere taal, en met `lang` kan een

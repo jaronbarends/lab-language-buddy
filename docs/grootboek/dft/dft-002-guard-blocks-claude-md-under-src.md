@@ -39,7 +39,7 @@ a second hook turns out to differ from its description.
 
 ## Decisions
 
-Decided by Jaron on 2026-10-27: **change the hook** (option 1 of the two that were open; the
+Decided by Jarón on 2026-10-27: **change the hook** (option 1 of the two that were open; the
 other was to tighten the agreement).
 
 `guard-kenniswerker.cjs` no longer guards Markdown files. A file with the extension `.md` (any

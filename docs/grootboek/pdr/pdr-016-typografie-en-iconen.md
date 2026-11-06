@@ -26,7 +26,7 @@
 
 ### Iconen
 
-- De oorspronkelijke iconen bevielen niet. Jaron noemde de iconen bij hun `Fa…`-namen; de agent leidde daar `react-icons` uit af, omdat `@fortawesome` namen als `faCircleInfo` gebruikt, en controleerde dat alle 14 namen in `fa6` bestaan. Op het moment van het besluit werden acht gebruikt en hadden zes nog geen plek. De mapping en de attributie (CC BY 4.0) staan in `ui/icons.tsx`.
+- De oorspronkelijke iconen bevielen niet. Jarón noemde de iconen bij hun `Fa…`-namen; de agent leidde daar `react-icons` uit af, omdat `@fortawesome` namen als `faCircleInfo` gebruikt, en controleerde dat alle 14 namen in `fa6` bestaan. Op het moment van het besluit werden acht gebruikt en hadden zes nog geen plek. De mapping en de attributie (CC BY 4.0) staan in `ui/icons.tsx`.
 - Het foutico beantwoordt een open vraag, nadat de foutbox in het dev-paneel bekeken was. Het staat naast titel, bericht en detail samen, niet alleen naast de titel. Het is 24px met `align-items: start`, dus het zit bovenaan het blok. De regels hebben geen eigen tussenruimte meer en staan op de regelhoogte van de tekst: 27px voor de titel, 21px voor de andere. Met een heel lang bericht gecontroleerd: het breekt af, het icoon houdt zijn grootte en de box blijft binnen zijn container.
 
 ## Voorgeschiedenis

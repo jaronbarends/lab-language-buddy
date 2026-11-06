@@ -3,7 +3,7 @@ name: reviewer
 description: >
   Reviews a builder's work with fresh eyes: checks the diff against the assignment (spec
   first, code quality second) and reports a verdict. Use after each task that matters,
-  before the work reaches Jaron. Strictly read-only. Not for building or refactoring. The
+  before the work reaches Jarón. Strictly read-only. Not for building or refactoring. The
   end-of-stage review without the plan is the separate /stage-review skill.
 tools: Read, Grep, Glob, Bash
 ---

@@ -43,11 +43,11 @@ providerkeuze en configuratie).
 - **Lifecycle-helper uitgesteld.** De helper zou `deepgram.ts` en `native.ts` wijzigen, allebei
   op de iPhone gecontroleerd, in dezelfde wijziging als een nieuwe engine. Bij een regressie
   zou niet te zien zijn welke wijziging de oorzaak was. De agent stelde voor het als aparte
-  stap erna te doen; Jaron ging akkoord.
+  stap erna te doen; Jarón ging akkoord.
 - **Fatale types.** De lijst had geen bron en een type buiten de lijst werd zonder spoor
   genegeerd. De docs zeggen niet per type dat de socket na een fout sluit, en ook niet wat
   `insufficient_audio_activity` betekent; de eigenaar koos deze indeling ("akkoord"). Voorgesteld
-  door de cold review, gekozen door Jaron.
+  door de cold review, gekozen door Jarón.
 - **De vlag.** Een tweede `session_started` zou een tweede audiograaf bouwen, waarna de eerste
   niet meer door `stop()` te ontkoppelen is. De docs zeggen niet of het bericht kan
   herhalen; de vlag bewaakt een geval dat nog niet is gezien. Dit kwam uit de cold review.
@@ -58,7 +58,7 @@ De eerste versie van de rij over de worklet (10-16) zei dat de `AudioContext` in
 aangemaakt, vóór iets werd afgewacht, zoals de spike deed. Op 10-19 is dat gecorrigeerd: een
 cold review en CodeRabbit wezen erop dat de context in een effect na de klik wordt gemaakt, zodat
 iOS hem mogelijk suspended laat. De comment in `elevenlabs.ts` ("inside the tap") was fout en is
-op 10-19 gecorrigeerd; de code is niet gewijzigd. Jaron probeerde het op een iPhone en koos ervoor alleen de comment te wijzigen; het
+op 10-19 gecorrigeerd; de code is niet gewijzigd. Jarón probeerde het op een iPhone en koos ervoor alleen de comment te wijzigen; het
 aantal runs en of de tweede beurt is geprobeerd, zijn niet vastgelegd. Toont een latere test een
 hang of een suspended context, dan is de oplossing de context in de Reply-handler te maken en aan
 de provider door te geven. Dat raakt `types.ts`, `index.ts`, de hook, `elevenlabs.ts` en drie
@@ -68,13 +68,13 @@ controls-componenten.
 
 - **Wat is gecontroleerd.** Op desktop Chrome en op een iPhone werkten de ElevenLabs-provider en
   de Deepgram-provider (ADR-011: Deepgram-provider), na de renames van die dag, in de app
-  "zoals eerder" (Jaron's woorden). Niet vastgelegd: het aantal runs, de iOS-versie, of de tweede
+  "zoals eerder" (Jarón's woorden). Niet vastgelegd: het aantal runs, de iOS-versie, of de tweede
   beurt na een AI-antwoord is geprobeerd, het volume van de AI-spraak en andere talen dan de
   gebruikte. Dit stelt vast dat de nieuwe provider en de hernoemde Deepgram-route draaien; het
   breidt het spike-resultaat van 11 van 11 beurten niet uit naar de app. De open vraag over de
   iPhone-problemen van de native engine blijft ongewijzigd; zie ADR-010 (Native engine op iPhone:
   herstart en twee mitigaties).
-- **De drie openstaande punten van de review zijn door Jaron geprobeerd.** `console.warn`: met de
+- **De drie openstaande punten van de review zijn door Jarón geprobeerd.** `console.warn`: met de
   check op `committed_transcript` tijdelijk hernoemd verscheen de waarschuwing één keer per
   beurt, hoeveel zinnen er ook in werden gesproken, en opnieuw in elke nieuwe beurt (één set per
   verbinding), zoals gebouwd; in een normale beurt wordt niets gelogd. Vlag: met

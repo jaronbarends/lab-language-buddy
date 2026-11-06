@@ -138,6 +138,12 @@ documents:
   - path: docs/grootboek/hdr/hdr-018-contextlagen-en-drift-check.md
     what: Waarom de context van het project gelaagd is (rules, CLAUDE.md per map, register, agents) en hoe npm run docs:check drift in de documentatie afdwingt; overgezet uit plan.md.
     read_when: je de lagen van de context wijzigt, een nieuw document registreert of de docs:check aanpast.
+  - path: docs/grootboek/hdr/hdr-019-stt-provider-verifieren-op-iphone.md
+    what: Elke bouwstap wordt op iPhone Safari geverifieerd, met voor live STT een uiting van meer dan 20 seconden; overgezet uit plan.md.
+    read_when: je een STT-provider toevoegt of wisselt en wilt weten wat er op de telefoon gecontroleerd moet worden.
+  - path: docs/grootboek/hdr/hdr-020-faalpaden-bewust-proberen.md
+    what: Bij elke stage worden de faalpaden bewust geprobeerd en moeten ze in een herstelbare error-state landen; overgezet uit plan.md.
+    read_when: je een stage verifieert of wilt weten welke faalpaden je met de hand probeert.
   - path: docs/grootboek/pdr/pdr-007-persona-van-de-ai.md
     what: De AI is een algemene vriendelijke kennis met vrij onderwerp, 2 tot 4 zinnen en hooguit één vraag per beurt; overgezet uit plan.md.
     read_when: je de persona, de toon of de prompt-opbouw uit benoemde secties wijzigt of een nieuwe persona toevoegt.
@@ -180,6 +186,9 @@ documents:
   - path: docs/grootboek/pdr/pdr-017-contrast-en-forced-colors.md
     what: Welke contrastparen onder de WCAG-drempel bewust zijn geaccepteerd en hoe geselecteerde opties zich in forced-colors-modus gedragen; overgezet uit plan.md.
     read_when: je het contrast van knoppen, opties of randen wilt aanpassen, of forced-colors-stijlen wijzigt.
+  - path: docs/grootboek/pdr/pdr-018-geen-open-microfoonmodus.md
+    what: Besluit dat de app geen open-microfoonmodus heeft en de AI niet te onderbreken is door erdoorheen te praten; overgezet uit plan.md.
+    read_when: je doorlopende opname overweegt of het onderbreken van de AI door erdoorheen te praten.
   - path: docs/grootboek/adr/adr-023-safari-safe-area-en-beperkingen.md
     what: De bovenste safe-area-inset en de geaccepteerde Safari/iPhone-beperkingen (landscape, bediening onder het toetsenbord); overgezet uit plan.md.
     read_when: je aan de layout van het setup- of gesprekscherm op iPhone, aan safe-area-insets of aan het toetsenbordgedrag in editing werkt.
@@ -189,6 +198,18 @@ documents:
   - path: docs/grootboek/adr/adr-025-mockmodus-voor-ontwikkeling.md
     what: De mockmodus voor ontwikkeling: mockschakelaars en -routes, gedrag van de mockantwoorden en de dev-stepper; overgezet uit plan.md.
     read_when: je met de mockschakelaars, de mockroutes of de dev-stepper werkt, of wilt weten waarom ze zo werken.
+  - path: docs/grootboek/adr/adr-026-safari-iphone-eisen.md
+    what: De zes Safari/iPhone-eisen die in de app zijn ingebouwd, met de afhandeling van het opnameformaat en de uitwijkroute; overgezet uit plan.md.
+    read_when: je recording, audio unlock, layout op iOS, focusbare controls of het bewerkbare bubbelveld aanraakt.
+  - path: docs/grootboek/adr/adr-027-cachecomponents-blijft-uit.md
+    what: Waarom cacheComponents in Next.js 16 uitgeschakeld blijft; overgezet uit plan.md.
+    read_when: je cacheComponents of PPR wilt aanzetten, of buildfouten over data buiten Suspense tegenkomt.
+  - path: docs/grootboek/adr/adr-028-reducer-negeert-late-acties.md
+    what: De reducer negeert late acties in plaats van te gooien, en de evaluatie is een veld van de gebruikersbeurt; overgezet uit plan.md.
+    read_when: je een actie of state aan de reducer toevoegt, of wilt weten waarom evaluatie geen beurtstatus is.
+  - path: docs/grootboek/adr/adr-029-geen-mock-stt.md
+    what: Besluit dat er geen mock voor speech-to-text komt, omdat de Edit-bediening getypte invoer dekt; overgezet uit plan.md.
+    read_when: je een mock-STT-schakelaar of -route wilt toevoegen naast de mocks voor chat en TTS.
   - path: docs/grootboek/pdr/pdr-012-setup-formulier.md
     what: Hoe het setup-scherm is opgebouwd: één form, fieldset en legend per veld, aria-labelledby op de select, native radio's met anchor-indicator, mask-pijl, breedte van Start chat; overgezet uit plan.md.
     read_when: je het setup-scherm, de starter-toggle, de niveau-select of de breedte van de Start chat-knop wijzigt.
@@ -222,6 +243,9 @@ documents:
   - path: docs/grootboek/journaal/jnl-004-openstaande-kwesties.md
     what: Journaal met de negen vragen die openstonden toen plan.md werd afgebouwd (tests, de Spaanse vlag, een sessie beëindigen, het afbreken bij 320px, bediening onder het toetsenbord, audio bufferen, de vastgehouden reply, de Gemini-wrappers, de native engine op iPhone), met bevindingen en metingen per kwestie.
     read_when: je een van deze kwesties oppakt of beslist of je haar accepteert, bouwt of laat vallen; je aan de native spraakherkenning op iPhone werkt (kwestie K9 bevat alle runs).
+  - path: docs/grootboek/journaal/jnl-005-metingen-van-de-corrector.md
+    what: Journaal met de metingen van de corrector (drie varianten, echte prompts, context van 10-10) en de zwakke plekken die gemeten maar niet opgelost zijn.
+    read_when: je de cijfers achter de besluiten over de corrector nodig hebt of de spellingregel, transcriptiehint of aanhalingstekens wilt heroverwegen.
   - path: docs/grootboek/dft/dft-001-eerste-reconciliatie-software-balans.md
     what: First drift reconciliation of the software balance; no drift found, because no code changed since the balance was written. Tested the process, not detection.
     read_when: running or interpreting the next reconciliation of the balance.

@@ -193,3 +193,14 @@ pdrs:
     beslissing: "De 4,05:1 van de primaire knop, de 3,16:1 van wit op --color-bg-secondary en de ongeveer 1,48:1 van de randen van bedieningselementen zijn bewust geaccepteerd; in forced-colors-modus gebruiken de geselecteerde AI/Me-optie en taalkaart Highlight/HighlightText"
     notitie: "Overgezet uit plan.md (HDR-015): de 3,16:1 is op 2026-09-30 gevonden en dezelfde dag geaccepteerd (vondst en acceptatie als één gebeurtenis). De eerste forced-colors-versie was fout (wit label op wit) en staat in Voorgeschiedenis"
     bestand: pdr-017-contrast-en-forced-colors.md
+  - id: "PDR-018"
+    titel: "Geen open-microfoonmodus"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-23
+    implementatie-datum: 2026-09-23
+    beslissing: "Er is geen doorlopende open-microfoonmodus en de AI is niet te onderbreken door erdoorheen te praten; op Reply tikken terwijl de AI praat blijft wel binnen scope"
+    notitie: "Overgezet uit plan.md (HDR-015): eerste alinea van de sectie Out of scope. De datum is die van de goedkeuring van het plan, niet uit de bron"
+    bestand: pdr-018-geen-open-microfoonmodus.md

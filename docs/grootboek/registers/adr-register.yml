@@ -283,3 +283,47 @@ adrs:
     beslissing: "Ontwikkelen kan zonder sleutel of quota via mockschakelaars (NEXT_PUBLIC_USE_MOCK_CHAT voor chat en evaluatie, NEXT_PUBLIC_USE_MOCK_TTS voor TTS), mockroutes met een scriptpositie in het interaction-id, en een dev-stepper in de interface"
     notitie: "Overgezet uit plan.md (HDR-015): twaalf rijen, vooral ontwikkelgereedschap. De eerste mockversie van de chatroute gaf een correctie mee; die stap is ingehaald doordat de mockevaluatie nu uit het bericht zelf citeert (Voorgeschiedenis)"
     bestand: adr-025-mockmodus-voor-ontwikkeling.md
+  - id: "ADR-026"
+    titel: "Safari/iPhone-eisen"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-23
+    implementatie-datum: 2026-09-23
+    beslissing: "Safari op iPhone is een harde eis en wordt ingebouwd met zes eisen: geen vast opname-mimeType, audio unlock synchroon in elke gesture, een 100dvh-flexkolom met safe-area-insets, een 16px-vloer op focusbare controls, device testing in elke fase en een contenteditable plaintext-only-div in plaats van een textarea"
+    notitie: "Overgezet uit plan.md (HDR-015): het plangedeelte Safari/iPhone requirements zonder rij-ids, met de notitie dat het opnameformaat is opgelost (WebM/Opus sinds Safari 18.4) en de uitwijkroute via AudioWorklet naar linear16. De datum is afgeleid, niet uit de bron"
+    bestand: adr-026-safari-iphone-eisen.md
+  - id: "ADR-027"
+    titel: "`cacheComponents` blijft uit"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-25
+    implementatie-datum: 2026-09-25
+    beslissing: "De Next.js-optie cacheComponents blijft uitgeschakeld: PPR als standaard en buildfouten voor niet-gecachete data buiten Suspense leveren niets op voor een volledig client-side app zonder persistentie"
+    notitie: "Overgezet uit plan.md (HDR-015): uit de sectie Next.js 16 specifics, alleen dit besluit. De datum is die van de verhuizing van het plan naar de repo, niet per se van het besluit"
+    bestand: adr-027-cachecomponents-blijft-uit.md
+  - id: "ADR-028"
+    titel: "De reducer negeert late acties; evaluatie is een veld van de beurt"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-29
+    implementatie-datum: 2026-09-29
+    beslissing: "De reducer is puur en negeert acties die niet bij de huidige state passen in plaats van te gooien; de evaluatie van een gebruikersbeurt is een veld evaluation van de beurt, geen beurtstatus"
+    notitie: "Overgezet uit plan.md (HDR-015): sectie State model zonder rij-ids; twee besluiten. Overlapt deels met ADR-018 en ADR-021. De datum is afgeleid van de vroegste logrij over het negeren van late acties"
+    bestand: adr-028-reducer-negeert-late-acties.md
+  - id: "ADR-029"
+    titel: "Geen mock-STT"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-03
+    implementatie-datum: 2026-10-03
+    beslissing: "Er is geen mock voor speech-to-text; de Edit-bediening dekt getypte invoer"
+    notitie: "Overgezet uit plan.md (HDR-015): één regel in het stage 2-gedeelte. De datum is een aanname (de mockkeuzes van stage 2)"
+    bestand: adr-029-geen-mock-stt.md

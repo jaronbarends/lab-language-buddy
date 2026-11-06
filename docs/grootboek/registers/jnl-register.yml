@@ -53,3 +53,15 @@ jnls:
     doel-records:
       - "per kwestie een record zodra er een besluit valt"
     bestand: jnl-004-openstaande-kwesties.md
+  - id: "JNL-005"
+    titel: "Metingen van de corrector"
+    status: discovery
+    datum: 2026-10-06
+    laatste-sessie: 2026-11-06
+    kwesties-totaal: 4
+    kwesties-besloten: 0
+    kwesties-open: 4
+    kwesties-geparkeerd: 0
+    doel-records:
+      - "per kwestie een record zodra er een besluit valt"
+    bestand: jnl-005-metingen-van-de-corrector.md

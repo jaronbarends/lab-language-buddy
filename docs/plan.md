@@ -1,5 +1,9 @@
 # Language buddy — plan and decision record
 
+> **Bevroren.** Dit plan wordt niet meer bijgehouden en is geen bron meer (HDR-015). De beslissingen
+> staan als records in `docs/grootboek/`. Dit bestand blijft alleen staan om na te gaan waar een oud
+> besluit is gebleven, en wordt in de volgende commit verwijderd.
+
 **This is a living document.** It is updated in the same commit as the code change that
 invalidates it, so the plan and the codebase never disagree for longer than one commit.
 The decision log at the bottom records everything that changed after the original plan was

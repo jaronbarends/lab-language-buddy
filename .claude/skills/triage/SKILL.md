@@ -1,65 +1,64 @@
 ---
 name: triage
 description: >
-  Determines the verification regime (trivial / normal / risky) before every build task,
-  per the staffel: classify by the TYPE of change, not its size. Always load this skill
-  before starting a builder agent or delegating a build task — including a "small fix",
-  "quick change" or "one-liner": that is exactly when triage decides whether the light
-  regime is allowed. Trigger on: build task, starting a builder, determining the regime,
-  the staffel, cutting a wave unit, executing a plan, delegating to a builder. NOT for:
-  external research, a review request, or chasing an existing bug (debugger) — those roles
-  have their own entry point.
+  Bepaalt het verificatieregime (trivial / normal / risky) vóór elke build-taak, volgens de
+  staffel: classificeer op het TYPE wijziging, niet op de omvang. Laad deze skill altijd
+  voordat je een builder-agent start of een build-taak delegeert, ook bij een "kleine fix",
+  "snelle aanpassing" of "one-liner": juist dan beslist triage of het lichte regime mag.
+  Trigger op: build-taak, een builder starten, het regime bepalen, de staffel, een
+  wave-eenheid afsnijden, een plan uitvoeren, delegeren aan een builder. NIET voor: extern
+  onderzoek, een reviewverzoek of het najagen van een bestaande bug (debugger): die rollen
+  hebben een eigen ingang.
 ---
 
-# Triage — the right amount of proof per change
+# Triage — de juiste hoeveelheid bewijs per wijziging
 
-One uniform, heavy verification regime is both slow and unreliable: in the largest failure
-study of multi-agent systems (MAST), *incorrect* verification is a bigger failure category
-than *absent* verification. The industry (Meta, Prime Video) classifies the change itself and
-staffles the assurance accordingly. This skill does that for our setup: you — the lead agent
-— answer four questions about the task and hand the verdict to the builder. Size is
-deliberately not one of the questions: the most dangerous changes are often the smallest
-(twelve lines in a schema), the safest often the largest (thousands of lines of generated
-catalogue).
+Eén uniform, zwaar verificatieregime is zowel traag als onbetrouwbaar: in de grootste
+faalstudie van multi-agent-systemen (MAST) is *onjuiste* verificatie een grotere faalcategorie
+dan *afwezige* verificatie. De industrie (Meta, Prime Video) classificeert de wijziging zelf en
+staffelt de borging daarnaar. Deze skill doet dat voor onze opzet: jij, de aansturende agent,
+beantwoordt vier vragen over de taak en geeft het oordeel mee aan de builder. Omvang is
+bewust geen van de vragen: de gevaarlijkste wijzigingen zijn vaak de kleinste (twaalf regels
+in een schema), de veiligste vaak de grootste (duizenden regels gegenereerde catalogus).
 
-## The four type questions
+## De vier typevragen
 
-Answer them based on the task and the files the change will touch. No configuration needed —
-look at what the change *is*.
+Beantwoord ze op basis van de taak en de bestanden die de wijziging raakt. Geen configuratie
+nodig: kijk naar wat de wijziging *is*.
 
-1. **Data** — does this touch a schema, migration, seed, or a destructive transformation of
-   real data?
-2. **Machine contract** — does the change force consumers (other code, clients, other
-   systems) to adapt? Think: a shared type, the shape of an API, an event format, a field
-   being renamed, removed or made required. A UI is not a machine contract: moving a button
-   breaks no consumer. Adding something optional breaks no one either.
-3. **Reversibility** — is this reverted with one revert or flag, or does it run once against
-   real data or outward (email, deploy, payment)?
-4. **Coverage and pattern** — is there a mechanical gate on the path (test, lint, snapshot,
-   check), and is this a known pattern in this project?
+1. **Data** — raakt dit een schema, migratie, seed, of een destructieve transformatie van
+   echte data?
+2. **Machinecontract** — dwingt de wijziging afnemers (andere code, clients, andere systemen)
+   zich aan te passen? Denk aan: een gedeeld type, de vorm van een API, een eventformaat, een
+   veld dat hernoemd, verwijderd of verplicht wordt. Een UI is geen machinecontract: een knop
+   verplaatsen breekt geen afnemer. Iets optioneels toevoegen breekt ook niemand.
+3. **Omkeerbaarheid** — wordt dit teruggedraaid met één revert of flag, of loopt het één keer
+   tegen echte data of naar buiten (e-mail, deploy, betaling)?
+4. **Dekking en patroon** — staat er een mechanische poort op het pad (test, lint, snapshot,
+   check), en is dit een bekend patroon in dit project?
 
-## The hard triggers → always RISKY, regardless of size
+## De harde triggers → altijd RISKY, ongeacht de omvang
 
-- data changes, migrations, seeds against real environments
-- machine contracts (definition above)
-- authentication and authorization
-- secrets and credentials
-- irreversible outward actions (sending, publishing, paying)
+- datawijzigingen, migraties, seeds tegen echte omgevingen
+- machinecontracten (definitie hierboven)
+- authenticatie en autorisatie
+- secrets en credentials
+- onomkeerbare acties naar buiten (versturen, publiceren, betalen)
 
-## The three regimes
+## De drie regimes
 
-| Regime | When | What it means |
+| Regime | Wanneer | Wat het betekent |
 |---|---|---|
-| **trivial** | all five: localized · reversible · no contract · covered path · known pattern | builder-light (one-line assignment, three-line report), no reviewer — the mechanical gates are the assurance |
-| **normal** | real behavior change, no hard trigger | full builder contract + fresh-eyes reviewer, as usual |
-| **risky** | one or more hard triggers | full regime plus extra care; flag the approach to Jarón if there's doubt |
+| **trivial** | alle vijf: lokaal · omkeerbaar · geen contract · gedekt pad · bekend patroon | builder-light (opdracht van één regel, rapport van drie regels), geen reviewer: de mechanische poorten zijn de borging |
+| **normal** | echte gedragswijziging, geen harde trigger | volledig builder-contract + reviewer met frisse ogen, zoals gebruikelijk |
+| **risky** | een of meer harde triggers | volledig regime plus extra zorg; leg de aanpak bij twijfel voor aan Jarón |
 
-**Guardrail:** when in doubt → normal. The staffel saves time on the clear cases; doubtful
-cases are by definition not clear.
+**Vangrail:** bij twijfel → normal. De staffel bespaart tijd bij de duidelijke gevallen;
+twijfelgevallen zijn per definitie niet duidelijk.
 
-## The verdict format
+## Het oordeelformaat
 
-Put the verdict literally at the top of the builder's assignment:
+Zet het oordeel letterlijk bovenaan de opdracht van de builder:
 
 ```
 regime: trivial — descriptive text next to the code, snapshot-covered, no contract
@@ -67,24 +66,24 @@ regime: normal — new behavior in a helper, covered path, no trigger
 regime: risky — touches the database schema (machine contract)
 ```
 
-One line: the regime plus the reasoning. The builder reads which contract applies from this
-(see `builder.md`'s regime section); the guard-hook refuses a builder-start without this line.
+Eén regel: het regime plus de redenering. De builder leest hieruit welk contract geldt (zie
+de regime-sectie in `builder.md`); de guard-hook weigert een builder-start zonder deze regel.
 
-**The guard's limit — be honest about it.** The guard only catches builder-starts from the
-lead thread. A builder started by a workflow script or a team-lead agent (a call that itself
-comes from an agent) always passes the guard. When orchestrating at a deeper level, you are
-the assurance yourself: put the regime verdict in each agent assignment's prompt — the guard
-does not check it there.
+**De grens van de guard — wees daar eerlijk over.** De guard vangt alleen builder-starts vanuit
+de hoofdthread. Een builder die door een workflowscript of een team-lead-agent wordt gestart
+(een aanroep die zelf van een agent komt) passeert de guard altijd. Orkestreer je op een
+dieper niveau, dan ben jij zelf de borging: zet het regime-oordeel in de prompt van elke
+agent-opdracht; de guard controleert het daar niet.
 
-## Examples (calibration cases)
+## Voorbeelden (ijkgevallen)
 
-Deliberately generic — recognize the type, not the path; this works in any stack:
+Bewust generiek: herken het type, niet het pad; dit werkt in elke stack:
 
-- Updating 84 three-line description files, next to the code, with snapshot tests on the
-  folder → **trivial** (large in lines, small in risk: no contract, covered, reversible).
-- A new pure helper function with its own test → **normal** (new behavior, covered path, no
-  hard trigger).
-- Twelve lines in the database schema, including a field becoming required → **risky**
-  (machine contract: forces consumers to adapt, regardless of size).
-- A functional change in a screen without a test on the path → **normal** (no hard trigger,
-  but coverage is missing — so not trivial; the guardrail does its job).
+- 84 beschrijvingsbestanden van drie regels bijwerken, naast de code, met snapshot-tests op de
+  map → **trivial** (groot in regels, klein in risico: geen contract, gedekt, omkeerbaar).
+- Een nieuwe pure helperfunctie met een eigen test → **normal** (nieuw gedrag, gedekt pad,
+  geen harde trigger).
+- Twaalf regels in het databaseschema, waaronder een veld dat verplicht wordt → **risky**
+  (machinecontract: dwingt afnemers zich aan te passen, ongeacht de omvang).
+- Een functionele wijziging in een scherm zonder test op het pad → **normal** (geen harde
+  trigger, maar de dekking ontbreekt, dus niet trivial; de vangrail doet zijn werk).

@@ -4,6 +4,6 @@
     "docs/grootboek/software-architectuur.md",
     "docs/code-architectuur.md"
   ],
-  "leadMessage": "Duty to communicate: {path} is a leading document and was just changed. Before you continue, tell Jarón what changed and why, show the concrete change, and ask him to check it. If you already did this for this change, say nothing more.",
-  "subagentMessage": "Duty to communicate: {path} is a leading document and was just changed. You cannot ask Jarón yourself. List this change under open points in your report: what changed, why, and the concrete change. The lead thread passes it on and asks for the check."
+  "leadMessage": "Communicatieplicht: {path} is een leidend document en is zojuist gewijzigd. Vertel Jarón voordat je verdergaat wat er veranderd is en waarom, toon de concrete wijziging en vraag hem die te controleren. Heb je dit voor deze wijziging al gedaan, zeg dan verder niets meer.",
+  "subagentMessage": "Communicatieplicht: {path} is een leidend document en is zojuist gewijzigd. Je kunt Jarón zelf niets vragen. Zet deze wijziging onder de open punten in je rapport: wat er veranderd is, waarom, en de concrete wijziging. De hoofdthread geeft het door en vraagt om de controle."
 }

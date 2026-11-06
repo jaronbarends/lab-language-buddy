@@ -110,11 +110,11 @@ function main() {
   }
 
   deny(
-    'The lead thread does not write to src/ or spikes/ directly (CLAUDE.md, "subagent-tenzij"). ' +
-      'Delegate this change to a builder subagent, or, if Jarón has explicitly asked the lead ' +
-      'thread to make this edit itself, create ' +
+    'De hoofdthread schrijft niet rechtstreeks naar src/ of spikes/ (CLAUDE.md, "subagent-tenzij"). ' +
+      'Delegeer deze wijziging aan een builder subagent, of, als Jarón de hoofdthread uitdrukkelijk ' +
+      'heeft gevraagd deze wijziging zelf te maken, maak ' +
       OVERRIDE_FILE +
-      ' with {"activatedAt": "<ISO timestamp>", "durationMinutes": 15} and retry.'
+      ' aan met {"activatedAt": "<ISO timestamp>", "durationMinutes": 15} en probeer het opnieuw.'
   );
   process.exit(0);
 }

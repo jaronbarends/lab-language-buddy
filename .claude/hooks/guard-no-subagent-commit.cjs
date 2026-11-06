@@ -48,8 +48,8 @@ function main() {
         hookEventName: 'PreToolUse',
         permissionDecision: 'deny',
         permissionDecisionReason:
-          `Subagents (agent_type: "${input.agent_type}") may not commit or push. ` +
-          "Report what changed back to the lead thread; only the lead commits, and only on Jarón's go-ahead.",
+          `Subagents (agent_type: "${input.agent_type}") mogen niet committen of pushen. ` +
+          'Meld wat er veranderd is terug aan de hoofdthread; alleen de hoofdthread commit, en alleen na Jaróns go-ahead.',
       },
     };
     process.stdout.write(JSON.stringify(output));

@@ -6,19 +6,19 @@ paths:
   - "src/app/**/*.css"
 ---
 
-# Safari on iPhone is a hard requirement
+# Safari op iPhone is een harde eis
 
-Full reasoning: ADR-026 (Safari/iPhone-eisen).
-The short form:
+Volledige onderbouwing: ADR-026 (Safari/iPhone-eisen).
+De korte vorm:
 
-1. Never hardcode a recording mimeType. Ask `MediaRecorder.isTypeSupported`, then read
-   back the real `mediaRecorder.mimeType`.
-2. Unlock audio inside every gesture: play the silent WAV on the one reused
-   `HTMLAudioElement` synchronously, before any `await`, in each click handler that can
-   lead to playback. In a form, that is the submit button's `onClick`, not `onSubmit`.
-3. Layout is a flex column at `100dvh`, with `viewport-fit=cover` and the safe-area insets.
-   No `position: fixed` bar.
-4. Every focusable control is at least 16px, or iOS zooms on focus.
-5. An editable bubble is `contenteditable="plaintext-only"`, not a textarea.
-6. Test on a real device (`next dev` plus an ngrok tunnel; `getUserMedia` needs HTTPS).
-   Reasoning from the spec is not a test.
+1. Hardcode nooit een mimeType voor opname. Vraag `MediaRecorder.isTypeSupported` en lees daarna
+   de echte `mediaRecorder.mimeType` terug.
+2. Ontgrendel audio binnen elke gesture: speel de stille WAV af op het ene hergebruikte
+   `HTMLAudioElement`, synchroon, vóór elke `await`, in elke click handler die tot afspelen kan
+   leiden. In een formulier is dat de `onClick` van de submit-knop, niet `onSubmit`.
+3. De layout is een flex column op `100dvh`, met `viewport-fit=cover` en de safe-area insets.
+   Geen `position: fixed` balk.
+4. Elk focusbaar element is minstens 16px, anders zoomt iOS in bij focus.
+5. Een bewerkbare bubbel is `contenteditable="plaintext-only"`, geen textarea.
+6. Test op een echt toestel (`next dev` plus een ngrok-tunnel; `getUserMedia` vereist HTTPS).
+   Redeneren vanuit de spec is geen test.

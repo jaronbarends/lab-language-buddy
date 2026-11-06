@@ -65,9 +65,9 @@ function main() {
 
   if (!REGIME_LINE.test(head)) {
     deny(
-      'Starting the builder needs a triage verdict first. Load the triage skill, classify ' +
-        'the task (trivial / normal / risky, by type — not size), and put ' +
-        '"regime: <trivial|normal|risky> — <reason>" on the first line of the prompt.'
+      'Voor het starten van de builder is eerst een triage-oordeel nodig. Laad de triage skill, classificeer ' +
+        'de taak (trivial / normal / risky, op type — niet op omvang), en zet ' +
+        '"regime: <trivial|normal|risky> — <reden>" op de eerste regel van de prompt.'
     );
   }
 

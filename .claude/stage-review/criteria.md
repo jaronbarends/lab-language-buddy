@@ -1,71 +1,74 @@
-# Criteria: maintainability review of one stage
+# Criteria: onderhoudbaarheidsreview van één stage
 
-Project-specific part of the stage-review skill. The script copies this file next to the
-review results, because the reviewer's worktree has `.claude/` stripped.
+Projectspecifiek deel van de stage-review-skill. Het script kopieert dit bestand naast de
+reviewresultaten, omdat `.claude/` uit de worktree van de reviewer gestript is.
 
-Scope: what this stage changed (the stage diff, see the review prompt). Read surrounding
-code to understand it, but report only findings that sit in, or are caused by, the stage
-diff. Code from earlier stages that this diff did not touch is out of scope.
+Scope: wat deze stage veranderde (de stage-diff, zie de reviewprompt). Lees omliggende code om
+haar te begrijpen, maar rapporteer alleen bevindingen die in de stage-diff zitten of erdoor
+veroorzaakt worden. Code uit eerdere stages die deze diff niet raakte, valt buiten de scope.
 
-The question behind every finding: **what would make the next change here slower or
-riskier than it needs to be?** A finding that cannot answer that is taste, not a finding.
+De vraag achter elke bevinding: **wat maakt de volgende wijziging hier trager of riskanter dan
+nodig is?** Een bevinding die dat niet kan beantwoorden is smaak, geen bevinding.
 
-## What to check
+## Wat je controleert
 
-1. **Boundaries.** Is it clear what runs on the server and what on the client? Does
-   anything cross that line that should not (secrets, provider error text, server-only
-   imports in client code)? Does logic live where a reader would look for it?
-   Also check **ownership**: for every value the client chooses and the server forwards
-   under its own credential (an id, a session or conversation handle, a URL), who is
-   allowed to use it? Does the server bind it to a caller or session, or does it trust that
-   only the rightful owner can know it? Name the assumption. If nothing in the code
-   enforces it, report it. Mark such a finding `observed` when the code visibly lacks the
-   check, and `inferred` when it depends on how the provider or deployment behaves, and say
-   which fact you would need.
-2. **Duplication and drift.** Where the stage has parallel paths (a real and a mock
-   implementation, client and server copies of a shape), where do they repeat each other,
-   and where could they silently diverge (request, response and error shapes)? Is there a
-   single source of truth for each contract between client and server?
-3. **Types at the edges.** Is data from outside (request body, model output, env) validated
-   before it is trusted? Look for `any`, `as` casts, non-null assertions, and optional
-   fields that are really required. Can a type express a combination that means nothing?
-4. **Failure and state.** Are failure paths handled the same way everywhere (timeout, bad
-   input, provider error, empty result)? Can the session state machine reach a state the UI
-   does not handle? Are limits and deadlines defined once, or scattered as magic numbers?
-5. **Legibility without context.** Could someone who has not seen the plan or the chat
-   history understand why the code is shaped this way? Missing "why" comments on
-   non-obvious choices count. Comments that restate the code do not. A comment that claims
-   something that is not true (a flag that does not exist) is a finding.
-6. **Dead and leftover code.** Scaffolding that this stage made obsolete, unused exports,
-   unused dependencies in package.json.
-7. **Testability.** Can the core logic be exercised without calling the external service?
-   Where are the seams, and are they in the right place? (The project has decided not to
-   have a test suite for now; judge only whether the seam is cheap to add later.)
-8. **House conventions** (checkable, report as low severity unless it hides a bug):
-   function declarations rather than `const f = () =>`; every `if` braced and multi-line;
-   early returns over nesting; boolean names that read as a sentence (`xIsValid`,
-   `yHasValue`, not `isXValid`); event handlers `handleX`; hooks `useX`; kebab-case
-   directories.
+1. **Grenzen.** Is duidelijk wat op de server draait en wat op de client? Steekt er iets die
+   grens over dat dat niet hoort te doen (secrets, foutteksten van de provider,
+   server-only imports in clientcode)? Staat logica waar een lezer haar zou zoeken?
+   Controleer ook het **eigenaarschap**: voor elke waarde die de client kiest en de server
+   onder zijn eigen credential doorgeeft (een id, een sessie- of gespreks-handle, een URL):
+   wie mag haar gebruiken? Bindt de server haar aan een aanroeper of sessie, of vertrouwt hij
+   erop dat alleen de rechtmatige eigenaar haar kan kennen? Benoem de aanname. Dwingt niets in
+   de code het af, rapporteer het dan. Markeer zo'n bevinding `observed` als de code de
+   controle zichtbaar mist, en `inferred` als het afhangt van het gedrag van de provider of de
+   deployment, en zeg welk feit je nodig zou hebben.
+2. **Duplicatie en drift.** Waar de stage parallelle paden heeft (een echte en een mock-
+   implementatie, client- en servercopieën van een vorm): waar herhalen ze elkaar, en waar
+   kunnen ze ongemerkt uiteenlopen (request-, response- en foutvormen)? Is er voor elk
+   contract tussen client en server één enkele bron van waarheid?
+3. **Types aan de randen.** Wordt data van buiten (request body, modeloutput, env)
+   gevalideerd voordat ze vertrouwd wordt? Zoek naar `any`, `as`-casts, non-null assertions en
+   optionele velden die eigenlijk verplicht zijn. Kan een type een combinatie uitdrukken die
+   niets betekent?
+4. **Falen en state.** Worden faalpaden overal op dezelfde manier afgehandeld (timeout, foute
+   invoer, providerfout, leeg resultaat)? Kan de state machine van de sessie een toestand
+   bereiken die de UI niet afhandelt? Zijn limieten en deadlines één keer gedefinieerd, of
+   verspreid als magic numbers?
+5. **Leesbaarheid zonder context.** Kan iemand die het plan of de chatgeschiedenis niet
+   gezien heeft begrijpen waarom de code zo is vormgegeven? Ontbrekende "waarom"-comments bij
+   niet-vanzelfsprekende keuzes tellen mee. Comments die de code herhalen niet. Een comment
+   die iets beweert wat niet waar is (een flag die niet bestaat) is een bevinding.
+6. **Dode en achtergebleven code.** Steigerwerk dat deze stage overbodig maakte, ongebruikte
+   exports, ongebruikte dependencies in package.json.
+7. **Testbaarheid.** Kan de kernlogica worden uitgeoefend zonder de externe dienst aan te
+   roepen? Waar zitten de naden (seams), en zitten ze op de juiste plek? (Het project heeft
+   besloten voorlopig geen testsuite te hebben; beoordeel alleen of de seam later goedkoop toe
+   te voegen is.)
+8. **Huisconventies** (controleerbaar, rapporteer als low severity tenzij het een bug
+   verbergt): function declarations in plaats van `const f = () =>`; elke `if` met accolades
+   en over meerdere regels; early returns boven nesting; booleannamen die als zin lezen
+   (`xIsValid`, `yHasValue`, niet `isXValid`); event handlers `handleX`; hooks `useX`;
+   kebab-case-mappen.
 
 ## Next.js
 
-This repo runs a Next.js version with breaking changes. Before judging any route handler,
-caching, or routing detail, read the relevant guide in `node_modules/next/dist/docs/`. If
-you are unsure whether something is wrong or just new, say so rather than guessing.
+Deze repo draait een Next.js-versie met breaking changes. Lees, voordat je een route handler,
+caching of een routingdetail beoordeelt, de relevante gids in `node_modules/next/dist/docs/`.
+Weet je niet zeker of iets fout of gewoon nieuw is, zeg dat dan in plaats van te gokken.
 
-## Out of scope
+## Buiten scope
 
-- Visual design and layout.
-- New features or "while you are here" additions. If something is missing, say so as a
-  finding; do not propose scope.
-- Style preferences that are not in the conventions above.
-- Speculative scale concerns. Judge for this app at its current size, and say when a point
-  only matters at a larger scale.
-- Facts outside the code (whether the app will be public, whether tests are planned). When
-  a finding depends on one, mark it `suspicion` and say which fact you would need. It does
-  not belong among the medium findings unless the code is wrong either way.
+- Visueel ontwerp en layout.
+- Nieuwe features of "nu je toch bezig bent"-toevoegingen. Ontbreekt er iets, meld dat dan als
+  bevinding; stel geen scope voor.
+- Stijlvoorkeuren die niet in de conventies hierboven staan.
+- Speculatieve schaalzorgen. Beoordeel voor deze app op haar huidige omvang, en zeg het
+  wanneer een punt pas op grotere schaal telt.
+- Feiten buiten de code (of de app openbaar wordt, of er tests gepland zijn). Hangt een
+  bevinding van zo'n feit af, markeer haar dan `suspicion` en zeg welk feit je nodig zou
+  hebben. Ze hoort niet bij de medium findings, tenzij de code in beide gevallen fout is.
 
-## Do not assume intent
+## Neem geen opzet aan
 
-Do not assume something is deliberate because it is there. If a choice looks arbitrary,
-report it and say what would have to be true for it to be right.
+Neem niet aan dat iets bewust is omdat het er staat. Lijkt een keuze willekeurig, rapporteer
+haar dan en zeg wat waar zou moeten zijn om haar juist te laten zijn.

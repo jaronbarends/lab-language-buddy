@@ -7,8 +7,6 @@
 //   3. every repo path in backticks in the context docs exists   (error)
 //   4. docs/index.yml lists existing paths, and every .md under
 //      docs/ is listed                                           (error)
-//   5. plan.md is not more than 30 days older than the newest
-//      commit that touched src/                                  (warning)
 //   6. every grootboek register holds each record id once, and
 //      the record file exists and starts with its own id          (error)
 //   7. a leading document's werkgebied paths exist (error), and
@@ -16,7 +14,6 @@
 //   8. the incident register is well formed (error), and no pattern
 //      has three incidents without a codified fix                (warning)
 //   9. no grootboek record or register is dated after today      (error)
-import { execFileSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import { findDrift } from "./drift-signal.mjs";
@@ -24,7 +21,6 @@ import { analyseIncidents } from "./incidents.mjs";
 import { checkRecordDates, checkRecords } from "./records.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1");
-const MAX_PLAN_LAG_DAYS = 30;
 
 const errors = [];
 const warnings = [];
@@ -117,23 +113,6 @@ for (const path of registeredPaths) {
 for (const file of listFiles("docs", [".md"])) {
   if (!registeredPaths.includes(file)) {
     errors.push(`index: ${file} is not listed in docs/index.yml`);
-  }
-}
-
-// 5. the plan keeps up with the code
-function lastCommitTime(path) {
-  const output = execFileSync("git", ["log", "-1", "--format=%ct", "--", path], {
-    cwd: ROOT,
-    encoding: "utf8",
-  }).trim();
-  return output ? Number(output) : null;
-}
-const planTime = lastCommitTime("docs/plan.md");
-const sourceTime = lastCommitTime("src");
-if (planTime && sourceTime) {
-  const lagDays = Math.floor((sourceTime - planTime) / 86400);
-  if (lagDays > MAX_PLAN_LAG_DAYS) {
-    warnings.push(`plan: docs/plan.md is ${lagDays} days older than the newest change in src/`);
   }
 }
 

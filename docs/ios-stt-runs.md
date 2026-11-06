@@ -1,6 +1,6 @@
 # iPhone: native speech recognition, second turn and volume — run summary
 
-The runs behind open question 14 in `plan.md` (found 10-13, investigated 10-14). One
+The runs behind issue K9 in JNL-004 (Openstaande kwesties; found 10-13, investigated 10-14). One
 iPhone (iOS version not recorded), Safari, `NEXT_PUBLIC_STT_PROVIDER=native` unless a row says
 Deepgram, Dutch unless noted, the AI opening the conversation, two user turns per run.
 

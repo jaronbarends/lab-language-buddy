@@ -49,8 +49,8 @@ several Safari-only failures that never show up in desktop Chrome. Anything touc
 recording or layout needs testing on a real device, not just reasoning from the spec.
 
 Everything else — styling approach, state management, component structure — was the
-agent's call. Hosting is Vercel. The reasons behind these choices are in the Decisions
-table of [`docs/plan.md`](docs/plan.md).
+agent's call. Hosting is Vercel. The reasons behind these choices are in the decision
+records under [`docs/grootboek/`](docs/grootboek/).
 
 ## Repository layout
 
@@ -149,15 +149,14 @@ Built in reviewable stages, one branch each, with a check-in between.
 
 ## Planning and decisions
 
-[`docs/plan.md`](docs/plan.md) is the living plan: the state model, the component layout,
-every design decision with its reasoning, what is out of scope, and a dated decision log
-of everything that changed after the original plan was approved. It is updated in the same
+Decisions and their reasoning are kept as numbered records in [`docs/grootboek/`](docs/grootboek/),
+found through the registers in `docs/grootboek/registers/`. A record is updated in the same
 commit as the code change that invalidates it, so the two never disagree for longer than
 one commit.
 
-Read it before changing anything structural — several things that look arbitrary (no Stop
-button, `editing` as its own state, the live transcript living outside the thread) are
-deliberate and the reasoning is recorded there.
+Read the relevant record before changing anything structural — several things that look
+arbitrary (no Stop button, `editing` as its own state, the live transcript living outside
+the thread) are deliberate and the reasoning is recorded there.
 
 Working agreements for contributors and AI agents (branches, commits, hooks, the subagent
 working model) are in [`CLAUDE.md`](CLAUDE.md); `docs/index.yml` is the table of contents

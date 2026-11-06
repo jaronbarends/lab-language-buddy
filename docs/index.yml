@@ -13,11 +13,8 @@ documents:
     what: Warning that this Next.js version differs from training data; read node_modules/next/dist/docs first.
     read_when: always loaded; before writing any Next.js code.
   - path: docs/plan.md
-    what: Living plan and decision record. See `plan_sections` for where to look.
-    read_when: before a structural change; when a choice in the code looks arbitrary.
-  - path: docs/adr/0001-decisions-live-in-the-plan.md
-    what: Why decisions are kept in plan.md instead of one file each.
-    read_when: deciding where to record a decision.
+    what: The retired plan, frozen as the source of the migration to the grootboek (HDR-015). Not maintained; to be deleted.
+    read_when: only to trace where an old decision went; use the grootboek records for everything else.
   - path: docs/code-architectuur.md
     what: Code-organization doctrine (REQ-AH-10, agentic harnas onderdeel D) — qualitative rules only, no thresholds or register.
     read_when: splitting or growing a file; before adding a new structural pattern.
@@ -310,49 +307,21 @@ documents:
     what: ARC's grootboek skill (v1.5, copied from the ARC MCP resource arc://skill/grootboek/1.5): writing guides and examples per document type, registers, drift. Its text is Dutch.
     read_when: writing or updating any document under docs/grootboek.
 
-# Headings in docs/plan.md, by topic. Search for the heading; line numbers would drift.
-plan_sections:
-  - heading: "## Fixed constraints"
-    topic: what was specified up front and is not an open question
-  - heading: "## Decisions"
-    topic: the standing choices, with the reason (framework, hosting, persistence, styling, state, providers, errors)
-  - heading: "## State model"
-    topic: session and turn states
-  - heading: "## Config flow"
-    topic: how session config reaches the screens
-  - heading: "## File layout"
-    topic: the folder tree
-  - heading: "## Design system"
-    topic: tokens, reset and element CSS carried over from the existing app, and the deltas
-  - heading: "## Safari/iPhone requirements"
-    topic: the numbered requirements and the recording-format resolution
-  - heading: "## Next.js 16 specifics"
-    topic: what differs from Next 14/15
-  - heading: "## Build stages"
-    topic: stages 1 to 4 and their status
-  - heading: "## Open questions"
-    topic: what is not decided
-  - heading: "## Decision log"
-    topic: dated changes after approval, with the Source column (agent, you, ported)
-  - heading: "## Keeping the experiment honest"
-    topic: what the agent may and may not read from the reference repo
-
-# Decisions that have a row in plan.md "Decisions". Name -> where the reason is.
+# Standing decisions and where the reason is. The records in docs/grootboek are leading;
+# find the rest through the registers in docs/grootboek/registers/.
 decisions:
   - name: Framework (Next.js 16, TypeScript strict)
-    where: "docs/plan.md, ## Decisions"
+    where: "docs/grootboek/adr/adr-013-nextjs-16-met-typescript-strict.md"
   - name: Hosting (Vercel)
-    where: "docs/plan.md, ## Decisions"
+    where: "docs/grootboek/adr/adr-014-hosting-vercel.md"
   - name: Persistence (none)
-    where: "docs/plan.md, ## Decisions"
+    where: "docs/grootboek/pdr/pdr-002-geen-persistentie.md"
   - name: Styling (CSS Modules over the ported design system)
-    where: "docs/plan.md, ## Decisions"
+    where: "docs/grootboek/adr/adr-015-styling-css-modules.md"
   - name: State (one useReducer session machine)
-    where: "docs/plan.md, ## Decisions"
+    where: "docs/grootboek/adr/adr-018-sessiestate-een-reducer.md"
   - name: STT and TTS providers behind registries
-    where: "docs/plan.md, ## Decisions; src/lib/CLAUDE.md"
-  - name: Decisions are kept in plan.md
-    where: "docs/adr/0001-decisions-live-in-the-plan.md"
+    where: "docs/grootboek/adr/adr-009-stt-providerkeuze-en-configuratie.md, docs/grootboek/adr/adr-020-tts-providers-en-stemmen.md; src/lib/CLAUDE.md"
 
 # What must change together. The check script verifies the first two mechanically.
 travels_together:
@@ -360,5 +329,5 @@ travels_together:
     also: .env.example and the env block in README.md
   - when: a file is added under docs/ or a path in this register moves
     also: this file
-  - when: code changes a choice that plan.md records
-    also: docs/plan.md and a Decision log row, in the same commit
+  - when: code changes a choice that a grootboek record holds
+    also: that record (update or supersede it), in the same commit

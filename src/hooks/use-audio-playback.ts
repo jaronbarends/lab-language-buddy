@@ -163,8 +163,8 @@ export function useAudioPlayback(
 
 /**
  * On an iPhone, the browser's own speech recognition can fail once the AI's speech has
- * played to its natural end (`ended`): it starts, but receives no audio (open question
- * 14 in docs/plan.md). The cause is not known. It did not happen when Reply cut the
+ * played to its natural end (`ended`): it starts, but receives no audio (see JNL-004,
+ * Openstaande kwesties, K9). The cause is not known. It did not happen when Reply cut the
  * speech off while it was still playing, so we do the same ourselves: pause shortly
  * before the end and call `onEarlyEnd` from here, so the audio element never reaches
  * `ended`. The caller's `onended` handler stays as the fallback for when the duration is

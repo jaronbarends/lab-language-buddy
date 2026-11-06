@@ -261,6 +261,9 @@ documents:
   - path: .claude/rules/code-style.md
     what: Code style.
     read_when: loads by itself when a file in src is touched.
+  - path: .claude/rules/nextjs-16.md
+    what: Twee Next.js 16-valkuilen waarbij een verkeerde aanname geruisloos slaagt (geen export const runtime in een route, SVG-imports zijn een URL-string).
+    read_when: laadt vanzelf bij werk in src/app, src/components of next.config.ts.
   - path: .claude/rules/safari-ios.md
     what: The Safari / iPhone rules in short form.
     read_when: loads by itself for components, hooks, STT code and CSS.

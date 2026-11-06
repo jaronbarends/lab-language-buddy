@@ -24,12 +24,12 @@ zelf in plaats van te delegeren.
 
 Rode bestanden gaan voor oranje. Beslis per bestand:
 
-- **Splitsen**, als de cohesievraag (§2.2) met "nee" beantwoord wordt — zaken die om
+- **Splitsen**, als de samenhangvraag (§2.2) met "nee" beantwoord wordt — zaken die om
   verschillende redenen veranderen. Splits op de naad (§2.1), verifieer met
   `npx tsc --noEmit` en `npm run lint` op je gewijzigde bestanden, en bevestig dat je het
   gedrag niet hebt veranderd: dit is een refactor, geen functiewijziging en geen opschoning
   voorbij de eigen vorm van het bestand.
-- **Een besluit `ceiling` of `excluded`**, als het bestand cohesief is en om een goede reden
+- **Een besluit `ceiling` of `excluded`**, als het bestand samenhangend is en om een goede reden
   groot (§2.2, §2.3). Leg dat zelf vast in `docs/code-architectuur-register.json` — positie,
   plafond indien van toepassing, en een reden van één zin in gewone taal. Raak
   `docs/code-architectuur.md` zelf niet aan: dat is doctrine en verandert alleen via Jarón. Het

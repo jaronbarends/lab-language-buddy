@@ -3,7 +3,7 @@
 - **Eén session reducer** (`session-reducer.ts`). Beurtstatussen zijn een discriminated union
   die per state data meedraagt. Voeg een state toe door de union uit te breiden, niet door een
   vlag toe te voegen.
-- **Providers zitten achter een registry in `index.ts`** (`tts/`, `stt/`). Een provider is één
+- **Providers vallen onder een registry in `index.ts`** (`tts/`, `stt/`). Een provider is één
   module; wisselen is een env var en verder niets. Een onbekende waarde gooit en noemt de
   geldige namen; er is nooit een fallback, zodat een typefout niet stilletjes een andere
   provider kiest.

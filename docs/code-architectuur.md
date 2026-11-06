@@ -1,135 +1,135 @@
-# Code architecture
+# Code-architectuur
 
-This document describes how this codebase should be organized so that an AI agent can work
-with it effectively. It is the doctrine side of the agentic harness (ARC's
-"het-agentic-harnas", onderdeel D): principles only, no thresholds and no per-file register.
-Those live in `docs/code-architectuur-register.json` and are read, not re-decided, by whoever
-builds.
+Dit document beschrijft hoe deze codebase georganiseerd moet zijn zodat een AI-agent er effectief
+mee kan werken. Het is de doctrinekant van het agentic harnas (ARC's "het-agentic-harnas",
+onderdeel D): alleen principes, geen drempels en geen register per bestand. Die staan in
+`docs/code-architectuur-register.json` en worden door wie bouwt gelezen, niet opnieuw beslist.
 
-The grootboek (`docs/grootboek/`) is the source for *what* this app is and *why* it is shaped the way
-it is. This document is the complementary *how*: how code should be organized so the agents
-building it stay effective.
+Het grootboek (`docs/grootboek/`) is de bron voor *wat* deze app is en *waarom* ze is gevormd
+zoals ze is. Dit document is het complement over *hoe*: hoe code georganiseerd moet zijn zodat de
+agents die haar bouwen effectief blijven.
 
-## 1. The thesis: code quality IS agent productivity
+## 1. De these: codekwaliteit IS agentproductiviteit
 
-This codebase is built and maintained almost entirely by Claude Code. Jarón reviews and
-decides; he does not write most of it. That makes code quality a question of
-**productivity**, not aesthetics: how well can an agent read, understand and safely change
-the code?
+Deze codebase wordt vrijwel geheel door Claude Code gebouwd en onderhouden. Jarón beoordeelt en
+beslist; het meeste schrijft hij zelf niet. Dat maakt codekwaliteit een kwestie van
+**productiviteit** en niet van esthetiek: hoe goed kan een agent de code lezen, begrijpen en
+veilig wijzigen?
 
-Three findings back this up:
+Drie bevindingen onderbouwen dit:
 
-- **Agents need healthier code than humans do.** CodeScene measured that human developers
-  understand code at a code-health score of 9.0/10; AI agents need at least 9.4/10. Below
-  that, defect risk rises by 60% or more — the agent cannot ask "what do you mean here?", so
-  it guesses, and guesses more often wrong in unhealthy code.
-- **84% of an agent's tokens go to observation.** JetBrains Research (NeurIPS 2025) found
-  that reading files, error messages and tool output — not generation — dominates an average
-  agent turn. Less irrelevant context in a file saves tokens and improves what gets
-  generated.
-- **AI-written code produces more issues than human-written code.** CodeRabbit measured 10.83
-  issues per AI-authored change versus 6.45 for human-authored ones — mainly logic/
-  correctness issues and over-abstraction. That is not an argument against AI code; it is an
-  argument for an architecture that compensates for those specific weaknesses.
+- **Agents hebben gezondere code nodig dan mensen.** CodeScene mat dat menselijke ontwikkelaars
+  code begrijpen bij een code-healthscore van 9,0/10; AI-agents hebben minstens 9,4/10 nodig.
+  Daaronder stijgt het defectrisico met 60% of meer — de agent kan niet vragen "wat bedoel je
+  hier?", dus hij gokt, en gokt vaker fout in ongezonde code.
+- **84% van de tokens van een agent gaat naar observatie.** JetBrains Research (NeurIPS 2025)
+  vond dat het lezen van bestanden, foutmeldingen en tooluitvoer — niet het genereren — een
+  gemiddelde agentbeurt domineert. Minder irrelevante context in een bestand bespaart tokens en
+  verbetert wat er wordt gegenereerd.
+- **AI-geschreven code geeft meer issues dan door mensen geschreven code.** CodeRabbit mat 10,83
+  issues per door AI geschreven wijziging tegenover 6,45 bij door mensen geschreven — vooral
+  logica-/correctheidsissues en over-abstractie. Dat is geen argument tegen AI-code; het is een
+  argument voor een architectuur die voor juist die zwaktes compenseert.
 
-Investing in how the code is organized is not overhead here — it is the lever that decides
-how effective the agent building it can be.
+Investeren in hoe de code is georganiseerd is hier geen overhead — het is de hefboom die bepaalt
+hoe effectief de agent kan zijn die haar bouwt.
 
-## 2. Qualitative rules
+## 2. Kwalitatieve regels
 
-Each rule describes a **when**, not a **how much**. Line count is a signal, never a trigger
-on its own — the threshold that turns it into a signal lives in the register (REQ-AH-11), not
-here.
+Elke regel beschrijft een **wanneer**, geen **hoeveel**. Het aantal regels is een signaal, nooit
+op zichzelf een trigger — de drempel die er een signaal van maakt staat in het register
+(REQ-AH-11), niet hier.
 
-### 2.1 Split at the seam of independent change
+### 2.1 Splits op de naad van onafhankelijke verandering
 
-The test: "if I change concern A, do I also need to understand concern B in the same file?"
-Yes → keep together. No → split.
+De toets: "als ik aspect A verander, moet ik dan ook aspect B in hetzelfde bestand begrijpen?"
+Ja → houd bij elkaar. Nee → splits.
 
-A file that mixes two concerns that change for unrelated reasons forces an agent to load
-context it does not need for either change. That costs tokens and raises the odds of an
-accidental edit.
+Een bestand dat twee aspecten mengt die om onafhankelijke redenen veranderen, dwingt een agent
+context te laden die hij niet voor beide wijzigingen nodig heeft. Dat kost tokens en vergroot
+de kans op een onbedoelde bewerking.
 
-### 2.2 Cohesion over compactness
+### 2.2 Samenhang boven compactheid
 
-A large file that is one cohesive domain is better than several small files that must be
-read together to make sense. Splitting cohesive code forces an agent to open multiple files
-and reconstruct the connection between them — more context consumed, not less.
+Een groot bestand dat één samenhangend domein is, is beter dan meerdere kleine bestanden die je
+samen moet lezen om ze te begrijpen. Samenhangende code splitsen dwingt een agent meerdere bestanden
+te openen en het verband daartussen te reconstrueren — meer context verbruikt, niet minder.
 
-The question is never "is this file too big?" but "does everything in it belong together for
-the same reason?" If yes, it is allowed to be large.
+De vraag is nooit "is dit bestand te groot?" maar "hoort alles erin om dezelfde reden bij
+elkaar?" Zo ja, dan mag het groot zijn.
 
-*Lived example:* `session-reducer.ts` (577 lines, the largest file in `src/`) is one state
-machine with one reducer. `src/lib/CLAUDE.md` already says why: a new state extends the
-discriminated union, it does not get bolted on as a separate flag elsewhere. Splitting the
-reducer by turn state would scatter one decision across files that all have to be read
-together to understand a single transition.
+*Praktijkvoorbeeld:* `session-reducer.ts` (577 regels, het grootste bestand in `src/`) is één
+state machine met één reducer. `src/lib/CLAUDE.md` zegt al waarom: een nieuwe state breidt de
+discriminated union uit en wordt niet als losse vlag ergens anders aangebouwd. De reducer splitsen
+per beurtstatus zou één beslissing verspreiden over bestanden die allemaal samen gelezen moeten
+worden om één transitie te begrijpen.
 
-### 2.3 A family of swappable implementations lives behind one registry
+### 2.3 Een verzameling verwisselbare implementaties valt onder één registry
 
-When several implementations of the same role exist (a TTS provider, an STT provider),
-they sit behind one registry module that picks between them by configuration — never by
-scattered `if (provider === ...)` checks at every call site. Switching is a single env var
-change, nothing else. An unknown value throws, naming the valid ones; it never silently
-falls back, so a typo cannot quietly leave the app on the wrong provider.
+Bestaan er meerdere implementaties van dezelfde rol (een TTS-provider, een STT-provider), dan
+vallen ze onder één registrymodule die op basis van configuratie tussen ze kiest — nooit via
+verspreide `if (provider === ...)`-controles op elke aanroepplek. Wisselen is één env var
+veranderen en verder niets. Een onbekende waarde gooit een fout en noemt de geldige; er is nooit
+een stille fallback, zodat een typefout de app niet ongemerkt op de verkeerde provider kan laten.
 
-*Lived example:* `src/lib/stt/index.ts`'s `getConfiguredStartFunction` — one typed map, one
-explicit throw on an unrecognized `NEXT_PUBLIC_STT_PROVIDER`. `src/lib/tts/` follows the same
-shape.
+*Praktijkvoorbeeld:* `getConfiguredStartFunction` in `src/lib/stt/index.ts` — één getypte map,
+één expliciete throw bij een onbekende `NEXT_PUBLIC_STT_PROVIDER`. `src/lib/tts/` heeft dezelfde
+vorm.
 
-### 2.4 Thin route handlers, logic lives beside them
+### 2.4 Dunne route handlers, de logica leeft ernaast
 
-A route handler (`src/app/api/**/route.ts`) is a thin wrapper: parse the request, call the
-logic, shape the response. It stays small by construction, not by rule — the moment a
-handler starts accumulating branching business logic instead of delegating to it, that is
-the seam (2.1) to split on.
+Een route handler (`src/app/api/**/route.ts`) is een dunne wrapper: de request parsen, de logica
+aanroepen, de response vormen. Hij blijft klein door constructie en niet door regel — zodra een
+handler vertakkende bedrijfslogica gaat opbouwen in plaats van te delegeren, is dat de naad (2.1)
+om op te splitsen.
 
-*Current state:* every route handler in `src/app/api/` is under 35 lines. Keep it that way by
-moving logic out, not by trimming the handler's own clarity.
+*Huidige stand:* elke route handler in `src/app/api/` is korter dan 35 regels. Houd het zo door
+logica eruit te halen, niet door de eigen duidelijkheid van de handler weg te knippen.
 
-### 2.5 Rule of three for extraction
+### 2.5 Regel van drie voor extractie
 
-Shared code moves to a shared location only at the third independent caller. Two callers →
-duplication is fine.
+Gedeelde code verhuist pas naar een gedeelde plek bij de derde onafhankelijke aanroeper. Twee
+aanroepers → duplicatie is prima.
 
-Extracting early creates a coupling that is harder to undo than the duplication it removed.
-An agent that sees two identical blocks can extract them on its own once a third caller
-appears; an agent that wants to change an existing abstraction first has to find out who
-depends on it — that is the more expensive mistake.
+Vroeg extraheren creëert een koppeling die moeilijker ongedaan te maken is dan de duplicatie die
+ze wegnam. Een agent die twee identieke blokken ziet, kan ze zelf extraheren zodra er een derde
+aanroeper komt; een agent die een bestaande abstractie wil wijzigen, moet eerst uitzoeken wie
+ervan afhangt — dat is de duurdere fout.
 
-### 2.6 No barrel files
+### 2.6 Geen barrel files
 
-No `index.ts` that only re-exports everything from a folder. Import directly from the module
-that defines what you need.
+Geen `index.ts` die alleen alles uit een map opnieuw exporteert. Importeer rechtstreeks uit de
+module die definieert wat je nodig hebt.
 
-A registry module (2.3) is not a barrel: it makes one decision (which implementation) and
-exports the result of that decision, not everything underneath it. There are currently no
-barrel files in `src/` — keep it that way as the codebase grows.
+Een registrymodule (2.3) is geen barrel: ze neemt één beslissing (welke implementatie) en
+exporteert het resultaat van die beslissing, niet alles eronder. Er zijn op dit moment geen
+barrel files in `src/` — houd dat zo terwijl de codebase groeit.
 
-## 3. How this document evolves
+## 3. Hoe dit document evolueert
 
-- A new structural pattern worth generalizing → add a numbered rule under section 2, with the
-  lived example that justified it.
-- A file growing past the register's threshold → the decision (exclude it, give it a ceiling,
-  or split it) goes in `docs/code-architectuur-register.json`, not here. This document stays
-  principles; the register stays decisions.
-- If a rule stops matching how the codebase actually works, say so and change the rule — this
-  document describes what is true, not what was once intended.
+- Een nieuw structureel patroon dat het generaliseren waard is → voeg een genummerde regel toe
+  onder sectie 2, met het praktijkvoorbeeld dat haar rechtvaardigde.
+- Een bestand dat de drempel van het register overschrijdt → de beslissing (uitsluiten, een
+  plafond geven of splitsen) komt in `docs/code-architectuur-register.json`, niet hier. Dit
+  document blijft principes; het register blijft beslissingen.
+- Als een regel niet meer past bij hoe de codebase werkelijk werkt, zeg dat dan en verander de
+  regel — dit document beschrijft wat waar is, niet wat ooit de bedoeling was.
 
-## 4. The refactor loop (REQ-AH-13)
+## 4. De refactor loop (REQ-AH-13)
 
-The loop that keeps this document and its register alive: `scripts/sweep-code-architectuur.mjs`
-walks every file in `src/` against the thresholds and the register's decisions; the
-`refactor-werkplaats` agent (`.claude/agents/refactor-werkplaats.md`) reads this document and
-the register, and for a flagged file delivers either a diff on its own worktree branch or a
-new register decision — never neither.
+De loop die dit document en zijn register levend houdt: `scripts/sweep-code-architectuur.mjs`
+loopt elk bestand in `src/` langs aan de hand van de drempels en de beslissingen van het
+register; de agent `refactor-werkplaats` (`.claude/agents/refactor-werkplaats.md`) leest dit
+document en het register, en levert voor een gemarkeerd bestand ofwel een diff op een eigen
+worktree-branch ofwel een nieuwe registerbeslissing — altijd één van beide.
 
-**What it is not, and why.** ARC's own convention wires this as a git-level push-hook that
-spawns the refactor agent unattended, in the background, on every push — including pushes made
-outside Claude Code entirely. Building that here was refused by the harness's own safety
-classifier ("Create Unsafe Agents": an unattended, code-editing agent triggered by a routine
-git operation). What exists instead is session-scoped: a `guard-push-sweep` PreToolUse hook
-denies a lead-thread `git push` when the sweep finds new flagged files, naming them; the lead
-thread then spawns `refactor-werkplaats` itself, in the same, human-supervised session, before
-retrying. It only catches pushes made through Claude Code — a push from a plain terminal
-bypasses it, the same known blind spot as the other guard-hooks in this harness.
+**Wat het niet is, en waarom.** ARC's eigen conventie koppelt dit als een git-hook die de
+refactor-agent onbewaakt, op de achtergrond, bij elke push start — ook bij pushes die helemaal
+buiten Claude Code om gebeuren. Dat hier bouwen werd geweigerd door de eigen veiligheidsclassifier
+van het harnas ("Create Unsafe Agents": een onbewaakte, code-bewerkende agent die door een
+routine-gitoperatie wordt getriggerd). Wat er in plaats daarvan is, is sessiegebonden: een
+PreToolUse-hook `guard-push-sweep` weigert een `git push` van de lead thread wanneer de sweep
+nieuwe gemarkeerde bestanden vindt, en noemt ze; de lead thread start dan zelf `refactor-werkplaats`,
+in dezelfde, door een mens begeleide sessie, voordat hij het opnieuw probeert. Hij vangt alleen
+pushes die via Claude Code gaan — een push vanuit een gewone terminal omzeilt hem, dezelfde
+bekende blinde vlek als bij de andere guard-hooks in dit harnas.

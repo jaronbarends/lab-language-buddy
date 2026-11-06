@@ -50,8 +50,11 @@ dan in plaats van een van beide blind te volgen.
   `README.md`, `AGENTS.md` en `spikes/`. Alle andere documentatie is Nederlands: het grootboek en
   zijn registers, elke `CLAUDE.md`, de regels, de instructies van agents en skills, hookberichten
   en de rest van `docs/`. Bestaande Engelse documenten worden vertaald; nieuwe documenten schrijf
-  je meteen in het Nederlands. Vertaal alleen proza, nooit keys, ids, bestandsnamen of de labels
-  `Status`/`Date`/`Implementation` van een record. Houd vaktermen Engels in plaats van Nederlandse
+  je meteen in het Nederlands. Vertaal alleen proza, nooit keys, ids of de labels
+  `Status`/`Date`/`Implementation` van een record. Bestandsnamen van documenten volgen de taal
+  van hun inhoud (een Nederlands document krijgt een Nederlandse kebab-case naam); namen waar
+  gereedschap op steunt (`CLAUDE.md`, `README.md`, `SKILL.md`, `index.yml`, registerbestanden, namen
+  van agents en skills) blijven Engels. Houd vaktermen Engels in plaats van Nederlandse
   termen te verzinnen (hook, worktree, branch, dryrun; niet "werkboom" of "droogloop").
 - **Geen AI-of-zelf-oordelen.** Dit project is een experiment in bouwen met een AI die het
   meeste van de code schrijft. Sla de eenregelige aanbeveling "laat AI dit genereren / schrijf dit

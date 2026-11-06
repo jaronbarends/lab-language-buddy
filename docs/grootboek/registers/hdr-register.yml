@@ -146,12 +146,12 @@ hdrs:
   - id: "HDR-014"
     titel: "Documentatie is Nederlands; code, UI en commits blijven Engels"
     status: in-progress
-    versie: "1.0"
+    versie: "1.1"
     implementatie: 50
     omgeving: geen
     datum: 2026-10-30
     beslissing: "Alle documentatie die geen code is (grootboek, CLAUDE.md-bestanden, rules, agent- en skill-instructies, hook-meldingen, docs/) is Nederlands; code, code-comments, UI-teksten, commitberichten, README.md, AGENTS.md en spikes/ blijven Engels; bestaande Engelse documenten worden vertaald"
-    notitie: "Regel staat in de drie taalregels van de leidende documenten; de vertaalronde is nog niet gedaan, daarom 50. Vertalen is geen nieuwe beslissing (HDR-001). De labels Status/Date/Implementation blijven Engels omdat scripts/records.mjs ze leest (HDR-012). Geen check op taal: pas bouwen bij herhaling"
+    notitie: "Regel staat in de drie taalregels van de leidende documenten; de vertaalronde is nog niet gedaan, daarom 50. Bestandsnamen van documenten volgen sinds 2026-11-06 de taal van hun inhoud (versie 1.1). Vertalen is geen nieuwe beslissing (HDR-001). De labels Status/Date/Implementation blijven Engels omdat scripts/records.mjs ze leest (HDR-012). Geen check op taal: pas bouwen bij herhaling"
     bestand: hdr-014-documentatie-nederlands.md
   - id: "HDR-015"
     titel: "plan.md vervalt als bron; beslissingen leven in het grootboek"

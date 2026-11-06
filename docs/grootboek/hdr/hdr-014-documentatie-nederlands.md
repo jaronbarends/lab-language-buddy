@@ -27,8 +27,10 @@ nog Engels is.
 bij vertalen verandert alleen de taal, nooit het besluit, de status, de datum of het id. Niet
 vertaald worden: sleutels in front matter en registers, id's, code-identifiers, kopteksten
 waar een script of `docs/index.yml` naar verwijst, en de labels `Status`, `Date` en
-`Implementation` bovenaan een record. Bestaande bestandsnamen blijven zoals ze zijn; nieuwe
-documenten krijgen een Nederlandse kebab-case naam.
+`Implementation` bovenaan een record. Bestandsnamen van documenten volgen de taal van hun
+inhoud: een Nederlands document krijgt een Nederlandse kebab-case naam, met het id-voorvoegsel
+(`adr-003-`) ongewijzigd. Bestandsnamen waar gereedschap op steunt blijven Engels: `CLAUDE.md`,
+`README.md`, `SKILL.md`, `index.yml`, de registerbestanden en de namen van agents en skills.
 
 ## Waarom
 
@@ -44,6 +46,15 @@ worden vastgelegd: de grootboekregel in de root-`CLAUDE.md`, de algemene taalreg
 Het besluit om dat om te draaien is van Jarón, genomen op 2026-10-30, om twee redenen. Hij
 wil de werkwijze van ARC volgen, en daarin is Nederlands de standaard. En hij gaat zelf over
 op Nederlands in het gesprek met Claude, omdat hij zich daarin beter kan uitdrukken.
+
+## Voorgeschiedenis
+
+De eerste versie van dit besluit liet bestaande bestandsnamen ongemoeid ("Bestaande bestandsnamen
+blijven zoals ze zijn"). Op 2026-11-06 is dat herzien: de overgezette records hadden al
+Nederlandse namen, de oudere records en specs hadden Engelse, en een vertaald document met een
+Engelse bestandsnaam is inconsistent. ARC doet het ook zo (zijn voorbeeldbestanden heten
+`hdr-009-livegang-checklists.md`). De oudere records en specs zijn hernoemd, hun titels vertaald
+en de verwijzingen daarnaar bijgewerkt. Beslist door Jarón.
 
 ## Gevolgen
 

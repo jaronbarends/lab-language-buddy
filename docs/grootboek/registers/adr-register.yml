@@ -94,7 +94,7 @@ adrs:
     datum: 2026-10-06
     implementatie-datum: 2026-10-06
     beslissing: "De prompts hebben een gedeeld deel en een deel per persona, de corrector verbiedt alle spelling-feedback en verzint geen correctie, het bericht gaat verpakt in <message>-tags naar de corrector, en er is geen code-guard op spelling-only correcties"
-    notitie: "Overgezet uit plan.md (HDR-015): zeven rijen uit het decision log. De spellingregel is verbreed van spaties, leestekens en diakrieten naar alle spelling (L120); de <message>-verpakking (L171) kwam erbij nadat prompt-regels alleen het lekken van eerdere berichten niet stopten. Versie 1.1 (2026-11-06): de spellingregel is aangescherpt tot NEVER EVER omdat er toch correcties over spelling en hoofdlettergebruik terugkwamen; het effect is nog niet vastgelegd"
+    notitie: "Overgezet uit plan.md (HDR-015): zeven rijen uit het decision log. De spellingregel is verbreed van spaties, leestekens en diakrieten naar alle spelling (L120); de <message>-verpakking (L171) kwam erbij nadat prompt-regels alleen het lekken van eerdere berichten niet stopten. Versie 1.1 (2026-11-06): de spellingregel is aangescherpt tot NEVER EVER omdat er toch correcties over spelling en hoofdlettergebruik terugkwamen; het effect is nog niet vastgelegd. Een aanvullende null-regel voor correcties over hoe het bericht geschreven is staat als overwogen optie in Gevolgen, niet ingevoerd"
     bestand: adr-008-prompts-van-de-corrector.md
   - id: "ADR-009"
     titel: "STT: providerkeuze en configuratie"

@@ -80,6 +80,12 @@ eerdere formulering. Of de aangescherpte formulering dat verhelpt is nog niet va
   het bericht voorkomt. Voor nu blijft het zoals het is.
 - De aanscherping van de spellingregel verandert het besluit over de code-guard niet: er is nog
   steeds geen guard, en de afweging als spellingfeedback toch blijft terugkomen is nog niet gemaakt.
+- Overwogen en bewust nog niet ingevoerd (2026-11-06): een aanvullende regel in de prompt in de
+  trant van "when you only have corrections that relate to spelling, spaces, punctuation,
+  capitalization or anything else related to how the message was written, return null". Bedoeld
+  voor het geval de aangescherpte regel niet genoeg blijkt en er toch verkeerde correcties
+  binnenkomen. De formulering is van Jaron en nog niet getest. Het is een regel in de prompt en
+  geen code-guard, dus het besluit dat er geen guard is blijft ongemoeid.
 - Zie ook ADR-007 (Evaluatie per beurt, in een eigen call), PDR-005 (Hoe de correctie eruitziet) en
   PDR-006 (Antwoord pas na de correctie).
 

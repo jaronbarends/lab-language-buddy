@@ -62,6 +62,11 @@ hoofdletters erbij (de huidige stand). Eerst was de `input` van de corrector (10
 kale bericht; daarna, op 10-12, kwam de verpakking in `<message>`-tags erbij, nadat regels in de
 prompt alleen het lekken van eerdere berichten twee keer niet stopten.
 
+Op 2026-11-06 is de regel over spelling aangescherpt van "Do not give feedback on spelling, …" naar
+"NEVER EVER give feedback on spelling, …" (commit `2ea47f9` op `main`). Reden: Jaron kreeg nog
+steeds correcties terug waarin iets over spelling of hoofdlettergebruik werd gezegd, ook na de
+eerdere formulering. Of de aangescherpte formulering dat verhelpt is nog niet vastgelegd.
+
 ## Gevolgen
 
 - De mock-evaluatieroute kiest zijn correctie uit een som van de tekens van de invoer, zodat
@@ -73,6 +78,8 @@ prompt alleen het lekken van eerdere berichten twee keer niet stopten.
   in `src/app/api/evaluation/gemini-evaluation.ts`.
 - Blijft het lekken terugkomen, dan is de volgende stap een controle dat elk `userInput`-segment in
   het bericht voorkomt. Voor nu blijft het zoals het is.
+- De aanscherping van de spellingregel verandert het besluit over de code-guard niet: er is nog
+  steeds geen guard, en de afweging als spellingfeedback toch blijft terugkomen is nog niet gemaakt.
 - Zie ook ADR-007 (Evaluatie per beurt, in een eigen call), PDR-005 (Hoe de correctie eruitziet) en
   PDR-006 (Antwoord pas na de correctie).
 

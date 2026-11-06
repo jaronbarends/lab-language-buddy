@@ -165,6 +165,27 @@ documents:
   - path: docs/grootboek/adr/adr-021-fouten-en-herstel.md
     what: Herstelbare fouten: de fout-state met from, wat als falen telt, fouten op de server en in de browser, en de time-outs; overgezet uit plan.md.
     read_when: je de foutflow, Try again, de time-outs (verbinding, chat, evaluatie) of de TTS-degradatie wijzigt.
+  - path: docs/grootboek/pdr/pdr-015-markering-van-het-gesproken-woord.md
+    what: Hoe het gesproken woord in een spraakbubbel wordt gemarkeerd (gradient, witruimte, forced-colors, woordtimings); overgezet uit plan.md.
+    read_when: je de markering van het gesproken woord, de bijbehorende CSS of het moment waarop de woordtimings worden gemaakt wijzigt.
+  - path: docs/grootboek/adr/adr-022-design-system-overgenomen.md
+    what: Het design system (tokens, bevels, reset en elementregels) van de bestaande app is overgenomen; overgezet uit plan.md.
+    read_when: je tokens, reset.css, elements.css of de diepte-stijl (bevels) van knoppen wilt begrijpen of aanpassen.
+  - path: docs/grootboek/pdr/pdr-016-typografie-en-iconen.md
+    what: 18px basislettergrootte, semibold labels en select, Font Awesome 6 iconen via react-icons en het waarschuwingsicoon in de foutbox; overgezet uit plan.md.
+    read_when: je typografie (lettergrootte, labelgewicht) of de iconen en de opmaak van de foutbox wijzigt.
+  - path: docs/grootboek/pdr/pdr-017-contrast-en-forced-colors.md
+    what: Welke contrastparen onder de WCAG-drempel bewust zijn geaccepteerd en hoe geselecteerde opties zich in forced-colors-modus gedragen; overgezet uit plan.md.
+    read_when: je het contrast van knoppen, opties of randen wilt aanpassen, of forced-colors-stijlen wijzigt.
+  - path: docs/grootboek/adr/adr-023-safari-safe-area-en-beperkingen.md
+    what: De bovenste safe-area-inset en de geaccepteerde Safari/iPhone-beperkingen (landscape, bediening onder het toetsenbord); overgezet uit plan.md.
+    read_when: je aan de layout van het setup- of gesprekscherm op iPhone, aan safe-area-insets of aan het toetsenbordgedrag in editing werkt.
+  - path: docs/grootboek/adr/adr-024-taalregistry.md
+    what: De velden van de taalregistry (htmlLang, deepgramLang, webSpeechLang, elevenLabsLang) en de controle bij het toevoegen van een taal; overgezet uit plan.md.
+    read_when: je een taal toevoegt of wijzigt, of een lang-attribuut of een taalcode voor een STT-provider nodig hebt.
+  - path: docs/grootboek/adr/adr-025-mockmodus-voor-ontwikkeling.md
+    what: De mockmodus voor ontwikkeling: mockschakelaars en -routes, gedrag van de mockantwoorden en de dev-stepper; overgezet uit plan.md.
+    read_when: je met de mockschakelaars, de mockroutes of de dev-stepper werkt, of wilt weten waarom ze zo werken.
   - path: docs/grootboek/pdr/pdr-012-setup-formulier.md
     what: Hoe het setup-scherm is opgebouwd: één form, fieldset en legend per veld, aria-labelledby op de select, native radio's met anchor-indicator, mask-pijl, breedte van Start chat; overgezet uit plan.md.
     read_when: je het setup-scherm, de starter-toggle, de niveau-select of de breedte van de Start chat-knop wijzigt.

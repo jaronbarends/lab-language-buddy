@@ -239,3 +239,47 @@ adrs:
     beslissing: "Fouten zijn herstelbaar en de weg terug hangt af van waar het misging; een mislukte AI-call wordt opnieuw geprobeerd, een mislukte opname brengt de gebruiker terug, een TTS-fout degradeert naar alleen tekst"
     notitie: "Overgezet uit plan.md (HDR-015): 13 rijen (Decisions-rij Errors plus foutflow, lege reply, request.signal, ontbrekende API-sleutel, abort-logging, TTS-fout, LIVE_CONNECT_TIMEOUT_MS, recorder- en WebSocket-fouten, unlockAudio bij Try again, retry van alleen de chat-call, EVALUATION_TIMEOUT_MS). Voorgeschiedenis: de foutflow van vóór de herziening van 09-29"
     bestand: adr-021-fouten-en-herstel.md
+  - id: "ADR-022"
+    titel: "Design system overgenomen uit de bestaande app"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-28
+    implementatie-datum: 2026-09-28
+    beslissing: "Het design system van de bestaande app is overgenomen (vijf tokenbestanden, bevels in plaats van schaduw, reset.css en elements.css tussen de tokens en globals.css)"
+    notitie: "Overgezet uit plan.md (HDR-015): drie logrijen (09-28 twee keer, 09-30) in één record. De zin in Gevolgen over het vervallen van de synchronisatie (PDR-001) komt niet uit de rijen"
+    bestand: adr-022-design-system-overgenomen.md
+  - id: "ADR-023"
+    titel: "Safari/iPhone: safe area en geaccepteerde beperkingen"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-01
+    implementatie-datum: 2026-10-01
+    beslissing: "De bovenste safe-area-inset wordt afgehandeld met --safe-top, landscape-telefoons worden niet ondersteund, en bediening die onder het toetsenbord in editing valt is voor nu geaccepteerd"
+    notitie: "Overgezet uit plan.md (HDR-015): drie logrijen. Bevat een bewust geaccepteerde afwijking van de brief en van de Stage 1-regel, plus een open vraag met onbevestigde ideeën"
+    bestand: adr-023-safari-safe-area-en-beperkingen.md
+  - id: "ADR-024"
+    titel: "Taalregistry"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-30
+    implementatie-datum: 2026-09-30
+    beslissing: "De taalregistry heeft per taal een eigen veld per consument, genoemd naar de leverancier plus Lang: htmlLang, deepgramLang, webSpeechLang en elevenLabsLang"
+    notitie: "Overgezet uit plan.md (HDR-015): vier rijen over een periode (09-30 tot 10-16). De hernoeming van deepgram naar deepgramLang en de verschuiving van de nova-2-waarschuwing naar een algemene opmerking staan als huidige stand in Besluit"
+    bestand: adr-024-taalregistry.md
+  - id: "ADR-025"
+    titel: "Mockmodus voor ontwikkeling"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-03
+    implementatie-datum: 2026-10-03
+    beslissing: "Ontwikkelen kan zonder sleutel of quota via mockschakelaars (NEXT_PUBLIC_USE_MOCK_CHAT voor chat en evaluatie, NEXT_PUBLIC_USE_MOCK_TTS voor TTS), mockroutes met een scriptpositie in het interaction-id, en een dev-stepper in de interface"
+    notitie: "Overgezet uit plan.md (HDR-015): twaalf rijen, vooral ontwikkelgereedschap. De eerste mockversie van de chatroute gaf een correctie mee; die stap is ingehaald doordat de mockevaluatie nu uit het bericht zelf citeert (Voorgeschiedenis)"
+    bestand: adr-025-mockmodus-voor-ontwikkeling.md

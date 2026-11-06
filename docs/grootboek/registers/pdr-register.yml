@@ -160,3 +160,36 @@ pdrs:
     beslissing: "Favicons en manifest komen uit de bestaande app, en Logo is de SVG van de oorspronkelijke app inline als component, zonder SVGR"
     notitie: "Overgezet uit plan.md (HDR-015): twee rijen van dezelfde dag, geen ingehaalde stappen"
     bestand: pdr-014-logo-en-favicons.md
+  - id: "PDR-015"
+    titel: "Markering van het gesproken woord"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-30
+    implementatie-datum: 2026-09-30
+    beslissing: "De gesproken-woordmarkering is een linear-gradient met een transparante strook van 1px boven en onder (in forced-colours mode weggelaten), met gemarkeerde witruimte tussen gesproken woorden, en woordtimings die op de eerste timeupdate met een eindige duur worden gemaakt"
+    notitie: "Overgezet uit plan.md (HDR-015): de eerste oplossing (padding 1px 0 weghalen) is ingehaald door de gradient en staat in Voorgeschiedenis; de forced-colours-kwestie was eerst open en is later door Jaron getest"
+    bestand: pdr-015-markering-van-het-gesproken-woord.md
+  - id: "PDR-016"
+    titel: "Typografie en iconen"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-28
+    implementatie-datum: 2026-09-28
+    beslissing: "De basislettergrootte is 18px, labels en level select zijn semibold, de iconen komen uit Font Awesome 6 Free via react-icons/fa6 en de foutbox krijgt een waarschuwingsicoon links van het tekstblok"
+    notitie: "Overgezet uit plan.md (HDR-015): vier rijen in twee groepen (typografie, iconen); het foutico is eerst gecentreerd met 8px gebouwd en daarna bovenaan met 12px (Voorgeschiedenis)"
+    bestand: pdr-016-typografie-en-iconen.md
+  - id: "PDR-017"
+    titel: "Contrast en forced-colors: bewust geaccepteerd"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-28
+    implementatie-datum: 2026-09-28
+    beslissing: "De 4,05:1 van de primaire knop, de 3,16:1 van wit op --color-bg-secondary en de ongeveer 1,48:1 van de randen van bedieningselementen zijn bewust geaccepteerd; in forced-colors-modus gebruiken de geselecteerde AI/Me-optie en taalkaart Highlight/HighlightText"
+    notitie: "Overgezet uit plan.md (HDR-015): de 3,16:1 is op 2026-09-30 gevonden en dezelfde dag geaccepteerd (vondst en acceptatie als één gebeurtenis). De eerste forced-colors-versie was fout (wit label op wit) en staat in Voorgeschiedenis"
+    bestand: pdr-017-contrast-en-forced-colors.md

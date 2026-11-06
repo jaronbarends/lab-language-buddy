@@ -41,3 +41,15 @@ jnls:
       - "HDR-013 (K10)"
       - "a spec as the build plan, once decided"
     bestand: jnl-003-chat-bubble-animation.md
+  - id: "JNL-004"
+    titel: "Openstaande kwesties"
+    status: discovery
+    datum: 2026-11-06
+    laatste-sessie: 2026-11-06
+    kwesties-totaal: 9
+    kwesties-besloten: 0
+    kwesties-open: 5
+    kwesties-geparkeerd: 4
+    doel-records:
+      - "per kwestie een record zodra er een besluit valt"
+    bestand: jnl-004-openstaande-kwesties.md

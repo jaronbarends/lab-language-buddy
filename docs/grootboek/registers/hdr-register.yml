@@ -185,3 +185,14 @@ hdrs:
     beslissing: "De app heeft geen testsuite (handmatige verificatie); scripts onder scripts/ die documenten herschrijven krijgen wel een node:test-test"
     notitie: "Overgezet uit plan.md (HDR-015): het besluit van 09-23 (geen tests) is op 10-27 versmald met de uitzondering voor scripts; de huidige stand staat in Besluit, de eerste stand in Voorgeschiedenis"
     bestand: hdr-017-geen-testsuite-behalve-scripts.md
+  - id: "HDR-018"
+    titel: "Contextlagen en een drift-check voor de documentatie"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-20
+    implementatie-datum: 2026-10-20
+    beslissing: "De context is gelaagd (.claude/rules, CLAUDE.md in src/components en src/lib, docs/index.yml als register, .claude/agents) en npm run docs:check maakt van drift in de documentatie een falend commando"
+    notitie: "Overgezet uit plan.md (HDR-015): één logrij van 10-20. De regel dat parallelle builders plan.md niet bewerken is vervallen met het plan"
+    bestand: hdr-018-contextlagen-en-drift-check.md

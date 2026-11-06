@@ -193,6 +193,41 @@ Rijen van het plan die niet als record meegaan, met de reden.
 - L32 (09-30) `legend { padding: 0 }` added to the reset — idem
 - L33 (09-30) `main { padding-bottom }` not taken over; no `fieldset` `min-inline-size` reset — idem
 - L34 (09-30) `legend` in `elements.css` uses `--color-text-label` and `--font-weight-label` — idem
+- L27 (09-29) Reducer contract for the async drivers, stated in its doc comment — de tekst staat in de doc-comment van de reducer
+- L29 (09-29) The reducer's `default` branch is a compile-time exhaustiveness check — de reden staat in het commentaar bij die tak
+- L60 (09-30) `ConversationControls` split into `ComposingControls`, `ErrorControls` and `IdleControls` — structuur die de code zelf laat zien
+- L61 (09-30) `composedTextOf(turnState)` in the reducer file is the one definition of "the text being composed" — de reden staat in de doc-comment; de bewust bewaarde lege-tekstcontroles staan in ADR-018 (Sessiestate: één reducer, beurtstatus als discriminated union)
+- L62 (09-30) `composedTextOf` takes a `ComposingTurnState` and has no `default` branch — de reden staat in de doc-comment van de functie
+- L77 (10-03) `.env.example` is committed — het bestand zelf en de docs:check leggen dit vast
+- L100 (10-05) `use-mock-driver.ts` and `useMockDriver` renamed to `use-mock-tts.ts` and `useMockTts` — hernoeming; er is niets te bewaren behalve de nieuwe naam, die in de code staat
+- L143 (10-08) `post-json.ts` takes `errorTextOf` out of `use-chat-driver.ts` — de reden staat in de commentaren van `post-json.ts`
+- L151 (10-10) `postJsonWithDeadline` in `post-json.ts` holds the abort and deadline handling — de reden staat in de commentaren van `post-json.ts`
+- L152 (10-10) The reducer's contract comment for async drivers names two kinds of source — staat in de contract-comment van de reducer
+- L170 (10-12) `@types/dom-speech-recognition` is a dev dependency — staat in `package.json`
+- L87 (10-03) Stage 3 is built in three steps, each with its own commit and check-in — bouwvolgorde van een afgesloten stap
+- L99 (10-05) `spikes/ai-voice-demo/findings.md` gets one added note — historie van een notitie in de spike
+- L108 (10-05) Comments that named stages or an outside file were rewritten — historie van een opschoonactie
+- L148 (10-10) Stage 4 review — review van een afgesloten stap; de uitkomsten staan in de records
+- L156 (10-10) The stale stage 4 texts in this plan are corrected — onderhoud van het plan, dat vervalt
+- L158 (10-10) Stage 4 is closed and ready to merge — afsluiting van een stap
+- L172 (10-13) STT provider review — review van een afgesloten stap; de uitkomsten staan in de records
+- L176 (10-13) Comment and mechanical fixes in the STT code — historie van opschoning
+- L186 (10-14) A stage review proposed two code changes, and Jaron accepted them — review van een afgesloten stap
+- L198 (10-19) Review of the ElevenLabs branch — review van een afgesloten stap; de uitkomsten staan in de records
+- L2 (09-23) Scaffolded via the scratchpad; repo's own `.gitignore` kept — detail van de eerste opzet
+- L22 (09-28) `resources/css-reference/` dropped; provenance recorded instead — herkomst van een map die is weggehaald; er is geen afwijkingenlijst meer (PDR-001, Een app voor dagelijks gebruik, en een experiment in werkwijze)
+- L76 (10-03) The temporary text input for stage 2 is dropped — tijdelijk invoerveld dat is weggehaald
+- L144 (10-08) `turn-bubble.tsx` renders the evaluation as plain text, marked temporary — tijdelijke weergave, vervangen (PDR-005, Hoe de correctie eruitziet)
+
+## Staat al elders
+
+Rijen van het plan die al in het grootboek staan.
+
+- L1 (09-23) App scaffolded at the repo root; UI copy in English — de taalregel staat in HDR-014 (Documentatie is Nederlands; code, UI en commits blijven Engels)
+- L102 (10-05) Buffering the audio while the socket opens is not built — staat als open kwestie in JNL-004 (Openstaande kwesties)
+- L200 (10-20) Audience and ambition written down in the README — staat in de README en in PDR-001 (Een app voor dagelijks gebruik, en een experiment in werkwijze)
+- Q9 (Public deployment) — ADR-002 (The server routes have no caller authentication, accepted for now) en JNL-001 (instap software-balans)
+- Q11 (One bubble for the AI's thinking dots and its text) — JNL-003 (Chat bubble animation) en PDR-013 (Animatie van bubbels)
 
 ## Bronnen
 

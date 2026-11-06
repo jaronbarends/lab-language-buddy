@@ -44,9 +44,9 @@ is `:has([contenteditable])`, niet focus.
 - **Ongecontroleerd.** Uit state renderen zou de caret naar het begin gooien. Dat is veilig omdat
   het bewerkvak alleen bestaat in de editing-state.
 - **Spellingscontrole uit.** De tekst is in de oefentaal, niet die van het toetsenbord, dus
-  iOS-correcties en rode onderstrepingen werken de gebruiker tegen. Nog niet op een device
-  gecontroleerd. De iPhone-controle van het bewerkvak noemt autocorrect als gedekt risico; de rij
-  over het uitzetten van de drie attributen zegt dat dat nog niet op een device is gecontroleerd.
+  iOS-correcties en rode onderstrepingen werken de gebruiker tegen. Op een iPhone is gecontroleerd
+  dat het uitzetten van autocorrect goed werkt (door Jaron bevestigd op 2026-11-06; dit staat niet
+  in het plan).
 - **Wit met `:has([contenteditable])`.** Het wit-bij-bewerken is een idee van Jaron. De
   voorwaarde in plaats van focus is een verfijning van de agent, door hem aanvaard: het bewerkvak
   bestaat alleen in de editing-state, terwijl een klik elders de focus laat vallen terwijl je nog

@@ -153,6 +153,18 @@ documents:
   - path: docs/grootboek/adr/adr-017-de-bubbel-en-het-bewerkvak.md
     what: Het gedeelde Bubble-frame, het ongecontroleerde contenteditable-bewerkvak, wit bij bewerken en pre-line voor regeleinden; overgezet uit plan.md.
     read_when: je het frame van een spraakbubbel, het bewerkvak of de witruimte in bubbels wijzigt.
+  - path: docs/grootboek/adr/adr-018-sessiestate-een-reducer.md
+    what: De sessiestate als één reducer, de beurtstatus als discriminated union, een UUID per beurt en de turnId op de AI_SPEECH-acties; overgezet uit plan.md.
+    read_when: je de sessiestate, de reducer-acties of de identiteit van beurten wijzigt of een state context overweegt.
+  - path: docs/grootboek/adr/adr-019-chat-api-en-gespreksgeschiedenis.md
+    what: De chat-API en de gespreksgeschiedenis (ketting via previous_interaction_id, system instruction op de server, request als union op kind); overgezet uit plan.md.
+    read_when: je het chat-endpoint, het request- of foutschema of de manier waarop de gespreksketting loopt wijzigt.
+  - path: docs/grootboek/adr/adr-020-tts-providers-en-stemmen.md
+    what: De drie TTS-providers, de provider-interface, de stemtabellen per provider, de stemkeuze en de tekstlimiet van /api/tts; overgezet uit plan.md.
+    read_when: je een TTS-provider of stem toevoegt of wijzigt, of de interface of limiet van /api/tts aanpast.
+  - path: docs/grootboek/adr/adr-021-fouten-en-herstel.md
+    what: Herstelbare fouten: de fout-state met from, wat als falen telt, fouten op de server en in de browser, en de time-outs; overgezet uit plan.md.
+    read_when: je de foutflow, Try again, de time-outs (verbinding, chat, evaluatie) of de TTS-degradatie wijzigt.
   - path: docs/grootboek/pdr/pdr-012-setup-formulier.md
     what: Hoe het setup-scherm is opgebouwd: één form, fieldset en legend per veld, aria-labelledby op de select, native radio's met anchor-indicator, mask-pijl, breedte van Start chat; overgezet uit plan.md.
     read_when: je het setup-scherm, de starter-toggle, de niveau-select of de breedte van de Start chat-knop wijzigt.

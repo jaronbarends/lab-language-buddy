@@ -147,7 +147,7 @@ pdrs:
     datum: 2026-10-27
     implementatie-datum: 2026-10-27
     beslissing: "Bubbels groeien in met scale (gebruiker vanuit rechtsonder, AI vanuit linksboven, 350 ms, overshoot-curve); de denkbubbel start 800 ms na een verstuurde beurt, en het antwoord groeit vanaf de grootte van de denkbubbel"
-    notitie: "Overgezet uit plan.md (HDR-015): drie rijen (10-27, 10-28, 10-30) over één onderwerp. Ingehaald is de eerste spike met clip-path zonder overshoot (Voorgeschiedenis). De denkbubbel is nog niet op een iPhone getest; de groei naar het antwoord wel"
+    notitie: "Overgezet uit plan.md (HDR-015): drie rijen (10-27, 10-28, 10-30) over één onderwerp. Ingehaald is de eerste spike met clip-path zonder overshoot (Voorgeschiedenis). De denkbubbel en de groei naar het antwoord zijn op een iPhone getest en slagen (denkbubbel: door Jaron bevestigd op 2026-11-06)"
     bestand: pdr-013-animatie-van-bubbels.md
   - id: "PDR-014"
     titel: "Logo en favicons"

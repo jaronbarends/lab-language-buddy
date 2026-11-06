@@ -38,8 +38,9 @@ een AI-antwoord zonder denkfase ongewijzigd blijven). Het antwoord rendert eerst
 onthullingsklasse, zodat de animatie niet kan starten voor de variabelen bestaan.
 
 Nog niet gedaan: het concept dat eerst krimpt in de bedieningsbalk, en de eigen groei van de
-evaluatie. De denkbubbel is nog niet getest op een iPhone; de groei van de denkbubbel naar het
-antwoord is door Jaron op een iPhone getest en slaagt.
+evaluatie. De groei van de denkbubbel naar het antwoord is door Jaron op een iPhone getest en
+slaagt. De denkbubbel zelf is inmiddels ook op een iPhone getest en goed bevonden (door Jaron
+bevestigd op 2026-11-06; dit staat niet in het plan).
 
 ## Waarom
 

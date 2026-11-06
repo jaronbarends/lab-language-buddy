@@ -195,3 +195,47 @@ adrs:
     beslissing: "Eén gedeelde Bubble (altijd een div met overflow: hidden) houdt het frame van elke spraakbubbel, het bewerkvak is een ongecontroleerde contenteditable=plaintext-only div daarin, een bubbel met bewerkbaar gebied wordt wit, en bubbels gebruiken white-space: pre-line"
     notitie: "Overgezet uit plan.md (HDR-015): het bewerkvak is twee keer gebouwd (textarea op verborgen kopie faalde op iPhone, toen contenteditable); de as-prop van Bubble uit de eerste rij is later vervallen"
     bestand: adr-017-de-bubbel-en-het-bewerkvak.md
+  - id: "ADR-018"
+    titel: "Sessiestate: één reducer, beurtstatus als discriminated union"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-23
+    implementatie-datum: 2026-09-23
+    beslissing: "De sessiestate is één useReducer-machine met side effects in hooks, de beurtstatus een discriminated union met per-state data, en elke beurt krijgt een crypto.randomUUID()"
+    notitie: "Overgezet uit plan.md (HDR-015): acht rijen. De state context met useSession en useConversation is op 09-29 weer verwijderd (de open optie om hem terug te zetten staat in het record); getPreviousInteractionId verving een stap van 10-10 die de afleiding dubbel liet staan"
+    bestand: adr-018-sessiestate-een-reducer.md
+  - id: "ADR-019"
+    titel: "Chat-API en gespreksgeschiedenis"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-23
+    implementatie-datum: 2026-09-23
+    beslissing: "De gespreksgeschiedenis staat server-side bij Google via previous_interaction_id, gelezen uit de laatste AI-beurt; de server bouwt de system instruction uit { language, level } en het chat-request is een discriminated union op kind"
+    notitie: "Overgezet uit plan.md (HDR-015): de responsvorm van stage 2 zonder correction per beurt staat als voorgeschiedenis; de rijen van 10-03 (ketting in de beurten, system instruction op de server, union op kind, foutschema, askGemini) zijn samengenomen"
+    bestand: adr-019-chat-api-en-gespreksgeschiedenis.md
+  - id: "ADR-020"
+    titel: "TTS-providers en stemmen"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-23
+    implementatie-datum: 2026-09-23
+    beslissing: "Azure (default), Google en ElevenLabs zijn aangesloten achter één provider-interface (synthesize met één object plus AbortSignal), met stemtabellen binnen elke providermodule, één geslacht via VOICE_GENDER en een tekstlimiet van 1500 tekens"
+    notitie: "Overgezet uit plan.md (HDR-015): de provider-interface is later uitgebreid met gender en de objectvorm van synthesize, de tekstlimiet is verlaagd van 2000 naar 1500 en TtsRequest is hernoemd naar TtsRequestBody; de huidige stand staat in Besluit, de eerdere in Voorgeschiedenis"
+    bestand: adr-020-tts-providers-en-stemmen.md
+  - id: "ADR-021"
+    titel: "Fouten en herstel"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-23
+    implementatie-datum: 2026-09-23
+    beslissing: "Fouten zijn herstelbaar en de weg terug hangt af van waar het misging; een mislukte AI-call wordt opnieuw geprobeerd, een mislukte opname brengt de gebruiker terug, een TTS-fout degradeert naar alleen tekst"
+    notitie: "Overgezet uit plan.md (HDR-015): 13 rijen (Decisions-rij Errors plus foutflow, lege reply, request.signal, ontbrekende API-sleutel, abort-logging, TTS-fout, LIVE_CONNECT_TIMEOUT_MS, recorder- en WebSocket-fouten, unlockAudio bij Try again, retry van alleen de chat-call, EVALUATION_TIMEOUT_MS). Voorgeschiedenis: de foutflow van vóór de herziening van 09-29"
+    bestand: adr-021-fouten-en-herstel.md

@@ -2,7 +2,7 @@
   "thresholds": {
     "warnAtLines": 300,
     "hardLimitAtLines": 400,
-    "note": "warnAtLines is the doorbell: crossing it asks the cohesion question in code-architectuur.md §2.2. hardLimitAtLines is the point where a file needs an explicit decision below (ceiling or excluded) to not count as a problem."
+    "note": "warnAtLines is de doorbell: wie hem overschrijdt, krijgt de samenhangvraag uit code-architectuur.md §2.2. hardLimitAtLines is het punt waarop een bestand een expliciete beslissing hieronder (ceiling of excluded) nodig heeft om niet als probleem te tellen."
   },
   "files": [
     {
@@ -10,14 +10,14 @@
       "position": "ceiling",
       "ceiling": 600,
       "lines": 577,
-      "reason": "One cohesive state machine (code-architectuur.md §2.2, the doctrine's own lived example); a new turn state extends the discriminated union rather than splitting the file."
+      "reason": "Eén samenhangende state machine (code-architectuur.md §2.2, het eigen praktijkvoorbeeld van de doctrine); een nieuwe beurtstatus breidt de discriminated union uit in plaats van het bestand te splitsen."
     },
     {
       "path": "src/lib/stt/elevenlabs.ts",
       "position": "ceiling",
       "ceiling": 400,
       "lines": 371,
-      "reason": "One provider's full connection lifecycle (token fetch, WS handshake with several close/error paths, audio streaming, message parsing) — same shape as deepgram.ts and native.ts, longer because ElevenLabs's handshake has more states to handle."
+      "reason": "De volledige levenscyclus van de verbinding van één provider (token ophalen, WS-handshake met meerdere close- en foutpaden, audiostreaming, berichten parsen) — dezelfde vorm als deepgram.ts en native.ts, langer omdat de handshake van ElevenLabs meer states heeft om af te handelen."
     }
   ]
 }

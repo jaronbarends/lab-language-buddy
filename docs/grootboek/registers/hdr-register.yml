@@ -120,7 +120,7 @@ hdrs:
     datum: 2026-10-27
     implementatie-datum: 2026-10-27
     beslissing: "De Branches-regel van de root-CLAUDE.md noemt arc/arc-main als basis voor arc-werk (en main als production) en zegt dat de branch vóór de eerste bewerking wordt gemaakt; geen hook voor de tweede helft (één incident)"
-    notitie: "Uit de eerste koude-startrun (JNL-002, K1 en K2). De zin is tijdgebonden: werk hem bij als arc/arc-main in main wordt gemerged. Het bewijs is een tweede koude-startronde"
+    notitie: "Uit de eerste koude-startrun (JNL-002, K1 en K2). De zin was tijdgebonden; het eerste deel (arc/arc-main als basisbranch) is op 2026-11-07 vervangen door HDR-021, het tweede deel (de branch vóór de eerste bewerking) geldt nog. Het bewijs is een tweede koude-startronde"
     bestand: hdr-011-arc-basisbranch-en-eerst-de-branch.md
   - id: "HDR-012"
     titel: "Geen record mag na vandaag gedateerd zijn"

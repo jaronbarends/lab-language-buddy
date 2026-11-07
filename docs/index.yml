@@ -19,7 +19,7 @@ documents:
     what: Machineleesbaar contract (REQ-AH-11) — waarschuwings- en harde drempels en de besluiten per bestand over plafond en uitsluiting. Regelaantallen zijn een momentopname; REQ-AH-12 maakt ze live gemeten.
     read_when: een bestand over de waarschuwingsdrempel gaat; je een plafondbesluit vastlegt of herziet.
   - path: docs/grootboek/CLAUDE.md
-    what: Regels voor de grootboekmap (experiment op arc/*-branches) — documenttypes, conventies, communicatieplicht.
+    what: Regels voor de grootboekmap — documenttypes, conventies, communicatieplicht.
     read_when: laadt vanzelf bij werk in docs/grootboek.
   - path: docs/grootboek/hdr/hdr-001-grootboek-stelsel.md
     what: Waarom het grootboek naast plan.md bestaat en welke beslissingen het bevat (vanaf 2026-10-20).
@@ -34,14 +34,14 @@ documents:
     what: Waarom de refactor loop van REQ-AH-13 een sessiegebonden PreToolUse-hook is en niet de onbewaakte push-hook op git-niveau van ARC (geweigerd door de safety classifier).
     read_when: je de refactor loop aanraakt; je een andere ARC-harnasconventie overneemt.
   - path: docs/grootboek/hdr/hdr-005-hernummeren-bij-merge-bij-botsende-nummers.md
-    what: Regel voor parallelle arc/*-branches die hetzelfde recordnummer boeken; de branch die als tweede merget hernummert zijn eigen records, in zijn eigen branch.
-    read_when: je een arc/*-branch merget die grootboekrecords heeft geboekt; je een nieuw record nummert.
+    what: Regel voor parallelle branches die hetzelfde recordnummer boeken; de branch die als tweede merget hernummert zijn eigen records, in zijn eigen branch.
+    read_when: je een branch merget die grootboekrecords heeft geboekt; je een nieuw record nummert.
   - path: docs/grootboek/hdr/hdr-006-communicatieplicht-hook.md
     what: Waarom een PostToolUse-hook de agent aan de communicatieplicht herinnert als een leidend document wijzigt; waar de lijst staat, de blinde vlekken, de tekst voor subagents.
     read_when: je de lijst van leidende documenten wijzigt; je notify-leading-document of leading-documents.json aanraakt.
   - path: docs/grootboek/hdr/hdr-007-mechanisch-hernummeren.md
     what: Waarom het hernummeren van records een script is, met een controle op dubbele ids en een merge-guardhook, en waarom de volgorde eerst hernummeren, dan mergen is (draait de stappen van HDR-005 om).
-    read_when: je arc/arc-main of main in een branch merget; je renumber-records, de guard-merge-renumber-hook of de controle op dubbele ids aanraakt.
+    read_when: je main in een branch merget; je renumber-records, de guard-merge-renumber-hook of de controle op dubbele ids aanraakt.
   - path: docs/grootboek/hdr/hdr-008-driftsignaal.md
     what: Waarom leidende documenten een werkgebied declareren en een script meldt wanneer de code daarin na het document is gewijzigd; signaal, geen oordeel, gevolgd door een reconciliatie en een DFT (REQ-GG-05).
     read_when: je drift-signal of het werkgebied-veld aanraakt; je een reconciliatie uitvoert; je een nieuwe balans maakt.
@@ -52,8 +52,8 @@ documents:
     what: De naamgevingsregel in code-style.md en waarom — zeven naamcorrecties in de review van stage 4, het eerste patroon dat via het incidentregister is vastgelegd.
     read_when: je een functie, status of type in src/ een naam geeft; een naamcorrectie van Jarón.
   - path: docs/grootboek/hdr/hdr-011-arc-basisbranch-en-eerst-de-branch.md
-    what: Waarom de root-CLAUDE.md arc/arc-main noemt als basis voor arc-werk en zegt dat de branch vóór de eerste bewerking komt; gevonden in de eerste koude-startrun.
-    read_when: je aan een arc-branch begint; je de Branches-regel bijwerkt als arc/arc-main in main wordt gemerged.
+    what: Historisch: waarom de root-CLAUDE.md arc/arc-main noemde als basis voor arc-werk en zegt dat de branch vóór de eerste bewerking komt; gevonden in de eerste koude-startrun. Het eerste deel is vervangen door HDR-021 (werk vertakt van main); het tweede deel geldt nog.
+    read_when: je de geschiedenis van de basisbranch zoekt; voor de regel om een branch te maken, zie HDR-021.
   - path: docs/grootboek/journaal/jnl-002-koude-start-onboarding.md
     what: Koude-startjournaal (REQ-GG-10) — wat een verse agent met alleen de repo goed deed en waar de repo zichzelf niet beschrijft; zes kwesties, twee besloten in HDR-011.
     read_when: je de volgende koude-startronde draait; je beoordeelt of onboarding werkt; je de open kwesties beslist (checks niet gedraaid, de privé README-link, de AI-of-zelf-regel).

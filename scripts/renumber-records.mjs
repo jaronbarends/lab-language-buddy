@@ -197,7 +197,8 @@ function main() {
   const root = join(dirname(fileURLToPath(import.meta.url)), "..");
   try {
     if (!args.includes("--no-fetch") && baseRef.startsWith("origin/")) {
-      gitOrNull(root, ["fetch", "--quiet", "origin"]);
+      // Name the branch: a clone with a narrow fetch refspec would not update origin/main otherwise.
+      gitOrNull(root, ["fetch", "--quiet", "origin", baseRef.slice("origin/".length)]);
     }
     if (checkOnly) {
       console.log(JSON.stringify({ collisions: findCollisions(root, baseRef) }));

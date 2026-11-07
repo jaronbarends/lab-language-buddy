@@ -15,7 +15,7 @@ const fs = require('fs');
 const path = require('path');
 const { execFileSync } = require('child_process');
 
-const GUARDED_REFS = ['main', 'origin/main'];
+const GUARDED_REFS = ['main', 'origin/main', 'refs/heads/main', 'refs/remotes/origin/main'];
 const OPTIONS_WITH_VALUE = ['-m', '-s', '-X', '-F', '--message', '--strategy', '--strategy-option', '--file'];
 const MERGE_ENDINGS = ['--abort', '--continue', '--quit'];
 const SCRIPT = path.join('scripts', 'renumber-records.mjs');

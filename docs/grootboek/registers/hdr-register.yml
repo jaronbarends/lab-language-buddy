@@ -220,3 +220,14 @@ hdrs:
     beslissing: "Bij de verificatie van elke stage worden de faalpaden bewust geprobeerd (microfoonrechten weigeren, netwerk afknippen midden in /api/chat, opname stoppen zonder iets te zeggen) en elk moet in een herstelbare error-state landen"
     notitie: "Overgezet uit plan.md (HDR-015): punt 5 van de sectie Verification. De datum is die van de goedkeuring van het plan, niet uit de bron"
     bestand: hdr-020-faalpaden-bewust-proberen.md
+  - id: "HDR-021"
+    titel: "Werk vertakt van `main`; `arc/arc-main` vervalt"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-11-07
+    implementatie-datum: 2026-11-07
+    beslissing: "arc/arc-main vervalt als integratiebranch: elke branch vertrekt van main en gaat via een pull request terug naar main; de CI, het hernummerscript en de hook guard-merge-renumber kijken alleen nog naar main"
+    notitie: "Vervangt het eerste deel van HDR-011; het tweede deel (de branch bestaat vóór de eerste bewerking) blijft gelden. Oudere records die arc/arc-main noemen blijven staan als geschiedenis"
+    bestand: hdr-021-werk-vertakt-van-main.md

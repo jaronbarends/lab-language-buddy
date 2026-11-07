@@ -2,8 +2,8 @@
 // in a base ref (HDR-005: the branch that merges second renumbers its own records).
 // Run it BEFORE merging the base ref into the branch; the guard-merge-renumber hook asks for it.
 //
-//   npm run docs:renumber                      renumber against origin/arc/arc-main
-//   npm run docs:renumber -- --base main       against another ref
+//   npm run docs:renumber                      renumber against origin/main
+//   npm run docs:renumber -- --base <ref>      against another ref
 //   npm run docs:renumber -- --check           only report collisions (exit 0, JSON on stdout)
 //   --no-fetch                                 do not run `git fetch origin` first
 //
@@ -17,7 +17,7 @@ import { dirname, isAbsolute, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { RECORD_TYPES, checkRecords, formatId, idNumber, parseRegister } from "./records.mjs";
 
-const DEFAULT_BASE = "origin/arc/arc-main";
+const DEFAULT_BASE = "origin/main";
 
 // The text files whose added lines may mention a record id: documents and registers, and the
 // source files that cite a record in a comment (DFT-003). Other files are left alone.

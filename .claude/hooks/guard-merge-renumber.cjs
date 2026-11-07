@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 'use strict';
 
-// PreToolUse guard for HDR-005, made mechanical: before the lead thread merges arc/arc-main or
-// main into a branch, check whether the grootboek records this branch added collide with ids
+// PreToolUse guard for HDR-005, made mechanical: before the lead thread merges main into a
+// branch, check whether the grootboek records this branch added collide with ids
 // that ref already holds. If they do, deny the merge, name the collisions and say to run
 // `npm run docs:renumber` first. Renumbering has to happen BEFORE the merge: after it, every
 // mention of a colliding id is ambiguous (see scripts/renumber-records.mjs).
@@ -15,7 +15,7 @@ const fs = require('fs');
 const path = require('path');
 const { execFileSync } = require('child_process');
 
-const GUARDED_REFS = ['arc/arc-main', 'origin/arc/arc-main', 'main', 'origin/main'];
+const GUARDED_REFS = ['main', 'origin/main'];
 const OPTIONS_WITH_VALUE = ['-m', '-s', '-X', '-F', '--message', '--strategy', '--strategy-option', '--file'];
 const MERGE_ENDINGS = ['--abort', '--continue', '--quit'];
 const SCRIPT = path.join('scripts', 'renumber-records.mjs');

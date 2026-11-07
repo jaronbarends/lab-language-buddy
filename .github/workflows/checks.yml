@@ -1,11 +1,9 @@
 name: Checks
 
-# HDR-003: the checks named in CLAUDE.md run on every pull request. The branch list names
-# both the production branch and the current integration branch; a branch that no longer
-# exists is simply never matched, so removing arc/arc-main later needs no change here.
+# HDR-003, HDR-021: the checks named in CLAUDE.md run on every pull request to main.
 on:
   pull_request:
-    branches: [main, arc/arc-main]
+    branches: [main]
 
 jobs:
   checks:

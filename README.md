@@ -6,24 +6,18 @@ and get feedback on how you did.
 
 ## Why this repo exists
 
-**The point of this project is to experiment with having AI generate the vast majority
-of the code.** The app itself is real and the requirements are genuine, but the reason
-for building it here — rather than in the existing Language Buddy codebase — is to see
-what comes out when the architecture and implementation are left to an AI agent working
-from a written brief, instead of being specified up front.
+This repo has two aims, and the first carries the second.
 
-So a few things are deliberate:
+1. **An app I use myself.** A live spoken conversation with an AI persona, in the language
+   and level I pick, with a short correction after every turn. It has to be reliable enough
+   for daily use, on an iPhone first.
+2. **An experiment in how to work with an AI that writes most of the code.** The written
+   brief, the review conversation, the decision ledger in `docs/grootboek/` and the checks
+   are the real input. What's being tried is the *workflow*: how well a fairly involved app
+   can be scoped, staged and reviewed when someone else writes the code.
 
-- **This is a from-scratch rebuild.** No code is carried over from the existing Language
-  Buddy app. The structure, state model, styling approach and component boundaries are
-  the agent's own choices, not a port of decisions already made elsewhere.
-- **The written brief and the review conversation are the real input.** Where a decision
-  was made by the agent rather than specified, the code says so in a comment — including
-  where it diverges from the visual reference on purpose.
-
-What's being tested is the *workflow*: how well a fairly involved app can be scoped,
-staged and reviewed when someone else writes the code. Judge the repo on that as much as
-on the app.
+It started as a from-scratch rebuild of an earlier Language Buddy app. No code was carried
+over, and that app is no longer a source for this one (see PDR-001).
 
 ## Who it is for and what it aims at
 
@@ -55,8 +49,8 @@ several Safari-only failures that never show up in desktop Chrome. Anything touc
 recording or layout needs testing on a real device, not just reasoning from the spec.
 
 Everything else — styling approach, state management, component structure — was the
-agent's call. Hosting is Vercel. The reasons behind these choices are in the Decisions
-table of [`docs/plan.md`](docs/plan.md).
+agent's call. Hosting is Vercel. The reasons behind these choices are in the decision
+records under [`docs/grootboek/`](docs/grootboek/).
 
 ## Repository layout
 
@@ -155,15 +149,14 @@ Built in reviewable stages, one branch each, with a check-in between.
 
 ## Planning and decisions
 
-[`docs/plan.md`](docs/plan.md) is the living plan: the state model, the component layout,
-every design decision with its reasoning, what is out of scope, and a dated decision log
-of everything that changed after the original plan was approved. It is updated in the same
+Decisions and their reasoning are kept as numbered records in [`docs/grootboek/`](docs/grootboek/),
+found through the registers in `docs/grootboek/registers/`. A record is updated in the same
 commit as the code change that invalidates it, so the two never disagree for longer than
 one commit.
 
-Read it before changing anything structural — several things that look arbitrary (no Stop
-button, `editing` as its own state, the live transcript living outside the thread) are
-deliberate and the reasoning is recorded there.
+Read the relevant record before changing anything structural — several things that look
+arbitrary (no Stop button, `editing` as its own state, the live transcript living outside
+the thread) are deliberate and the reasoning is recorded there.
 
 Working agreements for contributors and AI agents (branches, commits, hooks, the subagent
 working model) are in [`CLAUDE.md`](CLAUDE.md); `docs/index.yml` is the table of contents

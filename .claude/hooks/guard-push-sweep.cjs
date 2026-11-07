@@ -94,8 +94,8 @@ async function main() {
     .map((file) => `${file.path} (${file.lines} lines, ${file.status}: ${file.reason})`)
     .join('; ');
   deny(
-    `${newWork.length} file(s) need a refactor-werkplaats pass before pushing: ${list}. ` +
-      'Spawn the refactor-werkplaats agent for them now, then retry the push.'
+    `${newWork.length} bestand(en) hebben een refactor-werkplaats-ronde nodig vóór het pushen: ${list}. ` +
+      'Start nu de refactor-werkplaats agent voor deze bestanden en probeer de push dan opnieuw.'
   );
 }
 

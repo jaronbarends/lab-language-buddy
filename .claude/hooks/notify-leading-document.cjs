@@ -4,11 +4,11 @@
 // PostToolUse hook for REQ-GG-04 ("Implementeer de communicatieplicht bij
 // documentwijzigingen"): after an Edit or Write on a leading document, remind the agent
 // of the duty to communicate. It never blocks; the change has already happened and the
-// check by Jaron comes before the commit.
+// check by Jarón comes before the commit.
 //
 // Which files count, and the wording of the reminder, live in leading-documents.json next
 // to this script. A change of procedure is a change of that file, not of this code.
-// Subagents get their own wording: they cannot ask Jaron, so they report it instead.
+// Subagents get their own wording: they cannot ask Jarón, so they report it instead.
 
 const fs = require('fs');
 const path = require('path');

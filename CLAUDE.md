@@ -1,135 +1,140 @@
 @AGENTS.md
 
-# Project plan
+# Beslissingen
 
-`docs/plan.md` is the living plan and decision record for this app: state model,
-component layout, design decisions with their reasoning, build stages, and a dated log of
-everything that changed after the plan was first approved.
+Beslissingen leven in het grootboek (`docs/grootboek/`): ADR (wat), PDR (waarom, product) en HDR
+(hoe we werken), geïndexeerd door registers in `docs/grootboek/registers/`. Lees eerst het
+register en dan alleen het record dat je nodig hebt: veel keuzes die in de code willekeurig lijken
+zijn bewust gemaakt, en de redenering staat daar en niet in de diff. `docs/index.yml` is de
+inhoudsopgave.
 
-Read it before making structural changes — several choices that look arbitrary in the code
-are deliberate, and the reasoning lives there rather than in the diff.
+**Houd records bij in dezelfde commit als de code.** Spreekt een wijziging een record tegen,
+werk het record dan in diezelfde commit bij of vervang het. Als losse klus gebeurt het niet, en
+een verouderd record is erger dan geen record.
 
-**Keep it current in the same commit as the code.** If a change contradicts the plan,
-update the plan and add a decision-log line in that same commit. Left as a separate chore
-it will not happen, and a stale plan is worse than none.
+# Grootboek (experiment, `arc/*`-branches)
 
-# Grootboek (experiment, `arc/*` branches)
+Genummerde beslissingsrecords (ADR, HDR, PDR), driftrapporten (DFT) en ontdekkingsjournalen (JNL)
+onder `docs/grootboek/`, geïndexeerd door YAML-registers in `docs/grootboek/registers/`. Lees
+eerst een register en dan alleen het document dat je nodig hebt. `docs/grootboek/CLAUDE.md` laadt
+vanzelf in die map en bevat de documenttypen en afspraken. Start de skill `grootboek`
+(`.claude/skills/grootboek/`) voor elk grootboekdocument: de schrijfgidsen daarvan zijn een harde
+eis.
 
-An experiment next to the plan: numbered decision records (ADR, HDR, PDR), drift
-reports (DFT) and discovery journals (JNL) under `docs/grootboek/`, indexed by YAML
-registers in `docs/grootboek/registers/`. Read a register first, then only the
-document you need. `docs/grootboek/CLAUDE.md` loads by itself in that folder and has
-the document types and conventions. Start the `grootboek` skill
-(`.claude/skills/grootboek/`) for any grootboek document: its writing guides are a hard
-requirement.
+- **Communicatieplicht.** Leidende documenten: elke `CLAUDE.md` in de repo,
+  `docs/grootboek/software-architectuur.md` (de enige balans tot nu toe; een nieuwe balans komt
+  op deze lijst zodra hij wordt gemaakt) en `docs/code-architectuur.md`. Verandert er een: zeg
+  wat er verandert en waarom, laat de concrete wijziging zien en vraag om een check. Geen stille
+  bewerkingen. Dit geldt ook wanneer een record tot een wijziging van een leidend document leidt.
+  Records (ADR, HDR, PDR, DFT, JNL) en de README vallen buiten deze plicht.
+- Een beslissing zonder registerregel bestaat niet voor de volgende sessie. Werk het register bij
+  in dezelfde commit als het record.
+- **Incidentregister** (HDR-009): telt terugkerende fouten zodat ze regels kunnen worden. Corrigeert
+  Jarón de agent, of faalt een tool opnieuw op dezelfde manier, voeg dan één regel toe onder een
+  passend patroon in `docs/grootboek/registers/incident-register.yml` (of begin een nieuw patroon)
+  en zeg dat in één zin. Waarschuwt `docs:check` dat een patroon er drie heeft, los de oorzaak dan
+  op met een regel, hook of skill, boek een HDR en zet het id in de `maatregel` van het patroon.
 
-- **`docs/plan.md` stays the source for every decision made before 2026-10-20.**
-  Only decisions from the `arc/*` experiments are booked in the grootboek
-  (HDR-001 says why). It does not replace the plan rule above: a change that
-  contradicts the plan still updates the plan in the same commit.
-- **Language.** Grootboek documents are written in English, like everything else in
-  this repo. That overrides the skill's own "Documentatie: Nederlands" convention.
-- **Duty to communicate.** Leading documents: every `CLAUDE.md` in the repo,
-  `docs/grootboek/software-architectuur.md` (the only balance so far; a new balance joins
-  this list when it is created) and `docs/code-architectuur.md`. When one changes: say what
-  changes and why, show the concrete change, and ask for a check. No silent edits. This also
-  holds when a record leads to an update of a leading document. Records (ADR, HDR, PDR, DFT,
-  JNL), `docs/plan.md` (it has its own rule: same commit as the code) and the README are
-  outside this duty.
-- A decision without a register line does not exist for the next session. Update the
-  register in the same commit as the record.
-- **Incident register.** When Jaron corrects the agent, or a tool fails in a way that has
-  happened before, add one entry to `docs/grootboek/registers/incident-register.yml` (a new
-  pattern if none fits) and say so in one sentence. At three incidents in a pattern without a
-  `maatregel`, `docs:check` warns: codify it as a rule, hook or skill and book an HDR
-  (HDR-009).
+# Wat dit is
 
-# What this is
+Een persoonlijk leerproject, dat de bouwer ook dagelijks gebruikt, om gesproken gesprekken in een
+vreemde taal te oefenen met een AI-persona. Details en ambitie: de sectie "Who it is for" in
+`README.md`.
 
-A personal learning project, also used daily by its builder, to practise spoken
-conversation in a foreign language against an AI persona. Details and ambition: the
-"Who it is for" section of `README.md`.
+# Werkafspraken
 
-# Working agreements
+Deze beschrijven wat de codebase en haar geschiedenis al doen. Vind je een tegenvoorbeeld, zeg dat
+dan in plaats van een van beide blind te volgen.
 
-These describe what the codebase and its history already do. If you find a counter-example,
-say so rather than following either blindly.
+- **Taal** (HDR-014). Code, commentaar in code, UI-teksten en commitberichten zijn Engels, net als
+  `README.md`, `AGENTS.md` en `spikes/`. Alle andere documentatie is Nederlands: het grootboek en
+  zijn registers, elke `CLAUDE.md`, de regels, de instructies van agents en skills, hookberichten
+  en de rest van `docs/`. Bestaande Engelse documenten worden vertaald; nieuwe documenten schrijf
+  je meteen in het Nederlands. Vertaal alleen proza, nooit keys, ids of de labels
+  `Status`/`Date`/`Implementation` van een record. Bestandsnamen van documenten volgen de taal
+  van hun inhoud (een Nederlands document krijgt een Nederlandse kebab-case naam); namen waar
+  gereedschap op steunt (`CLAUDE.md`, `README.md`, `SKILL.md`, `index.yml`, registerbestanden, namen
+  van agents en skills) blijven Engels. Houd vaktermen Engels in plaats van Nederlandse
+  termen te verzinnen (hook, worktree, branch, dryrun; niet "werkboom" of "droogloop").
+- **Geen AI-of-zelf-oordelen.** Dit project is een experiment in bouwen met een AI die het
+  meeste van de code schrijft. Sla de eenregelige aanbeveling "laat AI dit genereren / schrijf dit
+  zelf" en de framing van de Next.js/TypeScript-leerdoelen uit de globale instructies over. Wijzen
+  op een vage prompt of spec blijft welkom.
+- **De bestaande app is geen bron** (HDR-016, PDR-001). Lees, toon of doorzoek de bestaande
+  Language Buddy-repo (`jaronbarends/language-buddy`) niet, tenzij Jarón een specifiek bestand
+  aanwijst. Zou het lezen van een bestand echt tijd besparen, vraag dan eerst; noem hardop alles
+  wat je wel leest. Kom je per ongeluk bij het materiaal uit, zeg dat dan in plaats van het
+  stilletjes te gebruiken.
+- **Codestijl** in één regel: TypeScript strict, function declarations, `if`s met accolades en
+  early returns, booleans die als zin lezen (`microphoneIsLive`), bestandsnamen in kleine letters
+  met streepjes. De volledige lijst laadt zodra je `src/` aanraakt (`.claude/rules/code-style.md`).
+- **Commits.** Eén korte zin in de gebiedende wijs die zegt wat er veranderde ("Handle all
+  documented Scribe error types"), geen prefixen behalve de zeldzame `chore:`. Geen
+  `Co-Authored-By`-trailer. Een record dat door de wijziging verouderd raakt, gaat in dezelfde
+  commit mee (zie Beslissingen).
+- **Branches.** Eén branch per stuk werk, via een pull request in `main` gemerged: `stage/N-name`
+  voor bouwstages, een beschrijvende naam voor fixes en features, `spike-*` voor experimenten.
+  Reviewfixes krijgen eigen commits op de branch die wordt gereviewd. Code gaat via een branch en
+  een PR; alleen kleine notities in de docs of tooling-aanpassingen zijn rechtstreeks op `main`
+  gecommit, en alleen met Jaróns akkoord. Maak de branch vóór de eerste bewerking, niet erna. Werk
+  in de grootboekexperiment-branches (`arc/*`) vanaf `arc/arc-main` en ga er via een PR terug in,
+  terwijl `arc/arc-main` de integratiebranch is; `main` is productie (HDR-011).
+- **Hooks.** `.claude/settings.json` koppelt hooks onder `.claude/hooks/`. De uitvoer van een hook
+  is een bevel, geen suggestie: vuurt er een, voer dan precies uit wat er staat — niets overslaan,
+  niets uitstellen, niet omzeilen met een ander gereedschap of een andere formulering. Een hook die
+  een procedure draagt (een checklist, een release-ritueel) bewaart die procedure in een eigen
+  bestand naast het script en injecteert haar op het juiste moment — de checklist is data, de hook
+  is bezorging, dus een wijziging van de procedure betekent nooit een codewijziging.
+- **Werkmodel: subagent-tenzij.** De lead thread stuurt aan en beslist; hij schrijft zelf geen
+  broncode. Bewerkingen in `src/` of `spikes/` gaan via een builder-subagent — een
+  `guard-kenniswerker`-hook dwingt dit af voor de lead thread (aanroepen van subagents komen
+  erdoor; `docs/`, `.claude/` en andere bestanden die geen code zijn vormen een uitzondering, dus
+  dit bestand of een hookscript kan nog direct worden bewerkt). Er is een tijdgebonden override
+  voor als Jarón uitdrukkelijk vraagt dat de lead thread één wijziging zelf doet: die maakt
+  `.claude/.hoofdthread-override.json` aan
+  (`{"activatedAt": "<ISO timestamp>", "durationMinutes": 15}`, 15 minuten tenzij Jarón een langere
+  duur noemt), en de hook honoreert het alleen tot het verloopt.
+- **Staffel.** Laad vóór je een builder start de skill `triage` en classificeer de taak —
+  trivial / normal / risky, op type, nooit op omvang — en zet het eenregelige oordeel
+  (`regime: ... — <reden>`) op de eerste regel van de opdracht aan de builder. Een
+  `triage-guard`-hook weigert een builderstart vanuit de lead thread zonder die regel (een builder
+  die door een andere agent wordt gestart komt erdoor — de aansturende agent is daar de borging,
+  volgens de skill). `trivial` krijgt een opdracht van één regel en een rapport van drie regels,
+  geen reviewer; al het andere houdt het volledige contract.
+- **Fork mode.** Standaard aan, geen setup nodig. Gebruik hem voor synthesewerk waarbij het gesprek
+  de bron is — een spec, een concept, een verslag waarbij de dialoog zelf de bron is. Levende
+  documenten en registers (de grootboekregisters) blijven werk voor de lead thread; ze zijn geen
+  materiaal voor een fork.
+- **Refactor loop.** Voordat de lead thread pusht, doorzoekt een `guard-push-sweep`-hook `src/` op
+  bestanden voorbij de doorbell/hard-limit zonder registerbeslissing. Vindt hij nieuwe, dan weigert
+  hij de push en noemt ze; de lead thread start de agent `refactor-werkplaats` voor die bestanden
+  en probeert het dan opnieuw. Een pending-marker (`docs/.refactor-pending.json`, 24 uur TTL)
+  voorkomt dat de volgende push een bestand opnieuw markeert waarvoor al een voorstel op review
+  wacht. Een hook op git-niveau die dit onbewaakt start, naar ARC's eigen conventie, werd geweigerd
+  door de eigen veiligheidsclassifier van het harnas ("Create Unsafe Agents") — wat echt is gebouwd
+  is deze sessiegebonden versie; zie de REQ-AH-13-notitie in `docs/code-architectuur.md`.
+- **Controles voordat je iets af noemt.** `npm run lint`, dan `npx next typegen && npx tsc --noEmit`,
+  `npm run docs:check` (drift tussen docs en repo), `npm run test:scripts` (de tests van de scripts
+  die documenten herschrijven), `npm run register:check` (het code-architectuurregister wijkt niet
+  af), en dan `npm run build`. Alles wat audio, opname of layout raakt, vraagt ook een test op
+  een echte iPhone: Safari is een harde eis.
+- **Mappen.** `src/app` routes en globale CSS, `src/components` schermen en UI, `src/hooks`
+  sessiecontext en effectdrivers, `src/lib` state machine, providerregistries en pure helpers.
+  `spikes/` is een aparte app, uitgesloten van lint en typecheck.
 
-- **Language.** Code, comments, UI copy, commit messages and docs are in English.
-- **No AI-or-self verdicts.** This project is an experiment in building with an AI that writes
-  most of the code. Skip the one-line "let AI generate this / write this yourself"
-  recommendation and the Next.js/TypeScript learning-goal framing from the global
-  instructions. Flagging a vague prompt or spec is still welcome.
-- **Code style** in one line: TypeScript strict, function declarations, braced `if`s with
-  early returns, booleans that read as a sentence (`microphoneIsLive`), lowercase-dashed
-  file names. The full list loads when you touch `src/` (`.claude/rules/code-style.md`).
-- **Commits.** One short imperative sentence that says what changed ("Handle all documented
-  Scribe error types"), no prefixes except the rare `chore:`. No `Co-Authored-By` trailer.
-  The plan goes in the same commit as the code that invalidates it (see above).
-- **Branches.** One branch per piece of work, merged into `main` through a pull request:
-  `stage/N-name` for build stages, a descriptive name for fixes and features, `spike-*` for
-  experiments. Review fixes get their own commits on the branch under review. Code goes
-  through a branch and a PR; only small notes in the plan or tooling tweaks have been
-  committed straight to `main`, and only on Jaron's go-ahead. Create the branch before the
-  first edit, not after. Work in the grootboek experiment (`arc/*`) branches from
-  `arc/arc-main` and goes back into it through a PR, while `arc/arc-main` is the integration
-  branch; `main` is production (HDR-011).
-- **Hooks.** `.claude/settings.json` wires hooks under `.claude/hooks/`. A hook's output is an
-  order, not a suggestion: when one fires, carry out exactly what it says — nothing skipped,
-  nothing deferred, no working around it with a different tool or phrasing. A hook that
-  carries a procedure (a checklist, a release ritual) keeps that procedure in its own file
-  next to the script and injects it at the right moment — the checklist is data, the hook is
-  delivery, so a procedure change never means a code change.
-- **Working model: subagent-tenzij.** The lead thread steers and decides; it does not write
-  source itself. Edits to `src/` or `spikes/` go through a builder subagent — a
-  `guard-kenniswerker` hook enforces this for the lead thread (subagent calls pass through;
-  `docs/`, `.claude/` and other non-code files are a carve-out, so this file or a hook script
-  can still be edited directly). A time-boxed override exists for when Jaron explicitly asks
-  the lead thread to make one change itself: it creates
-  `.claude/.hoofdthread-override.json` (`{"activatedAt": "<ISO timestamp>", "durationMinutes": 15}`,
-  15 minutes unless Jaron names a longer duration), which the hook honors only until it expires.
-- **Staffel.** Before starting a builder, load the `triage` skill and classify the task —
-  trivial / normal / risky, by type, never by size — then put the one-line verdict
-  (`regime: ... — <reason>`) on the first line of the builder's assignment. A `triage-guard`
-  hook refuses a lead-thread builder-start without that line (a builder started by another
-  agent passes through — the orchestrating agent is the assurance there, per the skill).
-  `trivial` gets a one-line assignment and a three-line report, no reviewer; anything else
-  keeps the full contract.
-- **Fork mode.** On by default, no setup needed. Use it for conversation-fed synthesis work — a
-  spec, a draft, a write-up where the dialogue itself is the source. Living documents and
-  registers (`docs/plan.md`, the grootboek registers) stay lead-thread work; they are not fork
-  material.
-- **Refactor loop.** Before the lead thread pushes, a `guard-push-sweep` hook sweeps `src/`
-  for files past the doorbell/hard-limit with no register decision. If it finds any new ones,
-  it denies the push and names them; the lead thread spawns the `refactor-werkplaats` agent
-  for those files, then retries. A pending marker (`docs/.refactor-pending.json`, 24h TTL)
-  stops the next push from re-flagging a file that already has a proposal awaiting review. A
-  git-level push-hook that spawns this unattended, matching ARC's own convention, was refused
-  by the harness's own safety classifier ("Create Unsafe Agents") — this session-scoped
-  version is what's actually built; see `docs/code-architectuur.md`'s REQ-AH-13 note.
-- **Checks before you call something done.** `npm run lint`, then
-  `npx next typegen && npx tsc --noEmit`, `npm run docs:check` (drift between docs and
-  repo), `npm run test:scripts` (the tests of the scripts that rewrite documents),
-  `npm run register:check` (the code-architecture register has not drifted), then
-  `npm run build`. Anything touching audio,
-  recording or layout also needs a test on a real iPhone: Safari is a hard requirement.
-- **Folders.** `src/app` routes and global CSS, `src/components` screens and UI,
-  `src/hooks` session context and effect drivers, `src/lib` state machine, provider
-  registries and pure helpers. `spikes/` is a separate app, excluded from lint and typecheck.
+# Waar de rest van de context staat
 
-# Where the rest of the context lives
+De context is gelaagd zodat een sessie laadt wat ze nodig heeft. `docs/index.yml` is de
+machineleesbare inhoudsopgave: lees die eerst en open dan alleen het document dat je nodig hebt.
 
-Context is layered so that a session loads what it needs. `docs/index.yml` is the
-machine-readable table of contents: read it first, then open only the document you need.
-
-| Layer | Where | Loads |
+| Laag | Waar | Laadt |
 |---|---|---|
-| Code style | `.claude/rules/code-style.md` | when a file in `src/` is touched |
-| Safari / iPhone | `.claude/rules/safari-ios.md` | when components, hooks or STT code are touched |
-| Design system, components | `src/components/CLAUDE.md` | when working in `src/components/` |
-| Providers, state machine | `src/lib/CLAUDE.md` | when working in `src/lib/` |
-| Plan and decisions | `docs/plan.md`, `docs/adr/` | on demand, via `docs/index.yml` |
-| Code architecture | `docs/code-architectuur.md` + `docs/code-architectuur-register.json` | on demand; before splitting or growing a file |
-| Grootboek | `docs/grootboek/`, via `registers/` | on demand; `docs/grootboek/CLAUDE.md` loads when working there |
-| Procedures | `.claude/skills/` | when invoked (`/stage-review`, `/grootboek`) |
-| Agents | `.claude/agents/` (`builder`, `reviewer`) | when delegated to; parallel builders get disjoint file boundaries and share this context |
+| Codestijl | `.claude/rules/code-style.md` | wanneer een bestand in `src/` wordt aangeraakt |
+| Safari / iPhone | `.claude/rules/safari-ios.md` | wanneer componenten, hooks of STT-code worden aangeraakt |
+| Design system, componenten | `src/components/CLAUDE.md` | bij werk in `src/components/` |
+| Providers, state machine | `src/lib/CLAUDE.md` | bij werk in `src/lib/` |
+| Beslissingen | `docs/grootboek/` (ADR, PDR, HDR), via de registers en `docs/index.yml` | op aanvraag |
+| Code-architectuur | `docs/code-architectuur.md` + `docs/code-architectuur-register.json` | op aanvraag; vóór het splitsen of laten groeien van een bestand |
+| Grootboek | `docs/grootboek/`, via `registers/` | op aanvraag; `docs/grootboek/CLAUDE.md` laadt bij werk daar |
+| Procedures | `.claude/skills/` | bij aanroep (`/stage-review`, `/grootboek`) |
+| Agents | `.claude/agents/` (`builder`, `reviewer`) | bij delegatie; parallelle builders krijgen elk een eigen bestandsgrens en delen deze context |

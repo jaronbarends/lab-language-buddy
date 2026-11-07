@@ -1,6 +1,6 @@
 ---
-titel: Software architecture
-perspectief: technical (components, environments, protocols)
+titel: Software-architectuur
+perspectief: technisch (componenten, omgevingen, protocollen)
 type: leidend-document
 versie: "1.0"
 status: v1
@@ -13,217 +13,225 @@ werkgebied:
   - src/components
   - next.config.ts
   - .env.example
-notitie: Derived from the code and the git history (scope `src/lib`, `src/hooks`, `src/app/api`, the delivery chain), reviewed by a fresh-context critique pass, and accepted by the human on 2026-10-20. Accepted as a whole, not section by section. Extended on 2026-10-21 with the frontend component layer (`src/components`, the app shell), closing REQ-GG-01's scope gap; most of what the explorer found was already decided in plan.md, cited where so. § 6 updated 2026-10-21 for ADR-004 (Google TTS key moved to a header). Open questions live in JNL-001, not here. Kept as a trial per HDR-002.
+notitie: Afgeleid uit de code en de git-geschiedenis (scope `src/lib`, `src/hooks`, `src/app/api`, de delivery chain), beoordeeld door een kritiekronde met verse context, en op 2026-10-20 door de mens geaccepteerd. Als geheel geaccepteerd, niet per sectie. Op 2026-10-21 uitgebreid met de frontend-componentlaag (`src/components`, de app shell), waarmee het scopegat van REQ-GG-01 is gedicht; het meeste wat de verkenner vond was al besloten, met vermelding waar. § 6 bijgewerkt op 2026-10-21 voor ADR-004 (Google TTS-key verhuisd naar een header). Open vragen staan in JNL-001, niet hier. Aangehouden als proef volgens HDR-002.
 ---
 
-# Software architecture — language-buddy
+# Software-architectuur — language-buddy
 
-**Lens.** The technical view: what the components are, how they connect, how credentials
-move, what differs between environments. The frontend is covered as structure — which
-components exist, how state and actions flow through them — not as product or visual
-design: copy, layout and the design system are a different perspective and are not covered
-here (see `src/components/CLAUDE.md` and `docs/plan.md` → Design system for those).
+**Perspectief.** De technische blik: wat de componenten zijn, hoe ze samenhangen, hoe credentials
+zich verplaatsen en wat er per omgeving verschilt. De frontend komt aan bod als structuur — welke
+componenten er zijn en hoe state en acties erdoorheen stromen — niet als product of visueel
+ontwerp: tekst, layout en het design system zijn een ander perspectief en worden hier niet
+behandeld (zie daarvoor `src/components/CLAUDE.md` en ADR-022 (Design system overgenomen uit de bestaande app)).
 
-**Reading guide.** Wanting the whole chain: sections 1 and 4. Working on a provider or a
-route: sections 3 and 6. Working on a screen or a component: sections 2 and 3. Touching
-deployment or env vars: sections 5 and 6.
+**Leeswijzer.**
 
-**Source of decisions.** Most "Decision" references point to rows in `docs/plan.md` (the
-"Decisions" table or the "Decision log"), which stays the source for anything decided before
-2026-10-20 (HDR-001). A reference to an ADR or HDR number points to a record under
-`docs/grootboek/`. A choice marked *candidate* shows in the code but has no decision record
-anywhere.
+- Wil je de hele keten: sectie 1 en 4.
+- Werk je aan een provider of een route: sectie 3 en 6.
+- Werk je aan een scherm of een component: sectie 2 en 3.
+- Raak je deployment of env vars aan: sectie 5 en 6.
 
-## 1. The system and the choices that make it possible
+**Bron van beslissingen.** Elke hier genoemde beslissing verwijst naar een record onder
+`docs/grootboek/` (ADR, PDR of HDR), met id en titel. De beslissingen die vroeger in
+`docs/plan.md` stonden, zijn naar zulke records verhuisd toen het plan verviel (HDR-015,
+plan.md vervalt als bron; beslissingen leven in het grootboek). Een keuze die als *kandidaat*
+is gemarkeerd, zie je in de code maar heeft nergens een beslissingsrecord.
 
-A browser app that lets one person practise spoken conversation in a foreign language
-against an AI persona: speech in, a reply from a language model, speech out, with a
-per-turn correction.
+## 1. Het systeem en de keuzes die het mogelijk maken
 
-1. **The server is stateless.** Every route is a plain request/response handler; no
-   long-lived process and no WebSocket server of our own. The conversation history lives at
-   the model vendor and is chained with `previous_interaction_id`; the server keeps nothing.
-   *Decision:* plan.md → Decisions (Hosting, Persistence, Conversation history).
-2. **No vendor key reaches the browser.** Keys are server-side env vars. Vendors the
-   browser must talk to directly (live speech recognition over WebSocket) get a short-lived
-   token minted by one of our routes. *Decision:* plan.md → Decisions (Hosting);
-   the reason is also in comments in the token routes.
-3. **One reducer is the only writer of session state; effects live in hooks.** State
-   changes only through actions to a pure reducer; the hooks drive the network and audio and
-   dispatch the results. *Decision:* plan.md → Decisions (State, Turn states, Turn identity).
-4. **Providers sit behind registries and an unknown setting fails loudly.** TTS and STT
-   engines are chosen by an env var; a typo throws with the valid names instead of quietly
-   picking another provider. *Decision:* plan.md → Decisions (TTS providers, STT providers);
-   the reason for "no fallback" is in the registry comments.
+Een browserapp waarmee één persoon gesproken gesprekken in een vreemde taal oefent tegen een
+AI-persona: spraak erin, een antwoord van een taalmodel, spraak eruit, met een correctie per
+beurt.
 
-## 2. Component map
+1. **De server is stateless.** Elke route is een gewone request/response-handler; geen
+   langlevend proces en geen eigen WebSocket-server. De gespreksgeschiedenis leeft bij de
+   modelleverancier en wordt geketend met `previous_interaction_id`; de server bewaart niets.
+   *Beslissing:* ADR-014 (Hosting: Vercel), PDR-002 (Geen persistentie), ADR-019 (Chat-API en
+   gespreksgeschiedenis).
+2. **Geen key van een leverancier bereikt de browser.** Keys zijn env vars aan de
+   serverkant. Services waarmee de browser rechtstreeks moet praten (live spraakherkenning
+   via WebSocket) krijgen een kortlevend token dat een van onze routes aanmaakt. *Beslissing:*
+   ADR-014 (Hosting: Vercel), ADR-011 (Deepgram-provider), ADR-012 (ElevenLabs
+   Scribe-provider); de reden staat ook in commentaar in de tokenroutes.
+3. **Eén reducer is de enige schrijver van sessiestate; effecten leven in hooks.** State
+   verandert alleen via acties naar een pure reducer; de hooks sturen het netwerk en de audio aan
+   en dispatchen de resultaten. *Beslissing:* ADR-018 (Sessiestate: één reducer, beurtstatus als
+   discriminated union).
+4. **Providers vallen onder registries en een onbekende instelling faalt luid.** TTS- en
+   STT-engines worden gekozen met een env var; een typfout gooit een fout met de geldige namen
+   in plaats van stilletjes een andere provider te kiezen. *Beslissing:* ADR-020
+   (TTS-providers en stemmen), ADR-009 (STT: providerkeuze en configuratie); de reden voor "geen
+   fallback" staat in het commentaar van de registries.
+
+## 2. Componentenkaart
 
 ```mermaid
 flowchart LR
   subgraph Browser
-    SCREENS["Screens (SetupScreen, ConversationScreen)"]
+    SCREENS["Schermen (SetupScreen, ConversationScreen)"]
     CTRL["Leaf controls (Composing/Idle/Error, dev StateStepper)"]
     RED["LanguageBuddy: reducer + effect hooks"]
-    NATIVE["Native speech recognition"]
+    NATIVE["Native spraakherkenning"]
   end
-  subgraph Server["Next.js routes (stateless)"]
+  subgraph Server["Next.js-routes (stateless)"]
     CHAT["/api/chat"]
     EVAL["/api/evaluation"]
     TTS["/api/tts"]
     TOK["/api/stt/*-token"]
-    MOCK["/api/mock/* (development only)"]
+    MOCK["/api/mock/* (alleen development)"]
   end
-  RED -- "state as props" --> SCREENS --> CTRL
+  RED -- "state als props" --> SCREENS --> CTRL
   CTRL -- "dispatch (context)" --> RED
   RED --> NATIVE
   RED --> CHAT --> GEM["Gemini"]
   RED --> EVAL --> GEM
   RED --> TTS --> TV["Azure / Google / ElevenLabs TTS"]
-  RED --> TOK --> SV["Deepgram / ElevenLabs token services"]
-  RED -. "WebSocket with token" .-> STT["Deepgram / ElevenLabs Scribe"]
+  RED --> TOK --> SV["Deepgram / ElevenLabs tokenservices"]
+  RED -. "WebSocket met token" .-> STT["Deepgram / ElevenLabs Scribe"]
   RED --> MOCK
 ```
 
-Only four components call `useSessionDispatch()` directly: `ComposingControls`,
-`IdleControls`, `ErrorControls` and the dev-only `StateStepper`. Everything else in
-`SCREENS` and the presentational pieces between `SCREENS` and `CTRL` (the thread, the
-bubbles, the evaluation display, the setup form fields) only receive state and callbacks as
-props — they never touch the reducer directly.
+Slechts vier componenten roepen `useSessionDispatch()` rechtstreeks aan: `ComposingControls`,
+`IdleControls`, `ErrorControls` en de dev-only `StateStepper`. Al het andere in
+`SCREENS` en de presentationele onderdelen tussen `SCREENS` en `CTRL` (de thread, de bubbels,
+de weergave van de evaluatie, de velden van het setupformulier) ontvangt alleen state en callbacks
+als props — ze raken de reducer nooit rechtstreeks aan.
 
-## 3. Components: responsibilities and decisions
+## 3. Componenten: verantwoordelijkheden en beslissingen
 
-| Component | Responsibility | Decision behind it |
+| Component | Verantwoordelijkheid | Beslissing erachter |
 |---|---|---|
-| Session reducer (`src/lib/session-reducer.ts`) | The state machine: setup vs conversation, and the turn-state union. The only writer of session state. | plan.md → Decisions: State, Turn states, Turn identity |
-| Effect hooks (`src/hooks/`) | One driver per concern: chat call, evaluation call, audio playback, live transcription, mock TTS. Each reacts to a turn state and dispatches results. | plan.md → Decisions: State |
-| TTS registry and providers (`src/lib/tts/`) | Pick one provider by `TTS_PROVIDER` (default Azure), turn text into MP3. Voice tables live inside each provider. | plan.md → Decisions: TTS providers, Voice tables |
-| STT registry and providers (`src/lib/stt/`) | Pick one engine by `NEXT_PUBLIC_STT_PROVIDER` (default native): native Web Speech, Deepgram, ElevenLabs Scribe. One start-function contract. | plan.md → Decisions: STT providers |
-| Chat and evaluation routes (`src/app/api/chat`, `evaluation`) | Call Gemini: the conversation turn, and a separate correction of the user's turn. Error details stay in the server log. | plan.md → Build stages: Stage 4 ("per-turn correction, in its own call") and its Decision log rows |
-| TTS route (`src/app/api/tts`) | Validate the body, synthesise with the configured provider, return audio. The voice gender is fixed on the server. | plan.md → Decision log (10-03, gender) |
-| Token routes (`src/app/api/stt/*-token`) | Exchange the server-side key for a short-lived token for the browser. | plan.md → Decisions: Hosting |
-| Mock routes (`src/app/api/mock/*`) | Canned chat and evaluation replies; 404 outside development. | plan.md → Decision log (10-03, the chat mock; 10-08, the evaluation mock) |
-| Prompt builder (`src/lib/prompt.ts`) | Builds the system instruction for the chat call and for the correction call, on every request. | plan.md → Build stages (stages 2 and 4) |
-| Contracts (`src/lib/chat-schema.ts`, `tts/types.ts`, `stt/types.ts`) | The request/response shapes and the provider interfaces, shared by routes, hooks and providers. | plan.md → Decisions: Provider interface |
-| App shell (`src/app/layout.tsx`, `page.tsx`, `manifest.ts`) | Fonts, PWA manifest, global CSS, mounts `LanguageBuddy` as the one page. | — |
-| `LanguageBuddy` (`src/components/language-buddy.tsx`) | Owns the reducer, wires every effect hook, renders exactly one screen for the current `phase`, provides `dispatch` through context. | plan.md → Decisions: State |
-| Screens (`SetupScreen`, `ConversationScreen`) and the presentational pieces under them (thread, bubbles, evaluation display, form fields) | Receive state and callbacks as props; render; never call `dispatch` directly. | plan.md → Decisions: State; plan.md → Decision log (09-29, the removed state context) |
-| Leaf controls (`ComposingControls`, `IdleControls`, `ErrorControls`, dev-only `StateStepper`) | The only components that call `useSessionDispatch()`. `ConversationControls` switches on `turnState.name` to render exactly one of them. | plan.md → Decision log (09-30, the `ConversationControls` split) |
+| Session reducer (`src/lib/session-reducer.ts`) | De state machine: setup versus gesprek, en de union van beurtstatussen. De enige schrijver van sessiestate. | ADR-018 (Sessiestate: één reducer, beurtstatus als discriminated union) |
+| Effect hooks (`src/hooks/`) | Eén driver per aspect: chatcall, evaluatiecall, audio afspelen, live transcriptie, mock-TTS. Elk reageert op een beurtstatus en dispatcht resultaten. | ADR-018 (Sessiestate: één reducer, beurtstatus als discriminated union) |
+| TTS-registry en -providers (`src/lib/tts/`) | Kiezen één provider via `TTS_PROVIDER` (standaard Azure), zetten tekst om in MP3. Stemtabellen leven in elke provider zelf. | ADR-020 (TTS-providers en stemmen) |
+| STT-registry en -providers (`src/lib/stt/`) | Kiezen één engine via `NEXT_PUBLIC_STT_PROVIDER` (standaard native): native Web Speech, Deepgram, ElevenLabs Scribe. Eén contract voor de startfunctie. | ADR-009 (STT: providerkeuze en configuratie) |
+| Chat- en evaluatieroutes (`src/app/api/chat`, `evaluation`) | Roepen Gemini aan: de gespreksbeurt, en een aparte correctie van de beurt van de gebruiker. Foutdetails blijven in het serverlog. | ADR-007 (Evaluatie per beurt, in een eigen call), ADR-019 (Chat-API en gespreksgeschiedenis) |
+| TTS-route (`src/app/api/tts`) | Valideert de body, synthetiseert met de geconfigureerde provider, geeft audio terug. Het geslacht van de stem staat op de server vast. | ADR-020 (TTS-providers en stemmen) |
+| Tokenroutes (`src/app/api/stt/*-token`) | Wisselen de key aan de serverkant om voor een kortlevend token voor de browser. | ADR-011 (Deepgram-provider), ADR-012 (ElevenLabs Scribe-provider) |
+| Mockroutes (`src/app/api/mock/*`) | Vooraf vastgelegde chat- en evaluatieantwoorden; 404 buiten development. | ADR-025 (Mockmodus voor ontwikkeling) |
+| Prompt builder (`src/lib/prompt.ts`) | Bouwt bij elke request de system instruction voor de chatcall en voor de correctiecall. | ADR-019 (Chat-API en gespreksgeschiedenis), ADR-008 (Prompts van de corrector) |
+| Contracten (`src/lib/chat-schema.ts`, `tts/types.ts`, `stt/types.ts`) | De vorm van request en response en de providerinterfaces, gedeeld door routes, hooks en providers. | ADR-020 (TTS-providers en stemmen), ADR-019 (Chat-API en gespreksgeschiedenis) |
+| App shell (`src/app/layout.tsx`, `page.tsx`, `manifest.ts`) | Lettertypen, PWA-manifest, globale CSS, mount `LanguageBuddy` als de ene pagina. | — |
+| `LanguageBuddy` (`src/components/language-buddy.tsx`) | Bezit de reducer, koppelt elke effect hook, rendert precies één scherm voor de huidige `phase`, levert `dispatch` via context. | ADR-018 (Sessiestate: één reducer, beurtstatus als discriminated union) |
+| Schermen (`SetupScreen`, `ConversationScreen`) en de presentationele onderdelen eronder (thread, bubbels, weergave van de evaluatie, formuliervelden) | Ontvangen state en callbacks als props; renderen; roepen `dispatch` nooit rechtstreeks aan. | ADR-018 (Sessiestate: één reducer, beurtstatus als discriminated union) |
+| Leaf controls (`ComposingControls`, `IdleControls`, `ErrorControls`, dev-only `StateStepper`) | De enige componenten die `useSessionDispatch()` aanroepen. `ConversationControls` schakelt op `turnState.name` om precies één ervan te renderen. | De code (`src/components/conversation/conversation-controls.tsx`); geen record |
 
-## 4. Core data flow: one conversation turn
+## 4. Kern van de datastroom: één gespreksbeurt
 
 ```mermaid
 sequenceDiagram
-  participant U as User
+  participant U as Gebruiker
   participant H as Hooks + reducer
-  participant S as STT engine
+  participant S as STT-engine
   participant C as /api/chat
   participant E as /api/evaluation
   participant T as /api/tts
-  U->>H: starts listening
-  H->>S: start (native, or token + WebSocket)
-  S-->>H: transcript updates
-  U->>H: sends the turn
-  H->>C: user turn + previousInteractionId
-  H->>E: same turn, in parallel (branches from the same interaction)
-  E-->>H: correction (not stored at the vendor)
-  C-->>H: reply + interactionId
-  Note over H: reply is held until the evaluation settles
-  H->>T: reply text
+  U->>H: begint met luisteren
+  H->>S: start (native, of token + WebSocket)
+  S-->>H: transcriptupdates
+  U->>H: verstuurt de beurt
+  H->>C: gebruikersbeurt + previousInteractionId
+  H->>E: dezelfde beurt, parallel (vertakt van dezelfde interaction)
+  E-->>H: correctie (niet opgeslagen bij de leverancier)
+  C-->>H: antwoord + interactionId
+  Note over H: het antwoord wordt vastgehouden tot de evaluatie is afgehandeld
+  H->>T: tekst van het antwoord
   T-->>H: MP3
-  H-->>U: plays audio, highlights words by estimated timing
+  H-->>U: speelt audio af, markeert woorden op geschatte timing
 ```
 
-**Bounds on waiting:** the chat call has a client-side deadline of 30 s and the evaluation
-10 s; the evaluation deadline is therefore the longest a reply can be held back. Playback
-is cut slightly before the end of the audio, because of a problem observed on iPhone (cause
-unknown; plan.md → Open questions, 14).
+**Grenzen aan het wachten:** de chatcall heeft een client-side deadline van 30 s en de evaluatie
+10 s; de deadline van de evaluatie is dus het langst dat een antwoord kan worden vastgehouden. Het
+afspelen wordt iets vóór het einde van de audio afgekapt, vanwege een probleem dat op de iPhone
+is waargenomen (oorzaak onbekend; JNL-004 (Openstaande kwesties), K9; mitigatie in ADR-010 (Native
+engine op iPhone: herstart en twee mitigaties)).
 
-**Current model, marked explicitly:** the evaluation is a separate call that branches from
-the conversation and does not return into the chain; the AI reply is held until the
-evaluation of the preceding turn has settled, so a correction never appears after the reply.
-Word highlighting uses an estimate from text length, not provider timing.
+**Huidig model, expliciet gemarkeerd:** de evaluatie is een aparte call die van het gesprek
+vertakt en niet in de keten terugkeert; het AI-antwoord wordt vastgehouden tot de evaluatie van
+de voorgaande beurt is afgehandeld, zodat een correctie nooit na het antwoord verschijnt. Het
+markeren van woorden gebruikt een schatting uit de tekstlengte, niet de timing van de provider.
 
-**Where the two user actions in the diagram originate:** "starts listening" is
-`IdleControls` dispatching `LISTENING_STARTED`; "sends the turn" is `ComposingControls`
-dispatching `USER_TURN_SENT`. Both are leaf controls (see section 3); nothing between them
-and `LanguageBuddy` touches the reducer.
+**Waar de twee gebruikersacties in het diagram vandaan komen:** "begint met luisteren" is
+`IdleControls` die `LISTENING_STARTED` dispatcht; "verstuurt de beurt" is `ComposingControls`
+die `USER_TURN_SENT` dispatcht. Beide zijn leaf controls (zie sectie 3); niets tussen hen en
+`LanguageBuddy` raakt de reducer aan.
 
-## 5. Environments
+## 5. Omgevingen
 
-| | Local development | Deployed |
+| | Lokale development | Gedeployd |
 |---|---|---|
-| Runs as | `next dev`, optionally behind an HTTPS tunnel for iPhone tests (the dev server allows `*.ngrok-free.app`) | Vercel (named in README and plan; no configuration file in the repo) |
-| Mock chat / evaluation | `NEXT_PUBLIC_USE_MOCK_CHAT` switches both together; the mock routes answer only in development | Mock routes return 404 |
-| Mock TTS | `NEXT_PUBLIC_USE_MOCK_TTS` | Not limited to development: it runs in the browser, so no server check applies (plan.md → Decision log, 10-03) |
-| Provider choice | `TTS_PROVIDER` (server), `NEXT_PUBLIC_STT_PROVIDER` (baked in at build) | same variables |
+| Draait als | `next dev`, eventueel achter een HTTPS-tunnel voor iPhone-tests (de dev-server staat `*.ngrok-free.app` toe) | Vercel (genoemd in de README en ADR-014, Hosting: Vercel; geen configuratiebestand in de repo) |
+| Mock chat / evaluatie | `NEXT_PUBLIC_USE_MOCK_CHAT` schakelt beide samen; de mockroutes antwoorden alleen in development | Mockroutes geven 404 |
+| Mock-TTS | `NEXT_PUBLIC_USE_MOCK_TTS` | Niet beperkt tot development: hij draait in de browser, dus er is geen servercontrole (ADR-025, Mockmodus voor ontwikkeling) |
+| Providerkeuze | `TTS_PROVIDER` (server), `NEXT_PUBLIC_STT_PROVIDER` (bij de build ingebakken) | dezelfde variabelen |
 
-`main` is the production branch; every other branch deploys as a Vercel preview with
-Vercel's default settings, so nothing but a merge into `main` reaches production (ADR-001;
-this is configured in the Vercel dashboard, not in the repo). The `NEXT_PUBLIC_*`
-variables are enabled for Preview too; the API keys are enabled for Production only, so a
-preview builds but its vendor-calling routes fail at runtime and it cannot spend a key.
-Vercel Authentication is active with Standard Protection: previews ask for a Vercel login;
-the production domain is public (ADR-002 covers what that leaves open).
-There is no CI workflow in the repo; the checks are the ones listed in `CLAUDE.md`. Running
-them on pull requests to `main` is wanted but not built (HDR-003; JNL-001, K8).
+`main` is de productiebranch; elke andere branch deployt als Vercel-preview met de
+standaardinstellingen van Vercel, dus niets behalve een merge in `main` bereikt productie
+(ADR-001; dit is geconfigureerd in het Vercel-dashboard, niet in de repo). De `NEXT_PUBLIC_*`-variabelen
+staan ook voor Preview aan; de API-keys staan alleen voor Production aan, dus een preview
+bouwt wel maar de routes die een leverancier aanroepen falen tijdens runtime en hij kan geen key
+uitgeven. Vercel Authentication is actief met Standard Protection: previews vragen om een
+Vercel-login; het productiedomein is publiek (ADR-002 behandelt wat dat openlaat).
+Er is geen CI-workflow in de repo; de checks zijn die uit `CLAUDE.md`. Ze op pull requests naar
+`main` draaien is gewenst maar niet gebouwd (HDR-003; JNL-001, K8).
 
-## 6. Service authentication
+## 6. Authenticatie tussen diensten
 
-| Relationship | Mechanism | Secret / variable | Where it lives |
+| Relatie | Mechanisme | Geheim / variabele | Waar het leeft |
 |---|---|---|---|
-| Server → Gemini | API key | `GEMINI_API_KEY` | server only |
-| Server → Azure TTS | subscription key header | `AZURE_SPEECH_API_KEY`, `AZURE_SPEECH_REGION` | server only |
-| Server → Google TTS | API key as a header (`x-goog-api-key`) | `GOOGLE_CLOUD_API_KEY` | server only |
-| Server → ElevenLabs TTS | key header | `ELEVENLABS_API_KEY` | server only |
-| Server → ElevenLabs token service | key header; returns a single-use token | `ELEVENLABS_API_KEY` | server only |
-| Browser → ElevenLabs Scribe | single-use token as a query parameter on the WebSocket URL | token from our route | browser, short-lived |
-| Server → Deepgram grant | `Authorization` header (Token scheme); returns an access token | `DEEPGRAM_API_KEY` | server only |
-| Browser → Deepgram | access token as the WebSocket `Bearer` subprotocol | token from our route | browser, short-lived |
-| Browser → our routes | none found | none | — |
+| Server → Gemini | API-key | `GEMINI_API_KEY` | alleen server |
+| Server → Azure TTS | header met subscription key | `AZURE_SPEECH_API_KEY`, `AZURE_SPEECH_REGION` | alleen server |
+| Server → Google TTS | API-key als header (`x-goog-api-key`) | `GOOGLE_CLOUD_API_KEY` | alleen server |
+| Server → ElevenLabs TTS | key-header | `ELEVENLABS_API_KEY` | alleen server |
+| Server → ElevenLabs tokenservice | key-header; geeft een eenmalig token terug | `ELEVENLABS_API_KEY` | alleen server |
+| Browser → ElevenLabs Scribe | eenmalig token als queryparameter op de WebSocket-URL | token uit onze route | browser, kortlevend |
+| Server → Deepgram grant | `Authorization`-header (Token-schema); geeft een toegangstoken terug | `DEEPGRAM_API_KEY` | alleen server |
+| Browser → Deepgram | toegangstoken als WebSocket-subprotocol `Bearer` | token uit onze route | browser, kortlevend |
+| Browser → onze routes | geen gevonden | geen | — |
 
-Public by design: `NEXT_PUBLIC_STT_PROVIDER`, `NEXT_PUBLIC_USE_MOCK_CHAT`,
-`NEXT_PUBLIC_USE_MOCK_TTS` (they end up in the client bundle). Where two platforms must
-agree on a secret: none found.
+Bewust publiek: `NEXT_PUBLIC_STT_PROVIDER`, `NEXT_PUBLIC_USE_MOCK_CHAT`,
+`NEXT_PUBLIC_USE_MOCK_TTS` (ze komen in de clientbundle terecht). Waar twee platforms over een
+geheim moeten overeenstemmen: geen gevonden.
 
-## 7. Shared contracts
+## 7. Gedeelde contracten
 
-| Contract | Defined in | Consumed by |
+| Contract | Gedefinieerd in | Gebruikt door |
 |---|---|---|
-| Session state, turn state, actions | `src/lib/session-reducer.ts` | every effect hook and the screens |
-| Chat and evaluation request/response (zod; the chat request is a union discriminated on `kind`) | `src/lib/chat-schema.ts` | hooks and routes |
-| TTS provider and request body | `src/lib/tts/types.ts` | TTS providers, registry, route, playback hook |
-| STT start function and callbacks | `src/lib/stt/types.ts` | the three STT engines and the live-transcription hook |
-| Languages (per-vendor language codes) | `src/lib/languages.ts` | STT and TTS providers, prompt builder |
+| Sessiestate, beurtstatus, acties | `src/lib/session-reducer.ts` | elke effect hook en de schermen |
+| Request/response van chat en evaluatie (zod; de chatrequest is een union met discriminator `kind`) | `src/lib/chat-schema.ts` | hooks en routes |
+| TTS-provider en request-body | `src/lib/tts/types.ts` | TTS-providers, registry, route, afspeelhook |
+| STT-startfunctie en callbacks | `src/lib/stt/types.ts` | de drie STT-engines en de hook voor live transcriptie |
+| Talen (taalcodes per leverancier) | `src/lib/languages.ts` | STT- en TTS-providers, prompt builder |
 
-## 8. Technology choices, and what was not chosen
+## 8. Technologiekeuzes, en wat niet is gekozen
 
-| Choice | Reason | Not chosen |
+| Keuze | Reden | Niet gekozen |
 |---|---|---|
-| Next.js App Router + TypeScript strict | plan.md → Decisions: Framework | — |
-| Vercel hosting | plan.md → Decisions: Hosting | a long-lived server process |
-| CSS Modules | plan.md → Decisions: Styling | Tailwind |
-| `useReducer` + dispatch context | plan.md → Decisions: State | a state-management library |
-| Gemini for chat and correction | The provider was specified up front (plan.md → Fixed constraints); the model (`flash-lite`) was chosen on price, without an extensive comparison (ADR-003) | other models were not compared |
-| Azure TTS as default | plan.md → Decisions: TTS providers | — |
-| Native Web Speech as default STT | plan.md → Decision log (10-12, 10-14) | Google Cloud STT and Azure STT, ruled out in the spike (plan.md → Decisions: STT providers) |
-| No persistence | plan.md → Decisions: Persistence | storing conversations |
+| Next.js App Router + TypeScript strict | ADR-013 (Next.js 16 met TypeScript strict) | — |
+| Vercel-hosting | ADR-014 (Hosting: Vercel) | een langlevend serverproces |
+| CSS Modules | ADR-015 (Styling: CSS Modules over het overgenomen design system) | Tailwind |
+| `useReducer` + dispatch-context | ADR-018 (Sessiestate: één reducer, beurtstatus als discriminated union) | een state-managementbibliotheek |
+| Gemini voor chat en correctie | De provider stond vooraf vast; het model (`flash-lite`) is op prijs gekozen, zonder uitgebreide vergelijking (ADR-003, Gemini `flash-lite` als model, gekozen op prijs) | andere modellen zijn niet vergeleken |
+| Azure TTS als standaard | ADR-020 (TTS-providers en stemmen) | — |
+| Native Web Speech als standaard-STT | ADR-009 (STT: providerkeuze en configuratie) | Google Cloud STT en Azure STT, uitgesloten in de spike (ADR-009, Voorgeschiedenis) |
+| Geen persistentie | PDR-002 (Geen persistentie) | gesprekken opslaan |
 
-## 9. Security principles and where they live
+## 9. Beveiligingsprincipes en waar ze leven
 
-| Principle | Implementation |
+| Principe | Implementatie |
 |---|---|
-| A vendor key never reaches the client | keys read only in server code; browser gets minted tokens |
-| Provider error details stay out of responses | the routes log the detail and return a generic message |
-| The mock chat and evaluation routes cannot answer in production | they return 404 unless `NODE_ENV` is `development`. The TTS mock is a browser-side flag with no such gate (see section 5) |
-| Values that enter a system prompt are constrained | `language` and `level` are zod enums in the request schema |
-| Input size is bounded | the chat input and the text sent to TTS have length limits in their zod schemas |
-| An abandoned request stops the vendor call | the route's request signal is passed on to the Gemini and TTS calls |
-| Callers of our own routes | no principle found; no authentication or rate limit in the repo. The risk is accepted for now and a fix is wanted soon (ADR-002, provisional; JNL-001, K7) |
+| Een key van een leverancier bereikt de client nooit | keys worden alleen in servercode gelezen; de browser krijgt aangemaakte tokens |
+| Foutdetails van providers blijven uit responses | de routes loggen het detail en geven een algemene melding terug |
+| De mock-chat- en -evaluatieroutes kunnen in productie niet antwoorden | ze geven 404 tenzij `NODE_ENV` `development` is. De TTS-mock is een vlag in de browser zonder zo'n poort (zie sectie 5) |
+| Waarden die in een system prompt terechtkomen zijn begrensd | `language` en `level` zijn zod-enums in het requestschema |
+| De omvang van invoer is begrensd | de chatinvoer en de tekst die naar TTS gaat hebben lengtelimieten in hun zod-schema's |
+| Een verlaten request stopt de call naar de leverancier | het requestsignaal van de route wordt doorgegeven aan de Gemini- en TTS-calls |
+| Aanroepers van onze eigen routes | geen principe gevonden; geen authenticatie of rate limit in de repo. Het risico is voorlopig geaccepteerd en een oplossing is binnenkort gewenst (ADR-002, voorlopig; JNL-001, K7) |
 
-## 10. How this document changes
+## 10. Hoe dit document verandert
 
-First the decision (an ADR, or a plan.md row until HDR-001 is settled), then the update of
-this document, and the human is told what changed and asked for a check. Facts that move
-fast (dependency versions, line counts, the provider list) are measured from the code, not
-kept here. Sections without a decision behind them say so; an honest gap is better than a
-plausible filler.
+Eerst de beslissing (een record: een ADR, PDR of HDR), dan de aanpassing van dit document, en
+de mens krijgt te horen wat er veranderd is en wordt om een check gevraagd. Feiten die snel
+bewegen (versies van dependencies, aantallen regels, de lijst met providers) worden uit de code
+gemeten en hier niet bewaard. Secties zonder beslissing erachter zeggen dat. Een eerlijk gat is
+beter dan plausibele opvulling.

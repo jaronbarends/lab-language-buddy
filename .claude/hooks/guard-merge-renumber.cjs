@@ -109,7 +109,7 @@ function main() {
         continue;
       }
       if (result.refusal) {
-        deny(`Merge of ${ref} held back (HDR-005): ${result.refusal}`);
+        deny(`Merge van ${ref} tegengehouden (HDR-005): ${result.refusal}`);
         process.exit(0);
       }
       if (result.collisions.length > 0) {
@@ -117,10 +117,10 @@ function main() {
           .map((c) => `${c.oldId} -> ${c.newId} (${c.newBestand})`)
           .join('; ');
         deny(
-          `Merging ${ref} would give two records the same id (HDR-005): ${list}. ` +
-            `First run \`npm run docs:renumber -- --base ${ref} --no-fetch\`, review the result and ` +
-            'commit it, then retry the merge. After the merge, the references to a colliding id ' +
-            'can no longer be told apart.'
+          `Door ${ref} te mergen krijgen twee records hetzelfde id (HDR-005): ${list}. ` +
+            `Draai eerst \`npm run docs:renumber -- --base ${ref} --no-fetch\`, controleer het resultaat en ` +
+            'commit het, en probeer de merge dan opnieuw. Na de merge zijn de verwijzingen naar een ' +
+            'botsend id niet meer van elkaar te onderscheiden.'
         );
         process.exit(0);
       }

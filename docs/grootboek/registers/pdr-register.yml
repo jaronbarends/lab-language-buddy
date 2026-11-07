@@ -95,7 +95,7 @@ pdrs:
     notitie: "Overgezet uit plan.md (HDR-015): drie logrijen (09-24, 09-24, 09-30). De 320px-breuk van Cancel edit staat nog open en komt in het JNL met open kwesties"
     bestand: pdr-008-knoppen.md
   - id: "PDR-009"
-    titel: "De luisterstip"
+    titel: "De live-indicator"
     status: implemented
     versie: "1.0"
     implementatie: 100
@@ -103,8 +103,8 @@ pdrs:
     datum: 2026-09-25
     implementatie-datum: 2026-09-25
     beslissing: "De stip in de luisterbubbel is een indicator dat de microfoon live is, staat er precies zolang de microfoon live is en pulseert via een ring (::after); de gestippelde rand is weggelaten"
-    notitie: "Overgezet uit plan.md (HDR-015): drie rijen (09-25, 09-25, 10-27); de puls was op 09-25 gepland en is op 10-27 gebouwd, getest op iPhone"
-    bestand: pdr-009-de-luisterstip.md
+    notitie: "Overgezet uit plan.md (HDR-015): drie rijen (09-25, 09-25, 10-27); de pulse was op 09-25 gepland en is op 10-27 gebouwd, getest op iPhone"
+    bestand: pdr-009-de-live-indicator.md
   - id: "PDR-010"
     titel: "Sessieflow en schermen"
     status: implemented

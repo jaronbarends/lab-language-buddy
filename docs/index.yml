@@ -144,9 +144,9 @@ documents:
   - path: docs/grootboek/pdr/pdr-008-knoppen.md
     what: Twee knopvarianten met eigen uitgeschakelde stijl, Reply als primaire knop en horizontale padding 16px; overgezet uit plan.md.
     read_when: je de knopvarianten, de kleur van Reply of de breedte en padding van knoppen op een telefoon wijzigt.
-  - path: docs/grootboek/pdr/pdr-009-de-luisterstip.md
+  - path: docs/grootboek/pdr/pdr-009-de-live-indicator.md
     what: De stip in de luisterbubbel duidt de live microfoon aan, pulseert via een ring en vervangt de gestippelde rand; overgezet uit plan.md.
-    read_when: je het live transcript, de stip of de puls-animatie wijzigt.
+    read_when: je het live transcript, de stip of de pulse-animatie wijzigt.
   - path: docs/grootboek/pdr/pdr-010-sessieflow-en-schermen.md
     what: Besluiten over de sessieflow: geen ended-fase, lastConfig als nieuwe standaard, Start conversation als eerste beurt, Reply tijdens aiSpeaking; overgezet uit plan.md.
     read_when: je de overgang tussen setup en gesprek, het label van de eerste knop of het onderbreken van de AI-spraak wilt begrijpen of wijzigen.

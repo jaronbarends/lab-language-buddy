@@ -7,10 +7,10 @@ jnls:
     titel: "Instapjournaal: de software-balans"
     status: discovery
     datum: 2026-10-20
-    laatste-sessie: 2026-10-20
+    laatste-sessie: 2026-10-22
     kwesties-totaal: 8
-    kwesties-besloten: 6
-    kwesties-open: 2
+    kwesties-besloten: 7
+    kwesties-open: 1
     kwesties-geparkeerd: 0
     doel-records:
       - "software-architectuur.md (v1.0, geaccepteerd 2026-10-20)"

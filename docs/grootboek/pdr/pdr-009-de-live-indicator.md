@@ -1,4 +1,4 @@
-# PDR-009: De luisterstip
+# PDR-009: De live-indicator
 
 - **Status:** implemented
 - **Date:** 2026-09-25
@@ -13,7 +13,7 @@ versiering van het concept. Hij staat er precies zolang de microfoon live is.
 De stip pulseert. Een ring (`::after`) groeit en vervaagt over de stip: `scale` van 1 naar 2.2 en
 `opacity` van 0.8 naar 0, in 1.6 s, oneindig, zoals in de originele app. De stip zelf blijft staan.
 Bij reduced motion is er geen ring, alleen de gewone stip. "Preparing mic…" heeft geen stip, dus ook
-geen puls.
+geen pulse.
 
 De stip is 12 px, zoals in de originele app (eerst 8 px). Zijn `margin-top` is afgeleid uit de
 regelhoogte (`calc((1lh - var(--size)) / 2)`), zodat hij gecentreerd blijft op de eerste tekstregel.
@@ -23,7 +23,7 @@ De gestippelde rand van de luisterbubbel is weggelaten.
 
 ## Waarom
 
-De stip is de indicator dat de microfoon live is, en de puls was al sinds 09-25 gepland. De
+De stip is de indicator dat de microfoon live is, en de pulse was al sinds 09-25 gepland. De
 gestippelde rand zei hetzelfde als de stip: twee signalen voor één toestand, en hij week af van de
 referentie.
 
@@ -39,8 +39,8 @@ nodig had (proef HDR-013: Modern Web Guidance proberen op de bubbelanimatie, met
 
 ## Voorgeschiedenis
 
-- De stip was eerst 8 px en pulseerde niet; de puls stond als plan.
-- Op 10-27 is de puls gebouwd. Alleen die ene regel met zijn keyframes is in het bestand van de
+- De stip was eerst 8 px en pulseerde niet; de pulse stond als plan.
+- Op 10-27 is de pulse gebouwd. Alleen die ene regel met zijn keyframes is in het bestand van de
   originele app gelezen, op Jaróns aanwijzing.
 
 ## Gevolgen
@@ -48,5 +48,5 @@ nodig had (proef HDR-013: Modern Web Guidance proberen op de bubbelanimatie, met
 Getest op een iPhone door Jarón op 2026-10-27: geslaagd.
 
 (Uit de code, niet uit het plan:) de stip staat in `src/components/conversation/live-transcript.tsx`
-en wordt alleen getoond bij `microphoneIsLive`; de puls staat in `live-transcript.module.css` en de
+en wordt alleen getoond bij `microphoneIsLive`; de pulse staat in `live-transcript.module.css` en de
 gedeelde `min-width: 17ch` in `bubble.module.css`.

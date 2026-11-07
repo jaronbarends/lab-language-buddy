@@ -42,11 +42,11 @@ dateert van vóór 2026-10-20 en verwijst hiernaartoe, zodat de twee plekken nie
 | K6 | Eén element, één rol: `status` of `log`? | geparkeerd 2026-10-23 |
 | K7 | De bubbel van de gebruiker die groeit als zijn evaluatie binnenkomt | besloten 2026-10-23 (voorlopig alleen de AI-bubbel) |
 | K8 | `prefers-reduced-motion` | besloten 2026-10-23 |
-| K9 | Overlap met de pulse van de microfoonstip en de richting van puntjes en bounce | besloten 2026-10-23 (buiten scope); de pulse van de microfoonstip is op 2026-10-27 opgepakt als K13 |
+| K9 | Overlap met de pulse van de live-indicator en de richting van puntjes en bounce | besloten 2026-10-23 (buiten scope); de pulse van de live-indicator is op 2026-10-27 opgepakt als K13 |
 | K10 | Modern Web Guidance: geeft het een beter antwoord voor K3? | proef afgesproken, uitkomst open |
 | K11 | De bubbel van de gebruiker bij het versturen: wat animeert | besloten en gebouwd 2026-10-27, iPhone-test open; het krimpen in de balk en de vertraging van de denkbubbel volgen daarna |
 | K12 | Start van de spraak tegenover het einde van de onthulling | geparkeerd 2026-10-27 |
-| K13 | De luisterindicator pulseert zolang de microfoon live is | besloten en gebouwd 2026-10-27, getest op de iPhone |
+| K13 | De live-indicator pulseert zolang de microfoon live is | besloten en gebouwd 2026-10-27, getest op de iPhone |
 | K15 | De denkbubbel wacht ook na een Retry 800ms | geparkeerd 2026-10-30 |
 | K14 | De denkbubbel van de AI verschijnt met dezelfde onthulling, na een vertraging als hij op een verstuurde beurt volgt | besloten en gebouwd 2026-10-28; het antwoord groeit uit de grootte van de denkbubbel (spike 2026-10-30); getest op de iPhone |
 
@@ -218,7 +218,7 @@ Het plan heeft een pulse gepland voor de stip van de actieve microfoon (besluite
 mens heeft na de TTS-latentiemetingen een richting van puntjes en bounce genoemd. **Vraag:** in of
 buiten dit journaal? Standaard: erbuiten, om dit journaal bij de bubbels te houden.
 
-**Besluit (2026-10-23, de mens):** erbuiten. De pulse van de microfoonstip en de richting van
+**Besluit (2026-10-23, de mens):** erbuiten. De pulse van de live-indicator en de richting van
 puntjes en bounce zijn apart werk en krijgen een eigen journaal of kwestie als ze worden opgepakt.
 
 ### K10 — Modern Web Guidance
@@ -361,9 +361,9 @@ kort antwoord, een snelle of gecachte respons, of de mock-TTS kan eerder starten
 besloten: de highlight start wanneer de tekst volledig zichtbaar is, na de fade (550ms), niet aan
 het einde van de scale (350ms). Er is niets gebouwd.
 
-### K13 — De luisterindicator pulseert zolang de microfoon live is
+### K13 — De live-indicator pulseert zolang de microfoon live is
 
-K9 legde de pulse van de microfoonstip buiten dit journaal "tot hij wordt opgepakt"; de mens
+K9 legde de pulse van de live-indicator buiten dit journaal "tot hij wordt opgepakt"; de mens
 pakte hem op 2026-10-27 op, dus hij is hier als kwestie geboekt in plaats van in een eigen
 journaal. De richting van puntjes en bounce uit K9 blijft erbuiten.
 
@@ -633,7 +633,7 @@ uiteenlopen als het anker van de AI-bubbel ooit veranderde.
   de strook is meteen zichtbaar); een dev-only preview van de verstuurde bubbel is toegevoegd. De
   basis `scale: 1` van de guidance is niet toegepast. Volgende: de iPhone-test, daarna de
   vertraging van de denkbubbel en, later, het krimpen van het concept in de bedieningsbalk.
-- **2026-10-27 — K13 besloten en gebouwd.** De luisterstip pulseert zolang de microfoon live is
+- **2026-10-27 — K13 besloten en gebouwd.** De live-indicator pulseert zolang de microfoon live is
   (een ring, zoals in de originele app); geen pulse onder reduced motion. Test 3 van de
   HDR-013-proef. Door de mens op de iPhone getest, alle punten geslaagd. Volgende: het oordeel van
   de mens over de proef.

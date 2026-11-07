@@ -12,7 +12,7 @@ inhoudsopgave.
 werk het record dan in diezelfde commit bij of vervang het. Als losse klus gebeurt het niet, en
 een verouderd record is erger dan geen record.
 
-# Grootboek (experiment, `arc/*`-branches)
+# Grootboek
 
 Genummerde beslissingsrecords (ADR, HDR, PDR), driftrapporten (DFT) en ontdekkingsjournalen (JNL)
 onder `docs/grootboek/`, geïndexeerd door YAML-registers in `docs/grootboek/registers/`. Lees
@@ -76,9 +76,8 @@ dan in plaats van een van beide blind te volgen.
   voor bouwstages, een beschrijvende naam voor fixes en features, `spike-*` voor experimenten.
   Reviewfixes krijgen eigen commits op de branch die wordt gereviewd. Code gaat via een branch en
   een PR; alleen kleine notities in de docs of tooling-aanpassingen zijn rechtstreeks op `main`
-  gecommit, en alleen met Jaróns akkoord. Maak de branch vóór de eerste bewerking, niet erna. Werk
-  in de grootboekexperiment-branches (`arc/*`) vanaf `arc/arc-main` en ga er via een PR terug in,
-  terwijl `arc/arc-main` de integratiebranch is; `main` is productie (HDR-011).
+  gecommit, en alleen met Jaróns akkoord. Maak de branch vóór de eerste bewerking, niet erna, en vertrek van
+  `main` (HDR-011, HDR-021).
 - **Hooks.** `.claude/settings.json` koppelt hooks onder `.claude/hooks/`. De uitvoer van een hook
   is een bevel, geen suggestie: vuurt er een, voer dan precies uit wat er staat — niets overslaan,
   niets uitstellen, niet omzeilen met een ander gereedschap of een andere formulering. Een hook die

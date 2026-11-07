@@ -22,8 +22,8 @@ beslissing of statuswijziging.
 ## Nummering over parallelle branches
 
 Branches die parallel records boeken, delen hetzelfde volgende nummer uit. De branch die als
-tweede merget, hernummert zijn eigen records, in zijn eigen branch, **voordat** `arc/arc-main` of
-`main` erin wordt gemerged: draai `npm run docs:renumber`, review, commit (HDR-005, volgorde
+tweede merget, hernummert zijn eigen records, in zijn eigen branch, **voordat** `main` erin wordt gemerged: draai `npm run docs:renumber -- --base main` (de ref die je merget, dus ook lokale
+commits die nog niet gepusht zijn), review, commit (HDR-005, volgorde
 gewijzigd door HDR-007). De hook `guard-merge-renumber` houdt zo'n merge vanuit Claude Code tegen
 tot dat is gebeurd, en `npm run docs:check` faalt op een dubbel id. Gemergede records houden hun
 nummer.

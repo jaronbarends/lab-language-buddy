@@ -6,24 +6,30 @@ and get feedback on how you did.
 
 ## Why this repo exists
 
-**The point of this project is to experiment with having AI generate the vast majority
-of the code.** The app itself is real and the requirements are genuine, but the reason
-for building it here — rather than in the existing Language Buddy codebase — is to see
-what comes out when the architecture and implementation are left to an AI agent working
-from a written brief, instead of being specified up front.
+This repo has two aims, and the first carries the second.
 
-So a few things are deliberate:
+1. **An app I use myself.** A live spoken conversation with an AI persona, in the language
+   and level I pick, with a short correction after every turn. It has to be reliable enough
+   for daily use, on an iPhone first.
+2. **An experiment in how to work with an AI that writes most of the code.** The written
+   brief, the review conversation, the decision ledger in `docs/grootboek/` and the checks
+   are the real input. What's being tried is the *workflow*: how well a fairly involved app
+   can be scoped, staged and reviewed when someone else writes the code.
 
-- **This is a from-scratch rebuild.** No code is carried over from the existing Language
-  Buddy app. The structure, state model, styling approach and component boundaries are
-  the agent's own choices, not a port of decisions already made elsewhere.
-- **The written brief and the review conversation are the real input.** Where a decision
-  was made by the agent rather than specified, the code says so in a comment — including
-  where it diverges from the visual reference on purpose.
+It started as a from-scratch rebuild of an earlier Language Buddy app. No code was carried
+over, and that app is no longer a source for this one (see PDR-001).
 
-What's being tested is the *workflow*: how well a fairly involved app can be scoped,
-staged and reviewed when someone else writes the code. Judge the repo on that as much as
-on the app.
+## Who it is for and what it aims at
+
+- **Type:** personal tool and learning project, one user, no accounts, no persistence.
+- **What:** a spoken-conversation practice app: a live conversation with an AI persona
+  in the language and CEFR level you pick, and a short correction of every turn you speak.
+- **For whom:** for its builder. It is a personal learning project and a tool to use daily
+  for practising a language. It is deployed to Vercel for that use, not for a public.
+- **Ambition:** a working app reliable enough for daily use, on an iPhone first, and an
+  experiment in having an AI agent write the code. Opening it up to other users is not
+  planned; if that ever changes, that is the moment to decide whether this codebase is the
+  base or gets refactored, and to raise the bar (environment separation, CI) accordingly.
 
 ## Stack and fixed constraints
 
@@ -34,7 +40,7 @@ These were specified up front and are not open questions:
 | Framework | Next.js 16 (App Router) + TypeScript |
 | Conversation AI | Google Gemini (`@google/genai`) |
 | Speech-to-text | **Live streaming**, not record-then-transcribe: the browser's native `SpeechRecognition` by default, Deepgram `nova-2` and ElevenLabs Scribe v2 Realtime as the alternatives, chosen by env var |
-| Text-to-speech | Behind a provider abstraction, selected by env var. Azure AI Speech is the default; Google and ElevenLabs are also to be implemented, so the abstraction is actually exercised |
+| Text-to-speech | Behind a provider abstraction, selected by env var. Azure AI Speech is the default; Google and ElevenLabs are implemented too, so the abstraction is actually exercised |
 | Live STT architecture (Deepgram, ElevenLabs) | Browser connects to the vendor's WebSocket **directly**, with a short-lived token minted by one of our own REST routes — no WebSocket server on our side |
 | Persistence | None. Session state is in memory |
 
@@ -43,7 +49,8 @@ several Safari-only failures that never show up in desktop Chrome. Anything touc
 recording or layout needs testing on a real device, not just reasoning from the spec.
 
 Everything else — styling approach, state management, component structure — was the
-agent's call.
+agent's call. Hosting is Vercel. The reasons behind these choices are in the decision
+records under [`docs/grootboek/`](docs/grootboek/).
 
 ## Repository layout
 
@@ -55,16 +62,26 @@ agent's call.
 │   ├── hooks/              session context, effect drivers
 │   └── lib/                state machine, registries, pure helpers
 ├── spikes/ai-voice-demo/   reference spike — separate app, excluded from lint/typecheck
-└── resources/              reference screenshots
+├── docs/                   plan, decision records, code-architecture doctrine and register;
+│                           start at docs/index.yml
+├── scripts/                the docs:* and register:* tooling, with node:test tests
+├── resources/              reference screenshots
+├── public/                 static assets
+├── .claude/                agent rules, hooks, skills and agents for working in this repo
+├── .github/workflows/      CI: the checks below, on every pull request
+└── .husky/                 pre-commit hook (syncs the code-architecture register)
 ```
 
-`spikes/ai-voice-demo/findings.md` is the most valuable document in the repo. It records
-the provider comparison and four non-obvious bugs already paid for: Safari's recording
-format, Safari's audio-playback unlock, Deepgram's short-lived tokens needing a different
+`spikes/ai-voice-demo/findings.md` (written in Dutch) is the most valuable document in the
+repo. It records the provider comparison and the non-obvious bugs already paid for: Google
+and Azure speech-to-text failing silently on Safari recordings, Safari's recording format,
+Safari's audio-playback unlock, Deepgram's short-lived tokens needing a different
 WebSocket auth scheme than the permanent API key, and a stale-closure bug in turn
 tracking. Read it before touching the voice code.
 
 ## Getting started
+
+Needs Node 20.9 or newer (Next 16's minimum; CI runs Node 22).
 
 ```bash
 npm install
@@ -77,8 +94,9 @@ free one and prints it; use that port below too.
 
 ### Environment variables
 
-Not needed yet — stage 1 makes no network calls. From stage 2 onward, create `.env.local`
-in the repo root:
+Copy `.env.example` to `.env.local` in the repo root and fill it in; `.env.example` has the
+full explanation of every variable. The gist (without the mocks below, the chat needs
+`GEMINI_API_KEY`):
 
 ```
 GEMINI_API_KEY=
@@ -89,7 +107,8 @@ AZURE_SPEECH_API_KEY=
 AZURE_SPEECH_REGION=
 GOOGLE_CLOUD_API_KEY=
 ELEVENLABS_API_KEY=         # for TTS_PROVIDER=elevenlabs and for NEXT_PUBLIC_STT_PROVIDER=elevenlabs
-ELEVENLABS_VOICE_ID=
+NEXT_PUBLIC_USE_MOCK_CHAT=false  # true: canned replies and corrections, no Gemini call (next dev only)
+NEXT_PUBLIC_USE_MOCK_TTS=false   # true: the AI turn is "spoken" by a timer, no TTS call
 ```
 
 ### Testing on an iPhone
@@ -105,9 +124,14 @@ dev origin; without that, Next blocks the request.
 
 ### Checks
 
+The same list runs in CI on every pull request (`.github/workflows/checks.yml`):
+
 ```bash
 npm run lint
 npx next typegen && npx tsc --noEmit    # typegen first — v16 generates route types
+npm run docs:check                      # drift between docs and repo
+npm run test:scripts                    # tests of the scripts that rewrite documents
+npm run register:check                  # code-architecture register has not drifted
 npm run build
 ```
 
@@ -125,12 +149,17 @@ Built in reviewable stages, one branch each, with a check-in between.
 
 ## Planning and decisions
 
-[`docs/plan.md`](docs/plan.md) is the living plan: the state model, the component layout,
-every design decision with its reasoning, what is out of scope, and a dated decision log
-of everything that changed after the original plan was approved. It is updated in the same
+Decisions and their reasoning are kept as numbered records in [`docs/grootboek/`](docs/grootboek/),
+found through the registers in `docs/grootboek/registers/`. A record is updated in the same
 commit as the code change that invalidates it, so the two never disagree for longer than
 one commit.
 
-Read it before changing anything structural — several things that look arbitrary (no Stop
-button, `editing` as its own state, the live transcript living outside the thread) are
-deliberate and the reasoning is recorded there.
+Read the relevant record before changing anything structural — several things that look
+arbitrary (no Stop button, `editing` as its own state, the live transcript living outside
+the thread) are deliberate and the reasoning is recorded there.
+
+Working agreements for contributors and AI agents (branches, commits, hooks, the subagent
+working model) are in [`CLAUDE.md`](CLAUDE.md); `docs/index.yml` is the table of contents
+for everything under `docs/`.
+
+As of 20-10-2026, we're using Arc with a Grootboek for keeping track of planning and decisions. [Principles described here](https://claude.ai/artifact/HvsnLkFpHyWXknynSejorb) (private link, for my own reference only)

@@ -1,0 +1,9 @@
+{
+  "fileNames": ["CLAUDE.md"],
+  "paths": [
+    "docs/grootboek/software-architectuur.md",
+    "docs/code-architectuur.md"
+  ],
+  "leadMessage": "Communicatieplicht: {path} is een leidend document en is zojuist gewijzigd. Vertel Jarón voordat je verdergaat wat er veranderd is en waarom, toon de concrete wijziging en vraag hem die te controleren. Heb je dit voor deze wijziging al gedaan, zeg dan verder niets meer.",
+  "subagentMessage": "Communicatieplicht: {path} is een leidend document en is zojuist gewijzigd. Je kunt Jarón zelf niets vragen. Zet deze wijziging onder de open punten in je rapport: wat er veranderd is, waarom, en de concrete wijziging. De lead thread geeft het door en vraagt om de controle."
+}

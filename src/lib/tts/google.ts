@@ -52,11 +52,14 @@ export async function synthesize(
   const apiKey = getApiKey();
   const voice = VOICES[gender][language];
 
+  // The key travels as a header, not a `?key=` query parameter: a thrown or logged
+  // fetch error carries the URL, and a header does not end up in such a log the way a
+  // query string does. Confirmed against this endpoint before switching (ADR-004).
   const response = await fetch(
-    `https://texttospeech.googleapis.com/v1/text:synthesize?key=${apiKey}`,
+    "https://texttospeech.googleapis.com/v1/text:synthesize",
     {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
       body: JSON.stringify({
         input: { text },
         voice: { languageCode: localeOfVoice(voice), name: voice },

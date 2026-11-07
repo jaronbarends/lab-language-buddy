@@ -1,0 +1,23 @@
+{
+  "thresholds": {
+    "warnAtLines": 300,
+    "hardLimitAtLines": 400,
+    "note": "warnAtLines is de doorbell: wie hem overschrijdt, krijgt de samenhangvraag uit code-architectuur.md §2.2. hardLimitAtLines is het punt waarop een bestand een expliciete beslissing hieronder (ceiling of excluded) nodig heeft om niet als probleem te tellen."
+  },
+  "files": [
+    {
+      "path": "src/lib/session-reducer.ts",
+      "position": "ceiling",
+      "ceiling": 600,
+      "lines": 577,
+      "reason": "Eén samenhangende state machine (code-architectuur.md §2.2, het eigen praktijkvoorbeeld van de doctrine); een nieuwe beurtstatus breidt de discriminated union uit in plaats van het bestand te splitsen."
+    },
+    {
+      "path": "src/lib/stt/elevenlabs.ts",
+      "position": "ceiling",
+      "ceiling": 400,
+      "lines": 371,
+      "reason": "De volledige levenscyclus van de verbinding van één provider (token ophalen, WS-handshake met meerdere close- en foutpaden, audiostreaming, berichten parsen) — dezelfde vorm als deepgram.ts en native.ts, langer omdat de handshake van ElevenLabs meer states heeft om af te handelen."
+    }
+  ]
+}

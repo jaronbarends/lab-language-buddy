@@ -1,0 +1,113 @@
+/*
+ * Reveals a bubble by growing it out of one corner, from scale 0 to 1, anchored where the
+ * bubble's tail is. Shared by the AI's bubble (top-left, the default) and the user's
+ * bubble (bottom-right, `.fromBottomRight`), so the two cannot drift apart (JNL-003,
+ * K11). The easing curve is the overshoot: its second control value (1.56) lets the
+ * scale run past 1 (peak about 1.098, at about 57% of the duration) and settle back.
+ * Then the text fades in, starting exactly when the growth ends.
+ *
+ * The layout is already at its final size; scale is a transform, so it does not affect
+ * layout and the thread's scroll effect sees the final size and needs no change (K4(A)).
+ *
+ * The AI bubble that replaces the thinking bubble sets --grow-from-x and --grow-from-y
+ * (old size / new size, measured in AiBubble), so it grows from the size of the dots
+ * bubble to its own. Without them (the user's bubble, an AI reply that was never a
+ * thinking bubble) the scale starts at 0 on both axes, as it always did.
+ *
+ * The animation has no fill, so no transform remains afterwards and the bubble's focus
+ * ring, which sits outside its box, is not affected.
+ */
+.reveal {
+  /* --reveal-duration, --fade-duration, --evaluation-pause and --thinking-delay are
+     defined on the thread (conversation-thread.module.css) and inherited. */
+  transform-origin: var(--reveal-origin, top left);
+  animation: grow var(--reveal-duration) cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* The user's bubble sits on the right, so it grows out of its bottom-right corner. */
+.fromBottomRight {
+  --reveal-origin: bottom right;
+}
+
+/*
+ * The speaker label and the paragraph, only in a bubble that ran the reveal. Held
+ * transparent through the delay by the backwards fill (no separate opacity: 0 that
+ * would stay), then faded in. Without the fill the text would show during the growth.
+ */
+.text {
+  animation: fade-in var(--fade-duration) ease-out backwards;
+  animation-delay: var(--reveal-duration);
+}
+
+/*
+ * The evaluation text inside the user bubble's strip (not the strip itself, whose frame
+ * is visible at once and scales with the bubble): the same fade, starting when the
+ * user's text fade ends plus a pause (--evaluation-pause), so the order is growth, text,
+ * a beat, evaluation text: it starts at 800ms and ends at 1000ms, and the pause keeps the
+ * two fades from reading as one. Put on one span
+ * that stays mounted, once at mount; the animation only restarts when its name changes,
+ * so the evaluation settling from pending to ready or failed does not replay it, and the
+ * backwards fill leaves no opacity behind. Opacity animates on the inline span as it is.
+ * Not the evaluation's own animation (K7), only its first appearance at send time.
+ */
+.afterText {
+  animation: fade-in var(--fade-duration) ease-out backwards;
+  animation-delay: var(--thinking-delay);
+}
+
+/*
+ * The waiting bubble's entry (JNL-003, K14): the same growth as `.reveal`, then the dots
+ * fade in. It is rendered from the start and held at scale 0 by the backwards fill
+ * through its delay, so it stays one element with the reply that replaces it (K2).
+ * Its own keyframes name (`grow-waiting`): an animation only restarts when its name
+ * changes, so swapping to `.reveal` when the text arrives starts the reply's reveal
+ * from scale 0, even in the middle of this one or during its delay (then the dots are
+ * never seen).
+ */
+.waiting {
+  transform-origin: top left;
+  animation: grow-waiting var(--reveal-duration) cubic-bezier(0.34, 1.56, 0.64, 1)
+    backwards;
+  animation-delay: var(--entry-delay, 0ms);
+}
+
+/* After a sent turn the entry waits for the moment "Evaluating…" starts. The opening
+   turn has no such class and starts at once. */
+.waitingAfterSentTurn {
+  --entry-delay: var(--thinking-delay);
+}
+
+/* The dots, hidden until the growth ends and then faded in, like the text elsewhere. */
+.waitingDots {
+  animation: fade-in var(--fade-duration) ease-out backwards;
+  animation-delay: calc(var(--entry-delay, 0ms) + var(--reveal-duration));
+}
+
+@keyframes grow {
+  from {
+    scale: var(--grow-from-x, 0) var(--grow-from-y, 0);
+  }
+}
+
+@keyframes grow-waiting {
+  from {
+    scale: 0;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* No scale, no fade: the text is simply there. */
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .text,
+  .afterText,
+  .waiting,
+  .waitingDots {
+    animation: none;
+  }
+}

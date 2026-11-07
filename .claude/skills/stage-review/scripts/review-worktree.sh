@@ -58,7 +58,7 @@ load_conf() {
 
 # Fills PATHSPEC (for running git) and PATHSPEC_TEXT (for the prompt) with the whole stage
 # diff minus the STRIP items and EXCLUDE_PATHS. The STRIP items must be excluded: a changed
-# docs/plan.md in the diff would show the reviewer the plan it is not meant to see.
+# record under docs/ in the diff would show the reviewer the decisions it is not meant to see.
 build_pathspec() {
   PATHSPEC=(".")
   PATHSPEC_TEXT="."

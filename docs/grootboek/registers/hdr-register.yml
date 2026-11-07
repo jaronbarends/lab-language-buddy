@@ -1,0 +1,222 @@
+# HDR Register — overzicht van alle Harness Decision Records
+# De index van het harnas-grootboek: hoe mens en agent samenwerken.
+#
+# Dezelfde velden en levenscyclus als het ADR-register; het onderwerp is de manier van werken
+# (harnas, hooks, samenwerking), niet de software.
+
+hdrs:
+  - id: "HDR-001"
+    titel: "Invoering van het grootboekstelsel"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-20
+    implementatie-datum: 2026-10-20
+    beslissing: "Elke beslissing over architectuur, harnas, product en drift krijgt een genummerd document en een registerregel; plan.md blijft de bron voor beslissingen van vóór 2026-10-20"
+    bestand: hdr-001-grootboek-stelsel.md
+  - id: "HDR-002"
+    titel: "De software-balans naast `plan.md` houden, als proef voor driftdetectie"
+    status: in-progress
+    versie: "1.0"
+    implementatie: 50
+    omgeving: geen
+    datum: 2026-10-20
+    beslissing: "software-architectuur.md blijft bestaan om het driftmechanisme van het grootboek te proberen; plan.md blijft de bron tot de proef is afgerond"
+    bestand: hdr-002-balans-naast-plan-driftproef.md
+  - id: "HDR-003"
+    titel: "De checks van de repo draaien op pull requests naar `main` en `arc/arc-main`"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-20
+    implementatie-datum: 2026-10-22
+    beslissing: "Lint, typecheck, docs:check, de scripttests (npm run test:scripts), de drift-check op het register (REQ-AH-12) en build draaien op elke PR naar main of arc/arc-main (K8)"
+    notitie: "Gewijzigd op 2026-10-27 met akkoord van Jarón, ook al was het record al geland: test:scripts toegevoegd (HDR-007)"
+    bestand: hdr-003-ci-checks-op-pull-requests.md
+  - id: "HDR-004"
+    titel: "Sessiegebonden refactor loop in plaats van een onbewaakte push-hook"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-21
+    implementatie-datum: 2026-10-21
+    beslissing: "De onbewaakte push-hook op git-niveau van ARC voor de refactor loop (REQ-AH-13) werd geweigerd door de eigen safety classifier van Claude Code; in plaats daarvan is een sessiegebonden guard-push-sweep-hook gebouwd"
+    bestand: hdr-004-sessiegebonden-refactor-loop.md
+  - id: "HDR-005"
+    titel: "De branch die als tweede merget hernummert zijn records"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-23
+    implementatie-datum: 2026-10-23
+    beslissing: "Parallelle arc/*-branches boeken hetzelfde volgende nummer; wie als tweede merget hernummert zijn eigen records in zijn eigen branch, nadat arc/arc-main erin is gemerged en vóór zijn PR. Gemergede records houden hun nummer"
+    notitie: "docs:check ziet dubbele ids niet; de controle is handmatig. Het HDR-005 van arc/bubble-animation is het eerste dat hernummerd wordt"
+    bestand: hdr-005-hernummeren-bij-merge-bij-botsende-nummers.md
+  - id: "HDR-006"
+    titel: "Een hook herinnert de agent aan de communicatieplicht"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-24
+    implementatie-datum: 2026-10-24
+    beslissing: "Een PostToolUse-hook op Edit en Write herinnert de agent (lead thread en subagents, met verschillende tekst) als een leidend document wijzigt; de lijst van leidende documenten en de tekst staan als data in .claude/hooks/leading-documents.json"
+    notitie: "Blokkeert nooit. Blinde vlekken: wijzigingen via de shell, bewerkingen buiten Claude Code. Geen ontdubbeling. De lijst staat op twee plekken (root-CLAUDE.md en de json). Nummering: arc/bubble-animation heeft HDR-006 voor de proef met Modern Web Guidance, dus een van de twee hernummert als die als tweede merget (HDR-005)"
+    bestand: hdr-006-communicatieplicht-hook.md
+  - id: "HDR-007"
+    titel: "Hernummeren is mechanisch: een check, een script en een guard-hook"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-27
+    implementatie-datum: 2026-10-27
+    beslissing: "Records worden vóór de merge hernummerd, niet erna: npm run docs:renumber hernummert de botsende records van de branch, docs:check faalt op een dubbel id, en een guard-hook houdt een merge van arc/arc-main of main tegen tot het script is gedraaid"
+    notitie: "Draait de volgorde van HDR-005 om (hernummeren vóór het mergen) en vervangt de handmatige controle daarvan. Eerste geautomatiseerde test in de repo, alleen voor scripts (plan, log 10-27). Geprobeerd op een wegwerp-worktree van arc/bubble-animation: HDR-006 naar HDR-007"
+    bestand: hdr-007-mechanisch-hernummeren.md
+  - id: "HDR-008"
+    titel: "Een driftsignaal meldt wanneer de code die een leidend document beschrijft is doorgegroeid"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-27
+    implementatie-datum: 2026-10-27
+    beslissing: "Een leidend document declareert zijn werkgebied in de front matter; npm run docs:drift somt de codewijzigingen in dat gebied op sinds het document het laatst is aangeraakt, docs:check waarschuwt bij drift en faalt bij een ontbrekend pad; een signaal wordt gevolgd door een reconciliatie en een DFT"
+    notitie: "REQ-GG-05. Signaal, geen oordeel. Bewezen op een wegwerp-checkout van arc/bubble-animation (750dc49, vier bestanden); de reconciliatie die op een echt signaal volgt staat nog open. Nummering: arc/bubble-animation heeft een eigen HDR-008 en hernummert via docs:renumber (HDR-007)"
+    bestand: hdr-008-driftsignaal.md
+  - id: "HDR-009"
+    titel: "Terugkerende fouten worden per patroon gelogd en bij drie vastgelegd als regel"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-27
+    implementatie-datum: 2026-10-27
+    beslissing: "Een incidentregister per patroon (geen ids, één regel per incident); npm run docs:incidents en docs:check tellen het en waarschuwen bij drie zonder maatregel; bij drie wordt het patroon vastgelegd (regel, hook of skill) en boekt een HDR het; een logplicht in CLAUDE.md"
+    notitie: "REQ-GG-06. Drempel drie (het requirement), niet meer dan drie (de HDR-gids van de skill). Gevuld uit zes geheugennotities. Het loggen hangt van de agent af: geen hook ziet een correctie van de mens. Nummering: arc/bubble-animation heeft een eigen HDR-008 en hernummert via docs:renumber (HDR-007)"
+    bestand: hdr-009-incidentregister.md
+  - id: "HDR-010"
+    titel: "Een naam wordt getoetst aan wat hij belooft"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-27
+    implementatie-datum: 2026-10-27
+    beslissing: "Een regel in .claude/rules/code-style.md: een naam zegt wat de functie teruggeeft of doet en gebruikt het woord van zijn buren; een correctie wordt zonder verdediging geaccepteerd, met een reden en een beter voorstel"
+    notitie: "Eerste patroon dat via het incidentregister is vastgelegd (naming-precision, zeven incidenten). Een regel is niet mechanisch te controleren: succes is geen verder naamgevingsincident"
+    bestand: hdr-010-namen-getoetst-aan-wat-ze-beloven.md
+  - id: "HDR-011"
+    titel: "Arc-werk vertakt van `arc/arc-main`, en de branch bestaat vóór de eerste bewerking"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-27
+    implementatie-datum: 2026-10-27
+    beslissing: "De Branches-regel van de root-CLAUDE.md noemt arc/arc-main als basis voor arc-werk (en main als production) en zegt dat de branch vóór de eerste bewerking wordt gemaakt; geen hook voor de tweede helft (één incident)"
+    notitie: "Uit de eerste koude-startrun (JNL-002, K1 en K2). De zin is tijdgebonden: werk hem bij als arc/arc-main in main wordt gemerged. Het bewijs is een tweede koude-startronde"
+    bestand: hdr-011-arc-basisbranch-en-eerst-de-branch.md
+  - id: "HDR-012"
+    titel: "Geen record mag na vandaag gedateerd zijn"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-27
+    implementatie-datum: 2026-10-27
+    beslissing: "docs:check faalt als een grootboekregister of -record een datum na vandaag draagt (gelezen in Europe/Amsterdam, niet UTC); alleen gestructureerde velden"
+    notitie: "Maatregel van het incidentpatroon date-assumed (22 datums een dag vooruit geschreven). Vangt alleen toekomstige datums; een foute datum in het verleden of in proza komt erdoor. Gedekt door record-dates.test.mjs"
+    bestand: hdr-012-geen-record-gedateerd-na-vandaag.md
+  - id: "HDR-013"
+    titel: "Modern Web Guidance proberen op de bubbelanimatie, met eerst de eigen baseline"
+    status: in-progress
+    versie: "1.0"
+    implementatie: 50
+    omgeving: geen
+    datum: 2026-10-23
+    beslissing: "Proef met Modern Web Guidance voor JNL-003 K3: de eigen baseline van de agent wordt geschreven voordat de guidance wordt geraadpleegd en na de iPhone-spike vergeleken; daarna houdt de mens de guidance, zet hij haar uit of past hij haar aan"
+    notitie: "De bevindingen van vóór de installatie staan in het record (geen installscripts, niet vastgepind @latest, telemetrie volgens de README); geïnstalleerd 2026-10-23 (scope local, v0.0.195); genomen besluiten: telemetrie uit via de env in .claude/settings.json, goedkeuring per run, default Baseline, antwoordsectie behouden, route via /plugin; proef op 2026-10-23 uitgebreid naar meerdere CSS-taken (eerst baseline, dan guidance; proeflog in het record); eindigt na in totaal drie tests. Bron: JNL-003 K10"
+    bestand: hdr-013-modern-web-guidance-proef.md
+  - id: "HDR-014"
+    titel: "Documentatie is Nederlands; code, UI en commits blijven Engels"
+    status: implemented
+    versie: "1.1"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-30
+    implementatie-datum: 2026-11-07
+    beslissing: "Alle documentatie die geen code is (grootboek, CLAUDE.md-bestanden, rules, agent- en skill-instructies, hook-meldingen, docs/) is Nederlands; code, code-comments, UI-teksten, commitberichten, README.md, AGENTS.md en spikes/ blijven Engels; bestaande Engelse documenten worden vertaald"
+    notitie: "Regel staat in de drie taalregels van de leidende documenten; de vertaalronde is op 2026-11-07 afgerond (uitzondering: de prompttemplates van de skill stage-review blijven Engels). Bestandsnamen van documenten volgen sinds 2026-11-06 de taal van hun inhoud (versie 1.1). Vertalen is geen nieuwe beslissing (HDR-001). De labels Status/Date/Implementation blijven Engels omdat scripts/records.mjs ze leest (HDR-012). Geen check op taal: pas bouwen bij herhaling"
+    bestand: hdr-014-documentatie-nederlands.md
+  - id: "HDR-015"
+    titel: "plan.md vervalt als bron; beslissingen leven in het grootboek"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-11-01
+    implementatie-datum: 2026-11-06
+    beslissing: "docs/plan.md wordt niet meer bijgewerkt of gebruikt; beslissingen, open vragen en werkafspraken staan als records in het grootboek, direct in het Nederlands; een script controleert dat geen rij uit Decisions, het decision log en Open questions zonder bestemming blijft; plan.md wordt bevroren en later verwijderd"
+    notitie: "Vervangt ADR 0001 en de bepaling in HDR-001 dat plan.md de bron blijft voor beslissingen van voor 2026-10-20. Het veld Source komt niet terug. Uitwerking in de spec plan-overzetting (inmiddels verwijderd). Uitgevoerd op 2026-11-06: plan.md, de spec, de volledigheidscontrole en de Herkomst-secties zijn verwijderd"
+    bestand: hdr-015-plan-vervalt-als-bron.md
+  - id: "HDR-016"
+    titel: "De bestaande Language Buddy-repo is geen bron, tenzij Jarón een bestand aanwijst"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-11-01
+    implementatie-datum: 2026-11-01
+    beslissing: "De agent gebruikt de bestaande Language Buddy-repo niet als bron (niet doorzoeken, geen boomlijst, niet even kijken); wijst Jarón een specifiek bestand aan dan mag het gelezen worden en noemt de agent wat hij leest; per ongeluk gezien materiaal meldt hij"
+    notitie: "Korte vorm van Keeping the experiment honest uit plan.md; de reden Het experiment meetbaar houden is vervallen (PDR-001), de reden Jarón leidt de correctieronde blijft. Proza, geen hook; bij herhaling via het incident-register (HDR-009). Staat als bullet in de root-CLAUDE.md (akkoord van Jarón 2026-11-01); het archief van wat de agent zag staat in het record"
+    bestand: hdr-016-bestaande-repo-geen-bron.md
+  - id: "HDR-017"
+    titel: "Geen testsuite, behalve scripts die documenten herschrijven"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-23
+    implementatie-datum: 2026-09-23
+    beslissing: "De app heeft geen testsuite (handmatige verificatie); scripts onder scripts/ die documenten herschrijven krijgen wel een node:test-test"
+    notitie: "Overgezet uit plan.md (HDR-015): het besluit van 09-23 (geen tests) is op 10-27 versmald met de uitzondering voor scripts; de huidige stand staat in Besluit, de eerste stand in Voorgeschiedenis"
+    bestand: hdr-017-geen-testsuite-behalve-scripts.md
+  - id: "HDR-018"
+    titel: "Contextlagen en een drift-check voor de documentatie"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-20
+    implementatie-datum: 2026-10-20
+    beslissing: "De context is gelaagd (.claude/rules, CLAUDE.md in src/components en src/lib, docs/index.yml als register, .claude/agents) en npm run docs:check maakt van drift in de documentatie een falend commando"
+    notitie: "Overgezet uit plan.md (HDR-015): één logrij van 10-20. De regel dat parallelle builders plan.md niet bewerken is vervallen met het plan"
+    bestand: hdr-018-contextlagen-en-drift-check.md
+  - id: "HDR-019"
+    titel: "Elke stage verifiëren op de iPhone"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-23
+    implementatie-datum: 2026-09-23
+    beslissing: "Elke bouwstap wordt op iPhone Safari (via ngrok) geverifieerd; de stap met live STT controleert ook een uiting van meer dan 20 seconden, de lengte waarop Google STT brak"
+    notitie: "Overgezet uit plan.md (HDR-015): punt 4 van de sectie Verification. De datum is die van de goedkeuring van het plan, niet uit de bron"
+    bestand: hdr-019-stage-verifieren-op-iphone.md
+  - id: "HDR-020"
+    titel: "Faalpaden bewust proberen"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-23
+    implementatie-datum: 2026-09-23
+    beslissing: "Bij de verificatie van elke stage worden de faalpaden bewust geprobeerd (microfoonrechten weigeren, netwerk afknippen midden in /api/chat, opname stoppen zonder iets te zeggen) en elk moet in een herstelbare error-state landen"
+    notitie: "Overgezet uit plan.md (HDR-015): punt 5 van de sectie Verification. De datum is die van de goedkeuring van het plan, niet uit de bron"
+    bestand: hdr-020-faalpaden-bewust-proberen.md

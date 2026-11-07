@@ -68,7 +68,12 @@ export function LiveTranscript({
   }, [transcript.finalized, transcript.interim]);
 
   return (
-    <Bubble author="user" className={styles.listening} aria-live="polite">
+    <Bubble
+      author="user"
+      hasMinimumWidth
+      className={styles.listening}
+      aria-live="polite"
+    >
       {microphoneIsLive && (
         <span className={styles.listeningIndicator} aria-hidden="true" />
       )}

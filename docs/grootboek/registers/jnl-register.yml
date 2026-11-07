@@ -1,0 +1,67 @@
+# JNL Register — overzicht van alle journalen (discovery)
+# Een journaal telt kwesties in plaats van implementatiepercentages: de discovery is klaar als
+# de kwesties zijn beslist en in doelrecords (ADR/PDR/HDR) zijn beland.
+
+jnls:
+  - id: "JNL-001"
+    titel: "Instapjournaal: de software-balans"
+    status: discovery
+    datum: 2026-10-20
+    laatste-sessie: 2026-10-22
+    kwesties-totaal: 8
+    kwesties-besloten: 7
+    kwesties-open: 1
+    kwesties-geparkeerd: 0
+    doel-records:
+      - "software-architectuur.md (v1.0, geaccepteerd 2026-10-20)"
+    bestand: jnl-001-instap-software-balans.md
+  - id: "JNL-002"
+    titel: "Koude-startjournaal: kan een nieuwkomer werken met alleen de repo?"
+    status: afgerond
+    datum: 2026-10-27
+    laatste-sessie: 2026-10-27
+    kwesties-totaal: 6
+    kwesties-besloten: 6
+    kwesties-open: 0
+    kwesties-geparkeerd: 0
+    doel-records:
+      - "HDR-011 (K1, K2)"
+    bestand: jnl-002-koude-start-onboarding.md
+  - id: "JNL-003"
+    titel: "Animatie van chatbubbels"
+    status: discovery
+    datum: 2026-10-23
+    laatste-sessie: 2026-10-27
+    kwesties-totaal: 15
+    kwesties-besloten: 10
+    kwesties-open: 2
+    kwesties-geparkeerd: 3
+    doel-records:
+      - "ADR voor de structuur van de bubbel (K2), nog te schrijven"
+      - "HDR-013 (K10)"
+      - "een spec als bouwplan, zodra besloten"
+    bestand: jnl-003-animatie-van-chatbubbels.md
+  - id: "JNL-004"
+    titel: "Openstaande kwesties"
+    status: discovery
+    datum: 2026-11-06
+    laatste-sessie: 2026-11-06
+    kwesties-totaal: 9
+    kwesties-besloten: 0
+    kwesties-open: 5
+    kwesties-geparkeerd: 4
+    doel-records:
+      - "per kwestie een record zodra er een besluit valt"
+    bestand: jnl-004-openstaande-kwesties.md
+  - id: "JNL-005"
+    titel: "Metingen van de corrector"
+    status: discovery
+    datum: 2026-10-06
+    laatste-sessie: 2026-11-06
+    kwesties-totaal: 4
+    kwesties-besloten: 0
+    kwesties-open: 4
+    kwesties-geparkeerd: 0
+    doel-records:
+      - "per kwestie een record zodra er een besluit valt"
+    bestand: jnl-005-metingen-van-de-corrector.md

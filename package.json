@@ -6,7 +6,14 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "docs:check": "node scripts/check-docs.mjs",
+    "docs:renumber": "node scripts/renumber-records.mjs",
+    "docs:drift": "node scripts/drift-signal.mjs",
+    "docs:incidents": "node scripts/incidents.mjs",
+    "test:scripts": "node --test \"scripts/*.test.mjs\"",
+    "register:check": "node scripts/sync-code-architectuur-register.mjs --check",
+    "prepare": "husky"
   },
   "dependencies": {
     "@google/genai": "^2.27.0",
@@ -18,12 +25,15 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@emnapi/core": "^1.11.3",
+    "@emnapi/runtime": "^1.11.3",
     "@types/dom-speech-recognition": "^0.0.12",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.6",
+    "husky": "^9.1.7",
     "typescript": "^5"
   }
 }

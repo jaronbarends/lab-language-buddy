@@ -1,0 +1,340 @@
+# ADR Register — overzicht van alle Architecture Decision Records
+# De goedkope index van het grootboek: lees eerst het register en dan het document.
+#
+# Velden:
+#   versie        — semver-achtig (1.0, 1.1). Verfijning = minor; koerswijziging = nieuw ADR.
+#   implementatie — percentage (0-100), een levende meter
+#   omgeving      — waar draait het? dev | prod | geen
+#
+# Levenscyclus: voorstel → discussion → accepted → in-progress → implemented
+# Onveranderlijkheid: een 'implemented' record verandert niet meer; een nieuw record vervangt
+# het oude (de tegenboeking).
+# Alleen toevoegen: records verdwijnen nooit — dat is de boekhouding.
+
+adrs:
+  - id: "ADR-001"
+    titel: "Omgeving en deployment-topologie"
+    status: accepted
+    versie: "1.0"
+    implementatie: 100
+    omgeving: prod
+    datum: 2026-10-20
+    beslissing: "main is production; andere branches (incl. arc/*) worden standaard als Vercel-preview gedeployd; geheime env vars gelden alleen voor Production"
+    notitie: "Ingesteld in het Vercel-dashboard, niet in de repo; geen driftcontrole dekt het"
+    bestand: adr-001-omgeving-en-deployment-topologie.md
+  - id: "ADR-002"
+    titel: "De serverroutes hebben geen authenticatie van de aanroeper, voorlopig geaccepteerd"
+    status: accepted
+    versie: "1.0"
+    implementatie: 0
+    omgeving: prod
+    datum: 2026-10-20
+    beslissing: "Geen authenticatie van de aanroeper en geen rate limit op een serverroute; risico voorlopig geaccepteerd, een oplossing is snel gewenst"
+    notitie: "Voorlopig; wordt vervangen door een nieuw ADR zodra K7 een beschermingsmechanisme oplevert"
+    bestand: adr-002-routes-zonder-authenticatie-voorlopig-geaccepteerd.md
+  - id: "ADR-003"
+    titel: "Gemini `flash-lite` als model, gekozen op prijs"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: prod
+    datum: 2026-10-20
+    implementatie-datum: 2026-10-20
+    beslissing: "gemini-3.1-flash-lite voor chat en evaluatie, gekozen op prijs zonder uitgebreide modelvergelijking"
+    bestand: adr-003-gemini-flash-lite-op-prijs.md
+  - id: "ADR-004"
+    titel: "De Google TTS-key verhuist van de URL naar een header"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: prod
+    datum: 2026-10-21
+    implementatie-datum: 2026-10-21
+    beslissing: "GOOGLE_CLOUD_API_KEY verhuist naar de header x-goog-api-key; vóór de wijziging bevestigd tegen het live endpoint"
+    bestand: adr-004-google-tts-key-als-header.md
+  - id: "ADR-005"
+    titel: "De taalkiezer is overgenomen uit de bestaande app"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-28
+    implementatie-datum: 2026-09-28
+    beslissing: "De taalkiezer is in zijn geheel overgenomen uit de bestaande app: native radio in een label, fieldset met legend, kolomaantallen met :has(), style container query voor de richting van het label"
+    notitie: "Overgezet uit plan.md (HDR-015): decision log, rij van 09-28 (in het plan gemarkeerd als ported). Vervangt de role=radio-knoppen van de agent. Proefrecord van de overzetting"
+    bestand: adr-005-taalkiezer-uit-de-bestaande-app.md
+  - id: "ADR-006"
+    titel: "`editing` is een eigen beurtstatus met `draftBeforeEdit`"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-24
+    implementatie-datum: 2026-09-24
+    beslissing: "editing is een eigen beurtstatus met draftBeforeEdit, omdat Cancel edit de tekst van vóór het bewerken moet terugzetten en alleen die state een plek heeft om die te bewaren"
+    notitie: "Overgezet uit plan.md (HDR-015): decision log, rij van 09-24. Hoort bij PDR-003 (de bediening). Proefrecord van de overzetting"
+    bestand: adr-006-editing-eigen-beurtstatus.md
+  - id: "ADR-007"
+    titel: "Evaluatie per beurt, in een eigen call"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-06
+    implementatie-datum: 2026-10-06
+    beslissing: "De evaluatie is een correctie per gebruikersbeurt uit een eigen, parallelle call (/api/evaluation) die het hele gesprek te zien krijgt, zonder Evaluate-knop of samenvatting aan het einde"
+    notitie: "Overgezet uit plan.md (HDR-015): vier ingehaalde stappen in Voorgeschiedenis (correctie in de chatrespons, één call in de keten, eigen stateless call, eigen call met het hele gesprek); de metingen zijn exact overgenomen. Q1 (Evaluation design) is hiermee beslist. L146 klopt niet meer met de code (zie het record)"
+    bestand: adr-007-evaluatie-per-beurt-eigen-call.md
+  - id: "ADR-008"
+    titel: "Prompts van de corrector"
+    status: implemented
+    versie: "1.1"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-06
+    implementatie-datum: 2026-10-06
+    beslissing: "De prompts hebben een gedeeld deel en een deel per persona, de corrector verbiedt alle spelling-feedback en verzint geen correctie, het bericht gaat verpakt in <message>-tags naar de corrector, en er is geen code-guard op spelling-only correcties"
+    notitie: "Overgezet uit plan.md (HDR-015): zeven rijen uit het decision log. De spellingregel is verbreed van spaties, leestekens en diakrieten naar alle spelling (L120); de <message>-verpakking (L171) kwam erbij nadat prompt-regels alleen het lekken van eerdere berichten niet stopten. Versie 1.1 (2026-11-06): de spellingregel is aangescherpt tot NEVER EVER omdat er toch correcties over spelling en hoofdlettergebruik terugkwamen; het effect is nog niet vastgelegd. Een aanvullende null-regel voor correcties over hoe het bericht geschreven is staat als overwogen optie in Gevolgen, niet ingevoerd"
+    bestand: adr-008-prompts-van-de-corrector.md
+  - id: "ADR-009"
+    titel: "STT: providerkeuze en configuratie"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-23
+    implementatie-datum: 2026-09-23
+    beslissing: "STT is een providerkeuze via de env var NEXT_PUBLIC_STT_PROVIDER (native default, deepgram en elevenlabs als alternatieven), zonder UI-keuze en zonder automatische fallback; een onbekende waarde gooit bij het laden van de pagina"
+    notitie: "Overgezet uit plan.md (HDR-015): de vaste randvoorwaarde never the Web Speech API en de eerste keuze alleen Deepgram staan in Voorgeschiedenis, net als de ontwikkelomgeving op deepgram, die is ingehaald door de terugkeer naar native. Bevat ook de hernoeming engine naar provider en de gelijkgetrokken namen in beide providers"
+    bestand: adr-009-stt-providerkeuze-en-configuratie.md
+  - id: "ADR-010"
+    titel: "Native engine op iPhone: herstart en twee mitigaties"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-12
+    implementatie-datum: 2026-10-12
+    beslissing: "De native engine start een nieuwe sessie en houdt de gehoorde woorden vast als de browser zelf een sessie beëindigt, en draait op de iPhone twee mitigaties in elke browser: de speech van de AI 0,15 s eerder pauzeren en een gehouden getUserMedia-stream"
+    notitie: "Overgezet uit plan.md (HDR-015): geen ingehaalde stappen. De oorzaak van de iPhone-problemen is niet begrepen; de mitigaties zijn geen fix. Het onderzoek zelf staat niet in dit record"
+    bestand: adr-010-native-engine-op-iphone.md
+  - id: "ADR-011"
+    titel: "Deepgram-provider"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-03
+    implementatie-datum: 2026-10-03
+    beslissing: "De Deepgram-provider mint zijn token in de route zelf, weigert andere opnameformaten dan webm of ogg (gecontroleerd bij het start-event van de recorder), flusht niet bij het verlaten van listening, staat in een eigen module met gedeelde callbacks-vorm en breekt een lopende tokenaanvraag af met een AbortController"
+    notitie: "Overgezet uit plan.md (HDR-015): zes rijen (10-03 t/m 10-13) tot één besluit samengevoegd. De formaatcheck is op 10-05 van direct na start() naar het start-event verplaatst (Voorgeschiedenis), en de code is op 10-12 uit de hook naar src/lib/stt/deepgram.ts gehaald. De tokenroute heet nu deepgram-token. De abort moet nog op een iPhone worden nagelopen"
+    bestand: adr-011-deepgram-provider.md
+  - id: "ADR-012"
+    titel: "ElevenLabs Scribe-provider"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-16
+    implementatie-datum: 2026-10-16
+    beslissing: "ElevenLabs Scribe is de derde STT-provider, met PCM uit een AudioWorklet via een Blob URL, een eigen tokenroute en een door de event reference van ElevenLabs bepaalde set fatale berichttypes"
+    notitie: "Overgezet uit plan.md (HDR-015): de AudioContext-plaatsing is op 10-19 gecorrigeerd (in de effect, niet in de tap); de gedeelde lifecycle-helper (F2) is uitgesteld en nog niet gebouwd; bevat de testuitkomsten van Jarón op desktop Chrome en iPhone zoals vastgelegd, met de ontbrekende gegevens genoemd"
+    bestand: adr-012-elevenlabs-scribe-provider.md
+  - id: "ADR-013"
+    titel: "Next.js 16 met TypeScript strict"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-23
+    implementatie-datum: 2026-09-23
+    beslissing: "Het framework is Next.js 16 (App Router) met TypeScript strict en React 19, met een paar kleine serverroutes die API-keys van de client houden"
+    notitie: "Overgezet uit plan.md (HDR-015): rij uit de Decisions-tabel; de plan-sectie over Next 16 specifics is niet overgezet. Het plan zegt dat er verder niets op de server staat; in de code staan inmiddels meer routes (gemarkeerd in het record)"
+    bestand: adr-013-nextjs-16-met-typescript-strict.md
+  - id: "ADR-014"
+    titel: "Hosting: Vercel"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-23
+    implementatie-datum: 2026-09-23
+    beslissing: "De app wordt gehost op Vercel, een gratis omgeving die automatisch uit GitHub deployt; elke serverroute is een gewone stateless Request/Response-handler, dus er is geen langlevend serverproces of WebSocket-server nodig"
+    notitie: "Overgezet uit plan.md (HDR-015): rij uit de Decisions-tabel; geen ingehaalde stappen. Verwijst naar ADR-001 voor de inrichting van omgevingen en deployment"
+    bestand: adr-014-hosting-vercel.md
+  - id: "ADR-015"
+    titel: "Styling: CSS Modules over het overgenomen design system"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-23
+    implementatie-datum: 2026-09-23
+    beslissing: "De styling is CSS Modules, over het design system dat uit de bestaande app is overgenomen, en niet Tailwind"
+    notitie: "Overgezet uit plan.md (HDR-015): rij uit de Decisions-tabel; de code is gecontroleerd en wijkt niet af"
+    bestand: adr-015-styling-css-modules.md
+  - id: "ADR-016"
+    titel: "Vlaggen: flag-icons"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-23
+    implementatie-datum: 2026-09-23
+    beslissing: "De vlaggen komen uit het pakket flag-icons, met alleen de zes benodigde SVG's geïmporteerd en niet de stylesheet"
+    notitie: "Overgezet uit plan.md (HDR-015): twee rijen (Decisions-tabel en decision log) over hetzelfde besluit, samengevoegd. Vervangt de emoji-vlaggen"
+    bestand: adr-016-vlaggen-flag-icons.md
+  - id: "ADR-017"
+    titel: "De bubbel en het bewerkvak"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-30
+    implementatie-datum: 2026-09-30
+    beslissing: "Eén gedeelde Bubble (altijd een div met overflow: hidden) houdt het frame van elke spraakbubbel, het bewerkvak is een ongecontroleerde contenteditable=plaintext-only div daarin, een bubbel met bewerkbaar gebied wordt wit, en bubbels gebruiken white-space: pre-line"
+    notitie: "Overgezet uit plan.md (HDR-015): het bewerkvak is twee keer gebouwd (textarea op verborgen kopie faalde op iPhone, toen contenteditable); de as-prop van Bubble uit de eerste rij is later vervallen"
+    bestand: adr-017-de-bubbel-en-het-bewerkvak.md
+  - id: "ADR-018"
+    titel: "Sessiestate: één reducer, beurtstatus als discriminated union"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-23
+    implementatie-datum: 2026-09-23
+    beslissing: "De sessiestate is één useReducer-machine met side effects in hooks, de beurtstatus een discriminated union met per-state data, en elke beurt krijgt een crypto.randomUUID()"
+    notitie: "Overgezet uit plan.md (HDR-015): acht rijen. De state context met useSession en useConversation is op 09-29 weer verwijderd (de open optie om hem terug te zetten staat in het record); getPreviousInteractionId verving een stap van 10-10 die de afleiding dubbel liet staan"
+    bestand: adr-018-sessiestate-een-reducer.md
+  - id: "ADR-019"
+    titel: "Chat-API en gespreksgeschiedenis"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-23
+    implementatie-datum: 2026-09-23
+    beslissing: "De gespreksgeschiedenis staat server-side bij Google via previous_interaction_id, gelezen uit de laatste AI-beurt; de server bouwt de system instruction uit { language, level } en het chat-request is een discriminated union op kind"
+    notitie: "Overgezet uit plan.md (HDR-015): de responsvorm van stage 2 zonder correction per beurt staat als voorgeschiedenis; de rijen van 10-03 (ketting in de beurten, system instruction op de server, union op kind, foutschema, askGemini) zijn samengenomen"
+    bestand: adr-019-chat-api-en-gespreksgeschiedenis.md
+  - id: "ADR-020"
+    titel: "TTS-providers en stemmen"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-23
+    implementatie-datum: 2026-09-23
+    beslissing: "Azure (default), Google en ElevenLabs zijn aangesloten achter één provider-interface (synthesize met één object plus AbortSignal), met stemtabellen binnen elke providermodule, één geslacht via VOICE_GENDER en een tekstlimiet van 1500 tekens"
+    notitie: "Overgezet uit plan.md (HDR-015): de provider-interface is later uitgebreid met gender en de objectvorm van synthesize, de tekstlimiet is verlaagd van 2000 naar 1500 en TtsRequest is hernoemd naar TtsRequestBody; de huidige stand staat in Besluit, de eerdere in Voorgeschiedenis"
+    bestand: adr-020-tts-providers-en-stemmen.md
+  - id: "ADR-021"
+    titel: "Fouten en herstel"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-23
+    implementatie-datum: 2026-09-23
+    beslissing: "Fouten zijn herstelbaar en de weg terug hangt af van waar het misging; een mislukte AI-call wordt opnieuw geprobeerd, een mislukte opname brengt de gebruiker terug, een TTS-fout degradeert naar alleen tekst"
+    notitie: "Overgezet uit plan.md (HDR-015): 13 rijen (Decisions-rij Errors plus foutflow, lege reply, request.signal, ontbrekende API-key, abort-logging, TTS-fout, LIVE_CONNECT_TIMEOUT_MS, recorder- en WebSocket-fouten, unlockAudio bij Try again, retry van alleen de chat-call, EVALUATION_TIMEOUT_MS). Voorgeschiedenis: de foutflow van vóór de herziening van 09-29"
+    bestand: adr-021-fouten-en-herstel.md
+  - id: "ADR-022"
+    titel: "Design system overgenomen uit de bestaande app"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-28
+    implementatie-datum: 2026-09-28
+    beslissing: "Het design system van de bestaande app is overgenomen (vijf tokenbestanden, bevels in plaats van schaduw, reset.css en elements.css tussen de tokens en globals.css)"
+    notitie: "Overgezet uit plan.md (HDR-015): drie logrijen (09-28 twee keer, 09-30) in één record. De zin in Gevolgen over het vervallen van de synchronisatie (PDR-001) komt niet uit de rijen"
+    bestand: adr-022-design-system-overgenomen.md
+  - id: "ADR-023"
+    titel: "Safari/iPhone: safe area en geaccepteerde beperkingen"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-01
+    implementatie-datum: 2026-10-01
+    beslissing: "De bovenste safe-area-inset wordt afgehandeld met --safe-top, landscape-telefoons worden niet ondersteund, en bediening die onder het toetsenbord in editing valt is voor nu geaccepteerd"
+    notitie: "Overgezet uit plan.md (HDR-015): drie logrijen. Bevat een bewust geaccepteerde afwijking van de brief en van de Stage 1-regel, plus een open vraag met onbevestigde ideeën"
+    bestand: adr-023-safari-safe-area-en-beperkingen.md
+  - id: "ADR-024"
+    titel: "Taalregistry"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-30
+    implementatie-datum: 2026-09-30
+    beslissing: "De taalregistry heeft per taal een eigen veld per consument, genoemd naar de leverancier plus Lang: htmlLang, deepgramLang, webSpeechLang en elevenLabsLang"
+    notitie: "Overgezet uit plan.md (HDR-015): vier rijen over een periode (09-30 tot 10-16). De hernoeming van deepgram naar deepgramLang en de verschuiving van de nova-2-waarschuwing naar een algemene opmerking staan als huidige stand in Besluit"
+    bestand: adr-024-taalregistry.md
+  - id: "ADR-025"
+    titel: "Mockmodus voor ontwikkeling"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-03
+    implementatie-datum: 2026-10-03
+    beslissing: "Ontwikkelen kan zonder key of quota via mockschakelaars (NEXT_PUBLIC_USE_MOCK_CHAT voor chat en evaluatie, NEXT_PUBLIC_USE_MOCK_TTS voor TTS), mockroutes met een scriptpositie in het interaction-id, en een dev-stepper in de interface"
+    notitie: "Overgezet uit plan.md (HDR-015): twaalf rijen, vooral ontwikkelgereedschap. De eerste mockversie van de chatroute gaf een correctie mee; die stap is ingehaald doordat de mockevaluatie nu uit het bericht zelf citeert (Voorgeschiedenis)"
+    bestand: adr-025-mockmodus-voor-ontwikkeling.md
+  - id: "ADR-026"
+    titel: "Safari/iPhone-eisen"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-23
+    implementatie-datum: 2026-09-23
+    beslissing: "Safari op iPhone is een harde eis en wordt ingebouwd met zes eisen: geen vast opname-mimeType, audio unlock synchroon in elke gesture, een 100dvh-flexkolom met safe-area-insets, een 16px-vloer op focusbare controls, device testing in elke fase en een contenteditable plaintext-only-div in plaats van een textarea"
+    notitie: "Overgezet uit plan.md (HDR-015): het plangedeelte Safari/iPhone requirements zonder rij-ids, met de notitie dat het opnameformaat is opgelost (WebM/Opus sinds Safari 18.4) en de uitwijkroute via AudioWorklet naar linear16. De datum is afgeleid, niet uit de bron"
+    bestand: adr-026-safari-iphone-eisen.md
+  - id: "ADR-027"
+    titel: "`cacheComponents` blijft uit"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-25
+    implementatie-datum: 2026-09-25
+    beslissing: "De Next.js-optie cacheComponents blijft uitgeschakeld: PPR als standaard en buildfouten voor niet-gecachete data buiten Suspense leveren niets op voor een volledig client-side app zonder persistentie"
+    notitie: "Overgezet uit plan.md (HDR-015): uit de sectie Next.js 16 specifics, alleen dit besluit. De datum is die van de verhuizing van het plan naar de repo, niet per se van het besluit"
+    bestand: adr-027-cachecomponents-blijft-uit.md
+  - id: "ADR-028"
+    titel: "De reducer negeert late acties"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-29
+    implementatie-datum: 2026-09-29
+    beslissing: "De reducer is puur en negeert acties die niet bij de huidige state passen in plaats van te gooien"
+    notitie: "Overgezet uit plan.md (HDR-015): sectie State model zonder rij-ids; het andere besluit uit die sectie staat in ADR-030. Overlapt deels met ADR-018 en ADR-021. De datum is afgeleid van de vroegste logrij over het negeren van late acties"
+    bestand: adr-028-reducer-negeert-late-acties.md
+  - id: "ADR-029"
+    titel: "Geen mock-STT"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-03
+    implementatie-datum: 2026-10-03
+    beslissing: "Er is geen mock voor speech-to-text; de Edit-bediening dekt getypte invoer"
+    notitie: "Overgezet uit plan.md (HDR-015): één regel in het stage 2-gedeelte. De datum is een aanname (de mockkeuzes van stage 2)"
+    bestand: adr-029-geen-mock-stt.md
+  - id: "ADR-030"
+    titel: "Evaluatie is een veld van de beurt"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-08
+    implementatie-datum: 2026-10-08
+    beslissing: "De evaluatie van een gebruikersbeurt is een veld evaluation van de beurt (pending, ready of failed), geen beurtstatus; het antwoord wacht in de reducer als pendingReply tot de correctie is afgehandeld"
+    notitie: "Overgezet uit plan.md (HDR-015): sectie State model zonder rij-ids, afgesplitst van ADR-028. De datum is die van stage 4, stap 2"
+    bestand: adr-030-evaluatie-is-een-veld-van-de-beurt.md

@@ -1,0 +1,206 @@
+# PDR Register — overzicht van alle Product Decision Records
+# Productbeslissingen leggen het WAAROM vast achter featurekeuzes, prioritering en
+# productrichting.
+#
+# Dezelfde velden en levenscyclus als het ADR-register; een PDR heeft ook een changelog zodra
+# de koers verschuift binnen dezelfde kernbeslissing.
+
+pdrs:
+  - id: "PDR-001"
+    titel: "Een app voor dagelijks gebruik, en een experiment in werkwijze"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-11-01
+    implementatie-datum: 2026-11-01
+    beslissing: "Het project is een app die Jarón dagelijks gebruikt en een experiment in werkwijze (AI schrijft het grootste deel van de code); de bestaande Language Buddy-app is geen bron meer (de agent gebruikt de repo niet, tenzij Jarón een specifiek bestand aanwijst); er is geen vergelijking of synchronisatie meer"
+    notitie: "README (Why this repo exists) is op 2026-11-01 door Jarón aangepast; CLAUDE.md liep al gelijk. De regel Keeping the experiment honest uit plan.md staat in kortere vorm als HDR-016"
+    bestand: pdr-001-app-in-gebruik-en-werkwijze-experiment.md
+  - id: "PDR-002"
+    titel: "Geen persistentie"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-23
+    implementatie-datum: 2026-09-23
+    beslissing: "De app bewaart niets: sessiestate in het geheugen, gespreksgeschiedenis bij Google via previous_interaction_id; het sluiten van de tab beëindigt de sessie"
+    notitie: "Overgezet uit plan.md (HDR-015): Decisions-tabel, rij Persistence"
+    bestand: pdr-002-geen-persistentie.md
+  - id: "PDR-003"
+    titel: "Eén set bediening zonder Stop, het live transcript in de control bar"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-24
+    implementatie-datum: 2026-09-24
+    beslissing: "Het live transcript staat in de control bar, niet in de thread; listening, reviewing en editing delen één set bediening zonder Stop"
+    notitie: "Overgezet uit plan.md (HDR-015): decision log, twee rijen van 09-24; de derde rij (editing als eigen beurtstatus) is ADR-006. Proefrecord van de overzetting"
+    bestand: pdr-003-een-set-bediening-zonder-stop.md
+  - id: "PDR-004"
+    titel: "Tekst in spraakbubbels: regelhoogte 1.25 en gewicht medium"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-30
+    implementatie-datum: 2026-09-30
+    beslissing: "Alle spraakbubbels gebruiken --line-height-body-tight (1.25) en --font-weight-medium; de conceptbubbel komt daarmee overeen met het live transcript; de foutbox is geen bubbel"
+    notitie: "Overgezet uit plan.md (HDR-015): decision log, drie rijen van 09-30, met 1.3 als ingehaalde tussenstap. Proefrecord van de overzetting"
+    bestand: pdr-004-tekst-in-spraakbubbels.md
+  - id: "PDR-005"
+    titel: "Hoe de correctie eruitziet"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-06
+    implementatie-datum: 2026-10-06
+    beslissing: "De correctie hangt als blauw-50 gedeelte onderaan de gebruikersbubbel, met Engelse uitleg, doeltaalcitaten als segmenten (text, userInput, suggestion) en vaste placeholders voor laden, geen fouten en mislukt"
+    notitie: "Overgezet uit plan.md (HDR-015): L114 (aparte gele bubbel onder de beurt) is ingehaald door L117; ook de gewone-string-correctie (door L119) en de regel die beide citaten markeerde (door L129) staan in Voorgeschiedenis"
+    bestand: pdr-005-hoe-de-correctie-eruitziet.md
+  - id: "PDR-006"
+    titel: "Antwoord pas na de correctie"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-08
+    implementatie-datum: 2026-10-08
+    beslissing: "Het antwoord van de AI verschijnt pas nadat de correctie is getoond (de reducer houdt het vast als pendingReply), een correctie-call van meer dan 10 seconden wordt afgebroken, en TTS-audio wordt niet vooraf opgehaald"
+    notitie: "Overgezet uit plan.md (HDR-015): vier rijen (L127, L134, L141, L142) over de volgorde van correctie en antwoord, de time-out, gelijktijdig tonen en het niet vooraf ophalen van audio. Geen ingehaalde stappen"
+    bestand: pdr-006-antwoord-pas-na-de-correctie.md
+  - id: "PDR-007"
+    titel: "Persona van de AI"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-03
+    implementatie-datum: 2026-10-03
+    beslissing: "De AI is een algemene, vriendelijke kennis met een vrij onderwerp, 2 tot 4 zinnen per beurt en hooguit één vraag; benoemde persona's of scenariokaarten zijn een andere feature"
+    notitie: "Overgezet uit plan.md (HDR-015): open vraag die voor stage 2 is beslist. De datum (2026-10-03) is een aanname, de vraag noemt er geen. De prompt wordt uit benoemde secties opgebouwd zodat latere persona's onderdelen kunnen delen"
+    bestand: pdr-007-persona-van-de-ai.md
+  - id: "PDR-008"
+    titel: "Knoppen"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-24
+    implementatie-datum: 2026-09-24
+    beslissing: "De knop heeft twee varianten (primary, secondary) met elk een eigen uitgeschakelde stijl, Reply is een primaire knop, en de horizontale padding is 16px"
+    notitie: "Overgezet uit plan.md (HDR-015): drie logrijen (09-24, 09-24, 09-30). De 320px-breuk van Cancel edit staat nog open en komt in het JNL met open kwesties"
+    bestand: pdr-008-knoppen.md
+  - id: "PDR-009"
+    titel: "De live-indicator"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-25
+    implementatie-datum: 2026-09-25
+    beslissing: "De stip in de luisterbubbel is een indicator dat de microfoon live is, staat er precies zolang de microfoon live is en pulseert via een ring (::after); de gestippelde rand is weggelaten"
+    notitie: "Overgezet uit plan.md (HDR-015): drie rijen (09-25, 09-25, 10-27); de pulse was op 09-25 gepland en is op 10-27 gebouwd, getest op iPhone"
+    bestand: pdr-009-de-live-indicator.md
+  - id: "PDR-010"
+    titel: "Sessieflow en schermen"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-24
+    implementatie-datum: 2026-09-24
+    beslissing: "End session gaat zonder ended-fase rechtstreeks terug naar setup met lastConfig als beginwaarde; de eerste beurt heet Start conversation als de gebruiker opent, en Reply is ook actief in aiSpeaking (stopt de spraak)"
+    notitie: "Overgezet uit plan.md (HDR-015): vijf logrijen van 09-24 tot 10-03; de rij over Reply in aiSpeaking was alleen met tsc en eslint gecontroleerd, niet in de browser"
+    bestand: pdr-010-sessieflow-en-schermen.md
+  - id: "PDR-011"
+    titel: "Scroll en tekstvakken"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-24
+    implementatie-datum: 2026-09-24
+    beslissing: "De thread scrolt de bovenkant van een te hoge nieuwe bubbel in beeld, de tekst in de bediening is begrensd op 40vh en scrolt binnen de bubbel (met volgen van het live transcript), en .bubble krimpt niet (flex-shrink: 0)"
+    notitie: "Overgezet uit plan.md (HDR-015): zes rijen over scrollgedrag en tekstbegrenzing. Geen ingehaalde stappen. Volgen van het live transcript en scrollen bij binnenkomst zijn niet op een iPhone getest"
+    bestand: pdr-011-scroll-en-tekstvakken.md
+  - id: "PDR-012"
+    titel: "Setup-formulier"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-30
+    implementatie-datum: 2026-09-30
+    beslissing: "Het setup-scherm is één form met een fieldset en legend per veld, een select met aria-labelledby, een starter-toggle van native radio's met een schuivende anchor-indicator (met terugval), een pijl als mask en een Start chat-knop met één --flex-basis"
+    notitie: "Overgezet uit plan.md (HDR-015): zes rijen van 09-30, gebundeld per scherm. De indicator heeft een feature-test met terugval die alleen op regelstructuur is geverifieerd, niet in een browser zonder anchor positioning"
+    bestand: pdr-012-setup-formulier.md
+  - id: "PDR-013"
+    titel: "Animatie van bubbels"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-27
+    implementatie-datum: 2026-10-27
+    beslissing: "Bubbels groeien in met scale (gebruiker vanuit rechtsonder, AI vanuit linksboven, 350 ms, overshoot-curve); de denkbubbel start 800 ms na een verstuurde beurt, en het antwoord groeit vanaf de grootte van de denkbubbel"
+    notitie: "Overgezet uit plan.md (HDR-015): drie rijen (10-27, 10-28, 10-30) over één onderwerp. Ingehaald is de eerste spike met clip-path zonder overshoot (Voorgeschiedenis). De denkbubbel en de groei naar het antwoord zijn op een iPhone getest en slagen (denkbubbel: door Jarón bevestigd op 2026-11-06)"
+    bestand: pdr-013-animatie-van-bubbels.md
+  - id: "PDR-014"
+    titel: "Logo en favicons"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-10-12
+    implementatie-datum: 2026-10-12
+    beslissing: "Favicons en manifest komen uit de bestaande app, en Logo is de SVG van de oorspronkelijke app inline als component, zonder SVGR"
+    notitie: "Overgezet uit plan.md (HDR-015): twee rijen van dezelfde dag, geen ingehaalde stappen"
+    bestand: pdr-014-logo-en-favicons.md
+  - id: "PDR-015"
+    titel: "Markering van het gesproken woord"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-30
+    implementatie-datum: 2026-09-30
+    beslissing: "De gesproken-woordmarkering is een linear-gradient met een transparante strook van 1px boven en onder (in forced-colours mode weggelaten), met gemarkeerde witruimte tussen gesproken woorden, en woordtimings die op de eerste timeupdate met een eindige duur worden gemaakt"
+    notitie: "Overgezet uit plan.md (HDR-015): de eerste oplossing (padding 1px 0 weghalen) is ingehaald door de gradient en staat in Voorgeschiedenis; de forced-colours-kwestie was eerst open en is later door Jarón getest"
+    bestand: pdr-015-markering-van-het-gesproken-woord.md
+  - id: "PDR-016"
+    titel: "Typografie en iconen"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-28
+    implementatie-datum: 2026-09-28
+    beslissing: "De basislettergrootte is 18px, labels en level select zijn semibold, de iconen komen uit Font Awesome 6 Free via react-icons/fa6 en de foutbox krijgt een waarschuwingsicoon links van het tekstblok"
+    notitie: "Overgezet uit plan.md (HDR-015): vier rijen in twee groepen (typografie, iconen); het foutico is eerst gecentreerd met 8px gebouwd en daarna bovenaan met 12px (Voorgeschiedenis)"
+    bestand: pdr-016-typografie-en-iconen.md
+  - id: "PDR-017"
+    titel: "Contrast en forced-colors: bewust geaccepteerd"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-28
+    implementatie-datum: 2026-09-28
+    beslissing: "De 4,05:1 van de primaire knop, de 3,16:1 van wit op --color-bg-secondary en de ongeveer 1,48:1 van de randen van bedieningselementen zijn bewust geaccepteerd; in forced-colors-modus gebruiken de geselecteerde AI/Me-optie en taalkaart Highlight/HighlightText"
+    notitie: "Overgezet uit plan.md (HDR-015): de 3,16:1 is op 2026-09-30 gevonden en dezelfde dag geaccepteerd (vondst en acceptatie als één gebeurtenis). De eerste forced-colors-versie was fout (wit label op wit) en staat in Voorgeschiedenis"
+    bestand: pdr-017-contrast-en-forced-colors.md
+  - id: "PDR-018"
+    titel: "Geen open-microfoonmodus"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-09-23
+    implementatie-datum: 2026-09-23
+    beslissing: "Er is geen doorlopende open-microfoonmodus en de AI is niet te onderbreken door erdoorheen te praten; op Reply tikken terwijl de AI praat blijft wel binnen scope"
+    notitie: "Overgezet uit plan.md (HDR-015): eerste alinea van de sectie Out of scope. De datum is die van de goedkeuring van het plan, niet uit de bron"
+    bestand: pdr-018-geen-open-microfoonmodus.md

@@ -1,10 +1,12 @@
 "use client";
 
-import { useLayoutEffect, useRef } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 
+import { AiBubblePreview } from "@/components/dev/ai-bubble-preview";
+import { UserBubblePreview } from "@/components/dev/user-bubble-preview";
 import type { Turn, TurnState } from "@/lib/session-reducer";
 
-import { ThinkingBubble } from "./thinking-bubble";
+import { AiBubble } from "./ai-bubble";
 import { TurnBubble } from "./turn-bubble";
 import styles from "./conversation-thread.module.css";
 
@@ -20,12 +22,27 @@ type ConversationThreadProps = {
  */
 const NEWEST_ITEM_TOP_GAP = 16;
 
+/** How many AI turns come before `endIndex`: the position an AI bubble is keyed by. */
+function countAiTurns(turns: Turn[], endIndex: number) {
+  return turns.slice(0, endIndex).filter((turn) => turn.author === "ai").length;
+}
+
+function aiBubbleKey(position: number) {
+  return `ai-${position}`;
+}
+
 export function ConversationThread({
   turns,
   turnState,
   conversationLang,
 }: ConversationThreadProps) {
   const threadRef = useRef<HTMLDivElement | null>(null);
+
+  // How many turns the thread had on its first render (lazy initial state is never
+  // updated). Turns are only appended, so a turn at an index from here on appeared after
+  // the thread mounted and may animate in; the earlier ones just appear, so a remount
+  // does not replay every bubble (JNL-003, K11).
+  const [turnCountAtMount] = useState(turns.length);
 
   // The evaluation sits in the user's bubble, which grows when it settles. That can push
   // the newest item out of view without a new turn or another turn state.
@@ -74,6 +91,53 @@ export function ConversationThread({
       : bottomScrollTop;
   }, [turns.length, turnState.name, lastUserEvaluationStatus]);
 
+  // One array for the turns and the waiting bubble: React matches keys only among the
+  // children of the same array, so the waiting AiBubble and the reply that replaces it
+  // are the same element only if both sit in this array (JNL-003, K2).
+  const items = turns.map((turn, index) => {
+    const turnSpokenWordCount =
+      turn.id === speakingTurnId ? spokenWordCount : null;
+
+    if (turn.author === "user") {
+      return (
+        <TurnBubble
+          key={turn.id}
+          turn={turn}
+          conversationLang={conversationLang}
+          spokenWordCount={turnSpokenWordCount}
+          shouldReveal={index >= turnCountAtMount}
+        />
+      );
+    }
+
+    // Keyed by position, not by turn id. Turns are only ever appended or reset, so the
+    // position cannot shift mid-session.
+    return (
+      <AiBubble
+        key={aiBubbleKey(countAiTurns(turns, index))}
+        turn={turn}
+        conversationLang={conversationLang}
+        spokenWordCount={turnSpokenWordCount}
+      />
+    );
+  });
+
+  if (turnState.name === "aiThinking") {
+    // After a sent turn the waiting bubble enters after a visual delay; the AI's opening
+    // turn (no turns yet) enters at once (JNL-003, K14). Purely visual: the request is
+    // not delayed.
+    const waitingFollowsSentTurn = turns.at(-1)?.author === "user";
+    items.push(
+      <AiBubble
+        key={aiBubbleKey(countAiTurns(turns, turns.length))}
+        turn={null}
+        conversationLang={conversationLang}
+        spokenWordCount={null}
+        followsSentTurn={waitingFollowsSentTurn}
+      />,
+    );
+  }
+
   return (
     // role="log" is an implicit polite live region, so appended replies are
     // announced while focus stays on the controls.
@@ -83,16 +147,16 @@ export function ConversationThread({
       role="log"
       aria-label="Conversation"
     >
-      {turns.map((turn) => (
-        <TurnBubble
-          key={turn.id}
-          turn={turn}
-          conversationLang={conversationLang}
-          spokenWordCount={turn.id === speakingTurnId ? spokenWordCount : null}
-        />
-      ))}
-
-      {turnState.name === "aiThinking" && <ThinkingBubble />}
+      {items}
+      {/* Gated here, not only inside the component: NODE_ENV is replaced at build time,
+          so in production this branch and the import are dead code. */}
+      {/* The user preview first: the AI preview's dots may follow a sent turn. */}
+      {process.env.NODE_ENV === "development" && (
+        <UserBubblePreview conversationLang={conversationLang} />
+      )}
+      {process.env.NODE_ENV === "development" && (
+        <AiBubblePreview conversationLang={conversationLang} />
+      )}
     </div>
   );
 }

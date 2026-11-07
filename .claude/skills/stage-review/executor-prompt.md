@@ -30,7 +30,7 @@ listed.
 {{CHANGES}}
 (Per file: what changes and the exact design where it is a choice: names, shapes, limits,
 messages, where new files go. Include documentation updates the project rules require, such
-as the plan and its decision log, with the Source column filled as the project rule says.)
+as the grootboek records the change invalidates.)
 
 ## Out of scope
 {{OUT_OF_SCOPE}}

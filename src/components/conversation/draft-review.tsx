@@ -36,7 +36,7 @@ export function DraftBubble({
   }, []);
 
   return (
-    <Bubble author="user" lang={conversationLang}>
+    <Bubble author="user" hasMinimumWidth lang={conversationLang}>
       <BubbleText ref={textRef}>{draft}</BubbleText>
     </Bubble>
   );
@@ -106,7 +106,7 @@ export function DraftEditor({
   }
 
   return (
-    <Bubble author="user">
+    <Bubble author="user" hasMinimumWidth>
       <BubbleText
         ref={editorRef}
         className={styles.editor}

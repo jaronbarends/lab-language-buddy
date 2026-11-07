@@ -5,7 +5,7 @@
      avoid a fixed element drifting when the iOS visual viewport shifts as the keyboard
      opens and the URL bar collapses. It does not keep the controls above the keyboard:
      dvh does not shrink for it, so in the home-screen app they can end up under the
-     keyboard while editing. Accepted for now, see open question 8 in docs/plan.md. */
+     keyboard while editing. Accepted for now, see ADR-023 (Safari/iPhone: safe area en geaccepteerde beperkingen). */
   height: 100dvh;
   width: 100%;
   max-width: var(--layout-max-width);

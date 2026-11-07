@@ -38,3 +38,15 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# credentials and keys
+credentials*
+*credentials.json
+service-account*.json
+*.key
+*.p12
+
+# agentic harnas: time-boxed kenniswerker-guard override, personal and ephemeral
+.claude/.hoofdthread-override.json
+# agentic harnas: pending-refactor markers for the push-sweep, local and ephemeral
+docs/.refactor-pending.json

@@ -5,36 +5,38 @@
 - **Implementation:** 100
 - **Type:** Harness Decision Record (HOW do we work)
 
-## Decision
+## Besluit
 
-One sentence added to the `Branches` line of the root `CLAUDE.md`: work in the grootboek
-experiment (`arc/*`) branches from `arc/arc-main` and goes back into it through a pull request,
-while `arc/arc-main` is the integration branch; `main` is production (ADR-001). The branch is
-created before the first edit, not after.
+Eén zin toegevoegd aan de regel `Branches` van de root-`CLAUDE.md`: werk in de branches van het
+grootboekexperiment (`arc/*`) vertakt van `arc/arc-main` en gaat er via een pull request weer in,
+terwijl `arc/arc-main` de integratiebranch is; `main` is productie (ADR-001). De branch wordt
+gemaakt vóór de eerste bewerking, niet erna.
 
-No hook enforces the second half. It is one incident (see the register), and the rule was not
-written down until now; a hook comes only if the pattern recurs.
+Geen hook dwingt de tweede helft af. Het is één incident (zie het register), en de regel was tot
+nu toe niet opgeschreven; een hook komt pas als het patroon terugkeert.
 
-## Why
+## Waarom
 
-**Kernprincipe:** the root `CLAUDE.md` is the one file every session loads, so whatever a
-newcomer needs to start correctly has to be there, not only in a folder that loads when you
-happen to work in it. The base branch was written in `docs/grootboek/CLAUDE.md` and in the CI
-workflow, and a fresh agent in the first cold-start run (JNL-002) answered "what do I do before
-a change" exactly as the root said: its own branch, never `main`, and no base branch. It then
-edited on `arc/arc-main`. The repo's description of itself had drifted behind how the work is
-actually done.
+**Kernprincipe:** de root-`CLAUDE.md` is het ene bestand dat elke sessie laadt, dus wat een
+nieuwkomer nodig heeft om goed te beginnen moet daar staan, niet alleen in een map die laadt als
+je toevallig daar werkt. De basisbranch stond in `docs/grootboek/CLAUDE.md` en in de
+CI-workflow, en een verse agent in de eerste cold-start-run (JNL-002) beantwoordde "wat doe ik
+vóór een wijziging" precies zoals de root het zei: een eigen branch, nooit `main`, en geen
+basisbranch. Daarna bewerkte hij op `arc/arc-main`. De beschrijving die de repo van zichzelf gaf
+was achtergebleven bij hoe het werk feitelijk wordt gedaan.
 
-## Consequences
+## Gevolgen
 
-- **A time-bound sentence.** It says "while `arc/arc-main` is the integration branch". When
-  `arc/arc-main` merges into `main` and becomes the central branch, the sentence is updated in
-  the same step; the drift signal does not watch it.
-- The base branch is now named in two places, the root and `docs/grootboek/CLAUDE.md`. A
-  duplication, accepted: the root is what loads for everyone.
-- `branch-before-edit` is logged in the incident register with this record as its `maatregel`.
-  If it recurs after the sentence, the rule was not enough and the pattern escalates; a hook that
-  refuses edits on `arc/arc-main` and `main` is the obvious next step, not a thing to build first.
-- The root `CLAUDE.md` is a leading document: the change was reported to Jarón and checked.
-- Proof is a second cold-start round (JNL-002): the base-branch question should now be answered
-  and the edit should start on a branch. Until then this is a decision, not a result.
+- **Een zin met een houdbaarheidsdatum.** Er staat "terwijl `arc/arc-main` de integratiebranch
+  is". Als `arc/arc-main` in `main` wordt gemerged en de centrale branch wordt, wordt de zin in
+  dezelfde stap bijgewerkt; het driftsignaal let hier niet op.
+- De basisbranch wordt nu op twee plekken genoemd, de root en `docs/grootboek/CLAUDE.md`. Een
+  duplicatie, geaccepteerd: de root is wat voor iedereen laadt.
+- `branch-before-edit` is gelogd in het incidentregister met dit record als `maatregel`. Als het
+  na de zin terugkeert, was de regel niet genoeg en groeit het patroon door; een hook die
+  bewerkingen op `arc/arc-main` en `main` weigert is de voor de hand liggende volgende stap, niet
+  iets om eerst te bouwen.
+- De root-`CLAUDE.md` is een leidend document: de wijziging is aan Jarón gemeld en gecontroleerd.
+- Het bewijs is een tweede cold-start-ronde (JNL-002): de vraag naar de basisbranch zou nu
+  beantwoord moeten worden en de bewerking zou op een branch moeten beginnen. Tot dan is dit een
+  besluit, geen resultaat.

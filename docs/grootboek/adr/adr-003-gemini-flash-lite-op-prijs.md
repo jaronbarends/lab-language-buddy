@@ -5,25 +5,26 @@
 - **Implementation date:** 2026-10-20
 - **Type:** Architecture Decision Record (WHAT do we build)
 
-## Decision
+## Besluit
 
-Both the chat route and the evaluation route use the model constant `gemini-3.1-flash-lite`.
-The model was a deliberate choice, made on price. No extensive comparison with other Gemini
-models was carried out.
+Zowel de chatroute als de evaluatieroute gebruikt de modelconstante `gemini-3.1-flash-lite`.
+Het model was een bewuste keuze, gemaakt op prijs. Er is geen uitgebreide vergelijking met
+andere Gemini-modellen gedaan.
 
-## Why
+## Waarom
 
-Gemini as the provider was specified up front (`docs/plan.md` → Fixed constraints); the
-specific model was not. `flash-lite` is the cheap end of the family, which fits a personal
-project used daily by its own builder. The plan's measurements (10-06 to 10-10) describe how
-well this model performs at its task; they do not compare it against a different model.
+Gemini als leverancier lag vooraf vast (`docs/plan.md` → Fixed constraints); het specifieke
+model niet. `flash-lite` is het goedkope uiteinde van de familie, wat past bij een persoonlijk
+project dat dagelijks door zijn eigen bouwer wordt gebruikt. De metingen in het plan (10-06 tot
+10-10) beschrijven hoe goed dit model zijn taak uitvoert; ze vergelijken het niet met een ander
+model.
 
-## Consequences
+## Gevolgen
 
-- If `flash-lite`'s quality ever becomes the limiting factor, that comparison still has to be
-  done — this record does not claim it was.
-- The two routes share the constant by duplication, not by import; a future model change has
-  to touch both `src/app/api/chat/gemini-chat.ts` and
-  `src/app/api/evaluation/gemini-evaluation.ts`, and this record does not change that.
-- Recorded in `docs/grootboek/software-architectuur.md` § 8 (Technology choices).
-- Source: JNL-001, issue K5.
+- Als de kwaliteit van `flash-lite` ooit de beperkende factor wordt, moet die vergelijking nog
+  steeds worden gedaan; dit record beweert niet dat dat al gebeurd is.
+- De twee routes delen de constante door duplicatie, niet door een import; een toekomstige
+  modelwissel moet zowel `src/app/api/chat/gemini-chat.ts` als
+  `src/app/api/evaluation/gemini-evaluation.ts` aanraken, en dit record verandert dat niet.
+- Vastgelegd in `docs/grootboek/software-architectuur.md` § 8 (Technology choices).
+- Bron: JNL-001, kwestie K5.

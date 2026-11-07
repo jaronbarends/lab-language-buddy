@@ -5,32 +5,34 @@
 - **Implementation date:** 2026-10-21
 - **Type:** Architecture Decision Record (WHAT do we build)
 
-## Decision
+## Besluit
 
-`src/lib/tts/google.ts` sends `GOOGLE_CLOUD_API_KEY` as the `x-goog-api-key` header instead
-of a `?key=` URL query parameter. The other two TTS providers (Azure, ElevenLabs) already
-use a header; Google's `text:synthesize` endpoint was the one exception.
+`src/lib/tts/google.ts` stuurt `GOOGLE_CLOUD_API_KEY` mee als de header `x-goog-api-key` in
+plaats van als `?key=`-queryparameter in de URL. De andere twee TTS-providers (Azure,
+ElevenLabs) gebruiken al een header; het `text:synthesize`-endpoint van Google was de enige
+uitzondering.
 
-## Why
+## Waarom
 
-Sending a secret in a URL is worse than sending it in a header: a logged or thrown fetch
-error can carry the request URL, and a header does not end up in such a log the way a query
-string does. It was never a deliberate choice (JNL-001, K6) — just how the call was first
-written. Before changing it, the human tested both forms directly against the live endpoint
-(`Invoke-WebRequest`, one call with `?key=`, one with the header) and got `200` on both,
-confirming the endpoint accepts the header even though Google's own REST reference page for
-this method documents only OAuth, not an API key, in any form.
+Een geheim in een URL versturen is slechter dan in een header: een gelogde of opgeworpen
+fetch-fout kan de request-URL bevatten, en een header komt niet zo in zo'n log terecht als een
+querystring. Het was nooit een bewuste keuze (JNL-001, K6), alleen de manier waarop de aanroep
+oorspronkelijk was geschreven. Voordat hij dit veranderde, testte de mens beide vormen
+rechtstreeks tegen het live endpoint (`Invoke-WebRequest`, één aanroep met `?key=`, één met de
+header) en kreeg op beide `200`. Daarmee is bevestigd dat het endpoint de header accepteert,
+ook al documenteert de eigen REST-referentiepagina van Google voor deze methode alleen OAuth,
+en in geen enkele vorm een API-key.
 
-## Consequences
+## Gevolgen
 
-- No other code changes: `getApiKey()` and the voice tables are untouched.
-- `docs/grootboek/software-architectuur.md` § 6 updated in the same commit.
-- `docs/plan.md` line citing `GET .../v1/voices?key=…` is a different endpoint (manual voice
-  verification), untouched by this decision.
-- This is the first grootboek decision that changed code rather than only documentation —
-  closes one instance of REQ-GG-09's journal → decision → document → **code** step. The
-  drift trial (REQ-GG-05) can now be repeated meaningfully against an actual change.
-- Verified beyond the curl test: `npm run build` passed, and the human ran the app with
-  `TTS_PROVIDER=google` end to end — the `/api/tts` route through `google.ts`'s header
-  returned real audio, not just a `200` on a bare synthesis call.
-- Source: JNL-001, issue K6 (now decided and booked).
+- Geen andere codewijzigingen: `getApiKey()` en de stemtabellen blijven onaangeroerd.
+- `docs/grootboek/software-architectuur.md` § 6 is in dezelfde commit bijgewerkt.
+- De regel in `docs/plan.md` die `GET .../v1/voices?key=…` noemt, betreft een ander endpoint
+  (handmatige controle van stemmen) en blijft door dit besluit onaangeroerd.
+- Dit is het eerste grootboekbesluit dat code veranderde en niet alleen documentatie: het sluit
+  één keer de stap journaal → besluit → document → **code** van REQ-GG-09 af. De driftproef
+  (REQ-GG-05) kan nu zinvol worden herhaald tegen een daadwerkelijke wijziging.
+- Gecontroleerd buiten de curl-test: `npm run build` slaagde, en de mens draaide de app met
+  `TTS_PROVIDER=google` van begin tot eind: de route `/api/tts` gaf via de header in
+  `google.ts` echte audio terug, niet alleen een `200` op een kale synthese-aanroep.
+- Bron: JNL-001, kwestie K6 (nu besloten en geboekt).

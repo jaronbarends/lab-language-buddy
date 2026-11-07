@@ -4,28 +4,30 @@
 - **Date:** 2026-10-20
 - **Type:** Architecture Decision Record (WHAT do we build)
 
-## Decision
+## Besluit
 
-None of the server routes (`/api/chat`, `/api/evaluation`, `/api/tts`, the two token routes)
-check who is calling them, and none is rate-limited. This is an accepted, provisional state,
-not a settled one: the human wants it fixed soon (tracked as the open follow-up, JNL-001
-issue K7). Vercel Authentication is active on the project with Standard Protection, which
-gates previews and generated deployment URLs but leaves the production domain public — so
-the production routes remain reachable by anyone who knows the URL.
+Geen van de serverroutes (`/api/chat`, `/api/evaluation`, `/api/tts`, de twee tokenroutes)
+controleert wie ze aanroept, en geen enkele heeft een rate limit. Dit is een geaccepteerde,
+voorlopige toestand, geen definitieve: de mens wil dat het snel wordt opgelost (bijgehouden als
+het openstaande vervolg, JNL-001 kwestie K7). Vercel Authentication staat aan op het project
+met Standard Protection, die previews en gegenereerde deployment-URL's afschermt maar het
+productiedomein openbaar laat: de productieroutes blijven dus bereikbaar voor iedereen die de
+URL kent.
 
-## Why
+## Waarom
 
-The app is a personal project on an unshared URL; the risk was knowingly accepted rather
-than discovered as a gap. It was not a considered trade-off at the time the routes were
-built — it surfaced during the grootboek onboarding (JNL-001) and was then accepted as the
-status quo, with the intent to close it.
+De app is een persoonlijk project op een URL die niet gedeeld wordt; het risico is bewust
+geaccepteerd en niet als gat ontdekt. Het was geen afgewogen keuze toen de routes werden
+gebouwd: het kwam boven tijdens de onboarding van het grootboek (JNL-001) en is toen
+geaccepteerd als de bestaande situatie, met de bedoeling het te dichten.
 
-## Consequences
+## Gevolgen
 
-- Each unauthenticated call can spend a paid vendor key (Gemini, Azure, Google, ElevenLabs,
-  Deepgram). The only backstop outside the code is per-vendor spend limits, which the human
-  does not currently have a clear overview of (also tracked under K3/K7).
-- This record is provisional by design: when K7 lands a protection mechanism, a new ADR
-  supersedes this one rather than editing it in place.
-- Recorded in `docs/grootboek/software-architectuur.md` § 6 (Security principles) and § 9.
-- Source: JNL-001, issues K3 and K7.
+- Elke aanroep zonder authenticatie kan een betaalde key van een leverancier aanspreken
+  (Gemini, Azure, Google, ElevenLabs, Deepgram). Het enige vangnet buiten de code zijn de
+  bestedingslimieten per leverancier, waarvan de mens nu geen duidelijk overzicht heeft (ook
+  bijgehouden onder K3/K7).
+- Dit record is voorlopig van opzet: als K7 een beveiligingsmechanisme oplevert, vervangt een
+  nieuwe ADR deze, in plaats van dat deze ter plekke wordt aangepast.
+- Vastgelegd in `docs/grootboek/software-architectuur.md` § 6 (Security principles) en § 9.
+- Bron: JNL-001, kwesties K3 en K7.

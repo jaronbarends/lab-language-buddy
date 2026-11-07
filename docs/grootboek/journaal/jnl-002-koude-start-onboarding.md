@@ -2,148 +2,154 @@
 titel: "Koude-startjournaal: kan een nieuwkomer werken met alleen de repo?"
 status: afgerond
 datum: 2026-10-27
-kernvraag: Where does the repo not describe itself well enough for an agent that has nothing but the repo?
+kernvraag: Waar beschrijft de repo zichzelf niet goed genoeg voor een agent die niets heeft dan de repo?
 doel-records:
   - "HDR-011 (K1, K2)"
 ---
 
 # JNL-002 — Koude-startjournaal: kan een nieuwkomer werken met alleen de repo?
 
-**Core question.** REQ-GG-10 (Stroomlijn onboarding tot zelfde-dag-productief) asks that a new
-agent or teammate is productive the same day. Where does the repo not describe itself well
-enough for someone who has nothing but the repo?
+**Kernvraag.** REQ-GG-10 (Stroomlijn onboarding tot zelfde-dag-productief) vraagt dat een nieuwe
+agent of teamgenoot dezelfde dag productief is. Waar beschrijft de repo zichzelf niet goed genoeg
+voor iemand die niets heeft dan de repo?
 
-**Main message.** Orientation works; working practice has two gaps. A fresh agent with no
-memory and no hints answered four orientation questions from the loaded `CLAUDE.md` files
-without inventing anything, and made a correct small change. It missed two things the repo
-never says outright: which branch arc work starts from, and that the branch is made before the
-first edit.
+**Hoofdboodschap.** De oriëntatie werkt; de werkwijze heeft twee gaten. Een verse agent zonder
+geheugen en zonder hints beantwoordde vier oriëntatievragen uit de geladen `CLAUDE.md`-bestanden
+zonder iets te verzinnen, en maakte een correcte kleine wijziging. Hij miste twee dingen die de
+repo nergens uitdrukkelijk zegt: van welke branch arc-werk uitgaat, en dat de branch vóór de
+eerste edit wordt gemaakt.
 
-**How this was made.** A fresh clone in `repo-cold` (no memory, no local settings, pushing
-disabled) on `arc/arc-main` at bd508d5, and a new Claude Code session. Two prompts, no hints:
-four orientation questions with nothing to change, then "the README says which checks you run:
-check that and fix it". Scored from the working tree and from Jarón's transcript. One round,
-so it measures the first hour and not the day. One prediction of mine was wrong: the README
-listed three checks, not one; I had read a search that misses `npx` lines.
+**Hoe dit is gemaakt.** Een verse clone in `repo-cold` (geen geheugen, geen lokale settings, push
+uitgeschakeld) op `arc/arc-main` bij bd508d5, en een nieuwe Claude Code-sessie. Twee prompts,
+geen hints: vier oriëntatievragen waarbij niets hoefde te veranderen, en daarna "de README zegt
+welke checks je draait: controleer dat en repareer het". Beoordeeld aan de hand van de working
+tree en het transcript van Jarón. Een ronde, dus het meet het eerste uur en niet de dag. Een
+voorspelling van mij klopte niet: de README noemde drie checks, niet een; ik had een zoekopdracht
+gelezen die `npx`-regels mist.
 
-## What the run showed
+## Wat de run liet zien
 
-| Part | Result |
+| Onderdeel | Resultaat |
 |---|---|
-| What is this project | Good. Correct, from the loaded `CLAUDE.md` files; the Next.js warning in `AGENTS.md` included |
-| How decisions are recorded | Good. Two layers (`plan.md` before 2026-10-20, the grootboek after), registers first |
-| What to do before a change | **Partly.** Own branch, plan, skills: right. The base branch for arc work: missing |
-| What not to do alone | Good, and thorough: hooks, override, triage, leading documents, the incident register, the order of the checks, and the conflict between the session's Co-Authored-By request and the project's rule resolved in the project's favour |
-| Invented answers | None. It said which documents it had not opened |
-| The small change | Correct: the three missing checks, in the order of `CLAUDE.md`, with the iPhone test left out on purpose and said so |
-| Questions asked, corrections given | None, none |
-| Branch | **None.** It edited `README.md` on `arc/arc-main`, uncommitted, and only said afterwards that it needs a branch |
-| Checks run | **No**, and it said so. `docs:check` needs no `npm install` |
+| Wat is dit project | Goed. Correct, uit de geladen `CLAUDE.md`-bestanden; de Next.js-waarschuwing in `AGENTS.md` inbegrepen |
+| Hoe besluiten worden vastgelegd | Goed. Twee lagen (`plan.md` voor 2026-10-20, het grootboek erna), eerst de registers |
+| Wat te doen vóór een wijziging | **Gedeeltelijk.** Eigen branch, plan, skills: goed. De basisbranch voor arc-werk: ontbreekt |
+| Wat je niet alleen doet | Goed, en grondig: hooks, override, triage, leidende documenten, het incidentregister, de volgorde van de checks, en het conflict tussen het Co-Authored-By-verzoek van de sessie en de regel van het project, in het voordeel van het project beslecht |
+| Verzonnen antwoorden | Geen. Hij zei welke documenten hij niet had geopend |
+| De kleine wijziging | Correct: de drie ontbrekende checks, in de volgorde van `CLAUDE.md`, met de iPhone-test bewust weggelaten en dat ook gezegd |
+| Vragen gesteld, correcties gegeven | Geen, geen |
+| Branch | **Geen.** Hij bewerkte `README.md` op `arc/arc-main`, ongecommit, en zei pas achteraf dat er een branch nodig is |
+| Checks gedraaid | **Nee**, en dat zei hij. `docs:check` heeft geen `npm install` nodig |
 
-Orientation came entirely from the `CLAUDE.md` files that load by themselves: it did not open
-the README, `docs/index.yml`, `plan.md` or the registers. The layering works.
+De oriëntatie kwam volledig uit de `CLAUDE.md`-bestanden die vanzelf laden: hij opende de README,
+`docs/index.yml`, `plan.md` of de registers niet. De gelaagdheid werkt.
 
-## Issues
+## Kwesties
 
-| # | Issue | Status |
+| # | Kwestie | Status |
 |---|---|---|
-| K1 | The base branch for arc work is not in the root `CLAUDE.md` | decided 2026-10-27, booked in HDR-011 |
-| K2 | Nothing says the branch comes before the first edit | decided 2026-10-27, booked in HDR-011 |
-| K3 | The checks were not run, though they could have been | decided 2026-10-27: not repeated in round two |
-| K4 | The README links to a private artifact a newcomer cannot open | decided 2026-10-27: the link stays |
-| K5 | What does one run of one hour prove? | decided 2026-10-27 |
-| K6 | Does the "no AI-or-self verdict" rule hold? | decided 2026-10-27: holds in two runs |
+| K1 | De basisbranch voor arc-werk staat niet in de root-`CLAUDE.md` | besloten 2026-10-27, geboekt in HDR-011 |
+| K2 | Nergens staat dat de branch vóór de eerste edit komt | besloten 2026-10-27, geboekt in HDR-011 |
+| K3 | De checks zijn niet gedraaid, hoewel dat kon | besloten 2026-10-27: niet herhaald in ronde twee |
+| K4 | De README linkt naar een privé-artifact dat een nieuwkomer niet kan openen | besloten 2026-10-27: de link blijft |
+| K5 | Wat bewijst een run van een uur? | besloten 2026-10-27 |
+| K6 | Houdt de regel "geen AI-of-zelf-oordeel" stand? | besloten 2026-10-27: houdt stand in twee runs |
 
-### K1 — The base branch for arc work is not in the root `CLAUDE.md`
+### K1 — De basisbranch voor arc-werk staat niet in de root-`CLAUDE.md`
 
-The root says branches are "merged into `main` through a pull request". For arc work that is
-not what happens: it branches from `arc/arc-main` and goes back into it. That is written in
-`docs/grootboek/CLAUDE.md`, which loads only when working in that folder, and in the CI
-workflow. The fresh agent's answer to "what do I do before a change" followed the root exactly:
-`stage/N-name`, a descriptive name or `spike-*`, and never commit to `main`. No base branch.
+De root zegt dat branches "merged into `main` through a pull request" worden. Voor arc-werk
+gebeurt dat niet: het vertrekt van `arc/arc-main` en gaat daar weer in terug. Dat staat in
+`docs/grootboek/CLAUDE.md`, die alleen laadt als je in die map werkt, en in de CI-workflow. Het
+antwoord van de verse agent op "wat doe ik vóór een wijziging" volgde de root exact:
+`stage/N-name`, een beschrijvende naam of `spike-*`, en nooit committen op `main`. Geen
+basisbranch.
 
-**Decided (Jarón, 2026-10-27):** one sentence in the root `Branches` line, naming
-`arc/arc-main` as the base while it is the integration branch, and `main` as production.
-**Booked as HDR-011.** The sentence has to change when `arc/arc-main` merges into `main`.
+**Besloten (Jarón, 2026-10-27):** een zin in de root-regel `Branches`, die `arc/arc-main` noemt
+als basis zolang het de integratiebranch is, en `main` als productie. **Geboekt als HDR-011.** De
+zin moet veranderen wanneer `arc/arc-main` in `main` wordt gemerged.
 
-### K2 — Nothing says the branch comes before the first edit
+### K2 — Nergens staat dat de branch vóór de eerste edit komt
 
-"One branch per piece of work" is true but not when. The agent edited on `arc/arc-main` and
-reported correctly that it needs a branch and a PR. Nothing was committed, so no rule was
-broken; Jarón expected the branch first.
+"Een branch per stuk werk" is waar, maar zegt niet wanneer. De agent bewerkte op `arc/arc-main`
+en meldde terecht dat hij een branch en een PR nodig heeft. Er is niets gecommit, dus er is geen
+regel gebroken; Jarón verwachtte eerst de branch.
 
-**Decided (Jarón, 2026-10-27):** the same sentence says the branch is created before the first
-edit. **No hook for it.** It is one incident and the rule is not even written yet; if it
-recurs after the rule, the pattern escalates (HDR-010 gives the reasoning). Logged as the
-pattern `branch-before-edit` in the incident register. **Booked as HDR-011.**
+**Besloten (Jarón, 2026-10-27):** dezelfde zin zegt dat de branch vóór de eerste edit wordt
+gemaakt. **Geen hook ervoor.** Het is één incident en de regel is nog niet eens geschreven; als
+het na de regel terugkomt, escaleert het patroon (HDR-010 geeft de redenering). Gelogd als het
+patroon `branch-before-edit` in het incidentregister. **Geboekt als HDR-011.**
 
-### K3 — The checks were not run, though they could have been
+### K3 — De checks zijn niet gedraaid, hoewel dat kon
 
-The agent listed the three scripts correctly and checked that they exist in `package.json`, but
-did not run any check before saying "I've fixed it", and said so plainly. `docs:check` needs
-nothing but Node, so the missing install was no excuse. This is behaviour, not a missing
-sentence: the rule is in `CLAUDE.md`. **Decided (2026-10-27):** it did not recur. In round two the
-agent ran all six checks, `build` included, plus the dev server, and said what it had not done.
-No rule change.
+De agent noemde de drie scripts correct en controleerde dat ze in `package.json` staan, maar
+draaide geen enkele check voordat hij zei "I've fixed it", en zei dat ronduit. `docs:check` heeft
+niets nodig dan Node, dus de ontbrekende install was geen excuus. Dit is gedrag, geen ontbrekende
+zin: de regel staat in `CLAUDE.md`. **Besloten (2026-10-27):** het kwam niet terug. In ronde twee
+draaide de agent alle zes de checks, `build` inbegrepen, plus de dev server, en zei wat hij niet
+had gedaan. Geen regelwijziging.
 
-### K4 — The README links to a private artifact
+### K4 — De README linkt naar een privé-artifact
 
-The README's Arc paragraph points at a private artifact, marked "for my own reference only". A
-newcomer cannot open it. The run did not test this: the agent never read that paragraph. Whether
-the principles should be reachable for a newcomer is Jarón's call. **Decided (Jarón,
-2026-10-27):** the link stays. In round two the agent noticed it, left it alone and said that a
-newcomer cannot open it.
+De Arc-alinea van de README wijst naar een privé-artifact, gemarkeerd als "for my own reference
+only". Een nieuwkomer kan het niet openen. De run testte dit niet: de agent las die alinea nooit.
+Of de principes bereikbaar moeten zijn voor een nieuwkomer is aan Jarón. **Besloten (Jarón,
+2026-10-27):** de link blijft. In ronde twee zag de agent hem, liet hem met rust en zei dat een
+nieuwkomer hem niet kan openen.
 
-### K5 — What does one run of one hour prove?
+### K5 — Wat bewijst een run van een uur?
 
-It proves that the knowledge is there and in the right layers. It does not prove "the same day",
-and one run is one data point. **Decided (2026-10-27):** the first hour is the measure, a run
-counts as productive with at most two corrections the repo already answers (the incident
-threshold is three), and REQ-GG-10 counts as almost met until a second round after the fixes
-comes out better. That happened on 2026-10-27, see round two below.
+Het bewijst dat de kennis er is en in de juiste lagen zit. Het bewijst niet "dezelfde dag", en
+een run is een datapunt. **Besloten (2026-10-27):** het eerste uur is de maat, een run telt als
+productief met hoogstens twee correcties die de repo al beantwoordt (de incidentdrempel is
+drie), en REQ-GG-10 telt als bijna gehaald tot een tweede ronde na de fixes beter uitpakt. Dat
+gebeurde op 2026-10-27, zie ronde twee hieronder.
 
-### K6 — Does the "no AI-or-self verdict" rule hold?
+### K6 — Houdt de regel "geen AI-of-zelf-oordeel" stand?
 
-Weak evidence that it does. Jarón's global instructions say to give a one-line "let AI generate
-this / write it yourself" recommendation before any new task, and the second prompt was a new
-task. The agent had read those instructions (it cited their Co-Authored-By rule against the
-session's request) and gave no verdict. **Decided (2026-10-27):** it held again in round two, on a
-different task, so it holds in two runs. An earlier version of this journal wrongly said no
-occasion had arisen in round one.
+Zwak bewijs dat het zo is. De globale instructies van Jarón zeggen een eenregelige aanbeveling
+"let AI generate this / write it yourself" te geven vóór elke nieuwe taak, en de tweede prompt
+was een nieuwe taak. De agent had die instructies gelezen (hij citeerde de Co-Authored-By-regel
+ervan tegen het verzoek van de sessie) en gaf geen oordeel. **Besloten (2026-10-27):** het hield
+opnieuw stand in ronde twee, bij een andere taak, dus het houdt stand in twee runs. Een eerdere
+versie van dit journaal zei ten onrechte dat er in ronde één geen aanleiding was geweest.
 
-## Round two
+## Ronde twee
 
-A new clone (`repo-cold-2`) at ad88f62, after HDR-011 was merged: no memory, no local settings,
-pushing disabled, the same four orientation questions and a new task ("walk the README as a
-newcomer, run what can be run, fix what does not match"). Scored from the working tree, the
-reflog, and the agent's own report; its claims about the repo were checked against the repo.
+Een nieuwe clone (`repo-cold-2`) bij ad88f62, nadat HDR-011 was gemerged: geen geheugen, geen
+lokale settings, push uitgeschakeld, dezelfde vier oriëntatievragen en een nieuwe taak ("walk the
+README as a newcomer, run what can be run, fix what does not match"). Beoordeeld aan de hand van
+de working tree, de reflog en het eigen rapport van de agent; zijn beweringen over de repo zijn
+tegen de repo gecontroleerd.
 
-| Part | Result |
+| Onderdeel | Resultaat |
 |---|---|
-| Base branch (K1) | Named: "grootboekwerk (`arc/*`) vertrekt vanuit `arc/arc-main` en gaat via een PR terug. `main` is productie" |
-| Branch before the first edit (K2) | Stated in the orientation answer and done: the branch was made at 15:23:51 and the README last changed at 15:24:06 |
-| Checks run (K3) | All six, `build` included, plus the dev server with the mocks; said what it had not done (a browser, an iPhone, real API keys) |
-| Private link (K4) | Noticed, left alone, reported |
-| AI-or-self verdict (K6) | Not given |
-| Questions asked, corrections given, permission asked for `npm install` or `build` | None, none, none |
-| Invented claims | None found; the README claims were checked against `src/lib/tts/`, Next's `engines`, `findings.md` and the tracked files |
-| The change | Correct: the TTS row, the checks, the layout, the findings paragraph, the Node version, a pointer to `CLAUDE.md` and `docs/index.yml`. The last two are additions more than corrections |
+| Basisbranch (K1) | Genoemd: "grootboekwerk (`arc/*`) vertrekt vanuit `arc/arc-main` en gaat via een PR terug. `main` is productie" |
+| Branch vóór de eerste edit (K2) | Genoemd in het oriëntatieantwoord en gedaan: de branch is gemaakt om 15:23:51 en de README is voor het laatst gewijzigd om 15:24:06 |
+| Checks gedraaid (K3) | Alle zes, `build` inbegrepen, plus de dev server met de mocks; zei wat hij niet had gedaan (een browser, een iPhone, echte API-keys) |
+| Privé-link (K4) | Opgemerkt, met rust gelaten, gemeld |
+| AI-of-zelf-oordeel (K6) | Niet gegeven |
+| Vragen gesteld, correcties gegeven, toestemming gevraagd voor `npm install` of `build` | Geen, geen, geen |
+| Verzonnen beweringen | Geen gevonden; de README-beweringen zijn gecontroleerd tegen `src/lib/tts/`, de `engines` van Next, `findings.md` en de getrackte bestanden |
+| De wijziging | Correct: de TTS-rij, de checks, de indeling, de alinea over findings, de Node-versie, een verwijzing naar `CLAUDE.md` en `docs/index.yml`. De laatste twee zijn eerder toevoegingen dan correcties |
 
-An automatic safety check refused the agent's first attempt to stop the dev server (`taskkill`
-on every node process); it then stopped only its own server. `npm install` reported four
-vulnerabilities (one critical, three high); the agent did not look into them and neither was
-this journal's scope. By the rule set in K5, the criterion for REQ-GG-10 is met. What that
-proves is limited: two runs of the same kind of agent, with Jarón's global instructions loaded,
-on the first hour, on a task that points the agent at a document that points at everything else.
-A human newcomer, a different model and "the same day" are untested.
+Een automatische veiligheidscheck weigerde de eerste poging van de agent om de dev server te
+stoppen (`taskkill` op elk node-proces); daarna stopte hij alleen zijn eigen server. `npm install`
+meldde vier kwetsbaarheden (een kritieke, drie hoge); de agent zocht dat niet uit en het viel ook
+niet onder de scope van dit journaal. Volgens de regel uit K5 is het criterium voor REQ-GG-10
+gehaald. Wat dat bewijst is beperkt: twee runs van hetzelfde soort agent, met de globale
+instructies van Jarón geladen, op het eerste uur, bij een taak die de agent naar een document
+wijst dat naar al het andere wijst. Een menselijke nieuwkomer, een ander model en "dezelfde dag"
+zijn niet getest.
 
-The README changes of round two were adopted from the clone's diff on `arc/cold-start-round-2`.
+De README-wijzigingen van ronde twee zijn overgenomen uit de diff van de clone op
+`arc/cold-start-round-2`.
 
-## Decision log
+## Besluitenlog
 
-- **2026-10-27 — K1 and K2 decided and booked as HDR-011.** One sentence in the root `Branches`
-  line. The incident `branch-before-edit` is logged. K5 decided: a first-hour measure.
-- **2026-10-27 — Round two, and K3, K4 and K6 decided.** K3 did not recur, the link in the
-  README stays (Jarón), and the AI-or-self rule held a second time. Every issue is decided and
-  HDR-011 exists and points back, so the journal is `afgerond`. REQ-GG-10 meets the criterion of
-  K5, with the limits above.
+- **2026-10-27 — K1 en K2 besloten en geboekt als HDR-011.** Een zin in de root-regel
+  `Branches`. Het incident `branch-before-edit` is gelogd. K5 besloten: een maat van het eerste
+  uur.
+- **2026-10-27 — Ronde twee, en K3, K4 en K6 besloten.** K3 kwam niet terug, de link in de README
+  blijft (Jarón), en de AI-of-zelf-regel hield een tweede keer stand. Elke kwestie is besloten en
+  HDR-011 bestaat en wijst terug, dus het journaal is `afgerond`. REQ-GG-10 voldoet aan het
+  criterium van K5, met de beperkingen hierboven.

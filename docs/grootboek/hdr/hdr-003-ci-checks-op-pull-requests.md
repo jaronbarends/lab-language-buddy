@@ -6,36 +6,36 @@
 - **Implementation:** 100
 - **Type:** Harness Decision Record (HOW do we work)
 
-## Decision
+## Besluit
 
-The absence of CI in this repo was not a deliberate choice. The checks already named in
-`CLAUDE.md` (lint, typecheck, build, `npm run docs:check`) run automatically on every pull
-request to `main` or `arc/arc-main`, in `.github/workflows/checks.yml`. The register drift
-check of REQ-AH-12 (mechanism 2) runs in the same workflow on purpose: one piece of CI
-infrastructure, not two.
+Dat er in deze repo geen CI was, was geen bewuste keuze. De checks die al in `CLAUDE.md` staan
+(lint, typecheck, build, `npm run docs:check`) draaien automatisch op elke pull request naar
+`main` of `arc/arc-main`, in `.github/workflows/checks.yml`. De registerdriftcheck van REQ-AH-12
+(mechanisme 2) draait bewust in dezelfde workflow: één stuk CI-infrastructuur, niet twee.
 
-*Amended 2026-10-27, with Jarón's go-ahead although the record had landed:* the same workflow
-also runs `npm run test:scripts`, the tests of the scripts that rewrite documents (HDR-007).
+*Aangevuld op 2026-10-27, met Jaróns go-ahead hoewel het record al was geland:* dezelfde
+workflow draait ook `npm run test:scripts`, de tests van de scripts die documenten herschrijven
+(HDR-007).
 
-## Why
+## Waarom
 
-Checks exist and are documented, but nothing enforces that they were actually run before a
-merge that goes straight to production (see ADR-001). That gap surfaced during the grootboek
-onboarding and was not a considered trade-off.
+De checks bestaan en zijn gedocumenteerd, maar niets dwingt af dat ze daadwerkelijk zijn
+gedraaid vóór een merge die rechtstreeks naar productie gaat (zie ADR-001). Dat gat kwam naar
+boven tijdens de onboarding van het grootboek en was geen afgewogen keuze.
 
-## Consequences
+## Gevolgen
 
-- **Triggers.** `pull_request` with `branches: [main, arc/arc-main]`. A branch that no
-  longer exists is never matched, so deleting `arc/arc-main` later needs no change.
-- **Full history.** `docs:check` reads git history for its plan-staleness warning, so the
-  checkout uses `fetch-depth: 0`.
-- **Drift check verifies, never repairs.** `npm run register:check` runs
-  `sync-code-architectuur-register.mjs --check`: no write, no `git add`, exit 1 on drift.
-  With the Husky hook (mechanism 1) this completes REQ-AH-12.
-- **Lockfile.** `npm ci` rejected the lockfile on Linux (missing `@emnapi/core` and
-  `@emnapi/runtime`, optional wasm dependencies). Both are now pinned as devDependencies.
-- **Lint scope.** `.claude/hooks/**` is excluded from ESLint: the CommonJS hooks already
-  failed `npm run lint`.
-- Not (yet) a required status check: whether a red run blocks the merge button is a GitHub
-  branch-protection setting, outside the repo.
-- Source: JNL-001, issues K4 and K8.
+- **Triggers.** `pull_request` met `branches: [main, arc/arc-main]`. Een branch die niet meer
+  bestaat, matcht nooit, dus het later verwijderen van `arc/arc-main` vraagt geen aanpassing.
+- **Volledige history.** `docs:check` leest de git history voor zijn waarschuwing over een
+  verouderd plan, dus de checkout gebruikt `fetch-depth: 0`.
+- **De driftcheck controleert, herstelt nooit.** `npm run register:check` draait
+  `sync-code-architectuur-register.mjs --check`: niet schrijven, geen `git add`, exit 1 bij
+  drift. Samen met de Husky-hook (mechanisme 1) maakt dit REQ-AH-12 compleet.
+- **Lockfile.** `npm ci` weigerde de lockfile op Linux (ontbrekende `@emnapi/core` en
+  `@emnapi/runtime`, optionele wasm-dependencies). Beide staan nu vast als devDependencies.
+- **Lintbereik.** `.claude/hooks/**` is uitgesloten van ESLint: de CommonJS-hooks lieten
+  `npm run lint` al falen.
+- (Nog) geen verplichte statuscheck: of een rode run de merge-knop blokkeert, is een
+  branch-protection-instelling van GitHub, buiten de repo.
+- Bron: JNL-001, kwesties K4 en K8.

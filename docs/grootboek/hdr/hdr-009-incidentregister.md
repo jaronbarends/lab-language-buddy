@@ -5,58 +5,59 @@
 - **Implementation:** 100
 - **Type:** Harness Decision Record (HOW do we work)
 
-## Decision
+## Besluit
 
-REQ-GG-06 (Bouw het immuunsysteem) wants a fault that keeps coming back to become a rule, hook
-or skill in the harness. Until now nothing counted: the corrections Jarón gave lived in
-Claude's private memory, outside the repo, where no builder or other clone could see them and
-nobody could tell whether a fault had happened twice or seven times. This record adds the
-front half of the immune system.
+REQ-GG-06 (Bouw het immuunsysteem) wil dat een fout die blijft terugkomen een regel, hook of
+skill in de harness wordt. Tot nu toe telde niets: de correcties die Jarón gaf leefden in Claudes
+privégeheugen, buiten de repo, waar geen builder of andere clone ze kon zien en niemand kon
+zeggen of een fout twee keer was gebeurd of zeven keer. Dit record voegt de voorste helft van het
+immuunsysteem toe.
 
-- **A register**, `docs/grootboek/registers/incident-register.yml`, grouped by pattern. An
-  incident is a line (`datum`, optional `aantal`, `wat`, `bron`), not a document and not a
-  numbered record: it books no decision (HDR-001), and without ids two parallel branches cannot
-  collide on a number the way records do (HDR-007).
-- **A counter**, `npm run docs:incidents` (`scripts/incidents.mjs`), and a check in
-  `docs:check`. **Threshold three**: a pattern with three or more incidents and no `maatregel`
-  is a warning; a `maatregel` naming an HDR that does not exist, a duplicate pattern, or an
-  incident without `datum` or `wat` is an error.
-- **What happens at three:** the pattern is codified (a rule, a hook or a skill), an HDR books
-  the decision (its source is the immune system, as the HDR guide describes), and the HDR's id
-  goes in the pattern's `maatregel`. The warning then stops.
-- **A logging duty** in the root `CLAUDE.md`: when Jarón corrects the agent, or a tool fails in
-  a way that has happened before, add one entry and say so in a sentence.
+- **Een register**, `docs/grootboek/registers/incident-register.yml`, gegroepeerd per patroon. Een
+  incident is een regel (`datum`, optioneel `aantal`, `wat`, `bron`), geen document en geen
+  genummerd record: het boekt geen besluit (HDR-001), en zonder id's kunnen twee parallelle
+  branches niet op een nummer botsen zoals records dat doen (HDR-007).
+- **Een teller**, `npm run docs:incidents` (`scripts/incidents.mjs`), en een check in
+  `docs:check`. **Drempel drie**: een patroon met drie of meer incidenten en geen `maatregel` is
+  een waarschuwing; een `maatregel` die een HDR noemt die niet bestaat, een dubbel patroon, of een
+  incident zonder `datum` of `wat` is een fout.
+- **Wat er bij drie gebeurt:** het patroon wordt vastgelegd (een regel, een hook of een skill),
+  een HDR boekt het besluit (de bron ervan is het immuunsysteem, zoals de HDR-gids beschrijft), en
+  het id van die HDR komt in de `maatregel` van het patroon. De waarschuwing stopt dan.
+- **Een logplicht** in de root-`CLAUDE.md`: als Jarón de agent corrigeert, of een tool faalt op
+  een manier die eerder is gebeurd, voeg dan één regel toe en zeg dat in één zin.
 
-## Why
+## Waarom
 
-**Kernprincipe:** one time is an incident, two times is chance, three times is a weakness of the
-harness (kennisdocument het-gedirigeerde-grootboek). A weakness can only be fixed once it has
-been seen as one, and that takes a count nobody was keeping. The count is cheap if it is only a
-line; it would not be kept if each fault needed a document, which is why a fault is not a DFT.
+**Kernprincipe:** één keer is een incident, twee keer is toeval, drie keer is een zwakte van de
+harness (kennisdocument het-gedirigeerde-grootboek). Een zwakte kan pas worden hersteld als ze
+als zwakte is gezien, en dat vraagt een telling die niemand bijhield. De telling is goedkoop als
+het alleen een regel is; ze zou niet worden bijgehouden als elke fout een document vroeg, daarom
+is een fout geen DFT.
 
-The threshold is three, as the requirement says. The grootboek skill's HDR guide says
-"frequentie > 3", which is stricter and which this repo does not follow.
+De drempel is drie, zoals de requirement zegt. De HDR-gids van de grootboek-skill zegt
+"frequentie > 3", wat strenger is en wat deze repo niet volgt.
 
-## Consequences
+## Gevolgen
 
-- **Seeded** on 2026-10-27 from the six feedback notes in Claude's memory, counted by what the
-  notes themselves say and not by a full history: `naming-precision` 7, `answer-first` 2,
-  `act-on-question` 2, `review-point-context` 1, `id-with-title` 1, `ai-vs-self-advice` 1.
-- **First codification:** `naming-precision` stood at seven on day one, so the register warned
-  immediately. It was codified in HDR-010, which is the proof that the chain runs from
-  incident through count to rule.
-- **`ai-vs-self-advice` is not a repeated fault but a conflict** between Jarón's global
-  instructions and this project, settled only in private memory. It was fixed once, with a line
-  in the project `CLAUDE.md`, without waiting for a count.
-- **Logging depends on the agent.** No hook can see a human correction. The register makes
-  repetition countable once it is logged; it does not make the agent log. Whether it does is
-  known only after weeks of use, and this record does not claim it.
-- **Judgment stays human.** Whether a new fault is "the same" as an existing pattern is the
-  agent's call, checked by Jarón. A wrong match skews a count.
-- **Parallel branches** that both log still conflict on the same lines of the register; the
-  resolution is to keep both sides.
-- The memory notes are not deleted. They remain the source of the first incidents; the
-  register is where they are counted.
-- **Numbering.** This branch books HDR-009 and HDR-010. `arc/bubble-animation` holds an
-  HDR-008 of its own and renumbers it with `npm run docs:renumber` when it next merges
-  `arc/arc-main` (HDR-007).
+- **Gezaaid** op 2026-10-27 uit de zes feedbacknotities in Claudes geheugen, geteld op wat de
+  notities zelf zeggen en niet op een volledige geschiedenis: `naming-precision` 7, `answer-first`
+  2, `act-on-question` 2, `review-point-context` 1, `id-with-title` 1, `ai-vs-self-advice` 1.
+- **Eerste vastlegging:** `naming-precision` stond op dag één op zeven, dus het register
+  waarschuwde meteen. Het is vastgelegd in HDR-010, wat het bewijs is dat de keten van incident
+  via telling naar regel werkt.
+- **`ai-vs-self-advice` is geen herhaalde fout maar een conflict** tussen de globale
+  instructies van Jarón en dit project, dat alleen in privégeheugen was beslecht. Het is eenmalig opgelost,
+  met een regel in de `CLAUDE.md` van het project, zonder op een telling te wachten.
+- **Loggen hangt af van de agent.** Geen hook kan een menselijke correctie zien. Het register
+  maakt herhaling telbaar zodra ze is gelogd; het zorgt er niet voor dat de agent logt. Of hij
+  dat doet, is pas na weken gebruik bekend, en dit record beweert dat niet.
+- **Oordeel blijft menselijk.** Of een nieuwe fout "dezelfde" is als een bestaand patroon, is de
+  keuze van de agent, gecontroleerd door Jarón. Een verkeerde koppeling scheeftrekt een telling.
+- **Parallelle branches** die allebei loggen botsen nog steeds op dezelfde regels van het
+  register; de oplossing is beide kanten te houden.
+- De geheugennotities worden niet verwijderd. Ze blijven de bron van de eerste incidenten; het
+  register is waar ze worden geteld.
+- **Nummering.** Deze branch boekt HDR-009 en HDR-010. `arc/bubble-animation` bevat een eigen
+  HDR-008 en hernummert die met `npm run docs:renumber` als hij weer `arc/arc-main` merget
+  (HDR-007).

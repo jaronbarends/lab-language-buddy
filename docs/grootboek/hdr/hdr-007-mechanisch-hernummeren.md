@@ -5,62 +5,64 @@
 - **Implementation:** 100
 - **Type:** Harness Decision Record (HOW do we work)
 
-## Decision
+## Besluit
 
-HDR-005 says the branch that merges second renumbers its own records. That rested on someone
-remembering it, and on doing it by hand in the right order. This record makes it mechanical
-and changes the order.
+HDR-005 zegt dat de branch die als tweede merget zijn eigen records hernummert. Dat steunde op
+iemand die eraan denkt, en op het met de hand in de juiste volgorde doen. Dit record maakt het
+mechanisch en verandert de volgorde.
 
-- **Order: renumber first, then merge.** HDR-005 had the branch merge `arc/arc-main` first and
-  renumber afterwards. After the merge, a mention of `HDR-006` can mean either of two records
-  and no tool can tell which. Before the merge only the branch's own record has that id, so a
-  find-and-replace is exact. This reverses steps 1 to 3 of HDR-005; the rest of it stands.
-- **A script**, `npm run docs:renumber` (`scripts/renumber-records.mjs`). It compares the
-  branch's registers with a base ref (default `origin/arc/arc-main`). A record whose id the
-  base holds for a different file gets the next free number. The record file is renamed and
-  the new id replaces the old one in the lines the branch itself added since the merge-base:
-  registers, `docs/index.yml`, the record, journals that mention it. It changes nothing in
-  records that have already landed, and does nothing on a second run. It refuses during a
-  merge, and when the branch already holds a duplicated id.
-- **A check** in `npm run docs:check`: each register holds each id once, the record file
-  exists and its name starts with its id in lowercase. It also runs in CI on every PR, so it is
-  the net for a merge done in a plain terminal.
-- **A guard hook**, `guard-merge-renumber`: when the lead thread runs `git merge` of
-  `arc/arc-main`, `origin/arc/arc-main`, `main` or `origin/main`, it runs the script in check
-  mode against that ref. Collisions: it denies the merge, names them and says to run the script
-  first. `main` is included because `arc/arc-main` is expected to merge into `main` and become
-  the central branch.
+- **Volgorde: eerst hernummeren, dan mergen.** In HDR-005 merget de branch eerst `arc/arc-main` en
+  hernummert daarna. Na de merge kan een vermelding van `HDR-006` twee records bedoelen en kan
+  geen enkel gereedschap zien welke. Vóór de merge heeft alleen het eigen record van de branch
+  dat id, dus zoeken-en-vervangen is exact. Dit draait stap 1 tot en met 3 van HDR-005 om; de
+  rest ervan blijft staan.
+- **Een script**, `npm run docs:renumber` (`scripts/renumber-records.mjs`). Het vergelijkt de
+  registers van de branch met een basis-ref (standaard `origin/arc/arc-main`). Een record waarvan
+  het id in de basis bij een ander bestand hoort, krijgt het eerstvolgende vrije nummer. Het
+  recordbestand wordt hernoemd en het nieuwe id vervangt het oude in de regels die de branch zelf
+  heeft toegevoegd sinds de merge-base: registers, `docs/index.yml`, het record, journaals die
+  het noemen. Het verandert niets in records die al zijn binnengekomen en doet bij een tweede run
+  niets. Het weigert tijdens een merge, en als de branch al een dubbel id bevat.
+- **Een check** in `npm run docs:check`: elk register bevat elk id één keer, het recordbestand
+  bestaat en zijn naam begint met zijn id in kleine letters. Hij draait ook in CI bij elke PR,
+  dus hij is het vangnet voor een merge die in een gewone terminal is gedaan.
+- **Een guard-hook**, `guard-merge-renumber`: als de lead thread `git merge` van `arc/arc-main`,
+  `origin/arc/arc-main`, `main` of `origin/main` uitvoert, draait de hook het script in checkmodus
+  tegen die ref. Bij botsingen weigert hij de merge, noemt ze en zegt dat het script eerst
+  moet draaien. `main` is erbij genomen omdat `arc/arc-main` naar verwachting in `main` wordt
+  gemerged en de centrale branch wordt.
 
-## Why
+## Waarom
 
-**Kernprincipe:** a rule that has to be remembered fails when it matters, and a repair that
-needs judgment is better done at the moment when the judgment is still unambiguous. Renumbering
-before the merge is that moment. The guard hook turns "remember to" into "the merge does not
-start until", the same split as `guard-push-sweep` (HDR-004): the hook denies and names, the
-lead thread does the work and retries. The script is plain Node, not an agent, so it does not
-meet the objection that stopped the unattended refactor hook.
+**Kernprincipe:** een regel die onthouden moet worden faalt wanneer het erop aankomt, en een
+herstel dat oordeelsvermogen vraagt, doe je beter op het moment dat dat oordeel nog eenduidig
+is. Hernummeren vóór de merge is dat moment. De guard-hook maakt van "denk eraan" een "de merge
+begint pas als": dezelfde verdeling als bij `guard-push-sweep` (HDR-004): de hook weigert en
+benoemt, de lead thread doet het werk en probeert opnieuw. Het script is gewoon Node, geen agent,
+dus het valt niet onder het bezwaar dat de onbewaakte refactor-hook tegenhield.
 
-The replacement only touches lines the branch added. A branch that wrote `HDR-006` after the
-base already held a different HDR-006 is the one case this cannot see, which is why the
-procedure is "before the merge" and not "whenever".
+De vervanging raakt alleen regels die de branch zelf heeft toegevoegd. Een branch die `HDR-006`
+schreef nadat de basis al een ander HDR-006 bevatte, is het ene geval dat dit niet kan zien;
+daarom is de procedure "vóór de merge" en niet "wanneer dan ook".
 
-## Consequences
+## Gevolgen
 
-- **First automated test in this repo.** `scripts/renumber-records.test.mjs`, with `node:test`
-  (built into Node, no dependency), run by `npm run test:scripts`. The plan said "no test
-  suite" (`docs/plan.md`, Decisions); it now says the app has none and that scripts that
-  rewrite documents get a test (decision log 10-27). Open question 2 in the plan, tests for the
-  app, is unchanged.
-- **Run against the real case** on 2026-10-27 in a throwaway worktree of `arc/bubble-animation`:
-  its Modern Web Guidance trial went from HDR-006 to HDR-007, five files changed, no HDR-006
-  left. After this branch merges, that trial takes the number after this record.
-- **Blind spots, accepted:** the hook sees only merges the lead thread runs through the Bash
-  tool, not `git pull`, another tool or a script (the same limit as HDR-004). Outside Claude
-  Code the net is the duplicate-id check, and the habit of running the script before the
-  merge; with nothing to renumber it does nothing.
-- **HDR-005 is not edited.** It is implemented, and a record that has landed does not change.
-  Two of its statements no longer hold: the order of its steps, and that `docs:check` does not
-  detect duplicate ids. This record is the counter-entry. `docs/grootboek/CLAUDE.md` carries
-  the current rule.
-- **Memory outside the repo** (Claude's own notes) may mention an id that moves; that is not
-  covered by the script.
+- **Eerste geautomatiseerde test in deze repo.** `scripts/renumber-records.test.mjs`, met
+  `node:test` (zit in Node, geen dependency), uitgevoerd door `npm run test:scripts`. Het plan
+  zei "geen testsuite" (`docs/plan.md`, Decisions); nu staat er dat de app er geen heeft en dat
+  scripts die documenten herschrijven een test krijgen (decision log 10-27). Open vraag 2 in het
+  plan, tests voor de app, blijft ongewijzigd.
+- **Uitgevoerd op het echte geval** op 2026-10-27 in een wegwerp-worktree van
+  `arc/bubble-animation`: de Modern Web Guidance-proef ging van HDR-006 naar HDR-007, vijf
+  bestanden veranderden, er bleef geen HDR-006 over. Nadat deze branch is gemerged, krijgt die
+  proef het nummer na dit record.
+- **Blinde vlekken, geaccepteerd:** de hook ziet alleen merges die de lead thread via de
+  Bash-tool uitvoert, niet `git pull`, een ander gereedschap of een script (dezelfde grens als
+  HDR-004). Buiten Claude Code is het vangnet de check op dubbele id's, plus de gewoonte om het
+  script vóór de merge te draaien; als er niets te hernummeren valt, doet het niets.
+- **HDR-005 wordt niet aangepast.** Het is geïmplementeerd, en een record dat is binnengekomen
+  verandert niet. Twee van zijn uitspraken gelden niet meer: de volgorde van zijn stappen, en dat
+  `docs:check` dubbele id's niet detecteert. Dit record is de tegenboeking.
+  `docs/grootboek/CLAUDE.md` bevat de huidige regel.
+- **Geheugen buiten de repo** (Claudes eigen notities) kan een id noemen dat verschuift; dat
+  dekt het script niet.

@@ -5,58 +5,61 @@
 - **Implementation:** 100
 - **Type:** Harness Decision Record (HOW do we work)
 
-## Decision
+## Besluit
 
-The duty to communicate (REQ-GG-04, Implementeer de communicatieplicht bij documentwijzigingen)
-is a working rule in the root `CLAUDE.md`: when a leading document changes, say what changes
-and why, show the concrete change, and ask for a check. A rule that lives only in the context
-depends on the agent remembering it at the moment it edits. This record adds the reminder at
-that moment.
+De communicatieplicht (REQ-GG-04, Implementeer de communicatieplicht bij documentwijzigingen) is
+een werkregel in de root-`CLAUDE.md`: als een leidend document verandert, zeg je wat er verandert
+en waarom, toon je de concrete wijziging en vraag je om een check. Een regel die alleen in de
+context staat, hangt ervan af dat de agent eraan denkt op het moment dat hij bewerkt. Dit record
+voegt de herinnering toe op dat moment.
 
-What is built:
+Wat is gebouwd:
 
-- **The list of leading documents** is defined once, in the root `CLAUDE.md`: every
-  `CLAUDE.md` in the repo, `docs/grootboek/software-architectuur.md` (the only balance so far)
-  and `docs/code-architectuur.md`. Records, `docs/plan.md` and the README are outside the duty.
-  `docs/grootboek/CLAUDE.md` points to the root instead of repeating it.
-- **A PostToolUse hook** (`.claude/hooks/notify-leading-document.cjs`) runs after every `Edit`
-  and `Write`. If the file is a leading document it returns the reminder as context; otherwise
-  it stays silent. It never blocks: the change is made, and Jarón's check comes before the
-  commit.
-- **The list and the wording live in `.claude/hooks/leading-documents.json`** next to the
-  script. A new balance, or a different sentence, is a change to that file, not to the code.
-- **Subagents get their own wording.** A subagent cannot ask Jarón, so it is told to list the
-  change under open points in its report; the lead thread passes it on and asks for the check.
+- **De lijst met leidende documenten** is één keer gedefinieerd, in de root-`CLAUDE.md`: elke
+  `CLAUDE.md` in de repo, `docs/grootboek/software-architectuur.md` (tot nu toe de enige balans)
+  en `docs/code-architectuur.md`. Records, `docs/plan.md` en de README vallen buiten de plicht.
+  `docs/grootboek/CLAUDE.md` verwijst naar de root in plaats van de lijst te herhalen.
+- **Een PostToolUse-hook** (`.claude/hooks/notify-leading-document.cjs`) draait na elke `Edit` en
+  `Write`. Is het bestand een leidend document, dan geeft hij de herinnering als context terug;
+  anders blijft hij stil. Hij blokkeert nooit: de wijziging is gemaakt, en Jaróns check komt vóór
+  de commit.
+- **De lijst en de formulering staan in `.claude/hooks/leading-documents.json`**, naast het
+  script. Een nieuwe balans, of een andere zin, is een wijziging in dat bestand, niet in de code.
+- **Subagents krijgen een eigen formulering.** Een subagent kan Jarón niets vragen, dus in zijn
+  instructie staat dat hij de wijziging in zijn rapport onder open punten zet; de lead thread geeft
+  haar door en vraagt om de check.
 
-## Why
+## Waarom
 
-**Kernprincipe:** a rule that depends on being remembered fails exactly when the agent is busy,
-which is when documents drift. The reminder belongs at the point of the edit, injected by the
-harness, not in a list the agent has to consult. This is the same split the working agreements
-already use: the procedure is data, the hook is delivery.
+**Kernprincipe:** een regel die ervan afhangt dat eraan wordt gedacht, faalt precies wanneer de
+agent bezig is, en dat is wanneer documenten driften. De herinnering hoort op het punt van de
+bewerking, ingespoten door het harnas, niet in een lijst die de agent moet raadplegen. Dit is
+dezelfde splitsing die de werkafspraken al gebruiken: de procedure is data, de hook is bezorging.
 
-The hook fires after the edit and does not deny it, unlike the other hooks in this harness
-(`guard-kenniswerker`, `triage-guard`). Before the edit it cannot know what changed, and the
-change is cheap to undo until it is committed. Blocking would also turn a small correction into
-a stop-and-wait for a check that Jarón makes on the whole change anyway.
+De hook draait na de bewerking en weigert die niet, anders dan de andere hooks in dit harnas
+(`guard-kenniswerker`, `triage-guard`). Voor de bewerking kan hij niet weten wat er verandert, en
+de wijziging is goedkoop terug te draaien totdat ze is gecommit. Blokkeren zou ook van een kleine
+correctie een stop-en-wacht maken op een check die Jarón toch al op de hele wijziging doet.
 
-It also fires for subagents. First idea was to leave them out, as the other hooks do. That would
-make a silent edit possible exactly where the duty is hardest to keep: a builder whose file
-boundary includes a `CLAUDE.md`. The builder cannot ask, but it can report.
+Hij draait ook voor subagents. Het eerste idee was hen erbuiten te laten, zoals de andere hooks
+doen. Dat zou een stille bewerking mogelijk maken precies waar de plicht het moeilijkst na te
+leven is: een builder wiens bestandsgrens een `CLAUDE.md` omvat. De builder kan niet vragen, maar
+wel rapporteren.
 
-## Consequences
+## Gevolgen
 
-- Tested live on 2026-10-24 after a session restart: the hook fired on the lead thread and on
-  a builder subagent, the builder quoted the subagent wording and listed the change under open
-  points. Both throwaway edits were reverted; the file was clean afterwards.
-- **No de-duplication.** Every edit gives one reminder, so an edit and its revert give two. The
-  wording tells the agent to say nothing more if it already reported the change. If this turns
-  noisy in real work, add de-duplication per document, not a weaker rule.
-- **Blind spots, accepted:** the hook only sees `Edit` and `Write`. A change made through a
-  shell command (`sed`, `git checkout`, a script) does not trigger it, and neither does an edit
-  outside Claude Code. The same limit applies to the other hooks (HDR-004).
-- **The list exists in two places:** the sentence in the root `CLAUDE.md` and
-  `leading-documents.json`. A new balance has to be added to both. Nothing checks that they
-  agree; a check in `npm run docs:check` is a possible later step, not part of this record.
-- **Related, not decided here:** DFT-002 (the subagent-tenzij guard blocks `CLAUDE.md` files
-  under `src/` for the lead thread). The hook does not depend on who edits those files.
+- Live getest op 2026-10-24 na een herstart van de sessie: de hook vuurde op de lead thread en op
+  een builder-subagent, de builder citeerde de subagent-formulering en zette de wijziging onder
+  open punten. Beide wegwerpbewerkingen zijn teruggedraaid; het bestand was daarna schoon.
+- **Geen ontdubbeling.** Elke bewerking geeft één herinnering, dus een bewerking en haar revert
+  geven er twee. De formulering vertelt de agent niets meer te zeggen als hij de wijziging al heeft
+  gemeld. Wordt dit in echt werk storend, voeg dan ontdubbeling per document toe, geen zwakkere
+  regel.
+- **Blinde vlekken, geaccepteerd:** de hook ziet alleen `Edit` en `Write`. Een wijziging via een
+  shell-commando (`sed`, `git checkout`, een script) triggert hem niet, en een bewerking buiten
+  Claude Code ook niet. Dezelfde beperking geldt voor de andere hooks (HDR-004).
+- **De lijst staat op twee plekken:** de zin in de root-`CLAUDE.md` en `leading-documents.json`.
+  Een nieuwe balans moet aan beide worden toegevoegd. Niets controleert of ze overeenkomen; een
+  check in `npm run docs:check` is een mogelijke latere stap, geen onderdeel van dit record.
+- **Verwant, hier niet besloten:** DFT-002 (de subagent-tenzij-guard blokkeert `CLAUDE.md`-bestanden
+  onder `src/` voor de lead thread). De hook hangt er niet van af wie die bestanden bewerkt.

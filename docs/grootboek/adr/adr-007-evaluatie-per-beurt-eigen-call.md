@@ -40,7 +40,7 @@ huidige productie-app doet. Gekozen is optie 1.
 buiten de gespreksketen, zoals Jarón verkoos, en vertraagt TTS niet meer. De prijs is twee
 Gemini-calls per beurt, een tweede route, en een wacht- en foutstatus in de UI.
 
-**De corrector krijgt het gesprek.** Jarón's test: op de vraag hoe hij zijn koffie drinkt kreeg het
+**De corrector krijgt het gesprek.** Jaróns test: op de vraag hoe hij zijn koffie drinkt kreeg het
 antwoord `Ik vind zwart het lekkerst.` een correctie naar *mooist*, wat niet gebeurt als de vraag
 zichtbaar is. Gemeten: 6 van 6 van zulke correcties zonder de geschiedenis, 0 van 6 met. De
 correcties blijven buiten de keten omdat de evaluatiecall een zijtak is van de chatcall en zijn id

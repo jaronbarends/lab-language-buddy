@@ -1,9 +1,9 @@
-# PDR Register — overview of all Product Decision Records
-# Product decisions document the WHY behind feature choices, prioritisation and
-# product direction.
+# PDR Register — overzicht van alle Product Decision Records
+# Productbeslissingen leggen het WAAROM vast achter featurekeuzes, prioritering en
+# productrichting.
 #
-# Same fields and lifecycle as the ADR register; a PDR also carries a changelog as soon
-# as the course shifts within the same core decision.
+# Dezelfde velden en levenscyclus als het ADR-register; een PDR heeft ook een changelog zodra
+# de koers verschuift binnen dezelfde kernbeslissing.
 
 pdrs:
   - id: "PDR-001"

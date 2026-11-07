@@ -5,38 +5,40 @@
 - **Implementation:** 100
 - **Type:** Harness Decision Record (HOW do we work)
 
-## Decision
+## Besluit
 
-A rule in `.claude/rules/code-style.md`, loaded whenever a `.ts` or `.tsx` file in `src/` is
-touched: a name says what the function returns or does, not what it is used for, and uses the
-same word as its neighbours. When Jarón points at a name, the agent agrees, says plainly why it
-was wrong, proposes a better one with the reason, and lets him decide; a rename across files is
-cheap, and the files are listed once it passes about five.
+Een regel in `.claude/rules/code-style.md`, die laadt zodra een `.ts`- of `.tsx`-bestand in `src/`
+wordt aangeraakt: een naam zegt wat de functie teruggeeft of doet, niet waarvoor hij wordt
+gebruikt, en gebruikt hetzelfde woord als zijn buren. Als Jarón een naam aanwijst, is de agent
+het eens, zegt hij duidelijk waarom die fout was, stelt hij een betere voor met de reden, en laat
+hij Jarón beslissen; een hernoeming over meerdere bestanden is goedkoop, en de bestanden worden
+opgesomd zodra het er meer dan ongeveer vijf zijn.
 
-## Why
+## Waarom
 
-**Kernprincipe:** Jarón reads names as the specification and reviews them as part of the work.
-A name that promises more or less than the code does costs him review time, and a code base
-only reads well if one word means one thing.
+**Kernprincipe:** Jarón leest namen als de specificatie en reviewt ze als onderdeel van het werk.
+Een naam die meer of minder belooft dan de code doet, kost hem reviewtijd, en een codebase leest
+alleen goed als één woord één ding betekent.
 
-This is the first pattern the incident register (HDR-009) took through to a fix. In the stage 4
-review he corrected seven names, each with a reason, and each time he was right: a function
-returning a request *body* called a request (`createChatRequestBody`), an endpoint named for the
-verb where the noun was what was requested (`evaluation`), a function claiming the reply was
-spoken when it only started speaking (`addAiTurnAndStartSpeaking`), a status `running` where
-nothing ran yet (`pending`), and a CSS class in a different case than its neighbours. The
-existing style rules covered how names are *written* (`handleX`, booleans as sentences,
-camelCase), not what they have to *promise*.
+Dit is het eerste patroon dat het incidentregister (HDR-009) tot een oplossing bracht. In de
+review van stage 4 corrigeerde hij zeven namen, elk met een reden, en elke keer had hij gelijk:
+een functie die een request-*body* teruggeeft maar request heet (`createChatRequestBody`), een
+endpoint dat naar het werkwoord is genoemd terwijl het zelfstandig naamwoord werd opgevraagd
+(`evaluation`), een functie die beweert dat het antwoord is uitgesproken terwijl het pas begon
+met spreken (`addAiTurnAndStartSpeaking`), een status `running` terwijl er nog niets liep
+(`pending`), en een CSS-class in een ander hoofdlettergebruik dan zijn buren. De bestaande
+stijlregels dekten hoe namen worden *geschreven* (`handleX`, booleans als zinnen, camelCase), niet
+wat ze moeten *beloven*.
 
-## Consequences
+## Gevolgen
 
-- `naming-precision` in the incident register now names this record as its `maatregel`, and the
-  `docs:check` warning for it is gone.
-- **A rule cannot be checked mechanically.** Unlike the hooks, nothing stops a bad name. The
-  measure of success is that no further naming incident is logged. If one is, that is a new
-  incident in the same pattern, and the pattern should escalate to something firmer, not stay a
-  line of text.
-- The rule loads for TypeScript in `src/` only. Names in documents, scripts and CSS files are
-  not covered by it.
-- `.claude/rules/code-style.md` is not a leading document; the change is shown to Jarón before it
-  is committed all the same.
+- `naming-precision` in het incidentregister noemt nu dit record als zijn `maatregel`, en de
+  `docs:check`-waarschuwing ervoor is weg.
+- **Een regel is niet mechanisch te controleren.** Anders dan de hooks houdt niets een slechte
+  naam tegen. De maatstaf voor succes is dat er geen nieuw naming-incident meer wordt gelogd. Als
+  er toch een komt, is dat een nieuw incident in hetzelfde patroon, en moet het patroon
+  doorgroeien naar iets steviger, niet een regel tekst blijven.
+- De regel laadt alleen voor TypeScript in `src/`. Namen in documenten, scripts en CSS-bestanden
+  vallen er niet onder.
+- `.claude/rules/code-style.md` is geen leidend document; de wijziging wordt toch aan Jarón
+  getoond voordat ze wordt gecommit.

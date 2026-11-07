@@ -1,6 +1,6 @@
-# JNL Register — overview of all journals (discovery)
-# A journal counts issues instead of implementation percentages: the discovery is done when
-# the issues are decided and have landed in target records (ADR/PDR/HDR).
+# JNL Register — overzicht van alle journalen (discovery)
+# Een journaal telt kwesties in plaats van implementatiepercentages: de discovery is klaar als
+# de kwesties zijn beslist en in doelrecords (ADR/PDR/HDR) zijn beland.
 
 jnls:
   - id: "JNL-001"
@@ -13,7 +13,7 @@ jnls:
     kwesties-open: 2
     kwesties-geparkeerd: 0
     doel-records:
-      - "software-architectuur.md (v1.0, accepted 2026-10-20)"
+      - "software-architectuur.md (v1.0, geaccepteerd 2026-10-20)"
     bestand: jnl-001-instap-software-balans.md
   - id: "JNL-002"
     titel: "Koude-startjournaal: kan een nieuwkomer werken met alleen de repo?"
@@ -37,9 +37,9 @@ jnls:
     kwesties-open: 2
     kwesties-geparkeerd: 3
     doel-records:
-      - "ADR for the bubble's structure (K2), to be written"
+      - "ADR voor de structuur van de bubbel (K2), nog te schrijven"
       - "HDR-013 (K10)"
-      - "a spec as the build plan, once decided"
+      - "een spec als bouwplan, zodra besloten"
     bestand: jnl-003-animatie-van-chatbubbels.md
   - id: "JNL-004"
     titel: "Openstaande kwesties"

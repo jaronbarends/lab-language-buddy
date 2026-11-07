@@ -1,15 +1,15 @@
-# ADR Register — overview of all Architecture Decision Records
-# The cheap index of the grootboek: read the register first, then the document.
+# ADR Register — overzicht van alle Architecture Decision Records
+# De goedkope index van het grootboek: lees eerst het register en dan het document.
 #
-# Fields:
-#   versie        — semver-like (1.0, 1.1). Refinement = minor; change of course = new ADR.
-#   implementatie — percentage (0-100), a living gauge
-#   omgeving      — where does it run? dev | prod | geen
+# Velden:
+#   versie        — semver-achtig (1.0, 1.1). Verfijning = minor; koerswijziging = nieuw ADR.
+#   implementatie — percentage (0-100), een levende meter
+#   omgeving      — waar draait het? dev | prod | geen
 #
-# Lifecycle: voorstel → discussion → accepted → in-progress → implemented
-# Immutability: an 'implemented' record no longer changes; a new record supersedes the
-# old one (the counter-entry).
-# Append-only: records never disappear — that is the bookkeeping.
+# Levenscyclus: voorstel → discussion → accepted → in-progress → implemented
+# Onveranderlijkheid: een 'implemented' record verandert niet meer; een nieuw record vervangt
+# het oude (de tegenboeking).
+# Alleen toevoegen: records verdwijnen nooit — dat is de boekhouding.
 
 adrs:
   - id: "ADR-001"
@@ -19,8 +19,8 @@ adrs:
     implementatie: 100
     omgeving: prod
     datum: 2026-10-20
-    beslissing: "main is production; other branches (incl. arc/*) deploy as Vercel previews by default; secret env vars are Production-only"
-    notitie: "Configured in the Vercel dashboard, not in the repo; no drift check covers it"
+    beslissing: "main is production; andere branches (incl. arc/*) worden standaard als Vercel-preview gedeployd; geheime env vars gelden alleen voor Production"
+    notitie: "Ingesteld in het Vercel-dashboard, niet in de repo; geen driftcontrole dekt het"
     bestand: adr-001-omgeving-en-deployment-topologie.md
   - id: "ADR-002"
     titel: "De serverroutes hebben geen authenticatie van de aanroeper, voorlopig geaccepteerd"
@@ -29,8 +29,8 @@ adrs:
     implementatie: 0
     omgeving: prod
     datum: 2026-10-20
-    beslissing: "No caller authentication or rate limit on any server route; risk accepted for now, fix wanted soon"
-    notitie: "Provisional; superseded by a new ADR once K7 lands a protection mechanism"
+    beslissing: "Geen authenticatie van de aanroeper en geen rate limit op een serverroute; risico voorlopig geaccepteerd, een oplossing is snel gewenst"
+    notitie: "Voorlopig; wordt vervangen door een nieuw ADR zodra K7 een beschermingsmechanisme oplevert"
     bestand: adr-002-routes-zonder-authenticatie-voorlopig-geaccepteerd.md
   - id: "ADR-003"
     titel: "Gemini `flash-lite` als model, gekozen op prijs"
@@ -40,7 +40,7 @@ adrs:
     omgeving: prod
     datum: 2026-10-20
     implementatie-datum: 2026-10-20
-    beslissing: "gemini-3.1-flash-lite for chat and evaluation, chosen on price without an extensive model comparison"
+    beslissing: "gemini-3.1-flash-lite voor chat en evaluatie, gekozen op prijs zonder uitgebreide modelvergelijking"
     bestand: adr-003-gemini-flash-lite-op-prijs.md
   - id: "ADR-004"
     titel: "De Google TTS-key verhuist van de URL naar een header"
@@ -50,7 +50,7 @@ adrs:
     omgeving: prod
     datum: 2026-10-21
     implementatie-datum: 2026-10-21
-    beslissing: "GOOGLE_CLOUD_API_KEY moves to the x-goog-api-key header; confirmed working against the live endpoint before the change"
+    beslissing: "GOOGLE_CLOUD_API_KEY verhuist naar de header x-goog-api-key; vóór de wijziging bevestigd tegen het live endpoint"
     bestand: adr-004-google-tts-key-als-header.md
   - id: "ADR-005"
     titel: "De taalkiezer is overgenomen uit de bestaande app"

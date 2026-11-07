@@ -5,48 +5,49 @@
 - **Implementation:** 100
 - **Type:** Harness Decision Record (HOW do we work)
 
-## Decision
+## Besluit
 
-Building REQ-AH-13 (the agentic-harnas refactor loop) on `arc/agentic-harnas`, ARC's own
-convention wires a git-level push-hook that spawns the `refactor-werkplaats` agent
-unattended, in the background, on every `git push` — including pushes made outside Claude
-Code entirely. Building that exact mechanism here was refused by Claude Code's own safety
-classifier, with the reason "Create Unsafe Agents": an unattended, code-editing agent
-triggered automatically by a routine git operation.
+Bij het bouwen van REQ-AH-13 (de refactor loop van het agentic-harnas) op `arc/agentic-harnas`
+koppelt de eigen conventie van ARC een push-hook op git-niveau, die de `refactor-werkplaats`-agent
+onbewaakt, op de achtergrond, laat starten bij elke `git push`, ook bij pushes die helemaal buiten
+Claude Code om gebeuren. Precies dat mechanisme hier bouwen werd geweigerd door de eigen
+veiligheidsclassifier van Claude Code, met als reden "Create Unsafe Agents": een onbewaakte agent
+die code bewerkt, automatisch getriggerd door een routinematige git-handeling.
 
-What is built instead is session-scoped: a `guard-push-sweep` PreToolUse hook
-(`.claude/hooks/guard-push-sweep.cjs`) that, when the lead thread (not a subagent) runs
-`git push`, sweeps `src/` for files past the doorbell/hard-limit without a register decision
-(`scripts/sweep-code-architectuur.mjs`). If it finds files newly flagged — not already
-pending — it denies the push and names them. The lead thread then spawns the
-`refactor-werkplaats` agent for those files itself, in the same human-supervised session,
-before retrying the push. A pending marker (`docs/.refactor-pending.json`, 24h TTL) stops a
-later push from re-flagging a file that already has a proposal awaiting review.
+Wat in plaats daarvan is gebouwd, is sessiegebonden: een `guard-push-sweep` PreToolUse-hook
+(`.claude/hooks/guard-push-sweep.cjs`) die, wanneer de lead thread (niet een subagent)
+`git push` draait, `src/` doorzoekt op bestanden voorbij de doorbell/hard-limit zonder
+registerbesluit (`scripts/sweep-code-architectuur.mjs`). Vindt hij bestanden die nieuw zijn
+aangemerkt, dus nog niet pending, dan weigert hij de push en noemt ze. De lead thread start dan
+zelf de `refactor-werkplaats`-agent voor die bestanden, in dezelfde sessie onder toezicht van een mens,
+voordat de push opnieuw wordt geprobeerd. Een pending-marker (`docs/.refactor-pending.json`, 24
+uur TTL) voorkomt dat een latere push een bestand opnieuw aanmerkt waarvoor al een voorstel op
+review wacht.
 
-## Why
+## Waarom
 
-**Kernprincipe:** the harness's own safety boundary on unattended, code-editing automation
-takes precedence over matching an external convention literally, even one as considered as
-ARC's own. An agent that can edit files and is triggered by something as routine and
-frequent as `git push`, without a human present at the moment it fires, is exactly the risk
-class this classifier exists to catch — regardless of how carefully the agent itself is
-scoped (worktree isolation, a guard against its own push/merge, human sign-off on the
-result). The safer mechanism keeps the trigger inside an active, supervised session: the
-hook denies instead of spawning, and the human-in-session lead thread makes the actual call
-to delegate.
+**Kernprincipe:** de eigen veiligheidsgrens van het harnas voor onbewaakte automatisering die
+code bewerkt, gaat voor het letterlijk overnemen van een externe conventie, ook als die zo
+doordacht is als die van ARC zelf. Een agent die bestanden kan bewerken en wordt getriggerd door
+iets zo routinematigs en frequents als `git push`, zonder dat er op het moment van afvuren een
+mens aanwezig is, valt precies in de risicoklasse die deze classifier moet afvangen, hoe zorgvuldig
+de agent zelf ook is afgebakend (worktree-isolatie, een guard tegen zijn eigen push/merge,
+menselijke goedkeuring van het resultaat). Het veiligere mechanisme houdt de trigger binnen een
+actieve, bewaakte sessie: de hook weigert in plaats van te starten, en de lead thread, met een
+mens in de sessie, neemt de feitelijke beslissing om te delegeren.
 
-This also means the refactor loop only catches pushes made through Claude Code — a push from
-a plain terminal bypasses it entirely. That is an accepted, named blind spot, consistent with
-the same limitation already accepted for `guard-no-subagent-commit` and `triage-guard`
-elsewhere in this harness.
+Dit betekent ook dat de refactor loop alleen pushes via Claude Code opvangt; een push vanuit een
+gewone terminal omzeilt hem volledig. Dat is een geaccepteerde, benoemde blinde vlek, in lijn met
+dezelfde beperking die elders in dit harnas al is geaccepteerd voor `guard-no-subagent-commit` en
+`triage-guard`.
 
-## Consequences
+## Gevolgen
 
-- `.claude/hooks/guard-push-sweep.cjs`, `scripts/sweep-code-architectuur.mjs` and
-  `.claude/agents/refactor-werkplaats.md` implement this; `docs/code-architectuur.md` §4 and
-  the "Refactor loop" line in `CLAUDE.md`'s working agreements document it for every session.
-- Any future harness work that wants to port another ARC convention verbatim should check it
-  against this same boundary first, rather than discovering the refusal mid-build.
-- If this safety classifier's boundary ever changes, or a differently-scoped unattended
-  mechanism is proposed, this decision is the one to revisit — not a reason to quietly route
-  around the refusal.
+- `.claude/hooks/guard-push-sweep.cjs`, `scripts/sweep-code-architectuur.mjs` en
+  `.claude/agents/refactor-werkplaats.md` implementeren dit; `docs/code-architectuur.md` §4 en de
+  regel "Refactor loop" in de werkafspraken van `CLAUDE.md` documenteren het voor elke sessie.
+- Toekomstig harnaswerk dat een andere ARC-conventie letterlijk wil overnemen, moet die eerst aan
+  deze grens toetsen, in plaats van de weigering midden in de bouw te ontdekken.
+- Als de grens van deze veiligheidsclassifier ooit verandert, of een mechanisme met een andere
+  afbakening dat onbewaakt draait wordt voorgesteld, is dit het besluit om te herzien, en geen
+  reden om de weigering stilletjes te omzeilen.

@@ -1,68 +1,68 @@
-# Register of the documentation. Read this first, then open only the document you need.
-# `npm run docs:check` verifies that every path below exists and that no document under
-# docs/ is missing from the list. Keep it current in the same commit as the change.
+# Register van de documentatie. Lees dit eerst en open daarna alleen het document dat je nodig hebt.
+# `npm run docs:check` controleert dat elk pad hieronder bestaat en dat geen document onder
+# docs/ in de lijst ontbreekt. Houd het bij in dezelfde commit als de wijziging.
 
 documents:
   - path: README.md
-    what: Front door. What the app is, who it is for, stack, how to run it, build stages.
-    read_when: first contact with the repo; changing env vars or the stack table.
+    what: Voordeur. Wat de app is, voor wie hij is, de stack, hoe je hem draait en de bouwstappen.
+    read_when: eerste kennismaking met de repo; je wijzigt env vars of de stacktabel.
   - path: CLAUDE.md
-    what: Working agreements (language, commits, branches, checks) and the map of the context layers.
-    read_when: always loaded.
+    what: Werkafspraken (taal, commits, branches, checks) en de kaart van de contextlagen.
+    read_when: altijd geladen.
   - path: AGENTS.md
-    what: Warning that this Next.js version differs from training data; read node_modules/next/dist/docs first.
-    read_when: always loaded; before writing any Next.js code.
+    what: Waarschuwing dat deze Next.js-versie afwijkt van wat het model kent; lees eerst node_modules/next/dist/docs.
+    read_when: altijd geladen; voordat je Next.js-code schrijft.
   - path: docs/code-architectuur.md
-    what: Code-organization doctrine (REQ-AH-10, agentic harnas onderdeel D) — qualitative rules only, no thresholds or register.
-    read_when: splitting or growing a file; before adding a new structural pattern.
+    what: Doctrine voor code-organisatie (REQ-AH-10, agentic harnas onderdeel D) — alleen kwalitatieve regels, geen drempels of register.
+    read_when: je een bestand splitst of laat groeien; voordat je een nieuw structuurpatroon toevoegt.
   - path: docs/code-architectuur-register.json
-    what: Machine-readable contract (REQ-AH-11) — warn/hard-limit thresholds and the per-file ceiling/excluded decisions. Line counts are a snapshot; REQ-AH-12 makes them live-measured.
-    read_when: a file crosses the warn threshold; recording or revisiting a ceiling decision.
+    what: Machineleesbaar contract (REQ-AH-11) — waarschuwings- en harde drempels en de besluiten per bestand over plafond en uitsluiting. Regelaantallen zijn een momentopname; REQ-AH-12 maakt ze live gemeten.
+    read_when: een bestand over de waarschuwingsdrempel gaat; je een plafondbesluit vastlegt of herziet.
   - path: docs/grootboek/CLAUDE.md
-    what: Rules for the grootboek folder (experiment on arc/* branches): document types, conventions, duty to communicate.
-    read_when: loads by itself when working in docs/grootboek.
+    what: Regels voor de grootboekmap (experiment op arc/*-branches) — documenttypes, conventies, communicatieplicht.
+    read_when: laadt vanzelf bij werk in docs/grootboek.
   - path: docs/grootboek/hdr/hdr-001-grootboek-stelsel.md
-    what: Why the grootboek exists next to plan.md, and which decisions it holds (from 2026-10-20 on).
-    read_when: deciding whether a decision goes in the grootboek or in plan.md.
+    what: Waarom het grootboek naast plan.md bestaat en welke beslissingen het bevat (vanaf 2026-10-20).
+    read_when: je beslist of een beslissing in het grootboek of in plan.md hoort.
   - path: docs/grootboek/hdr/hdr-002-balans-naast-plan-driftproef.md
-    what: Why the technical balance is kept, as a trial of the grootboek's drift detection; plan.md stays the source until the trial is settled.
-    read_when: deciding whether to keep, change or drop the balance; before the drift trial.
+    what: Waarom de technische balans wordt bijgehouden, als proef van de driftdetectie van het grootboek; plan.md blijft de bron tot de proef is afgerond.
+    read_when: je beslist of de balans blijft, wijzigt of vervalt; voor de driftproef.
   - path: docs/grootboek/hdr/hdr-003-ci-checks-op-pull-requests.md
-    what: Decision that lint/typecheck/build/docs:check should run on PRs to main; not yet built (K8).
-    read_when: setting up CI for this repo.
+    what: Besluit dat lint/typecheck/build/docs:check op PR's naar main moeten draaien; nog niet gebouwd (K8).
+    read_when: je CI voor deze repo inricht.
   - path: docs/grootboek/hdr/hdr-004-sessiegebonden-refactor-loop.md
-    what: Why REQ-AH-13's refactor loop is a session-scoped PreToolUse hook, not ARC's unattended git-level push-hook (refused by the safety classifier).
-    read_when: touching the refactor loop; porting another ARC harness convention.
+    what: Waarom de refactor loop van REQ-AH-13 een sessiegebonden PreToolUse-hook is en niet de onbewaakte push-hook op git-niveau van ARC (geweigerd door de safety classifier).
+    read_when: je de refactor loop aanraakt; je een andere ARC-harnasconventie overneemt.
   - path: docs/grootboek/hdr/hdr-005-hernummeren-bij-merge-bij-botsende-nummers.md
-    what: Rule for parallel arc/* branches that book the same record number; the branch that merges second renumbers its own records, in its own branch.
-    read_when: merging an arc/* branch that has booked grootboek records; numbering a new record.
+    what: Regel voor parallelle arc/*-branches die hetzelfde recordnummer boeken; de branch die als tweede merget hernummert zijn eigen records, in zijn eigen branch.
+    read_when: je een arc/*-branch merget die grootboekrecords heeft geboekt; je een nieuw record nummert.
   - path: docs/grootboek/hdr/hdr-006-communicatieplicht-hook.md
-    what: Why a PostToolUse hook reminds the agent of the duty to communicate when a leading document changes; where the list lives, the blind spots, subagent wording.
-    read_when: changing the list of leading documents; touching notify-leading-document or leading-documents.json.
+    what: Waarom een PostToolUse-hook de agent aan de communicatieplicht herinnert als een leidend document wijzigt; waar de lijst staat, de blinde vlekken, de tekst voor subagents.
+    read_when: je de lijst van leidende documenten wijzigt; je notify-leading-document of leading-documents.json aanraakt.
   - path: docs/grootboek/hdr/hdr-007-mechanisch-hernummeren.md
-    what: Why record renumbering is a script, a duplicate-id check and a merge guard hook, and why the order is renumber first, merge second (reverses HDR-005's steps).
-    read_when: merging arc/arc-main or main into a branch; touching renumber-records, the guard-merge-renumber hook or the duplicate-id check.
+    what: Waarom het hernummeren van records een script is, met een controle op dubbele ids en een merge-guardhook, en waarom de volgorde eerst hernummeren, dan mergen is (draait de stappen van HDR-005 om).
+    read_when: je arc/arc-main of main in een branch merget; je renumber-records, de guard-merge-renumber-hook of de controle op dubbele ids aanraakt.
   - path: docs/grootboek/hdr/hdr-008-driftsignaal.md
-    what: Why leading documents declare a werkgebied and a script signals when the code in it changed after the document; signal not verdict, followed by a reconciliation and a DFT (REQ-GG-05).
-    read_when: touching drift-signal or the werkgebied field; running a reconciliation; creating a new balance.
+    what: Waarom leidende documenten een werkgebied declareren en een script meldt wanneer de code daarin na het document is gewijzigd; signaal, geen oordeel, gevolgd door een reconciliatie en een DFT (REQ-GG-05).
+    read_when: je drift-signal of het werkgebied-veld aanraakt; je een reconciliatie uitvoert; je een nieuwe balans maakt.
   - path: docs/grootboek/hdr/hdr-009-incidentregister.md
-    what: Why recurring faults are logged by pattern in an incident register and codified at three (REQ-GG-06); the threshold, what happens at three, and why logging depends on the agent.
-    read_when: logging an incident; touching the incident register or its counter; a docs:check warning about a pattern.
+    what: Waarom terugkerende fouten per patroon in een incidentregister worden gelogd en bij drie worden vastgelegd (REQ-GG-06); de drempel, wat er bij drie gebeurt en waarom het loggen van de agent afhangt.
+    read_when: je een incident logt; je het incidentregister of de teller aanraakt; een docs:check-waarschuwing over een patroon.
   - path: docs/grootboek/hdr/hdr-010-namen-getoetst-aan-wat-ze-beloven.md
-    what: The naming rule in code-style.md and why: seven naming corrections in the stage 4 review, the first pattern codified through the incident register.
-    read_when: naming a function, status or type in src/; a naming correction from Jarón.
+    what: De naamgevingsregel in code-style.md en waarom — zeven naamcorrecties in de review van stage 4, het eerste patroon dat via het incidentregister is vastgelegd.
+    read_when: je een functie, status of type in src/ een naam geeft; een naamcorrectie van Jarón.
   - path: docs/grootboek/hdr/hdr-011-arc-basisbranch-en-eerst-de-branch.md
-    what: Why the root CLAUDE.md names arc/arc-main as the base for arc work and says the branch comes before the first edit; found in the first cold-start run.
-    read_when: starting work on an arc branch; updating the Branches line when arc/arc-main merges into main.
+    what: Waarom de root-CLAUDE.md arc/arc-main noemt als basis voor arc-werk en zegt dat de branch vóór de eerste bewerking komt; gevonden in de eerste koude-startrun.
+    read_when: je aan een arc-branch begint; je de Branches-regel bijwerkt als arc/arc-main in main wordt gemerged.
   - path: docs/grootboek/journaal/jnl-002-koude-start-onboarding.md
-    what: Cold-start journal (REQ-GG-10): what a fresh agent with only the repo got right and where the repo does not describe itself; six issues, two decided in HDR-011.
-    read_when: running the next cold-start round; judging whether onboarding works; deciding the open issues (checks not run, the private README link, the AI-or-self rule).
+    what: Koude-startjournaal (REQ-GG-10) — wat een verse agent met alleen de repo goed deed en waar de repo zichzelf niet beschrijft; zes kwesties, twee besloten in HDR-011.
+    read_when: je de volgende koude-startronde draait; je beoordeelt of onboarding werkt; je de open kwesties beslist (checks niet gedraaid, de privé README-link, de AI-of-zelf-regel).
   - path: docs/grootboek/hdr/hdr-012-geen-record-gedateerd-na-vandaag.md
-    what: Why docs:check fails on a record dated after today (read in Europe/Amsterdam), what it reads and what it cannot catch; the maatregel of the date-assumed incident pattern.
-    read_when: writing a date in a record or register; a docs:check error about a date after today; changing the timezone constant.
+    what: Waarom docs:check faalt op een record dat na vandaag is gedateerd (gelezen in Europe/Amsterdam), wat het leest en wat het niet kan vangen; de maatregel van het incidentpatroon date-assumed.
+    read_when: je een datum in een record of register schrijft; een docs:check-fout over een datum na vandaag; je de tijdzoneconstante wijzigt.
   - path: docs/grootboek/hdr/hdr-013-modern-web-guidance-proef.md
-    what: Trial of Modern Web Guidance on the bubble animation; the agent's baseline is written before the guidance is consulted, then the human keeps, switches off or adjusts it.
-    read_when: considering web-platform guidance tooling for the agent; closing JNL-003 K10.
+    what: Proef met Modern Web Guidance op de bubbelanimatie; de baseline van de agent wordt geschreven voordat de guidance wordt geraadpleegd, daarna houdt de mens de guidance, zet hij haar uit of past hij haar aan.
+    read_when: je guidance-tooling voor het webplatform voor de agent overweegt; je JNL-003 K10 afsluit.
   - path: docs/grootboek/hdr/hdr-014-documentatie-nederlands.md
     what: Welke taal waar geldt (documentatie Nederlands; code, UI, commits, README, AGENTS.md en spikes Engels), dat vertalen geen nieuwe beslissing is, en welke labels niet vertaald worden.
     read_when: je een document schrijft of vertaalt; je twijfelt over de taal van een tekst; je de taalregels in een CLAUDE.md wijzigt.
@@ -217,26 +217,26 @@ documents:
     what: Favicons en manifest uit de bestaande app en het logo als inline SVG-component zonder SVGR; overgezet uit plan.md.
     read_when: je favicons, het manifest of het logo op het setup-scherm wijzigt, of overweegt een SVG-loader toe te voegen.
   - path: docs/grootboek/adr/adr-001-omgeving-en-deployment-topologie.md
-    what: main is production, other branches preview by default, secret env vars Production-only; configured in Vercel, not in the repo.
-    read_when: changing branch or env-var setup in Vercel.
+    what: main is production, andere branches krijgen standaard een preview, geheime env vars gelden alleen voor Production; ingesteld in Vercel, niet in de repo.
+    read_when: je de branch- of env-var-instellingen in Vercel wijzigt.
   - path: docs/grootboek/adr/adr-002-routes-zonder-authenticatie-voorlopig-geaccepteerd.md
-    what: No caller auth or rate limit on the server routes; accepted for now, provisional, superseded once K7 lands a fix.
-    read_when: touching the server routes' exposure; picking up K7.
+    what: Geen authenticatie van de aanroeper of rate limit op de serverroutes; voorlopig geaccepteerd en vervangen zodra K7 een oplossing oplevert.
+    read_when: je de blootstelling van de serverroutes aanraakt; je K7 oppakt.
   - path: docs/grootboek/adr/adr-003-gemini-flash-lite-op-prijs.md
-    what: Why gemini-3.1-flash-lite, and that it was chosen on price without an extensive model comparison.
-    read_when: considering a different model for chat or evaluation.
+    what: Waarom gemini-3.1-flash-lite, en dat het op prijs is gekozen zonder uitgebreide modelvergelijking.
+    read_when: je een ander model voor chat of evaluatie overweegt.
   - path: docs/grootboek/adr/adr-004-google-tts-key-als-header.md
-    what: GOOGLE_CLOUD_API_KEY moved from a URL query parameter to the x-goog-api-key header; confirmed against the live endpoint first.
-    read_when: touching src/lib/tts/google.ts or its auth.
+    what: GOOGLE_CLOUD_API_KEY is van een URL-queryparameter naar de header x-goog-api-key verhuisd; eerst bevestigd tegen het live endpoint.
+    read_when: je src/lib/tts/google.ts of de auth ervan aanraakt.
   - path: docs/grootboek/software-architectuur.md
-    what: Technical balance v1.0 (accepted 2026-10-20), derived from the code: components, data flow, environments, auth matrix, choices. Open questions are in JNL-001. Not yet checked for drift.
-    read_when: working on routes, providers, deployment or env vars; when running the drift trial.
+    what: Technische balans v1.0 (geaccepteerd 2026-10-20), afgeleid uit de code — componenten, datastroom, omgevingen, auth-matrix, keuzes. Open vragen staan in JNL-001. Nog niet op drift gecontroleerd.
+    read_when: je aan routes, providers, deployment of env vars werkt; bij de driftproef.
   - path: docs/grootboek/journaal/jnl-001-instap-software-balans.md
-    what: Onboarding journal for the software balance trial; eight issues (balance vs plan, environments, route auth and its follow-up, CI and its follow-up, model choice, Google key).
-    read_when: accepting or discarding the balance; answering one of its open questions.
+    what: Instapjournaal voor de proef met de software-balans; acht kwesties (balans versus plan, omgevingen, route-auth en het vervolg, CI en het vervolg, modelkeuze, Google-key).
+    read_when: je de balans accepteert of verwerpt; je een van de open vragen beantwoordt.
   - path: docs/grootboek/journaal/jnl-003-animatie-van-chatbubbels.md
-    what: Discovery journal for animating the chat bubbles (plan open question 11): the surviving element, growing in height and width, scroll, read-along, roles; ten issues.
-    read_when: working on bubble or thread animation; answering one of its open issues.
+    what: Discovery-journaal over het animeren van de chatbubbels (open vraag 11 uit het plan) — het blijvende element, groei in hoogte en breedte, scroll, meelezen, rollen; tien kwesties.
+    read_when: je aan bubbel- of threadanimatie werkt; je een van de open kwesties beantwoordt.
   - path: docs/grootboek/journaal/jnl-004-openstaande-kwesties.md
     what: Journaal met de negen vragen die openstonden toen plan.md werd afgebouwd (tests, de Spaanse vlag, een sessie beëindigen, het afbreken bij 320px, bediening onder het toetsenbord, audio bufferen, de vastgehouden reply, de Gemini-wrappers, de native engine op iPhone), met bevindingen en metingen per kwestie.
     read_when: je een van deze kwesties oppakt of beslist of je haar accepteert, bouwt of laat vallen; je aan de native spraakherkenning op iPhone werkt (kwestie K9 bevat alle runs).
@@ -244,84 +244,84 @@ documents:
     what: Journaal met de metingen van de corrector (drie varianten, echte prompts, context van 10-10) en de zwakke plekken die gemeten maar niet opgelost zijn.
     read_when: je de cijfers achter de besluiten over de corrector nodig hebt of de spellingregel, transcriptiehint of aanhalingstekens wilt heroverwegen.
   - path: docs/grootboek/dft/dft-001-eerste-reconciliatie-software-balans.md
-    what: First drift reconciliation of the software balance; no drift found, because no code changed since the balance was written. Tested the process, not detection.
-    read_when: running or interpreting the next reconciliation of the balance.
+    what: Eerste driftreconciliatie van de software-balans; geen drift gevonden, omdat er sinds het schrijven van de balans geen code was gewijzigd. Het proces is getest, niet de detectie.
+    read_when: je de volgende reconciliatie van de balans uitvoert of duidt.
   - path: docs/grootboek/dft/dft-002-guard-blokkeert-claude-md-onder-src.md
-    what: Resolved drift report; the subagent-tenzij hook blocked CLAUDE.md files under src/ for the lead thread while the working agreement exempts non-code files. Fixed by letting the hook allow Markdown; the first drift report to run booking, decision, change and closure.
-    read_when: touching guard-kenniswerker or the working-model line in CLAUDE.md; looking for an example of a drift report followed up to the end.
+    what: Opgelost driftrapport; de subagent-tenzij-hook blokkeerde CLAUDE.md-bestanden onder src/ voor de lead thread, terwijl de werkafspraak niet-codebestanden uitzondert. Opgelost door de hook Markdown toe te laten; het eerste driftrapport dat doorliep van boeking via besluit en wijziging tot afsluiting.
+    read_when: je guard-kenniswerker of de werkmodelregel in CLAUDE.md aanraakt; je een voorbeeld zoekt van een driftrapport dat tot het einde is opgevolgd.
   - path: docs/grootboek/specs/incidentregister.md
-    what: Plan for the front half of the immune system (REQ-GG-06): an incident register grouped by pattern, a counter that warns at three without a codified fix, a logging duty, and the first use on naming-precision. Throwaway once built.
-    read_when: building or changing the incident register or its counter; logging an incident.
+    what: Plan voor de voorste helft van het immuunsysteem (REQ-GG-06) — een incidentregister per patroon, een teller die bij drie zonder vastgelegde oplossing waarschuwt, een logplicht en het eerste gebruik op naming-precision. Wegwerpdocument zodra het gebouwd is.
+    read_when: je het incidentregister of de teller bouwt of wijzigt; je een incident logt.
   - path: docs/grootboek/specs/driftsignaal.md
-    what: Plan for a drift signal (REQ-GG-05): a werkgebied field in the front matter of a leading document, a script that lists the code changes in that scope since the document was last touched, and a warning in docs:check. Throwaway once built.
-    read_when: building or changing the drift signal; adding werkgebied to a leading document.
+    what: Plan voor een driftsignaal (REQ-GG-05) — een werkgebied-veld in de front matter van een leidend document, een script dat de codewijzigingen in dat gebied opsomt sinds het document het laatst is aangeraakt, en een waarschuwing in docs:check. Wegwerpdocument zodra het gebouwd is.
+    read_when: je het driftsignaal bouwt of wijzigt; je werkgebied aan een leidend document toevoegt.
   - path: docs/grootboek/specs/automatisch-hernummeren-bij-merge.md
-    what: Plan for making HDR-005's renumbering mechanical: a duplicate-id check in docs:check, a renumber script, and a hook that stops merges of arc/arc-main or main until it has run. Throwaway once built.
-    read_when: building or changing the renumber script, the duplicate-id check or the merge hook.
+    what: Plan om het hernummeren van HDR-005 mechanisch te maken — een controle op dubbele ids in docs:check, een renumber-script en een hook die merges van arc/arc-main of main tegenhoudt tot het is gedraaid. Wegwerpdocument zodra het gebouwd is.
+    read_when: je het renumber-script, de controle op dubbele ids of de merge-hook bouwt of wijzigt.
   - path: docs/grootboek/dft/dft-003-hernummerscript-mist-bronbestanden.md
-    what: Drift report; the renumber script rewrote only documents, while HDR-005 promises code comments too. Fixed in the script; stays in progress until the three stale comments on arc/bubble-animation are corrected.
-    read_when: touching renumber-records.mjs or the REWRITABLE file types; checking whether the three stale JNL-002 comments in src/ are fixed.
+    what: Driftrapport; het renumber-script herschreef alleen documenten, terwijl HDR-005 ook codecommentaar belooft. Opgelost in het script; blijft in uitvoering tot de drie verouderde commentaren op arc/bubble-animation zijn gecorrigeerd.
+    read_when: je renumber-records.mjs of de REWRITABLE-bestandstypen aanraakt; je controleert of de drie verouderde JNL-002-commentaren in src/ zijn gerepareerd.
   - path: docs/grootboek/registers
-    what: YAML registers (adr, hdr, pdr, dft, jnl) — the cheap index of the grootboek; read before opening a record.
-    read_when: looking for a decision, its status or an open drift report in the grootboek.
+    what: YAML-registers (adr, hdr, pdr, dft, jnl) — de goedkope index van het grootboek; lees ze voordat je een record opent.
+    read_when: je een beslissing, de status ervan of een open driftrapport in het grootboek zoekt.
   - path: docs/ios-stt-runs.md
-    what: Record of speech-recognition test runs on an iPhone.
-    read_when: touching src/lib/stt or the native-STT mitigations.
+    what: Verslag van testruns met spraakherkenning op een iPhone.
+    read_when: je src/lib/stt of de mitigaties voor native STT aanraakt.
   - path: spikes/ai-voice-demo/findings.md
-    what: The four non-obvious bugs already paid for, and the provider comparison.
-    read_when: before touching voice code.
+    what: De vier niet-vanzelfsprekende bugs die al zijn betaald, en de providervergelijking.
+    read_when: voordat je voice-code aanraakt.
   - path: src/components/CLAUDE.md
-    what: Design system and component rules.
-    read_when: loads by itself when working in src/components.
+    what: Design system en componentregels.
+    read_when: laadt vanzelf bij werk in src/components.
   - path: src/lib/CLAUDE.md
-    what: State machine and provider rules.
-    read_when: loads by itself when working in src/lib.
+    what: Regels voor de state machine en de providers.
+    read_when: laadt vanzelf bij werk in src/lib.
   - path: .claude/rules/code-style.md
-    what: Code style.
-    read_when: loads by itself when a file in src is touched.
+    what: Codestijl.
+    read_when: laadt vanzelf als een bestand in src wordt aangeraakt.
   - path: .claude/rules/nextjs-16.md
     what: Twee Next.js 16-valkuilen waarbij een verkeerde aanname geruisloos slaagt (geen export const runtime in een route, SVG-imports zijn een URL-string).
     read_when: laadt vanzelf bij werk in src/app, src/components of next.config.ts.
   - path: .claude/rules/safari-ios.md
-    what: The Safari / iPhone rules in short form.
-    read_when: loads by itself for components, hooks, STT code and CSS.
+    what: De Safari/iPhone-regels in korte vorm.
+    read_when: laadt vanzelf voor components, hooks, STT-code en CSS.
   - path: .claude/agents/builder.md
-    what: Agent that implements one bounded task inside a file boundary; reports in seven fields.
-    read_when: delegating a build task, alone or in parallel with other builders.
+    what: Agent die één afgebakende taak binnen een bestandsgrens uitvoert; rapporteert in zeven velden.
+    read_when: je een bouwtaak delegeert, alleen of parallel aan andere builders.
   - path: .claude/agents/reviewer.md
-    what: Read-only agent that checks a builder diff against its assignment.
-    read_when: after each task that matters, before the work reaches Jarón.
+    what: Alleen-lezen agent die een builder-diff toetst aan zijn opdracht.
+    read_when: na elke taak die ertoe doet, voordat het werk Jarón bereikt.
   - path: scripts/check-docs.mjs
-    what: Drift check between docs and repo (env vars, paths, register, plan staleness).
-    read_when: `npm run docs:check` fails or a new kind of drift needs checking.
+    what: Driftcontrole tussen docs en repo (env vars, paden, register, veroudering van het plan).
+    read_when: "`npm run docs:check` faalt of er een nieuw soort drift gecontroleerd moet worden."
   - path: .claude/skills/stage-review/SKILL.md
-    what: End-of-stage cold review procedure.
-    read_when: closing a build stage.
+    what: Procedure voor de koude review aan het einde van een stage.
+    read_when: je een bouwstage afsluit.
   - path: .claude/skills/grootboek/SKILL.md
-    what: ARC's grootboek skill (v1.5, copied from the ARC MCP resource arc://skill/grootboek/1.5): writing guides and examples per document type, registers, drift. Its text is Dutch.
-    read_when: writing or updating any document under docs/grootboek.
+    what: De grootboek-skill van ARC (v1.5, gekopieerd uit de ARC MCP-resource arc://skill/grootboek/1.5) — schrijfgidsen en voorbeelden per documenttype, registers, drift. De tekst is Nederlands.
+    read_when: je een document onder docs/grootboek schrijft of bijwerkt.
 
-# Standing decisions and where the reason is. The records in docs/grootboek are leading;
-# find the rest through the registers in docs/grootboek/registers/.
+# Vaste beslissingen en waar de reden staat. De records in docs/grootboek zijn leidend;
+# de rest vind je via de registers in docs/grootboek/registers/.
 decisions:
   - name: Framework (Next.js 16, TypeScript strict)
     where: "docs/grootboek/adr/adr-013-nextjs-16-met-typescript-strict.md"
   - name: Hosting (Vercel)
     where: "docs/grootboek/adr/adr-014-hosting-vercel.md"
-  - name: Persistence (none)
+  - name: Persistentie (geen)
     where: "docs/grootboek/pdr/pdr-002-geen-persistentie.md"
-  - name: Styling (CSS Modules over the ported design system)
+  - name: Styling (CSS Modules over het overgenomen design system)
     where: "docs/grootboek/adr/adr-015-styling-css-modules.md"
-  - name: State (one useReducer session machine)
+  - name: State (één useReducer session machine)
     where: "docs/grootboek/adr/adr-018-sessiestate-een-reducer.md"
-  - name: STT and TTS providers behind registries
+  - name: STT- en TTS-providers onder registries
     where: "docs/grootboek/adr/adr-009-stt-providerkeuze-en-configuratie.md, docs/grootboek/adr/adr-020-tts-providers-en-stemmen.md; src/lib/CLAUDE.md"
 
-# What must change together. The check script verifies the first two mechanically.
+# Wat samen moet veranderen. Het controlescript controleert de eerste twee mechanisch.
 travels_together:
-  - when: a process.env variable is added or removed in src
-    also: .env.example and the env block in README.md
-  - when: a file is added under docs/ or a path in this register moves
-    also: this file
-  - when: code changes a choice that a grootboek record holds
-    also: that record (update or supersede it), in the same commit
+  - when: een process.env-variabele in src wordt toegevoegd of verwijderd
+    also: .env.example en het env-blok in README.md
+  - when: er een bestand onder docs/ bijkomt of een pad in dit register verhuist
+    also: dit bestand
+  - when: code een keuze wijzigt die een grootboekrecord vastlegt
+    also: dat record (bijwerken of vervangen), in dezelfde commit

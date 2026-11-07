@@ -2,68 +2,71 @@
 
 - **Status:** resolved (2026-10-27)
 - **Date:** 2026-10-24
-- **Trigger:** found while designing the communication-duty hook (REQ-GG-04, Implementeer de
-  communicatieplicht bij documentwijzigingen): `src/components/CLAUDE.md` and
-  `src/lib/CLAUDE.md` are leading documents, so the question came up who may edit them.
+- **Trigger:** gevonden bij het ontwerpen van de communicatieplicht-hook (REQ-GG-04,
+  Implementeer de communicatieplicht bij documentwijzigingen): `src/components/CLAUDE.md` en
+  `src/lib/CLAUDE.md` zijn leidende documenten, dus de vraag kwam op wie ze mag bewerken.
 
 ## SOLL vs IST
 
-**SOLL:** the "Working model: subagent-tenzij" line in the root `CLAUDE.md` says edits to
-`src/` or `spikes/` go through a builder, and that `docs/`, `.claude/` and "other non-code
-files" are a carve-out the lead thread may edit directly.
+**SOLL:** de regel "Working model: subagent-tenzij" in de root-`CLAUDE.md` zegt dat bewerkingen
+in `src/` of `spikes/` via een builder lopen, en dat `docs/`, `.claude/` en "other non-code
+files" een uitzondering vormen die de lead thread direct mag bewerken.
 
-**IST:** `.claude/hooks/guard-kenniswerker.cjs` does not look at the kind of file. It denies
-any Edit or Write from the lead thread whose path starts with `src/` or `spikes/`. Tested on
-2026-10-24 with simulated lead-thread calls:
+**IST:** `.claude/hooks/guard-kenniswerker.cjs` kijkt niet naar het soort bestand. De hook
+weigert elke Edit of Write van de lead thread waarvan het pad met `src/` of `spikes/` begint.
+Getest op 2026-10-24 met gesimuleerde aanroepen van de lead thread:
 
-| Path | Lead thread |
+| Pad | Lead thread |
 |---|---|
-| `src/lib/foo.ts` | denied (intended) |
-| `src/lib/CLAUDE.md` | denied |
-| `src/components/CLAUDE.md` | denied |
-| `CLAUDE.md` | allowed |
-| `docs/plan.md` | allowed |
+| `src/lib/foo.ts` | geweigerd (bedoeld) |
+| `src/lib/CLAUDE.md` | geweigerd |
+| `src/components/CLAUDE.md` | geweigerd |
+| `CLAUDE.md` | toegestaan |
+| `docs/plan.md` | toegestaan |
 
-So two non-code files are blocked for the lead thread while a subagent may edit them. The
-agreement and the hook disagree on one class of file.
+Twee bestanden die geen code zijn, zijn dus geblokkeerd voor de lead thread terwijl een
+subagent ze mag bewerken. De afspraak en de hook zijn het oneens over één soort bestand.
 
-**Weight:** low. Nothing breaks: the lead thread can use the time-boxed override or a
-builder. The cost is that a documentation change in two context files needs a detour, and
-that the agreement overstates the carve-out.
+**Gewicht:** laag. Er breekt niets: de lead thread kan de tijdgebonden override of een
+builder gebruiken. De prijs is dat een documentatiewijziging in twee contextbestanden een
+omweg nodig heeft, en dat de afspraak de uitzondering te ruim voorstelt.
 
-## Pattern
+## Patroon
 
-None yet. One occurrence; no earlier report of a hook disagreeing with its working agreement.
-It is a candidate for the harness-weakness count (REQ-GG-06, Bouw het immuunsysteem) only if
-a second hook turns out to differ from its description.
+Nog geen. Eén voorval; geen eerdere melding van een hook die afwijkt van zijn werkafspraak. Het
+is alleen een kandidaat voor de telling van zwakke plekken van het harnas (REQ-GG-06, Bouw het
+immuunsysteem) als een tweede hook anders blijkt te werken dan beschreven.
 
-## Decisions
+## Besluiten
 
-Decided by Jarón on 2026-10-27: **change the hook** (option 1 of the two that were open; the
-other was to tighten the agreement).
+Besloten door Jarón op 2026-10-27: **de hook aanpassen** (optie 1 van de twee die openstonden;
+de andere was de afspraak aanscherpen).
 
-`guard-kenniswerker.cjs` no longer guards Markdown files. A file with the extension `.md` (any
-case) under `src/` or `spikes/` is allowed for the lead thread. Code and every other file
-type under those folders stays guarded, a CSS module or a JSON file included. The working
-agreement needed no change: it already said that non-code files are a carve-out.
+`guard-kenniswerker.cjs` bewaakt Markdown-bestanden niet meer. Een bestand met de extensie `.md`
+(hoofdletterongevoelig) onder `src/` of `spikes/` is toegestaan voor de lead thread. Code en
+elk ander bestandstype onder die mappen blijft bewaakt, ook een CSS-module of een JSON-bestand.
+De werkafspraak hoefde niet te veranderen: die zei al dat bestanden die geen code zijn een
+uitzondering vormen.
 
-Tested on 2026-10-27 with simulated lead-thread calls:
+Getest op 2026-10-27 met gesimuleerde aanroepen van de lead thread:
 
-| Path | Lead thread |
+| Pad | Lead thread |
 |---|---|
-| `src/lib/CLAUDE.md`, `src/components/CLAUDE.md` | allowed (was denied) |
-| `spikes/ai-voice-demo/findings.md`, `src/lib/NOTES.MD` | allowed |
-| `src/lib/foo.ts`, `src/app/page.tsx`, `src/components/x.module.css`, `spikes/ai-voice-demo/app.js`, `src/lib/notes.md.ts` | denied (unchanged) |
-| `CLAUDE.md`, `docs/plan.md` | allowed (unchanged) |
+| `src/lib/CLAUDE.md`, `src/components/CLAUDE.md` | toegestaan (was geweigerd) |
+| `spikes/ai-voice-demo/findings.md`, `src/lib/NOTES.MD` | toegestaan |
+| `src/lib/foo.ts`, `src/app/page.tsx`, `src/components/x.module.css`, `spikes/ai-voice-demo/app.js`, `src/lib/notes.md.ts` | geweigerd (ongewijzigd) |
+| `CLAUDE.md`, `docs/plan.md` | toegestaan (ongewijzigd) |
 
-A subagent edit of code passes as before, and the time-boxed override still works.
+Een bewerking van code door een subagent gaat door zoals eerder, en de tijdgebonden override
+werkt nog steeds.
 
-## Consequences
+## Gevolgen
 
-- The lead thread can now edit `src/components/CLAUDE.md` and `src/lib/CLAUDE.md` itself, so
-  the duty to communicate (HDR-006) reaches it directly, no longer through a builder's report.
-- This is the first drift report in the grootboek that ran the whole chain: booked (DFT-002),
-  decided, changed in the harness, and closed. It is evidence for REQ-GG-05 (Richt
-  drift-detectie in) that a finding is followed up and not only signalled.
-- No record is needed besides this one: a hook changed to match an existing agreement is a
-  correction, not a new decision.
+- De lead thread kan nu `src/components/CLAUDE.md` en `src/lib/CLAUDE.md` zelf bewerken, zodat
+  de communicatieplicht (HDR-006) hem direct bereikt, niet meer via het rapport van een
+  builder.
+- Dit is het eerste driftrapport in het grootboek dat de hele keten doorliep: geboekt (DFT-002),
+  besloten, in het harnas aangepast en gesloten. Het is bewijs voor REQ-GG-05 (Richt
+  drift-detectie in) dat een bevinding wordt opgevolgd en niet alleen gesignaleerd.
+- Naast dit record is geen ander record nodig: een hook die wordt aangepast aan een bestaande
+  afspraak is een correctie, geen nieuw besluit.

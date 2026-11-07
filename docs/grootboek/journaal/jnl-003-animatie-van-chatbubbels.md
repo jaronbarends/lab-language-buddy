@@ -2,622 +2,668 @@
 titel: "Animatie van chatbubbels"
 status: discovery
 datum: 2026-10-23
-kernvraag: How does an AI bubble go from thinking dots to its text as one element that grows, without breaking the scroll, the read-along highlight or the screen reader?
+kernvraag: Hoe gaat een AI-bubbel van denkpuntjes naar zijn tekst als één element dat groeit, zonder de scroll, de meeleesmarkering of de screen reader te breken?
 doel-records:
-  - "ADR for the bubble's structure (K2), to be written once decided"
-  - "HDR-013 (K10), booked 2026-10-23"
-  - "a spec as the build plan, once the issues are decided"
-  - "a PDR only if the human treats the motion behaviour as a product promise"
+  - "ADR voor de structuur van de bubbel (K2), te schrijven zodra het besloten is"
+  - "HDR-013 (K10), geboekt 2026-10-23"
+  - "een spec als bouwplan, zodra de kwesties besloten zijn"
+  - "een PDR alleen als de mens het bewegingsgedrag als productbelofte behandelt"
 ---
 
 # JNL-003 — Animatie van chatbubbels
 
-**Core question.** How does an AI bubble go from thinking dots to its text as one element that
-grows, without breaking the scroll, the read-along highlight or the screen reader?
+**Kernvraag.** Hoe gaat een AI-bubbel van denkpuntjes naar zijn tekst als één element dat groeit,
+zonder de scroll, de meeleesmarkering of de screen reader te breken?
 
-**Main message.** `docs/plan.md` open question 11 ("One bubble for the AI's thinking dots and
-its text") already describes the wanted effect and two ways to get the one surviving element.
-What it does not settle is how the bubble grows in *width* as well as height, and how that
-meets the scroll effect in the thread. Those two are the real unknowns; the rest are choices
-for the human.
+**Hoofdboodschap.** `docs/plan.md` open vraag 11 ("One bubble for the AI's thinking dots and its
+text") beschrijft het gewenste effect en twee manieren om aan het ene overlevende element te komen.
+Wat de vraag niet beslecht, is hoe de bubbel behalve in hoogte ook in *breedte* groeit, en hoe dat
+samengaat met het scroll-effect in de thread. Dat zijn de twee echte onbekenden; de rest zijn
+keuzes voor de mens.
 
-**How this was made.** A read of `docs/plan.md` (open question 11 and the Decision log), the
-bubble, turn-bubble, thinking-bubble and conversation-thread components and their CSS, and
-`.claude/rules/safari-ios.md`. No code has been changed and nothing is decided yet, except the
-trial in K10.
+**Hoe dit is gemaakt.** Een lezing van `docs/plan.md` (open vraag 11 en het besluitenlog), de
+componenten voor bubbel, beurtbubbel, denkbubbel en conversatiethread met hun CSS, en
+`.claude/rules/safari-ios.md`. Er is geen code gewijzigd en er is nog niets besloten, behalve de
+proef in K10.
 
-**Where the decisions are booked.** This work runs on an `arc/*` branch, so it falls under
-HDR-001: its decisions are booked in the grootboek, not in `plan.md`. Open question 11 in the
-plan predates 2026-10-20 and carries a pointer here, so the two places do not drift apart.
+**Waar de besluiten worden geboekt.** Dit werk draait op een `arc/*` branch en valt dus onder
+HDR-001: de besluiten worden in het grootboek geboekt, niet in `plan.md`. Open vraag 11 in het plan
+dateert van vóór 2026-10-20 en verwijst hiernaartoe, zodat de twee plekken niet uit elkaar lopen.
 
-## Issues
+## Kwesties
 
-| # | Issue | Status |
+| # | Kwestie | Status |
 |---|---|---|
-| K1 | Scope: only open question 11, or an enter animation on every bubble too? | decided 2026-10-23 |
-| K2 | The surviving element: key by position (a) or a pending AI turn (b)? | decided 2026-10-23 (a) |
-| K3 | Growing in height and width: which technique? (spike on an iPhone) | spike built 2026-10-23, tuning open |
-| K4 | The thread's scroll effect against a bubble that is still growing | decided 2026-10-23 (A) |
-| K5 | Read-along: may the highlight start while the text is still appearing? | decided 2026-10-23 (only when fully visible) |
-| K6 | One element, one role: `status` or `log`? | parked 2026-10-23 |
-| K7 | The user's bubble growing when its evaluation arrives | decided 2026-10-23 (AI bubble only for now) |
-| K8 | `prefers-reduced-motion` | decided 2026-10-23 |
-| K9 | Overlap with the microphone dot pulse and the dots-and-bounce direction | decided 2026-10-23 (out of scope); the mic dot pulse picked up as K13 on 2026-10-27 |
-| K10 | Modern Web Guidance: does it give a better answer for K3? | trial agreed, outcome open |
-| K11 | The user's bubble when it is sent: what animates | decided and built 2026-10-27, iPhone test open; shrink in the bar and the thinking-bubble delay come after |
-| K12 | Speech start against the end of the reveal | parked 2026-10-27 |
-| K13 | The listening indicator pulses while the microphone is live | decided and built 2026-10-27, tested on the iPhone |
-| K15 | The thinking bubble waits 800ms after a Retry too | parked 2026-10-30 |
-| K14 | The AI's thinking bubble appears with the same reveal, after a delay when it follows a sent turn | decided and built 2026-10-28; the reply grows from the thinking bubble's size (spike 2026-10-30); tested on the iPhone |
+| K1 | Reikwijdte: alleen open vraag 11, of ook een enter-animatie op elke bubbel? | besloten 2026-10-23 |
+| K2 | Het overlevende element: key op positie (a) of een wachtende AI-beurt (b)? | besloten 2026-10-23 (a) |
+| K3 | Groeien in hoogte en breedte: welke techniek? (spike op een iPhone) | spike gebouwd 2026-10-23, tuning open |
+| K4 | Het scroll-effect van de thread tegenover een bubbel die nog groeit | besloten 2026-10-23 (A) |
+| K5 | Meelezen: mag de highlight starten terwijl de tekst nog verschijnt? | besloten 2026-10-23 (alleen als volledig zichtbaar) |
+| K6 | Eén element, één rol: `status` of `log`? | geparkeerd 2026-10-23 |
+| K7 | De bubbel van de gebruiker die groeit als zijn evaluatie binnenkomt | besloten 2026-10-23 (voorlopig alleen de AI-bubbel) |
+| K8 | `prefers-reduced-motion` | besloten 2026-10-23 |
+| K9 | Overlap met de pulse van de microfoonstip en de richting van puntjes en bounce | besloten 2026-10-23 (buiten scope); de pulse van de microfoonstip is op 2026-10-27 opgepakt als K13 |
+| K10 | Modern Web Guidance: geeft het een beter antwoord voor K3? | proef afgesproken, uitkomst open |
+| K11 | De bubbel van de gebruiker bij het versturen: wat animeert | besloten en gebouwd 2026-10-27, iPhone-test open; het krimpen in de balk en de vertraging van de denkbubbel volgen daarna |
+| K12 | Start van de spraak tegenover het einde van de onthulling | geparkeerd 2026-10-27 |
+| K13 | De luisterindicator pulseert zolang de microfoon live is | besloten en gebouwd 2026-10-27, getest op de iPhone |
+| K15 | De denkbubbel wacht ook na een Retry 800ms | geparkeerd 2026-10-30 |
+| K14 | De denkbubbel van de AI verschijnt met dezelfde onthulling, na een vertraging als hij op een verstuurde beurt volgt | besloten en gebouwd 2026-10-28; het antwoord groeit uit de grootte van de denkbubbel (spike 2026-10-30); getest op de iPhone |
 
-### K1 — Scope
+### K1 — Reikwijdte
 
-Today no bubble has an enter animation; the only animation in the bubbles is the pulse of the
-thinking dots. Open question 11 asks for the dots-to-text transition and says it is "to be done
-together with the other animation work". **Question for the human:** is this journal only that
-transition, or also an enter animation for every new bubble (the user's too)? These are two
-separate pieces of work with different risk.
+Op dit moment heeft geen enkele bubbel een enter-animatie; de enige animatie in de bubbels is de
+pulse van de denkpuntjes. Open vraag 11 vraagt om de overgang van puntjes naar tekst en zegt dat
+die "samen met het andere animatiewerk" moet gebeuren. **Vraag aan de mens:** gaat dit journaal
+alleen over die overgang, of ook over een enter-animatie voor elke nieuwe bubbel (ook die van de
+gebruiker)? Dat zijn twee afzonderlijke stukken werk met verschillend risico.
 
-**Decision (2026-10-23, the human):** start with the transition only (option A): the AI bubble
-going from thinking dots to its text as one element. An enter animation for every bubble is not
-part of this first piece; it is decided after the K3 spike, because what "appearing" means for
-the AI bubble depends on K2 (with one surviving element it appears when the dots do, not when
-the text does). The user's bubble growing on evaluation stays K7, separate.
+**Besluit (2026-10-23, de mens):** begin alleen met de overgang (optie A): de AI-bubbel die van
+denkpuntjes naar zijn tekst gaat als één element. Een enter-animatie voor elke bubbel hoort niet
+bij dit eerste stuk; die wordt besloten na de K3-spike, omdat wat "verschijnen" voor de AI-bubbel
+betekent afhangt van K2 (met één overlevend element verschijnt hij wanneer de puntjes verschijnen,
+niet wanneer de tekst verschijnt). Het groeien van de bubbel van de gebruiker bij de evaluatie
+blijft K7, apart.
 
-### K2 — The surviving element
+### K2 — Het overlevende element
 
-Today `ThinkingBubble` and `TurnBubble` are two elements, one unmounting as the other mounts,
-so nothing exists to animate. The plan weighed two ways on 2026-10-08:
+Nu zijn `ThinkingBubble` en `TurnBubble` twee elementen, waarvan het ene unmount als het andere
+mount, dus er is niets om te animeren. Het plan woog op 2026-10-08 twee wegen af:
 
-- (a) **Key by position.** The thread renders one AI bubble keyed `ai-<number of AI turns before
-  it>` for both the waiting state and the real turn. No change to the reducer, the types or the
-  drivers. Recommended in the plan.
-- (b) **The waiting is part of the AI turn.** A `pending` AI turn with its own identity. One
-  element and one role, but the AI turn becomes a union and everything that reads "the last
-  turn" has to skip a pending one; two sources of truth; costs listed in the plan.
+- (a) **Key op positie.** De thread rendert één AI-bubbel met key `ai-<aantal AI-beurten ervoor>`
+  voor zowel de wachttoestand als de echte beurt. Geen wijziging in de reducer, de types of de
+  drivers. In het plan aanbevolen.
+- (b) **Het wachten is onderdeel van de AI-beurt.** Een `pending` AI-beurt met een eigen
+  identiteit. Eén element en één rol, maar de AI-beurt wordt een union en alles wat "de laatste
+  beurt" leest, moet een pending beurt overslaan; twee bronnen van waarheid; kosten staan in het
+  plan.
 
-**Question for the human:** confirm (a)? (b) pays off only if a failed AI turn is ever shown
-inline with a retry, which is not planned. Lands in an ADR.
+**Vraag aan de mens:** (a) bevestigen? (b) loont alleen als een mislukte AI-beurt ooit inline met
+een retry wordt getoond, wat niet gepland is. Landt in een ADR.
 
-**Decision (2026-10-23, the human):** (a), key by position. Checked before deciding: the reducer
-only appends turns, updates one in place with `map`, or resets `turns` to `[]` (session-reducer.ts
-lines 253, 467, 496, 314), so the position key cannot shift mid-session. Line 314 was not opened;
-it is assumed to be the reset to a new session. The ADR is not written yet: it waits for K3 to
-K6, so that one record covers the structure including the role it settles on. Condition that
-would reopen this: any future action that removes a single turn.
+**Besluit (2026-10-23, de mens):** (a), key op positie. Voor het besluit nagekeken: de reducer
+voegt alleen beurten toe, werkt er één op zijn plek bij met `map`, of zet `turns` terug op `[]`
+(session-reducer.ts regels 253, 467, 496, 314), dus de positiekey kan midden in een sessie niet
+verschuiven. Regel 314 is niet geopend; aangenomen wordt dat het de reset naar een nieuwe sessie
+is. De ADR is nog niet geschreven: die wacht op K3 tot en met K6, zodat één record de structuur
+dekt, inclusief de rol waarvoor gekozen wordt. Voorwaarde die dit heropent: elke toekomstige actie
+die één enkele beurt verwijdert.
 
-### K3 — Growing in height and width
+### K3 — Groeien in hoogte en breedte
 
-`.bubble` is `width: fit-content` with `max-width: 85%` and `overflow: hidden`
-(`bubble.module.css`). The plan names the `0fr` to `1fr` grid trick for an unknown height; that
-animates one axis. Going from the width of three dots to the width of a wrapped paragraph is a
-different problem. To be settled by a small spike on a real iPhone, not by an estimate.
+`.bubble` is `width: fit-content` met `max-width: 85%` en `overflow: hidden`
+(`bubble.module.css`). Het plan noemt de `0fr`-naar-`1fr` grid-trick voor een onbekende hoogte;
+die animeert één as. Van de breedte van drie puntjes naar de breedte van een afgebroken alinea is
+een ander probleem. Op te lossen met een kleine spike op een echte iPhone, niet met een schatting.
 
-**Baseline, written 2026-10-23 before consulting any web guidance (see K10).** This is what the
-agent would do from its own knowledge (training cutoff June 2026), unverified against current
-browser support:
+**Baseline, geschreven op 2026-10-23 voordat er webguidance werd geraadpleegd (zie K10).** Dit is
+wat de agent zou doen vanuit eigen kennis (training cutoff juni 2026), niet geverifieerd tegen de
+huidige browserondersteuning:
 
-- Height alone: `grid-template-rows: 0fr` to `1fr` on a wrapper. Works in current Safari, to my
-  knowledge.
-- Height and width together: measure, then transition explicit pixel values. Lay the final text
-  out at its final width (off-screen or in a layout effect), read the width and height, set them
-  on the bubble from the dots' size, transition to them, and release to `auto` at
-  `transitionend`. Reveal the text with an opacity fade once the size is nearly there.
-- I would not use `interpolate-size: allow-keywords` or `calc-size()`. To my knowledge they are
-  Chromium-only, and Safari on iPhone is a hard requirement.
-- Fallback if measuring proves fragile on iOS: no size animation; cross-fade the dots out and the
-  text in on a bubble that is already at its final size. Less ambitious, but cheap and robust.
-- Risks I expect on iOS: `transitionend` not firing when the tab is backgrounded or the
-  transition is interrupted (so release to `auto` needs a timeout fallback), and the interplay
-  with K4.
+- Alleen hoogte: `grid-template-rows: 0fr` naar `1fr` op een wrapper. Werkt in de huidige Safari,
+  voor zover ik weet.
+- Hoogte en breedte samen: meten, en dan expliciete pixelwaarden transitionen. Leg de uiteindelijke
+  tekst op zijn uiteindelijke breedte uit (buiten beeld of in een layout effect), lees breedte en
+  hoogte, zet die op de bubbel vanaf de maat van de puntjes, transition ernaartoe, en laat bij
+  `transitionend` los naar `auto`. Onthul de tekst met een opacity-fade zodra de maat bijna
+  bereikt is.
+- Ik zou `interpolate-size: allow-keywords` of `calc-size()` niet gebruiken. Voor zover ik weet
+  werken ze alleen in Chromium, en Safari op iPhone is een harde eis.
+- Terugvaloptie als meten op iOS fragiel blijkt: geen maatanimatie; cross-fade de puntjes uit en
+  de tekst in op een bubbel die al op zijn eindmaat staat. Minder ambitieus, maar goedkoop en
+  robuust.
+- Risico's die ik op iOS verwacht: `transitionend` dat niet afgaat als de tab op de achtergrond
+  staat of de transition wordt onderbroken (dus het loslaten naar `auto` heeft een timeout als
+  terugval nodig), en het samenspel met K4.
 
-**Spike result (2026-10-23, built on `arc/bubble-animation`, tuned by eye on desktop Chrome and
-the human's iPhone; "works more or less as wanted", to be continued).** What was built is not the
-baseline and not the first spike either:
+**Spike-resultaat (2026-10-23, gebouwd op `arc/bubble-animation`, op het oog getuned op desktop
+Chrome en de iPhone van de mens; "werkt min of meer zoals gewild", wordt vervolgd).** Wat is
+gebouwd is niet de baseline en ook niet de eerste spike:
 
-- First version: a `clip-path` reveal from the dots' size (K4(A)). It ran on the iPhone.
-- Replaced at the human's request by a `scale` 0 to 1 from the top-left corner, 350ms, with the
-  overshoot in the easing (`cubic-bezier(0.34, 1.56, 0.64, 1)`, peak about 1.10). Reason: a
-  clip-path cannot show an overshoot, and keyframes of 1 to 1.02 were too faint to see. The
-  cost, accepted: the bubble no longer starts at the dots' size; it grows out of its corner.
-- The text (label and paragraph) is transparent during the growth and fades in over 200ms
-  starting when it ends; one CSS variable (`--reveal-duration`) drives both. The dots vanish
-  at once. Reduced motion: no scale, no fade (reasoned, not tested).
-- Layout is at its final size at once, so K4(A) still holds: the scroll effect is unchanged.
+- Eerste versie: een `clip-path`-onthulling vanaf de maat van de puntjes (K4(A)). Die draaide op de
+  iPhone.
+- Op verzoek van de mens vervangen door een `scale` 0 naar 1 vanuit de linkerbovenhoek, 350ms,
+  met de overshoot in de easing (`cubic-bezier(0.34, 1.56, 0.64, 1)`, piek ongeveer 1,10). Reden:
+  een clip-path kan geen overshoot tonen, en keyframes van 1 naar 1,02 waren te zwak om te zien. De
+  prijs, geaccepteerd: de bubbel begint niet meer op de maat van de puntjes; hij groeit uit zijn
+  hoek.
+- De tekst (label en alinea) is tijdens de groei transparant en faadt in over 200ms, beginnend
+  wanneer de groei eindigt; één CSS-variabele (`--reveal-duration`) stuurt beide aan. De puntjes
+  verdwijnen meteen. Reduced motion: geen scale, geen fade (beredeneerd, niet getest).
+- De layout staat meteen op de eindmaat, dus K4(A) blijft gelden: het scroll-effect is ongewijzigd.
 
-### K4 — The scroll effect against a growing bubble
+### K4 — Het scroll-effect tegenover een groeiende bubbel
 
-`conversation-thread.tsx` scrolls in a `useLayoutEffect`, before paint, keyed on the turn count,
-the state name and the last user turn's evaluation status. It decides between "scroll to the
-bottom" and "align the bubble's top" from the bubble's size at that moment
-(`newestItem.offsetTop < bottomScrollTop`). A bubble that grows after that moment can end up
-partly out of view, or the top-alignment decision can be made on the wrong size. **Question:**
-scroll to the *final* size up front, or follow the growth frame by frame?
+`conversation-thread.tsx` scrolt in een `useLayoutEffect`, vóór de paint, op basis van het aantal
+beurten, de statenaam en de evaluatiestatus van de laatste gebruikersbeurt. Het kiest tussen
+"scroll naar de onderkant" en "lijn de bovenkant van de bubbel uit" aan de hand van de maat van de
+bubbel op dat moment (`newestItem.offsetTop < bottomScrollTop`). Een bubbel die na dat moment
+groeit, kan deels buiten beeld eindigen, of de beslissing om de bovenkant uit te lijnen kan op de
+verkeerde maat worden genomen. **Vraag:** scrollen naar de *uiteindelijke* maat vooraf, of de
+groei frame voor frame volgen?
 
-A scroll position cannot be set beyond what the content currently occupies, so "scroll to the
-final size" only works if the bubble takes its final space in the layout at once. Two options:
+Een scrollpositie kan niet verder gezet worden dan de inhoud op dat moment beslaat, dus "scrollen
+naar de uiteindelijke maat" werkt alleen als de bubbel meteen zijn uiteindelijke ruimte in de
+layout inneemt. Twee opties:
 
-- (A) **Layout at final size at once, animation only visual** (for example a `clip-path`
-  reveal). The scroll effect stays unchanged. Safe because the animating bubble is always the
-  last element in the thread, so nothing else shifts.
-- (B) **Follow the growth** with a `ResizeObserver` or `requestAnimationFrame`, re-scrolling
-  during the animation. More code, and scrolling during an animation is a known source of jank
-  on iOS.
+- (A) **Layout meteen op de eindmaat, animatie alleen visueel** (bijvoorbeeld een
+  `clip-path`-onthulling). Het scroll-effect blijft ongewijzigd. Veilig, omdat de animerende
+  bubbel altijd het laatste element in de thread is, dus er verschuift niets anders.
+- (B) **De groei volgen** met een `ResizeObserver` of `requestAnimationFrame`, en tijdens de
+  animatie opnieuw scrollen. Meer code, en scrollen tijdens een animatie is een bekende bron van
+  jank op iOS.
 
-**Decision (2026-10-23, the human):** (A), with (B) as the fallback if the spike shows (A) does
-not work on the iPhone. Not tested: how `clip-path` behaves on iOS with a bubble that has
-`overflow: hidden` and rounded corners; the spike (K3) is where that is found out.
+**Besluit (2026-10-23, de mens):** (A), met (B) als terugval als de spike laat zien dat (A) op de
+iPhone niet werkt. Niet getest: hoe `clip-path` zich op iOS gedraagt bij een bubbel met
+`overflow: hidden` en afgeronde hoeken; de spike (K3) is waar dat uitgezocht wordt.
 
-**Consequence for K3, noted after the K3 baseline was written.** If the layout is at final size
-at once, K3 is no longer about animating height and width but about revealing an already-full
-bubble. That is a different and easier problem than the baseline assumes (measure, then
-transition pixel values). The baseline is left as written, since it is the reference point for
-HDR-013; this consequence was not part of it.
+**Gevolg voor K3, genoteerd nadat de K3-baseline was geschreven.** Als de layout meteen op de
+eindmaat staat, gaat K3 niet meer over het animeren van hoogte en breedte maar over het onthullen
+van een al volle bubbel. Dat is een ander en makkelijker probleem dan de baseline aanneemt (meten
+en dan pixelwaarden transitionen). De baseline is gelaten zoals geschreven, omdat zij het
+referentiepunt voor HDR-013 is; dit gevolg maakte er geen deel van uit.
 
-### K5 — Read-along
+### K5 — Meelezen
 
-`spokenWordCount` and `HighlightedText` start as soon as the state is `aiSpeaking`. **Question
-for the human:** may the highlight start while the text is still appearing, or only once the
-text is fully visible? The second is simpler to reason about, but delays the highlight by the
-length of the animation.
+`spokenWordCount` en `HighlightedText` starten zodra de state `aiSpeaking` is. **Vraag aan de
+mens:** mag de highlight starten terwijl de tekst nog verschijnt, of pas als de tekst volledig
+zichtbaar is? Het tweede is eenvoudiger om over na te denken, maar vertraagt de highlight met de
+duur van de animatie.
 
-**Decision (2026-10-23, the human):** the highlight starts only once the text is fully visible.
-The cost is a delay of about the length of the reveal; how long that is, is not yet known and
-follows from the spike (K3). If the delay turns out to be noticeable, this is the issue to
-reopen. How the highlight is held back (the audio start, the `spokenWordCount` or only the
-styling) is a build detail, not decided here, and needs a look at the playback hook first.
+**Besluit (2026-10-23, de mens):** de highlight start pas als de tekst volledig zichtbaar is. De
+prijs is een vertraging van ongeveer de duur van de onthulling; hoe lang die is, is nog niet
+bekend en volgt uit de spike (K3). Als de vertraging merkbaar blijkt, is dit de kwestie om te
+heropenen. Hoe de highlight wordt tegengehouden (de start van de audio, de `spokenWordCount` of
+alleen de styling) is een bouwdetail, hier niet besloten, en vraagt eerst een blik op de
+playback-hook.
 
-### K6 — One element, one role
+### K6 — Eén element, één rol
 
-`ThinkingBubble` is `role="status"` with an `aria-label`; `TurnBubble` is a wrapper with a
-paragraph in the thread's `role="log"`. A single surviving element has to pick, or switch,
-what a screen reader announces. VoiceOver was explicitly out of scope for stage 1 (see the
-review notes in the plan), so this may be parked rather than decided.
+`ThinkingBubble` is `role="status"` met een `aria-label`; `TurnBubble` is een wrapper met een
+alinea in de `role="log"` van de thread. Eén enkel overlevend element moet kiezen, of wisselen,
+wat een screen reader aankondigt. VoiceOver viel uitdrukkelijk buiten scope voor stage 1 (zie de
+reviewnotities in het plan), dus dit kan geparkeerd worden in plaats van besloten.
 
-**Parked (2026-10-23, the human).** There is no existing screen-reader behaviour to preserve
-and no test procedure, so deciding now would be deciding blind. Condition on the build: the
-roles and the label that exist today keep working as they do, and the builder reports it if one
-surviving element makes that impossible. Open risk, not verified: switching the role of an
-element that stays mounted is an unusual pattern for screen readers, and it may not be possible
-without a change. To be picked up with a real VoiceOver test, as its own piece of work.
+**Geparkeerd (2026-10-23, de mens).** Er is geen bestaand screen-readergedrag om te behouden en
+geen testprocedure, dus nu besluiten zou blind besluiten zijn. Voorwaarde voor de bouw: de rollen
+en het label die er nu zijn blijven werken zoals ze doen, en de builder meldt het als één
+overlevend element dat onmogelijk maakt. Open risico, niet geverifieerd: de rol wisselen van een
+element dat gemount blijft is een ongebruikelijk patroon voor screen readers, en het kan zijn dat
+het niet zonder wijziging kan. Op te pakken met een echte VoiceOver-test, als eigen stuk werk.
 
-### K7 — The user's bubble growing
+### K7 — De bubbel van de gebruiker die groeit
 
-The user's bubble grows when its evaluation settles (the evaluation section is attached to it).
-The plan says the same technique applies. **Question:** same animation as the AI bubble, or
-only the AI bubble in the first version?
+De bubbel van de gebruiker groeit zodra zijn evaluatie is afgerond (de evaluatiesectie wordt eraan
+vastgemaakt). Het plan zegt dat dezelfde techniek geldt. **Vraag:** dezelfde animatie als de
+AI-bubbel, of in de eerste versie alleen de AI-bubbel?
 
-**Decision (2026-10-23, the human):** only the AI bubble in the first version. The user's bubble
-keeps jumping to its larger size when the evaluation settles; that is accepted for now and is the
-follow-up if it bothers in use. Note: with K4(A) the scroll effect is untouched for it, so
-nothing new breaks.
+**Besluit (2026-10-23, de mens):** in de eerste versie alleen de AI-bubbel. De bubbel van de
+gebruiker blijft naar zijn grotere maat springen als de evaluatie is afgerond; dat is voor nu
+geaccepteerd en is het vervolg als het in gebruik hindert. Opmerking: met K4(A) blijft het
+scroll-effect daarvoor onaangeroerd, dus er gaat niets nieuws stuk.
 
 ### K8 — Reduced motion
 
-The dot pulse already honours `prefers-reduced-motion`. The proposal to confirm: with reduced
-motion on, the size transition and any enter animation are skipped and the bubble goes straight
-to its final state. The human's call.
+De puntjespulse respecteert `prefers-reduced-motion` al. Het voorstel om te bevestigen: met
+reduced motion aan worden de maattransition en elke enter-animatie overgeslagen en gaat de bubbel
+direct naar zijn eindtoestand. Het oordeel is aan de mens.
 
-**Decision (2026-10-23, the human):** confirmed. With `prefers-reduced-motion: reduce` the
-reveal is skipped and the bubble goes straight to its final state, as the dot pulse already
-does. The read-along delay of K5 then also disappears for those users.
+**Besluit (2026-10-23, de mens):** bevestigd. Met `prefers-reduced-motion: reduce` wordt de
+onthulling overgeslagen en gaat de bubbel direct naar zijn eindtoestand, zoals de puntjespulse nu
+al doet. De meeleesvertraging van K5 verdwijnt dan ook voor die gebruikers.
 
-### K9 — Overlap with other animation work
+### K9 — Overlap met ander animatiewerk
 
-The plan has a pulse planned for the microphone-active dot (Decision log, 09-25) and the human
-has mentioned a dots-and-bounce direction after the TTS latency measurements. **Question:** in
-or out of this journal? Default: out, to keep this one to the bubbles.
+Het plan heeft een pulse gepland voor de stip van de actieve microfoon (besluitenlog, 09-25) en de
+mens heeft na de TTS-latentiemetingen een richting van puntjes en bounce genoemd. **Vraag:** in of
+buiten dit journaal? Standaard: erbuiten, om dit journaal bij de bubbels te houden.
 
-**Decision (2026-10-23, the human):** out. The microphone dot pulse and the dots-and-bounce
-direction are separate work and get their own journal or issue when picked up.
+**Besluit (2026-10-23, de mens):** erbuiten. De pulse van de microfoonstip en de richting van
+puntjes en bounce zijn apart werk en krijgen een eigen journaal of kwestie als ze worden opgepakt.
 
 ### K10 — Modern Web Guidance
 
-Booked as **HDR-013**: a trial of Google's Modern Web Guidance (agent skills with current web
-platform guidance), scoped to this feature. The comparison is K3's baseline above against what
-the guidance recommends, with the result written as one line here after the iPhone spike. Its
-guides include `css/animate-to-intrinsic-sizes`, `ui-behaviors/motion` and
-`ui-behaviors/animate-element-entry-exit`, which is why K3 is the test case. The outcome is
-open; the exit criterion is in HDR-013.
+Geboekt als **HDR-013**: een proef met Google's Modern Web Guidance (agent skills met actuele
+guidance over het webplatform), afgebakend tot deze feature. De vergelijking is de baseline van K3
+hierboven tegenover wat de guidance aanbeveelt, met het resultaat als één regel hier na de
+iPhone-spike. De guides omvatten `css/animate-to-intrinsic-sizes`, `ui-behaviors/motion` en
+`ui-behaviors/animate-element-entry-exit`, en daarom is K3 het testgeval. De uitkomst is open; het
+exitcriterium staat in HDR-013.
 
-**Result (to be filled in after the spike):** same / different and better / different and
-worse / nothing added; and whether the iPhone confirmed it.
+**Resultaat (in te vullen na de spike):** hetzelfde / anders en beter / anders en slechter /
+niets toegevoegd; en of de iPhone het bevestigde.
 
-**Facts so far (2026-10-23; the verdict is the human's and is not written yet).** The builder
-consulted the guidance before reading the K3 baseline (guides `animate-to-intrinsic-sizes`,
-`motion`, `animate-element-entry-exit`):
+**Feiten tot nu toe (2026-10-23; het oordeel is aan de mens en is nog niet geschreven).** De
+builder raadpleegde de guidance voordat hij de K3-baseline las (guides
+`animate-to-intrinsic-sizes`, `motion`, `animate-element-entry-exit`):
 
-- It confirms the baseline's refusal of `interpolate-size`: the guide itself says Chromium only
-  (Chrome and Edge 129), an instant jump in Safari.
-- Its `motion` guide recommends `clip-path` for geometric reveals; that matched K4(A) and the
-  first spike, which ran on the iPhone. The final solution (scale with back-easing) is NOT what
-  the guidance recommends, and it is not in the baseline either: it came from the human.
-- It did not change the approach the agent would have taken once K4(A) was decided, and it
-  said nothing on overshoot. A fair reading is "same, with one confirming source", with the
-  caveat that the final design is outside what it covered.
-- The extra "Modern Web Guidance" section did not disturb the builder's report format.
-- `DISABLE_TELEMETRY=1` was present in the builder subagent's shell (see HDR-013).
+- Het bevestigt dat de baseline `interpolate-size` afwijst: de guide zelf zegt dat het alleen
+  Chromium is (Chrome en Edge 129), en een directe sprong in Safari.
+- De `motion`-guide beveelt `clip-path` aan voor geometrische onthullingen; dat kwam overeen met
+  K4(A) en de eerste spike, die op de iPhone draaide. De uiteindelijke oplossing (scale met
+  back-easing) is NIET wat de guidance aanbeveelt, en staat ook niet in de baseline: die kwam van
+  de mens.
+- Het veranderde niets aan de aanpak die de agent zou hebben gekozen zodra K4(A) besloten was, en
+  zei niets over overshoot. Een redelijke lezing is "hetzelfde, met één bevestigende bron", met
+  het voorbehoud dat het uiteindelijke ontwerp buiten het bereik van de guidance valt.
+- De extra sectie "Modern Web Guidance" verstoorde het rapportformaat van de builder niet.
+- `DISABLE_TELEMETRY=1` stond in de shell van de builder-subagent (zie HDR-013).
 
-Process note: the first spike showed no animation at all, because the waiting bubble and the
-reply sat in different child slots of the thread, so React remounted instead of reusing the
-element. Neither the builder nor the reviewer caught it; the human's screen did. K2(a) therefore
-carries a condition the plan did not state: both must be in the SAME array.
+Procesnotitie: de eerste spike toonde helemaal geen animatie, omdat de wachtbubbel en het antwoord
+in verschillende child-slots van de thread zaten, zodat React opnieuw mountte in plaats van het
+element te hergebruiken. Noch de builder noch de reviewer ving het; het scherm van de mens wel.
+K2(a) draagt daarom een voorwaarde die het plan niet noemde: beide moeten in DEZELFDE array zitten.
 
-### K11 — The user's bubble when it is sent
+### K11 — De bubbel van de gebruiker bij het versturen
 
-New scope: K1 left an enter animation for the other bubbles until after the spike, and the
-timing of the AI bubble is now settled (350ms, 200ms, as built). The evaluation inside the user's
-bubble is NOT part of this (K7 stays: later).
+Nieuwe scope: K1 liet een enter-animatie voor de andere bubbels tot na de spike liggen, en de
+timing van de AI-bubbel ligt nu vast (350ms, 200ms, zoals gebouwd). De evaluatie binnen de bubbel
+van de gebruiker hoort hier NIET bij (K7 blijft: later).
 
-How it works today (read from the code, 2026-10-27): the text being composed sits in the control
-bar at the bottom, outside the thread: the live transcript, then `DraftBubble` (or
-`DraftEditor`). Send (`composing-controls.tsx`) dispatches `USER_TURN_SENT`; the draft bubble
-disappears from the bar and a `TurnBubble` for the user appears at the end of the thread, just
-above the bar. So the sent bubble is a new element, not the draft moving.
+Hoe het nu werkt (uit de code gelezen, 2026-10-27): de tekst die wordt samengesteld staat in de
+bedieningsbalk onderaan, buiten de thread: het live transcript, daarna `DraftBubble` (of
+`DraftEditor`). Send (`composing-controls.tsx`) dispatcht `USER_TURN_SENT`; de conceptbubbel
+verdwijnt uit de balk en een `TurnBubble` voor de gebruiker verschijnt aan het eind van de thread,
+vlak boven de balk. De verstuurde bubbel is dus een nieuw element, niet het concept dat verhuist.
 
-Design questions put to the human, none answered yet:
+Ontwerpvragen aan de mens, nog geen enkele beantwoord:
 
-1. What moves: the same scale-up as the AI bubble, mirrored (anchored bottom-right, since the
-   user's bubble is on the right), or a slide from the draft's position in the bar into the
-   thread? Recommendation: the scale. The slide needs measuring the draft and fights a bar
-   whose content changes on Send, with Safari as the risk.
-2. The text: hidden during the scale and faded in afterwards, as in the AI bubble, or visible
-   throughout? Recommendation: as the AI bubble, for consistency.
-3. Timing: the same 350ms, 200ms and curve as the AI bubble?
-4. To look at on the device, not decided: the AI's dots appear at the same moment as the sent
-   bubble, so two things arrive at once.
+1. Wat beweegt: dezelfde scale-up als de AI-bubbel, gespiegeld (verankerd rechtsonder, omdat de
+   bubbel van de gebruiker rechts staat), of een slide van de positie van het concept in de balk
+   naar de thread? Aanbeveling: de scale. De slide vraagt om het concept te meten en vecht met
+   een balk waarvan de inhoud bij Send verandert, met Safari als risico.
+2. De tekst: tijdens de scale verborgen en daarna ingefaded, zoals in de AI-bubbel, of de hele tijd
+   zichtbaar? Aanbeveling: zoals de AI-bubbel, voor de consistentie.
+3. Timing: dezelfde 350ms, 200ms en curve als de AI-bubbel?
+4. Op het apparaat te bekijken, niet besloten: de puntjes van de AI verschijnen op hetzelfde
+   moment als de verstuurde bubbel, dus er komen twee dingen tegelijk binnen.
 
-**Decisions (2026-10-27, the human):**
+**Besluiten (2026-10-27, de mens):**
 
-1. The same scale as the AI bubble, anchored bottom-right (the user's bubble is on the right).
-   Later in this feature the human probably wants the draft to shrink to scale 0 in the control
-   bar first and then grow in the thread; that will add a delay. Not part of this step.
-2. The text is hidden first and then faded in, as in the AI bubble.
-3. The same timing: 350ms, 200ms, the same curve.
-4. Not in this step, "in a moment": the AI's thinking bubble should appear after a small delay,
-   so the user sees the order: first their own text, then the AI seems to start thinking. The
-   timing of that is decided next.
+1. Dezelfde scale als de AI-bubbel, verankerd rechtsonder (de bubbel van de gebruiker staat
+   rechts). Later in deze feature wil de mens waarschijnlijk dat het concept eerst in de
+   bedieningsbalk krimpt tot scale 0 en daarna in de thread groeit; dat voegt een vertraging toe.
+   Geen onderdeel van deze stap.
+2. De tekst is eerst verborgen en faadt daarna in, zoals in de AI-bubbel.
+3. Dezelfde timing: 350ms, 200ms, dezelfde curve.
+4. Niet in deze stap, "zo meteen": de denkbubbel van de AI moet na een kleine vertraging
+   verschijnen, zodat de gebruiker de volgorde ziet: eerst zijn eigen tekst, daarna lijkt de AI te
+   gaan nadenken. De timing daarvan wordt hierna besloten.
 
-The evaluation's own growth when it settles stays out (K7).
+De eigen groei van de evaluatie als die is afgerond blijft erbuiten (K7).
 
-**Added by the human after seeing it (2026-10-27):** the text "Evaluating…" must not be visible
-while the user's text is still hidden. It stays hidden through the scale and the user's text fade
-and then fades in, so an order is visible: scale, then user text, then the evaluation text. The
-strip itself (divider and blue background) is visible at once and scales with the bubble. The
-agent first read "the strip should fade" as the whole strip and built that; the human corrected it.
+**Toegevoegd door de mens nadat hij het zag (2026-10-27):** de tekst "Evaluating…" mag niet
+zichtbaar zijn zolang de tekst van de gebruiker nog verborgen is. Hij blijft verborgen tijdens de
+scale en de fade van de tekst van de gebruiker en faadt daarna in, zodat een volgorde zichtbaar
+is: scale, dan de tekst van de gebruiker, dan de evaluatietekst. De strook zelf (scheidingslijn en
+blauwe achtergrond) is meteen zichtbaar en schaalt mee met de bubbel. De agent las "de strook
+moet faden" eerst als de hele strook en bouwde dat; de mens corrigeerde dit.
 
-**Baseline (the agent's own approach, written 2026-10-27 before any web guidance was consulted;
-HDR-013, test 2).** From the agent's own knowledge, unverified against current browser support:
+**Baseline (de eigen aanpak van de agent, geschreven op 2026-10-27 voordat er webguidance werd
+geraadpleegd; HDR-013, test 2).** Vanuit eigen kennis van de agent, niet geverifieerd tegen de
+huidige browserondersteuning:
 
-- Reuse the AI bubble's reveal instead of writing it twice: move the `.reveal` and `.text`
-  rules and the keyframes out of `ai-bubble.module.css` into one shared CSS module, with the
-  anchor as a custom property (`--reveal-origin`: top left for the AI, bottom right for the
-  user). The values of the AI animation do not change.
-- The user's `TurnBubble` gets the reveal class and the text class when the turn appears after
-  the thread has mounted. How to know that: the thread remembers how many turns it had on its
-  first render (a ref) and only turns after that animate, so a remount does not replay all.
-- The scale keeps `transform-origin: bottom right` and the same curve and duration variable. The
-  layout is at its final size at once (K4(A)), so the scroll effect is untouched.
-- Anchored at the bottom-right the overshoot grows left and up, away from the right edge, so
-  unlike the AI bubble it cannot be cut off at the side. It can overlap the bubble above for a
-  moment.
-- Reduced motion: no scale and no fade, as for the AI bubble.
-- Risks I expect: the draft in the control bar disappears in the same frame the bubble starts at
-  scale 0, so the sent text may be seen nowhere for a moment (a gap that the later shrink-in-the-
-  bar step would fill); Safari re-rasterising the border while it scales; and the extraction
-  touching the AI animation, which the human has just tuned and wants kept.
+- Hergebruik de onthulling van de AI-bubbel in plaats van haar twee keer te schrijven: verplaats de
+  regels `.reveal` en `.text` en de keyframes uit `ai-bubble.module.css` naar één gedeelde
+  CSS-module, met het anker als custom property (`--reveal-origin`: linksboven voor de AI,
+  rechtsonder voor de gebruiker). De waarden van de AI-animatie veranderen niet.
+- De `TurnBubble` van de gebruiker krijgt de reveal-klasse en de tekstklasse als de beurt
+  verschijnt nadat de thread is gemount. Hoe dat te weten: de thread onthoudt hoeveel beurten hij
+  bij zijn eerste render had (een ref) en alleen beurten daarna animeren, zodat een remount niet
+  alles opnieuw afspeelt.
+- De scale houdt `transform-origin: bottom right` en dezelfde curve en duurvariabele. De layout
+  staat meteen op de eindmaat (K4(A)), dus het scroll-effect blijft onaangeroerd.
+- Verankerd rechtsonder groeit de overshoot naar links en omhoog, weg van de rechterrand, dus
+  anders dan bij de AI-bubbel kan hij aan de zijkant niet worden afgesneden. Hij kan de bubbel
+  erboven even overlappen.
+- Reduced motion: geen scale en geen fade, zoals bij de AI-bubbel.
+- Risico's die ik verwacht: het concept in de bedieningsbalk verdwijnt in hetzelfde frame waarin
+  de bubbel op scale 0 begint, dus de verstuurde tekst is misschien even nergens te zien (een gat
+  dat de latere stap van het krimpen in de balk zou vullen); Safari die de rand opnieuw rastert
+  terwijl hij schaalt; en de extractie die de AI-animatie raakt, die de mens net heeft getuned en
+  wil behouden.
 
-**Built (2026-10-27), not yet tested on the iPhone.** The sent user turn scales 0 to 1 from the
-bottom-right in 350ms with the AI bubble's curve; "You: " and the paragraph fade in over 200ms
-from 350ms; the text of the "Evaluating…" strip (its frame is visible at once) fades in over 200ms from 800ms (a pause of 250ms, `--evaluation-pause`, after the user's text: the human found it too quick without one). The two reveals share
-`bubble-reveal.module.css` (the anchor is `--reveal-origin`; the durations are
-`--reveal-duration` and `--fade-duration`), and the AI bubble's values are unchanged. Only a
-turn that appears after the thread mounted animates: the thread keeps its turn count at mount
-in lazy state (the baseline said a ref; the lazy state is the same idiom as `startedAsThinking`
-in the AI bubble and avoids reading a ref while rendering). A dev-only preview button shows the
-sent bubble without a conversation (see `docs/plan.md`, decision log 10-27).
+**Gebouwd (2026-10-27), nog niet getest op de iPhone.** De verstuurde gebruikersbeurt schaalt van
+0 naar 1 vanuit rechtsonder in 350ms met de curve van de AI-bubbel; "You: " en de alinea faden in
+over 200ms vanaf 350ms; de tekst van de "Evaluating…"-strook (het kader is meteen zichtbaar) faadt
+in over 200ms vanaf 800ms (een pauze van 250ms, `--evaluation-pause`, na de tekst van de
+gebruiker: de mens vond het zonder pauze te snel). De twee onthullingen delen
+`bubble-reveal.module.css` (het anker is `--reveal-origin`; de duren zijn `--reveal-duration` en
+`--fade-duration`), en de waarden van de AI-bubbel zijn ongewijzigd. Alleen een beurt die
+verschijnt nadat de thread is gemount animeert: de thread houdt zijn aantal beurten bij het mounten
+vast in lazy state (de baseline zei een ref; de lazy state is hetzelfde idioom als
+`startedAsThinking` in de AI-bubbel en voorkomt het lezen van een ref tijdens het renderen). Een
+dev-only previewknop toont de verstuurde bubbel zonder gesprek (zie `docs/plan.md`, besluitenlog
+10-27).
 
-Guidance result for the trial (facts only, the verdict is the human's): the Modern Web Guidance
-agreed on every point of substance with the baseline (a shared module, only `scale` and
-`opacity`, reduced motion off, the same curve). It added one rule, the identity base `scale: 1`
-for an element that animates `scale` (guide `individual-transform-properties`), which was
-deliberately NOT applied: it adds a permanent stacking context for a risk that did not show up
-here, and the reviewer found no real risk in the CSS. It said nothing on a `transform-origin`
-that depends on the side the bubble is on.
+Guidance-resultaat voor de proef (alleen feiten, het oordeel is aan de mens): de Modern Web
+Guidance was het op alle inhoudelijke punten eens met de baseline (een gedeelde module, alleen
+`scale` en `opacity`, reduced motion uit, dezelfde curve). Het voegde één regel toe, de
+identiteitsbasis `scale: 1` voor een element dat `scale` animeert (guide
+`individual-transform-properties`), die bewust NIET is toegepast: het voegt een permanente stacking
+context toe voor een risico dat hier niet opdook, en de reviewer vond geen echt risico in de CSS.
+Het zei niets over een `transform-origin` die afhangt van de kant waarop de bubbel staat.
 
-Process: this is test 2 of the HDR-013 trial. Order: the human decided, the agent wrote the
-baseline above, the builder consults the guidance and reports, a row goes in the trial log.
-A builder check: only turns that appear after the thread mounted may animate.
+Proces: dit is test 2 van de HDR-013-proef. Volgorde: de mens besloot, de agent schreef de
+baseline hierboven, de builder raadpleegt de guidance en rapporteert, er komt een rij in het
+proeflog. Een buildercheck: alleen beurten die verschijnen nadat de thread is gemount mogen
+animeren.
 
-### K12 — Speech start against the end of the reveal
+### K12 — Start van de spraak tegenover het einde van de onthulling
 
-The human wants the AI's speech to start only once the bubble has its final size. Parked
-2026-10-27 until it bothers in practice. Reasoning: the TTS request starts when the reply
-arrives, together with the animation (`use-audio-playback.ts`), and the measured gap between
-reply and speech was about 0.85s for 240 characters and 1.55s for 584 (Azure, the default
-provider; desktop Chrome, 2026-10-05, iPhone not measured). The reveal takes 350ms and the fade
-ends at 550ms, so with a real provider the speech normally starts after the animation anyway. A
-short reply, a fast or cached response, or the mock TTS could start earlier. K5 stays as decided:
-the highlight starts when the text is fully visible, after the fade (550ms), not at the end of
-the scale (350ms). Nothing is built.
+De mens wil dat de spraak van de AI pas start als de bubbel zijn eindmaat heeft. Geparkeerd op
+2026-10-27 totdat het in de praktijk hindert. Redenering: het TTS-verzoek start als het antwoord
+binnenkomt, samen met de animatie (`use-audio-playback.ts`), en de gemeten kloof tussen antwoord
+en spraak was ongeveer 0,85s voor 240 tekens en 1,55s voor 584 (Azure, de standaardprovider;
+desktop Chrome, 2026-10-05, iPhone niet gemeten). De onthulling duurt 350ms en de fade eindigt op
+550ms, dus met een echte provider start de spraak normaal gesproken sowieso na de animatie. Een
+kort antwoord, een snelle of gecachte respons, of de mock-TTS kan eerder starten. K5 blijft zoals
+besloten: de highlight start wanneer de tekst volledig zichtbaar is, na de fade (550ms), niet aan
+het einde van de scale (350ms). Er is niets gebouwd.
 
-### K13 — The listening indicator pulses while the microphone is live
+### K13 — De luisterindicator pulseert zolang de microfoon live is
 
-K9 put the microphone dot pulse out of this journal "until picked up"; the human picked it up
-on 2026-10-27, so it is booked here as an issue rather than in a journal of its own. The
-dots-and-bounce direction from K9 stays out.
+K9 legde de pulse van de microfoonstip buiten dit journaal "tot hij wordt opgepakt"; de mens
+pakte hem op 2026-10-27 op, dus hij is hier als kwestie geboekt in plaats van in een eigen
+journaal. De richting van puntjes en bounce uit K9 blijft erbuiten.
 
-What was read from the reference app, on the human's pointer to the file (plan, "Keeping the
-experiment honest"; only the rule and keyframes named below, nothing else of the file):
-`.listeningIndicator` in `SpeechResults.module.css` is a dot (`--size-12`, `--color-bg-primary`)
-with an `::after` over it (`position: absolute; inset: 0`, the same circle, `background-color:
-inherit`) that runs `animation: pulse 1.6s infinite`; `@keyframes pulse` goes from `scale: 1;
-opacity: 0.8` to `scale: 2.2; opacity: 0`. A ring that widens and fades while the dot stays. The
-original has no `prefers-reduced-motion` rule.
+Wat uit de referentie-app is gelezen, op aanwijzing van de mens, die het bestand aanwees (plan, "Keeping the
+experiment honest"; alleen de regel en keyframes die hieronder genoemd worden, niets anders uit het
+bestand): `.listeningIndicator` in `SpeechResults.module.css` is een stip (`--size-12`,
+`--color-bg-primary`) met een `::after` eroverheen (`position: absolute; inset: 0`, dezelfde
+cirkel, `background-color: inherit`) die `animation: pulse 1.6s infinite` draait; `@keyframes
+pulse` gaat van `scale: 1; opacity: 0.8` naar `scale: 2.2; opacity: 0`. Een ring die wijder wordt
+en vervaagt terwijl de stip blijft. Het origineel heeft geen `prefers-reduced-motion`-regel.
 
-Here today: the dot is `.listeningIndicator` in `live-transcript.module.css`, 8px, rendered
-only while `microphoneIsLive` is true (`live-transcript.tsx`), inside a bubble that clips
+Zoals het nu hier is: de stip is `.listeningIndicator` in `live-transcript.module.css`, 8px, alleen gerenderd
+zolang `microphoneIsLive` waar is (`live-transcript.tsx`), binnen een bubbel die klipt
 (`overflow: hidden`).
 
-**Decisions (2026-10-27, the human):**
+**Besluiten (2026-10-27, de mens):**
 
-1. The element is that dot (the one named `listeningIndicator`).
-2. It pulses only while the microphone is live, not in "Preparing mic…".
-3. Reduced motion: no pulse; only the plain dot that exists now.
-4. (After seeing it with an 8px dot, same day.) The dot gets the original's size, 12px, and the
-   ring the original's dimension (2.2 x the dot, so 26.4px across). Changing only the size would
-   have misaligned the dot, so its `margin-top` follows the line height: see "Built".
+1. Het element is die stip (degene die `listeningIndicator` heet).
+2. Hij pulseert alleen terwijl de microfoon live is, niet in "Preparing mic…".
+3. Reduced motion: geen pulse; alleen de gewone stip die er nu is.
+4. (Nadat hij het zag met een stip van 8px, dezelfde dag.) De stip krijgt de maat van het
+   origineel, 12px, en de ring de dimensie van het origineel (2,2 x de stip, dus 26,4px breed).
+   Alleen de maat veranderen zou de stip uit lijn hebben gebracht, dus zijn `margin-top` volgt de
+   regelhoogte: zie "Gebouwd".
 
-Taken over from the original without a decision of its own: the animation itself (1.6s,
-infinite, scale 1 to 2.2, opacity 0.8 to 0). Tuning is for the device.
+Zonder eigen besluit overgenomen van het origineel: de animatie zelf (1,6s, infinite, scale 1 naar
+2,2, opacity 0,8 naar 0). Tuning is voor het apparaat.
 
-**Baseline (the agent's own approach, written 2026-10-27 after reading the original and before any
-web guidance was consulted; HDR-013, test 3).** From the agent's own knowledge, unverified:
+**Baseline (de eigen aanpak van de agent, geschreven op 2026-10-27 na het lezen van het origineel
+en voordat er webguidance werd geraadpleegd; HDR-013, test 3).** Vanuit eigen kennis van de agent,
+niet geverifieerd:
 
-- Keep the original's structure: `position: relative` on `.listeningIndicator` and an `::after`
-  over it (`position: absolute; inset: 0`, `border-radius: inherit`, `background: inherit`) that
-  runs the pulse. The `::after` is the ring; the dot itself never animates, so the reduced-motion
-  version is exactly today's dot.
-- The keyframes as in the original, animating only `scale` and `opacity` (compositor-friendly),
-  with `transform-origin` at the centre (the default), so the ring grows evenly around the dot.
-- The original's timing (1.6s, infinite) and its default easing; I would not add `ease-out`
-  unless it looks wrong on the device.
-- Reduced motion: `animation: none` on the `::after` and hide it (`display: none`), because a
-  static ring at `scale: 1; opacity: 0.8` would sit exactly on the dot but change its colour.
-- The ring reaches 2.2 x 8px = 17.6px, 4.8px beyond the dot on every side. The dot sits 16px from the
-  bubble's left edge and 20px from its top (padding plus the 8px `margin-top`), and 8px from the
-  text, so I expect no clipping by the bubble's `overflow: hidden` and no touching the text.
-- No `will-change` and no JavaScript; the pulse is as long as the element exists.
-- Risks I expect: the ring being too faint or too small at 8px, and Safari re-rasterising the
-  circle while it scales.
+- Houd de structuur van het origineel: `position: relative` op `.listeningIndicator` en een
+  `::after` eroverheen (`position: absolute; inset: 0`, `border-radius: inherit`,
+  `background: inherit`) die de pulse draait. De `::after` is de ring; de stip zelf animeert nooit,
+  dus de reduced-motionversie is precies de stip van nu.
+- De keyframes zoals in het origineel, die alleen `scale` en `opacity` animeren
+  (compositor-vriendelijk), met `transform-origin` in het midden (de default), zodat de ring
+  gelijkmatig rond de stip groeit.
+- De timing van het origineel (1,6s, infinite) en zijn standaard-easing; ik zou geen `ease-out`
+  toevoegen tenzij het er op het apparaat verkeerd uitziet.
+- Reduced motion: `animation: none` op de `::after` en verberg hem (`display: none`), omdat een
+  statische ring op `scale: 1; opacity: 0.8` precies op de stip zou zitten maar zijn kleur zou
+  veranderen.
+- De ring reikt tot 2,2 x 8px = 17,6px, 4,8px voorbij de stip aan elke kant. De stip zit 16px van
+  de linkerrand van de bubbel en 20px van de bovenkant (padding plus de `margin-top` van 8px), en
+  8px van de tekst, dus ik verwacht geen klipping door de `overflow: hidden` van de bubbel en geen
+  aanraking met de tekst.
+- Geen `will-change` en geen JavaScript; de pulse duurt zo lang als het element bestaat.
+- Risico's die ik verwacht: de ring die te zwak of te klein is bij 8px, en Safari die de cirkel
+  opnieuw rastert terwijl hij schaalt.
 
-**Built (2026-10-27), not yet tested on the iPhone.** `.listeningIndicator` in
-`live-transcript.module.css` has `position: relative` and a nested `&::after` ring (same circle,
-`inset: 0`, `border-radius` and `background` inherited, so the tokens are kept) running
-`listening-pulse 1.6s infinite`: `scale` 1 to 2.2 and `opacity` 0.8 to 0, the original's default
-easing. Under `prefers-reduced-motion: reduce` the ring is `display: none`, so only today's
-plain dot remains. The dot is 12px (`--size`), and its `margin-top` is
-`calc((1lh - var(--size)) / 2)`: at 18px text with a line height of 1.25 a line is 22.5px, so
-the margin is 5.25px and the dot's centre (11.25px) lands on the first line's centre. `lh` is
-supported since Chrome 109 and Safari 16.4, from the agent's own knowledge; the guidance has no
-guide on it. From the CSS (not measured): the ring reaches 7.2px beyond the dot, the dot is 16px
-from the bubble's clip edge on the left and 17.25px from the top, and the text is 8px away, so
-the ring is not clipped and ends 0.8px short of the text, where it is almost transparent; that
-may look tight on the device.
+**Gebouwd (2026-10-27), nog niet getest op de iPhone.** `.listeningIndicator` in
+`live-transcript.module.css` heeft `position: relative` en een geneste `&::after`-ring (dezelfde
+cirkel, `inset: 0`, `border-radius` en `background` geërfd, zodat de tokens behouden blijven) die
+`listening-pulse 1.6s infinite` draait: `scale` 1 naar 2,2 en `opacity` 0,8 naar 0, de
+standaard-easing van het origineel. Onder `prefers-reduced-motion: reduce` is de ring
+`display: none`, zodat alleen de gewone stip van nu overblijft. De stip is 12px (`--size`), en zijn
+`margin-top` is `calc((1lh - var(--size)) / 2)`: bij tekst van 18px met een regelhoogte van 1,25 is
+een regel 22,5px, dus de marge is 5,25px en het midden van de stip (11,25px) komt op het midden van
+de eerste regel. `lh` wordt ondersteund sinds Chrome 109 en Safari 16.4, uit eigen kennis van de
+agent; de guidance heeft er geen guide over. Uit de CSS (niet gemeten): de ring reikt 7,2px voorbij
+de stip, de stip staat 16px van de klipkant van de bubbel aan de linkerkant en 17,25px van de
+bovenkant, en de tekst staat 8px weg, dus de ring wordt niet geklipt en eindigt 0,8px voor de
+tekst, waar hij bijna transparant is; dat kan er op het apparaat krap uitzien.
 
-Found while checking the alignment (not caused by the pulse, not changed): the text is NOT where
-it was when the dot appears and disappears. The dot takes its width plus the 8px gap, so the text
-starts 20px from the padding edge while the microphone is live (it was 16px with the 8px dot) and
-0px in "Preparing mic…" and in the settled draft, which have no dot. The text moves 20px when the
-microphone goes live and 20px back when recording stops, and the text width shrinks by the same
-amount while live, so a longer transcript can rewrap at those moments. The comment on `.listening`
-("nothing shifts when recording ends — the indicator dot is the only difference") is true for the
-frame but not for the text.
+Gevonden tijdens het nakijken van de uitlijning (niet veroorzaakt door de pulse, niet gewijzigd):
+de tekst staat NIET op dezelfde plek als de stip verschijnt en verdwijnt. De stip neemt zijn breedte
+plus de gap van 8px in, dus de tekst begint 20px van de padding-rand zolang de microfoon live is
+(het was 16px met de stip van 8px) en 0px in "Preparing mic…" en in het afgeronde concept, die
+geen stip hebben. De tekst verschuift 20px als de microfoon live gaat en 20px terug als de opname
+stopt, en de tekstbreedte krimpt in dezelfde mate zolang hij live is, dus een langer transcript kan
+op die momenten opnieuw afbreken. De comment bij `.listening` ("nothing shifts when recording ends
+— the indicator dot is the only difference") klopt voor het frame, maar niet voor de tekst.
 
-**Decision 5 (2026-10-27, the human, after seeing it live):** the shift in width was slightly
-disturbing, so the three bubbles the user's words pass through while composing (live transcript,
-settled draft, editor) get one shared minimum width, `min-width: 17ch`, sized from the
-placeholder "Preparing mic…" (the human tried 17ch himself). It is defined once, in
-`bubble.module.css`, and switched on with `Bubble`'s `hasMinimumWidth`. The comment on
-`.listening` was corrected. Accepted by the human: for text longer than that the text still moves
-20px when the dot goes, since the bubble's colour and outline change at that moment anyway; and a
-one-word draft is now a bubble 17ch wide. Rejected: keeping the dot's room free in every state (a
-design change, not needed now). The 17ch is an estimate (about 184px border box, 148px of content,
-from the agent's knowledge of the font; not measured) and must be re-derived if the placeholder
-text, the dot, the gap, the padding or the font changes. It stays below 85% of the thread's
-width on a 320px screen, by the same estimate.
+**Besluit 5 (2026-10-27, de mens, nadat hij het live zag):** de verschuiving in breedte was licht
+storend, dus de drie bubbels waar de woorden van de gebruiker doorheen gaan tijdens het
+samenstellen (live transcript, afgerond concept, editor) krijgen één gedeelde minimumbreedte,
+`min-width: 17ch`, afgeleid van de placeholder "Preparing mic…" (de mens probeerde zelf 17ch). Die
+is eenmalig gedefinieerd in `bubble.module.css` en wordt aangezet met `hasMinimumWidth` van
+`Bubble`. De comment bij `.listening` is gecorrigeerd. Door de mens geaccepteerd: bij tekst langer
+dan dat verschuift de tekst nog steeds 20px als de stip weggaat, omdat de kleur en de omlijning van
+de bubbel op dat moment toch veranderen; en een concept van één woord is nu een bubbel van 17ch
+breed. Afgewezen: de ruimte van de stip in elke toestand vrijhouden (een ontwerpwijziging, nu niet
+nodig). De 17ch is een schatting (ongeveer 184px border box, 148px inhoud, uit de kennis van de
+agent van het font; niet gemeten) en moet opnieuw worden afgeleid als de placeholdertekst, de stip,
+de gap, de padding of het font verandert. Hij blijft onder 85% van de breedte van de thread op een
+scherm van 320px, volgens dezelfde schatting.
 
-Afterwards the editor's own `min-width: 4ch` was removed as redundant: the editor text is a block
-inside a bubble that is now at least 17ch wide, and `min-height: 1lh` stays for the height.
-**Tested on the iPhone by the human (2026-10-27): all points passed**, the ones listed for this
-change (the bubble keeping its width from "Preparing mic…" through live to the draft, the
-one-word draft and the editor at 17ch, a long transcript unchanged, the narrow screen).
+Daarna is de eigen `min-width: 4ch` van de editor als overbodig verwijderd: de editortekst is een
+blok in een bubbel die nu minstens 17ch breed is, en `min-height: 1lh` blijft voor de hoogte.
+**Door de mens getest op de iPhone (2026-10-27): alle punten geslaagd**, die voor deze wijziging
+waren opgesomd (de bubbel die zijn breedte houdt van "Preparing mic…" via live tot het concept, het
+concept van één woord en de editor op 17ch, een lang transcript ongewijzigd, het smalle scherm).
 
-Guidance result for the trial (facts only, the verdict is the human's): no guide covers a pulsing
-or expanding-ring indicator; the searches only found general motion guides (`motion`,
-`individual-transform-properties`, `spinner`). It agreed with the baseline on animating only
-`scale` and `opacity` (the compositor), on not applying `animation-duration: 0.01ms` globally,
-and on handling reduced motion per rule. Differences: (1) it mandates an identity base `scale: 1`
-on an element that animates `scale`, which the baseline did not have. The builder applied it on
-the `::after` ring (the bubbles in K11 had left it out); the human decided it is not needed here
-and had it removed again (2026-10-28). So none of the three animations has it: nothing visible
-went wrong on the device without it, the ring is a childless pseudo-element, and the rule would
-make each of them a permanent stacking context. (2) It prefers "default to
-static, opt in to motion", and its `spinner` guide says to slow a persistent animation down under
-reduced motion instead of stopping it, so the user can still tell it is active. That contradicts
-decision 3 (no pulse under reduced motion). K13 was followed; the plain dot already says the
-microphone is live.
+Guidance-resultaat voor de proef (alleen feiten, het oordeel is aan de mens): geen enkele guide
+dekt een pulserende indicator of een uitdijende ring; de zoekopdrachten vonden alleen algemene
+motion-guides (`motion`, `individual-transform-properties`, `spinner`). Het was het met de baseline
+eens over het animeren van alleen `scale` en `opacity` (de compositor), over het niet globaal
+toepassen van `animation-duration: 0.01ms`, en over het per regel afhandelen van reduced motion.
+Verschillen: (1) het schrijft een identiteitsbasis `scale: 1` voor op een element dat `scale`
+animeert, die de baseline niet had. De builder paste hem toe op de `::after`-ring (de bubbels in
+K11 hadden hem weggelaten); de mens besloot dat hij hier niet nodig is en liet hem weer
+verwijderen (2026-10-28). Dus geen van de drie animaties heeft hem: er ging op het apparaat niets
+zichtbaar mis zonder, de ring is een pseudo-element zonder kinderen, en de regel zou van elk ervan
+een permanente stacking context maken. (2) Het geeft de voorkeur aan "standaard statisch, motion
+als opt-in", en zijn `spinner`-guide zegt een blijvende animatie onder reduced motion te
+vertragen in plaats van te stoppen, zodat de gebruiker nog kan zien dat hij actief is. Dat
+spreekt besluit 3 tegen (geen pulse onder reduced motion). K13 is gevolgd; de gewone stip zegt al
+dat de microfoon live is.
 
-### K14 — The thinking bubble appears with the same reveal, after a delay
+### K14 — De denkbubbel verschijnt met dezelfde onthulling, na een vertraging
 
-Wanted (the human, 2026-10-28): the order is visible. First the user's text, then the AI seems to
-start thinking. Today the waiting bubble with the dots is rendered at once, right under the sent
-bubble, and has no entry animation of its own.
+Gewenst (de mens, 2026-10-28): de volgorde is zichtbaar. Eerst de tekst van de gebruiker, daarna
+lijkt de AI te gaan nadenken. Nu wordt de wachtbubbel met de puntjes meteen gerenderd, direct onder
+de verstuurde bubbel, en heeft hij geen eigen entry-animatie.
 
-How it works today (read from the code): `USER_TURN_SENT` puts the session in `aiThinking` at
-once and the chat request leaves at once; the waiting `AiBubble` (`turn={null}`, key
-`ai-<position>`) is in the thread's item list immediately (K2). The reply then reveals in the
-same element, scale 0 to 1 at its final size (K4(A)).
+Hoe het nu werkt (uit de code gelezen): `USER_TURN_SENT` zet de sessie meteen in `aiThinking` en
+het chatverzoek vertrekt meteen; de wachtende `AiBubble` (`turn={null}`, key `ai-<positie>`) staat
+direct in de itemlijst van de thread (K2). Het antwoord onthult daarna in hetzelfde element, scale
+0 naar 1 op zijn eindmaat (K4(A)).
 
-**Decisions (2026-10-28, the human):**
+**Besluiten (2026-10-28, de mens):**
 
-1. The delay is 800ms: the thinking bubble appears 800ms after the sent turn, the moment the
-   "Evaluating…" text starts (350 + 200 + the 250ms pause).
-2. The thinking bubble gets the same entry as the other bubbles: it scales 0 to 1 (anchored
-   top-left, 350ms, the same curve), and the dots fade in after that (200ms, like the text of the
-   other bubbles). When the AI's text arrives, the bubble scales up again to the size it then
-   has. (The agent reads this as the reveal that exists today: the reply reveals from scale 0 at
-   its final size. If the human meant growing from the dots bubble's size, that is a different
-   thing and has to be said.)
-3. After a sent turn the entry starts after the 800ms delay. For the AI's opening turn the
-   thinking bubble gets the same scale and fade but WITHOUT a delay: it starts as soon as the
-   chat screen is shown.
-4. A preview of the whole sequence: the sent bubble, the thinking bubble after the delay, then
-   the reply.
+1. De vertraging is 800ms: de denkbubbel verschijnt 800ms na de verstuurde beurt, het moment
+   waarop de tekst "Evaluating…" begint (350 + 200 + de pauze van 250ms).
+2. De denkbubbel krijgt dezelfde entry als de andere bubbels: hij schaalt 0 naar 1 (verankerd
+   linksboven, 350ms, dezelfde curve), en de puntjes faden daarna in (200ms, zoals de tekst van de
+   andere bubbels). Als de tekst van de AI binnenkomt, schaalt de bubbel opnieuw op naar de maat
+   die hij dan heeft. (De agent leest dit als de onthulling die er nu is: het antwoord onthult
+   vanaf scale 0 op zijn eindmaat. Als de mens bedoelde dat hij groeit vanaf de maat van de
+   puntjesbubbel, is dat iets anders en moet dat gezegd worden.)
+3. Na een verstuurde beurt start de entry na de vertraging van 800ms. Voor de openingsbeurt van de
+   AI krijgt de denkbubbel dezelfde scale en fade maar ZONDER vertraging: hij start zodra het
+   chatscherm getoond wordt.
+4. Een preview van de hele reeks: de verstuurde bubbel, de denkbubbel na de vertraging, dan het
+   antwoord.
 
-Constraints the agent sees: the delay is purely visual (the request is not delayed); the bubble
-must stay rendered during the delay, at scale 0, because K2 needs the waiting bubble and the
-reply to be one element (a bubble that mounts only after the delay would be a new element if the
-reply came first, with no reveal); the timing variables live on the user bubble's `.reveal`, so
-the thinking bubble cannot read them and they need one shared home; and a CSS animation only
-restarts when its `animation-name` changes, so the dots entry and the reply reveal need
-different keyframe names.
+Randvoorwaarden die de agent ziet: de vertraging is puur visueel (het verzoek wordt niet
+vertraagd); de bubbel moet tijdens de vertraging gerenderd blijven, op scale 0, omdat K2 eist dat
+de wachtbubbel en het antwoord één element zijn (een bubbel die pas na de vertraging mount zou een
+nieuw element zijn als het antwoord eerst kwam, zonder onthulling); de timingvariabelen staan op
+de `.reveal` van de bubbel van de gebruiker, dus de denkbubbel kan ze niet lezen en ze hebben één
+gedeelde plek nodig; en een CSS-animatie start alleen opnieuw als haar `animation-name`
+verandert, dus de entry van de puntjes en de onthulling van het antwoord hebben verschillende
+keyframes-namen nodig.
 
-**Built (2026-10-28), not yet tested on the iPhone.** The waiting bubble has its own entry:
-`.waiting` runs `grow-waiting` (scale 0 to 1, top-left, 350ms, the usual curve) with a
-`backwards` fill and `animation-delay: var(--entry-delay, 0ms)`; `.waitingAfterSentTurn` sets
-`--entry-delay` to `--thinking-delay`; the dots (`.waitingDots`, a class passed to
-`ThinkingIndicator`) fade in over 200ms after the bubble's scale. When the reply arrives the
-class becomes `.reveal` (`grow`), a different animation name, so the reply reveal restarts from
-scale 0 as before; its rules are unchanged. `AiBubble` has a boolean prop `followsSentTurn`; the
-thread passes `turns.at(-1)?.author === "user"`. Timeline in ms from the sent turn: user bubble
-scale 0-350, user text 350-550, "Evaluating…" 800-1000, thinking bubble scale 800-1150, dots
-fade 1150-1350; for the opening turn the thinking bubble scales 0-350 and the dots fade 350-550.
-If the reply arrives during the delay the bubble is still at scale 0, the class swap starts the
-reply reveal at once and the dots are gone: they are never seen (reasoned, not seen).
+**Gebouwd (2026-10-28), nog niet getest op de iPhone.** De wachtbubbel heeft een eigen entry:
+`.waiting` draait `grow-waiting` (scale 0 naar 1, linksboven, 350ms, de gebruikelijke curve) met
+een `backwards` fill en `animation-delay: var(--entry-delay, 0ms)`; `.waitingAfterSentTurn` zet
+`--entry-delay` op `--thinking-delay`; de puntjes (`.waitingDots`, een klasse die aan
+`ThinkingIndicator` wordt meegegeven) faden na de scale van de bubbel in over 200ms. Als het
+antwoord binnenkomt, wordt de klasse `.reveal` (`grow`), een andere animatienaam, zodat de
+onthulling van het antwoord net als eerder opnieuw start vanaf scale 0; haar regels zijn
+ongewijzigd. `AiBubble` heeft een boolean prop `followsSentTurn`; de thread geeft
+`turns.at(-1)?.author === "user"` mee. Tijdlijn in ms vanaf de verstuurde beurt: bubbel van de
+gebruiker scale 0-350, tekst van de gebruiker 350-550, "Evaluating…" 800-1000, denkbubbel scale
+800-1150, puntjes fade 1150-1350; voor de openingsbeurt schaalt de denkbubbel 0-350 en faden de
+puntjes 350-550. Als het antwoord tijdens de vertraging binnenkomt, staat de bubbel nog op scale 0,
+start de klassenwissel de onthulling van het antwoord meteen en zijn de puntjes weg: ze worden
+nooit gezien (beredeneerd, niet gezien).
 
-The timing variables (`--reveal-duration` 350ms, `--fade-duration` 200ms, `--evaluation-pause`
-250ms and `--thinking-delay`, their sum, 800ms) moved from `.reveal` to `.thread` in
-`conversation-thread.module.css`, the one ancestor of every bubble that reads them; each number
-exists once, and they stay out of `src/app/tokens/` (timings of one feature, not design tokens).
-Dev preview: a third button, "sent turn + thinking + reply", plays the sent bubble, the delayed
-thinking bubble and, about 3s after the press, a short reply; the user preview now renders before
-the AI preview. Not done: the draft shrinking in the control bar first (still wanted later).
+De timingvariabelen (`--reveal-duration` 350ms, `--fade-duration` 200ms, `--evaluation-pause`
+250ms en `--thinking-delay`, hun som, 800ms) verhuisden van `.reveal` naar `.thread` in
+`conversation-thread.module.css`, de ene voorouder van elke bubbel die ze leest; elk getal bestaat
+één keer, en ze blijven buiten `src/app/tokens/` (timings van één feature, geen designtokens).
+Dev-preview: een derde knop, "sent turn + thinking + reply", speelt de verstuurde bubbel, de
+vertraagde denkbubbel en, ongeveer 3s na de druk, een kort antwoord af; de gebruikerspreview rendert
+nu vóór de AI-preview. Niet gedaan: het concept dat eerst in de bedieningsbalk krimpt (later nog
+gewenst).
 
-**Clarification of decision 2 (2026-10-30, the human, after seeing it on the device):** when the
-AI's text arrives the bubble must NOT shrink to nothing and grow again from scale 0; it must grow
-from the size the thinking bubble has to the size it then gets (this was the open question about
-"the bubble grows to the size of the text" in `docs/plan.md`, item 11). The agent had read
-"scale up again" as the reveal from 0 and said so; the human corrected it. Originally this was
-the K3 question and the first spike (a `clip-path`) answered it without overshoot.
+**Verduidelijking van besluit 2 (2026-10-30, de mens, nadat hij het op het apparaat zag):** als de
+tekst van de AI binnenkomt, mag de bubbel NIET tot niets krimpen en vanaf scale 0 opnieuw groeien;
+hij moet groeien van de maat die de denkbubbel heeft naar de maat die hij dan krijgt (dit was de
+open vraag over "de bubbel groeit naar de grootte van de tekst" in `docs/plan.md`, punt 11). De
+agent had "opnieuw opschalen" gelezen als de onthulling vanaf 0 en zei dat; de mens corrigeerde
+het. Oorspronkelijk was dit de K3-vraag en de eerste spike (een `clip-path`) beantwoordde hem
+zonder overshoot.
 
-Considered: the reference app animates `width`/`height` with a `transition` between an explicit
-pending size and `fit-content`/`auto` (only the rules about size were read, on the human's
-pointer). Not taken over: a length to a keyword cannot be interpolated in plain CSS (it needs
-`interpolate-size`, which Safari does not have), and it would animate the layout, against K4(A).
-Decided for a spike instead: a non-uniform `scale` (x and y) from the thinking bubble's measured
-size to the reply's measured size, so the layout stays at its final size at once (K4(A)) and the
-motion stays a compositor transform. Open from the start: the borders and corner radii distort
-while the two axes differ (the text is hidden then), and Safari. The bubble's size is read with
-`offsetWidth`/`offsetHeight` (unaffected by transforms) in a layout effect at the swap.
+Overwogen: de referentie-app animeert `width`/`height` met een `transition` tussen een expliciete
+pending-maat en `fit-content`/`auto` (alleen de regels over maat zijn gelezen, op aanwijzing van de
+mens). Niet overgenomen: een lengte naar een keyword is in gewone CSS niet te interpoleren (het
+vraagt `interpolate-size`, dat Safari niet heeft), en het zou de layout animeren, tegen K4(A) in.
+In plaats daarvan besloten tot een spike: een niet-uniforme `scale` (x en y) van de gemeten maat van
+de denkbubbel naar de gemeten maat van het antwoord, zodat de layout meteen op de eindmaat blijft
+(K4(A)) en de beweging een compositor-transform blijft. Vanaf het begin open: de randen en
+hoekradii vervormen zolang de twee assen verschillen (de tekst is dan verborgen), en Safari. De
+maat van de bubbel wordt gelezen met `offsetWidth`/`offsetHeight` (niet beïnvloed door transforms)
+in een layout effect bij de wissel.
 
-**Spike built and accepted (2026-10-30).** `AiBubble` measures the waiting bubble once, while it
-waits, and the reply's bubble in a layout effect at the swap. The start scale per axis is old
-size / new size (`--grow-from-x`, `--grow-from-y`, set as inline custom properties); the `grow`
-keyframes are `from { scale: var(--grow-from-x, 0) var(--grow-from-y, 0) }`, so everything without
-the variables (the user's bubble, an AI reply that was never a thinking bubble) still starts at 0
-as before. Order, by construction and not by timing: the reply first renders WITHOUT the reveal
-class, the layout effect reads the sizes (which forces a layout while nothing animates) and sets
-state, and the synchronous re-render before paint adds the class, the text classes and the
-variables in one commit, so the animation cannot start without them. Layout stays at its final
-size at once (K4(A)); the scroll effect is untouched. **Tested on the iPhone by the human: all
-five points good** (the first frame at the swap has the dots bubble's size, the borders and
-corners while the axes differ, the overshoot, a very short and a very long reply, the scroll
-position; the user bubble unchanged).
+**Spike gebouwd en geaccepteerd (2026-10-30).** `AiBubble` meet de wachtbubbel één keer, terwijl
+hij wacht, en de bubbel van het antwoord in een layout effect bij de wissel. De startscale per as
+is oude maat / nieuwe maat (`--grow-from-x`, `--grow-from-y`, gezet als inline custom properties);
+de `grow`-keyframes zijn `from { scale: var(--grow-from-x, 0) var(--grow-from-y, 0) }`, dus alles
+zonder de variabelen (de bubbel van de gebruiker, een AI-antwoord dat nooit een denkbubbel was)
+start nog steeds op 0 zoals eerder. Volgorde, door constructie en niet door timing: het antwoord
+rendert eerst ZONDER de reveal-klasse, het layout effect leest de maten (wat een layout forceert
+terwijl niets animeert) en zet state, en de synchrone re-render vóór de paint voegt de klasse, de
+tekstklassen en de variabelen in één commit toe, zodat de animatie niet zonder ze kan starten. De
+layout blijft meteen op de eindmaat (K4(A)); het scroll-effect is onaangeroerd. **Door de mens
+getest op de iPhone: alle vijf punten goed** (het eerste frame bij de wissel heeft de maat van de
+puntjesbubbel, de randen en hoeken terwijl de assen verschillen, de overshoot, een heel kort en een
+heel lang antwoord, de scrollpositie; de bubbel van de gebruiker ongewijzigd).
 
-Known limitations, not fixed: the "was the thinking bubble ever visible" check uses the time since
-it mounted, not the animation's own clock (the swap commit has already removed that animation), so
-a reply just after the delay grows from a bubble that was barely visible, and for the opening turn
-(no delay) a very quick reply grows from a bubble that is still in its own entry; the waiting
-size is measured once, so a font or viewport change during the wait would leave the start size
-slightly off; a reply smaller than the dots bubble makes the ratio exceed 1 and the bubble shrinks
-to its size.
+Bekende beperkingen, niet opgelost: de check "was de denkbubbel ooit zichtbaar" gebruikt de tijd
+sinds hij mountte, niet de eigen klok van de animatie (de commit van de wissel heeft die animatie
+al verwijderd), dus een antwoord vlak na de vertraging groeit uit een bubbel die nauwelijks
+zichtbaar was, en bij de openingsbeurt (geen vertraging) groeit een heel snel antwoord uit een
+bubbel die nog in zijn eigen entry zit; de wachtmaat wordt één keer gemeten, dus een font- of
+viewportwijziging tijdens het wachten zou de startmaat licht scheef laten; een antwoord dat kleiner
+is dan de puntjesbubbel laat de verhouding boven 1 uitkomen en de bubbel krimpt naar zijn maat.
 
-### K15 — The thinking bubble waits 800ms after a Retry too
+### K15 — De denkbubbel wacht ook na een Retry 800ms
 
-Found in the review of K14 (2026-10-28), parked by the human on 2026-10-30 as not important.
+Gevonden in de review van K14 (2026-10-28), op 2026-10-30 door de mens geparkeerd als niet
+belangrijk.
 
-The problem: after an error the user presses Retry and the session enters `aiThinking` again. The
-error state had removed the waiting bubble, so it mounts fresh, and the last turn is still the
-user's, so `followsSentTurn` (`turns.at(-1)?.author === "user"`) is true and the bubble waits
-800ms, invisible, for an "Evaluating…" moment that passed long ago. The user sees nothing for
-800ms after pressing Retry. The same holds when the thread remounts during `aiThinking`.
+Het probleem: na een fout drukt de gebruiker op Retry en de sessie gaat opnieuw naar `aiThinking`.
+De foutstate had de wachtbubbel verwijderd, dus hij mount vers, en de laatste beurt is nog steeds
+die van de gebruiker, dus `followsSentTurn` (`turns.at(-1)?.author === "user"`) is waar en de
+bubbel wacht 800ms, onzichtbaar, op een "Evaluating…"-moment dat lang geleden voorbij is. De
+gebruiker ziet 800ms niets na het drukken op Retry. Hetzelfde geldt als de thread tijdens
+`aiThinking` opnieuw mount.
 
-The simple fix, when picked up: in `conversation-thread.tsx` apply the delay only when the last
-user turn's evaluation is still pending (`evaluation.status === "pending"`), which a fresh send
-always is and a retry usually is not. Caveats: it is an approximation (if the chat fails faster
-than the evaluation, the evaluation is still pending at Retry and the delay returns, a rarer
-case); the retry path in the reducer was not traced; and the prop name `followsSentTurn` then
-overpromises, so rename it with the change (for example `followsFreshTurn`; two files).
+De eenvoudige oplossing, als hij wordt opgepakt: in `conversation-thread.tsx` de vertraging alleen
+toepassen als de evaluatie van de laatste gebruikersbeurt nog pending is
+(`evaluation.status === "pending"`), wat bij een nieuwe verzending altijd zo is en bij een retry
+meestal niet. Kanttekeningen: het is een benadering (als de chat sneller mislukt dan de evaluatie,
+is de evaluatie bij Retry nog pending en komt de vertraging terug, een zeldzamer geval); het
+retry-pad in de reducer is niet nagelopen; en de propnaam `followsSentTurn` belooft dan te veel,
+dus hernoem hem met de wijziging (bijvoorbeeld `followsFreshTurn`; twee bestanden).
 
-Left open with it from the same review, both cosmetic and dev-only or latent: after the user
-preview was moved before the AI preview, a leftover AI-preview reply shows above a new "sent user
-bubble"; and `.waiting` in `bubble-reveal.module.css` hardcodes `transform-origin: top left`
-where `.reveal` reads `--reveal-origin`, which would drift if the AI bubble's anchor ever changed.
+Samen hiermee open gelaten uit dezelfde review, beide cosmetisch en dev-only of latent: nadat de
+gebruikerspreview vóór de AI-preview was verplaatst, staat een achtergebleven AI-previewantwoord
+boven een nieuwe "verstuurde gebruikersbubbel"; en `.waiting` in `bubble-reveal.module.css`
+hardcodet `transform-origin: top left` terwijl `.reveal` `--reveal-origin` leest, wat zou
+uiteenlopen als het anker van de AI-bubbel ooit veranderde.
 
-## Decision log
+## Besluitenlog
 
-- **2026-10-23 — journal opened.** Issues K1 to K10 from a read of the plan and the code. The
-  human confirmed this work stays on `arc/*` for now, so no new HDR on the method's scope.
-- **2026-10-23 — K1 decided.** Scope is the dots-to-text transition only; a general enter
-  animation waits until after the K3 spike.
-- **2026-10-23 — K2 decided.** Key by position; the reducer was checked for turn removal.
-- **2026-10-23 — K4 decided.** Layout at final size at once, animation only visual; changes
-  what K3 is about (see the note in K4).
-- **2026-10-23 — K5 decided.** Highlight starts once the text is fully visible.
-- **2026-10-23 — K6 parked.** With the condition that today's roles and label keep working.
-- **2026-10-23 — K7, K8, K9 decided.** AI bubble only for now; reduced motion skips the reveal;
-  the other animation work is out of scope.
-- **2026-10-23 — K10 agreed as a trial, booked as HDR-013 (accepted).** The baseline for K3 was
-  written before the guidance was consulted.
-- **2026-10-23 — spike built and committed on `arc/bubble-animation`.** `AiBubble` (one element,
-  position key, waiting bubble in the same array as the turns), scale 0 to 1 with back-easing,
-  delayed text fade. K3 stays open for tuning; K10 has facts but no verdict.
-- **2026-10-27 — timing settled, K11 and K12 opened.** The human is satisfied with the timing and
-  wants to keep it. A dev-only preview of the AI bubble was added to replay the transition (see
-  `docs/plan.md`, decision log 10-27; a first attempt through the reducer was rejected in review).
-  K11: animate the user's bubble on Send. K12: speech start after the reveal, parked. K5 unchanged.
-- **2026-10-27 — K11 built.** The user's bubble reveals on send, with the "Evaluating…" text
-  fading in after the user's text (the human's addition; the strip's frame is visible at once); a dev-only preview of the sent bubble was
-  added. The base `scale: 1` of the guidance was not applied. Next: the iPhone test, then the
-  thinking bubble's delay and, later, the draft shrinking in the control bar.
-- **2026-10-27 — K13 decided and built.** The listening dot pulses while the microphone is live
-  (a ring, as in the original app); no pulse under reduced motion. Test 3 of the HDR-013 trial.
-  Tested on the iPhone by the human, all points passed. Next: the human's verdict on the trial.
-- **2026-10-28 — the guidance's identity `scale: 1` removed from the ring.** The human decided it
-  is not needed there. Consistent now across the three animations of the trial: not used.
-- **2026-10-28 — K14 decided and built.** The thinking bubble enters with scale and fade, 800ms
-  after a sent turn and at once for the opening turn; the timing variables moved to the thread;
-  a combined dev preview was added. Next: the iPhone test.
-- **2026-10-30 — the reply grows from the thinking bubble's size.** The human corrected the
-  agent's reading of decision 2 (the reply must not start from scale 0); a non-uniform scale from
-  the measured sizes was built as a spike and accepted after the iPhone test (all five points).
-  The last open wish of the original question 11 in `docs/plan.md` is thereby built.
+- **2026-10-23 — journaal geopend.** Kwesties K1 tot en met K10 uit een lezing van het plan en de
+  code. De mens bevestigde dat dit werk voorlopig op `arc/*` blijft, dus geen nieuwe HDR over de
+  scope van de methode.
+- **2026-10-23 — K1 besloten.** De reikwijdte is alleen de overgang van puntjes naar tekst; een
+  algemene enter-animatie wacht tot na de K3-spike.
+- **2026-10-23 — K2 besloten.** Key op positie; de reducer is nagekeken op het verwijderen van
+  beurten.
+- **2026-10-23 — K4 besloten.** Layout meteen op de eindmaat, animatie alleen visueel; verandert
+  waar K3 over gaat (zie de notitie bij K4).
+- **2026-10-23 — K5 besloten.** De highlight start zodra de tekst volledig zichtbaar is.
+- **2026-10-23 — K6 geparkeerd.** Met de voorwaarde dat de rollen en het label van nu blijven
+  werken.
+- **2026-10-23 — K7, K8, K9 besloten.** Voorlopig alleen de AI-bubbel; reduced motion slaat de
+  onthulling over; het andere animatiewerk valt buiten scope.
+- **2026-10-23 — K10 afgesproken als proef, geboekt als HDR-013 (geaccepteerd).** De baseline voor K3
+  is geschreven voordat de guidance werd geraadpleegd.
+- **2026-10-23 — spike gebouwd en gecommit op `arc/bubble-animation`.** `AiBubble` (één element,
+  positiekey, wachtbubbel in dezelfde array als de beurten), scale 0 naar 1 met back-easing,
+  vertraagde tekstfade. K3 blijft open voor tuning; K10 heeft feiten maar geen oordeel.
+- **2026-10-27 — timing vastgelegd, K11 en K12 geopend.** De mens is tevreden met de timing en wil
+  hem houden. Een dev-only preview van de AI-bubbel is toegevoegd om de overgang opnieuw af te
+  spelen (zie `docs/plan.md`, besluitenlog 10-27; een eerste poging via de reducer werd in review
+  afgewezen). K11: de bubbel van de gebruiker animeren bij Send. K12: spraakstart na de onthulling,
+  geparkeerd. K5 ongewijzigd.
+- **2026-10-27 — K11 gebouwd.** De bubbel van de gebruiker onthult bij het versturen, met de tekst
+  "Evaluating…" die na de tekst van de gebruiker infaadt (de toevoeging van de mens; het kader van
+  de strook is meteen zichtbaar); een dev-only preview van de verstuurde bubbel is toegevoegd. De
+  basis `scale: 1` van de guidance is niet toegepast. Volgende: de iPhone-test, daarna de
+  vertraging van de denkbubbel en, later, het krimpen van het concept in de bedieningsbalk.
+- **2026-10-27 — K13 besloten en gebouwd.** De luisterstip pulseert zolang de microfoon live is
+  (een ring, zoals in de originele app); geen pulse onder reduced motion. Test 3 van de
+  HDR-013-proef. Door de mens op de iPhone getest, alle punten geslaagd. Volgende: het oordeel van
+  de mens over de proef.
+- **2026-10-28 — de identiteits-`scale: 1` van de guidance van de ring verwijderd.** De mens besloot
+  dat hij daar niet nodig is. Nu consistent over de drie animaties van de proef: niet gebruikt.
+- **2026-10-28 — K14 besloten en gebouwd.** De denkbubbel komt binnen met scale en fade, 800ms na
+  een verstuurde beurt en meteen bij de openingsbeurt; de timingvariabelen verhuisden naar de
+  thread; een gecombineerde dev-preview is toegevoegd. Volgende: de iPhone-test.
+- **2026-10-30 — het antwoord groeit uit de maat van de denkbubbel.** De mens corrigeerde de lezing
+  van de agent van besluit 2 (het antwoord mag niet vanaf scale 0 starten); een niet-uniforme scale
+  vanaf de gemeten maten is gebouwd als spike en geaccepteerd na de iPhone-test (alle vijf
+  punten). De laatste open wens van de oorspronkelijke vraag 11 in `docs/plan.md` is daarmee
+  gebouwd.
 
-**Where to pick up (written for the next session):**
+**Waar je verder gaat (geschreven voor de volgende sessie):**
 
-- Tune on the phone: the second value of the cubic-bezier (1.56 gives a peak of about 1.10;
-  1.3 about 1.03; 1.0 none), the 350ms and 200ms. Check a tall reply near the bottom of the
-  thread for a scroll shift (a scaled element extends the scrollable area for a moment).
-- K5 is decided but not built: the read-along highlight still starts at once. It needs a look
-  at the playback hook first.
-- K6 is parked: a VoiceOver test of the role change on the surviving element is still owed.
-- Cleanup left behind: the AI branch in `TurnBubble` is dead code and its markup is duplicated
-  in `AiBubble`. Done 2026-10-27: `ThinkingBubble` is now `ThinkingIndicator` (the human's
-  choice, named after its function rather than its form, so a different animation would not
-  force another rename; the agent had proposed `ThinkingDots`).
-- Not written yet: the ADR for K2 (after K3 is settled), the spec, the K10 verdict and the
-  decision on HDR-013 (keep, switch off or adjust).
-- Parked: K6 (VoiceOver), K12 (speech start after the reveal) and K15 (the Retry delay).
+- Tunen op de telefoon: de tweede waarde van de cubic-bezier (1,56 geeft een piek van ongeveer
+  1,10; 1,3 ongeveer 1,03; 1,0 geen), de 350ms en 200ms. Controleer een hoog antwoord onderaan de
+  thread op een scrollverschuiving (een geschaald element vergroot de scrollbare ruimte even).
+- K5 is besloten maar niet gebouwd: de meelees-highlight start nog steeds meteen. Daarvoor eerst
+  een blik op de playback-hook.
+- K6 is geparkeerd: een VoiceOver-test van de rolwissel op het overlevende element is nog
+  verschuldigd.
+- Opruiming die is blijven liggen: de AI-tak in `TurnBubble` is dode code en de markup ervan is
+  gedupliceerd in `AiBubble`. Gedaan 2026-10-27: `ThinkingBubble` is nu `ThinkingIndicator` (de
+  keuze van de mens, genoemd naar zijn functie in plaats van zijn vorm, zodat een andere animatie
+  niet nog een hernoeming afdwingt; de agent had `ThinkingDots` voorgesteld).
+- Nog niet geschreven: de ADR voor K2 (nadat K3 is afgerond), de spec, het K10-oordeel en het
+  besluit over HDR-013 (behouden, uitzetten of bijstellen).
+- Geparkeerd: K6 (VoiceOver), K12 (spraakstart na de onthulling) en K15 (de Retry-vertraging).
 
-This journal closes when K1 to K9 are decided or parked and the ADR (K2) and the spec exist.
+Dit journaal sluit wanneer K1 tot en met K9 besloten of geparkeerd zijn en de ADR (K2) en de spec
+bestaan.

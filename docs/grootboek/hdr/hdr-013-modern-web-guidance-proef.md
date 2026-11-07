@@ -6,147 +6,155 @@
 
 ## Kernprincipe
 
-A tool that claims to improve the agent's output earns its place in the harness on evidence
-from this project. The evidence needs a baseline, and the baseline has to exist before the tool
-is consulted, because afterwards "what would we have done without it" cannot be reconstructed
-honestly.
+Een tool die beweert de output van de agent te verbeteren, verdient zijn plek in de harness op
+bewijs uit dit project. Het bewijs heeft een baseline nodig, en die baseline moet bestaan voordat
+de tool wordt geraadpleegd, want achteraf is "wat hadden we zonder gedaan" niet eerlijk te
+reconstrueren.
 
-## Decision
+## Besluit
 
-Try **Modern Web Guidance** (the Chrome team's agent skills with current web platform guidance,
-`GoogleChrome/modern-web-guidance`) on the chat bubble animation (JNL-003), and decide
-afterwards whether it stays.
+**Modern Web Guidance** proberen (de agent skills van het Chrome-team met actuele richtlijnen
+voor het webplatform, `GoogleChrome/modern-web-guidance`) op de animatie van de chatbubbel
+(JNL-003), en achteraf beslissen of het blijft.
 
-The method costs almost no extra work:
+De methode kost bijna geen extra werk:
 
-1. Before the spike, the agent writes its own approach for JNL-003 K3 (growing a bubble in
-   height and width), from its own knowledge. Done on 2026-10-23, in K3.
-2. The spike's assignment to the builder carries one extra sentence: consult the guidance for
-   K3 and report what it recommends and whether that differs from the baseline in K3.
-3. The spike runs on a real iPhone, as planned anyway.
-4. One line goes into JNL-003 K10: same / different and better / different and worse /
-   nothing added, and whether the iPhone confirmed it.
+1. Vóór de spike schrijft de agent zijn eigen aanpak voor JNL-003 K3 (een bubbel laten groeien in
+   hoogte en breedte), vanuit zijn eigen kennis. Gedaan op 2026-10-23, in K3.
+2. De opdracht van de spike aan de builder bevat één extra zin: raadpleeg de richtlijnen voor K3
+   en rapporteer wat ze aanbevelen en of dat afwijkt van de baseline in K3.
+3. De spike draait op een echte iPhone, zoals sowieso gepland.
+4. Eén regel komt in JNL-003 K10: hetzelfde / anders en beter / anders en slechter / niets
+   toegevoegd, en of de iPhone het bevestigde.
 
-**Exit criterion.** Right after that line, the human decides: keep it, switch it off, or adjust
-it. A difference the iPhone does not confirm does not count as a gain. "Same" is a valid result
-and a reason not to keep it. This record then moves to `implemented` (kept) or is superseded or
-rejected.
+**Exitcriterium.** Direct na die regel beslist de mens: houden, uitzetten of bijstellen. Een
+verschil dat de iPhone niet bevestigt, telt niet als winst. "Hetzelfde" is een geldige uitkomst
+en een reden om het niet te houden. Dit record gaat dan naar `implemented` (gehouden) of wordt
+vervangen of afgewezen.
 
-## Extension (2026-10-23): more than one test
+## Uitbreiding (2026-10-23): meer dan één test
 
-The human wants to test with a few more CSS-related tasks before deciding, so the procedure
-above is repeated, not just run once. It applies to every task where the skill itself says it
-should trigger (UI and layout, scroll and motion, performance, web APIs, forms and
-accessibility), and not to backend work, scripts, tooling or trivial edits.
+De mens wil met nog een paar CSS-gerelateerde taken testen voordat hij beslist, dus de procedure
+hierboven wordt herhaald en niet maar één keer uitgevoerd. Ze geldt voor elke taak waarvoor de
+skill zelf zegt dat hij moet starten (UI en layout, scroll en motion, performance, web-API's,
+formulieren en toegankelijkheid), en niet voor backendwerk, scripts, tooling of triviale
+bewerkingen.
 
-For each such task, in this order:
+Voor elke zo'n taak, in deze volgorde:
 
-1. The agent writes its own approach down **before** the guidance is consulted, in the
-   journal or spec of that task. The skill's own description says to run it first ("mandatory"
-   for HTML/CSS work); in the lead thread that is deliberately **not** followed until the
-   baseline is written. The builder is told in its assignment to consult it, as in K10.
-2. The builder consults the guidance and reports what it recommends and how it differs from
-   the baseline.
-3. A row goes into the trial log below, and the human gives the verdict for that task.
+1. De agent schrijft zijn eigen aanpak op **voordat** de richtlijnen worden geraadpleegd, in het
+   journaal of de spec van die taak. De eigen beschrijving van de skill zegt dat hij eerst moet
+   draaien ("mandatory" voor HTML/CSS-werk); in de lead thread wordt dat bewust **niet**
+   gevolgd totdat de baseline is geschreven. De builder krijgt in zijn opdracht te horen dat hij
+   ze moet raadplegen, zoals in K10.
+2. De builder raadpleegt de richtlijnen en rapporteert wat ze aanbevelen en hoe dat verschilt van
+   de baseline.
+3. Een rij gaat in het proeflog hieronder, en de mens geeft het oordeel voor die taak.
 
-**Lesson from the first test (JNL-003):** write the baseline *after* the design decisions that
-constrain the problem. There, K4 changed what K3 was about after the baseline existed, so the
-comparison was partly moot. A baseline written against a problem that is still moving does not
-measure the guidance.
+**Les uit de eerste test (JNL-003):** schrijf de baseline *na* de ontwerpbeslissingen die het
+probleem begrenzen. Daar veranderde K4 waar K3 over ging nadat de baseline al bestond, dus de
+vergelijking was deels achterhaald. Een baseline geschreven tegen een probleem dat nog beweegt, meet
+de richtlijnen niet.
 
-**The trial ends after three tests in total** (the bubble animation plus two more; decided by
-the human, 2026-10-23). Then the human decides: keep, switch off or adjust.
+**De proef eindigt na in totaal drie tests** (de bubbelanimatie plus twee meer; besloten door de
+mens, 2026-10-23). Dan beslist de mens: houden, uitzetten of bijstellen.
 
-### Trial log
+### Proeflog
 
-| # | Task | Baseline (where) | Guidance recommended | Difference | iPhone confirmed | Verdict (human) |
+| # | Taak | Baseline (waar) | Aanbeveling van de richtlijnen | Verschil | iPhone bevestigd | Oordeel (mens) |
 |---|---|---|---|---|---|---|
-| 1 | Bubble reveal (JNL-003 K3) | JNL-003 K3 | `clip-path` for reveals; `interpolate-size` Chromium-only | Same on the key point; final design came from the human, outside both | The first spike ran; the final design was tuned by eye | open |
-| 2 | User bubble reveal on send (JNL-003 K11) | JNL-003 K11 | A shared module, only `scale` and `opacity`, reduced motion off, the same curve; one extra rule: identity base `scale: 1` (`individual-transform-properties`); nothing on a `transform-origin` that depends on the side | Same on every point of substance; the one extra rule was deliberately not applied | Not yet tested on the iPhone | open |
-| 3 | Listening-dot pulse (JNL-003 K13) | JNL-003 K13 | No guide for a pulsing ring; the general `motion` rules (compositor properties, reduced motion handled per rule, nested `@media`); the identity base `scale: 1`; under reduced motion, slow the animation down instead of stopping it (`spinner`) | Same technique and end state. The `scale: 1` was applied at first and then removed on the human's decision (2026-10-28), as in test 2; "slow, do not stop" contradicts K13's "no pulse under reduced motion" and was not followed | Tested on the iPhone by the human with the final dot and minimum width: all points passed | open |
+| 1 | Bubbel onthullen (JNL-003 K3) | JNL-003 K3 | `clip-path` voor onthullingen; `interpolate-size` alleen Chromium | Hetzelfde op het kernpunt; het uiteindelijke ontwerp kwam van de mens, buiten beide om | De eerste spike draaide; het uiteindelijke ontwerp is op het oog afgesteld | open |
+| 2 | Gebruikersbubbel onthullen bij verzenden (JNL-003 K11) | JNL-003 K11 | Een gedeelde module, alleen `scale` en `opacity`, reduced motion uit, dezelfde curve; één extra regel: identiteitsbasis `scale: 1` (`individual-transform-properties`); niets over een `transform-origin` die van de kant afhangt | Hetzelfde op elk inhoudelijk punt; de ene extra regel is bewust niet toegepast | Nog niet getest op de iPhone | open |
+| 3 | Puls van de luisterstip (JNL-003 K13) | JNL-003 K13 | Geen gids voor een pulserende ring; de algemene `motion`-regels (compositor-properties, reduced motion per regel afgehandeld, geneste `@media`); de identiteitsbasis `scale: 1`; onder reduced motion de animatie vertragen in plaats van stoppen (`spinner`) | Dezelfde techniek en eindtoestand. De `scale: 1` is eerst toegepast en daarna verwijderd op besluit van de mens (2026-10-28), zoals bij test 2; "vertragen, niet stoppen" is in strijd met K13 "geen pulse onder reduced motion" en is niet gevolgd | Door de mens op de iPhone getest met de definitieve stip en minimale breedte: alle punten geslaagd | open |
 
-## Why
+## Waarom
 
-The animation work depends on web platform features whose support changes quickly (animating to
-an unknown size, entry animations, reduced motion), and the agent's knowledge ends at its
-training cutoff. Guidance that is kept current could close that gap. It is a claim, not yet
-a fact for this project: Google's reported improvement (37 percentage points) is from its own
-internal benchmark. This is deliberately a trial, like HDR-002, but with its exit criterion
-stated up front.
+Het animatiewerk hangt af van webplatformfeatures waarvan de ondersteuning snel verandert (animeren
+naar een onbekende grootte, entry-animaties, reduced motion), en de kennis van de agent eindigt
+bij zijn training cutoff. Richtlijnen die actueel worden gehouden kunnen die kloof dichten. Het is
+een bewering, nog geen feit voor dit project: de gemelde verbetering van Google (37
+procentpunten) komt uit zijn eigen interne benchmark. Dit is bewust een proef, zoals HDR-002,
+maar met het exitcriterium vooraf vastgelegd.
 
-## What was found before installing (2026-10-23)
+## Wat er is gevonden vóór het installeren (2026-10-23)
 
-Read from the project's README, `SKILL.md`, `plugin.json` and `package.json` on GitHub (through
-a summarising fetch tool, so a second-hand reading) and from the npm registry directly.
+Gelezen uit de README, `SKILL.md`, `plugin.json` en `package.json` van het project op GitHub (via
+een samenvattende fetch-tool, dus een tweedehandslezing) en rechtstreeks uit de npm-registry.
 
-**Checked against the npm registry (first-hand):** version 0.0.195, Apache-2.0, no lifecycle
-scripts (nothing runs on install), no dependencies, 260 files, 33 MB unpacked, four maintainers
-who are Chrome team members, 195 versions with the latest published on 2026-10-19.
+**Gecontroleerd tegen de npm-registry (uit eerste hand):** versie 0.0.195, Apache-2.0, geen
+lifecycle-scripts (er draait niets bij het installeren), geen dependencies, 260 bestanden, 33 MB
+uitgepakt, vier maintainers die Chrome-teamleden zijn, 195 versies waarvan de laatste is
+gepubliceerd op 2026-10-19.
 
-**What it does when the agent uses it (from `SKILL.md`):** on UI, layout, scroll and motion work
-(not on backend, infrastructure or trivial edits) the agent runs
-`npx -y modern-web-guidance@latest search "<query>" --skill-version <date>`, then `retrieve
-"<id>"`. The skill allows only that exact command pattern to be allow-listed, never bare `npx *`.
-It also tells the agent to end any reply that used a guide with a "Modern Web Guidance" section
-listing the guide ids and the rule each one applied.
+**Wat het doet als de agent het gebruikt (uit `SKILL.md`):** bij UI-, layout-, scroll- en
+motion-werk (niet bij backend, infrastructuur of triviale bewerkingen) voert de agent
+`npx -y modern-web-guidance@latest search "<query>" --skill-version <date>` uit, daarna `retrieve
+"<id>"`. De skill staat alleen toe dat precies dat commandopatroon op de allowlist komt, nooit
+kale `npx *`. Hij vertelt de agent ook elk antwoord dat een gids gebruikte te laten eindigen met
+een sectie "Modern Web Guidance" met de gids-id's en de regel die elk toepaste.
 
-**Answers to the open points:**
+**Antwoorden op de open punten:**
 
-- **Install scope.** Not stated by the README. The plugin commands are `/plugin marketplace add
-  GoogleChrome/modern-web-guidance` and `/plugin install modern-web-guidance@googlechrome`; the
-  alternative `npx modern-web-guidance@latest install` runs a wizard whose file writes are not
-  documented. To be observed after installing, in the `/plugin` screen. This repo keeps its
-  skills checked in under `.claude/skills/`; a user-level plugin would not travel with the repo.
-- **Updates and pinning.** Nothing is pinned: every command uses `@latest`, the package is at
-  0.0.x and changes often. The plugin has an AutoUpdate switch in `/plugin`. Whether a fixed
-  version can be used is not documented. npm itself would allow `modern-web-guidance@0.0.195`,
-  but the skill text says `@latest`, so a pinned run would be a different thing from what the
-  vendor ships. Not tested.
-- **Telemetry.** The README says Google collects anonymous usage information: installation
-  counts, the calling agent's name, retrieved guide ids and the **CLI search queries**, not raw
-  prompts; opt out with `DISABLE_TELEMETRY=1`. `SKILL.md` describes none. **The two sources
-  disagree; the README is the more specific one, so treat telemetry as on.** Search itself runs
-  an offline model (no network call); the network is needed to fetch the package through `npx`.
-- **Uninstall.** Not stated.
-- **Baseline target.** Not configurable through the README. The Chrome documentation says one
-  line in `CLAUDE.md` or `AGENTS.md` ("This project's Baseline target is Baseline 2024."), and
-  `SKILL.md` follows a custom support policy when one is set. Without one it defaults to
-  Baseline Widely available.
+- **Installatiebereik.** Niet vermeld in de README. De plugincommando's zijn `/plugin marketplace
+  add GoogleChrome/modern-web-guidance` en `/plugin install modern-web-guidance@googlechrome`; het
+  alternatief `npx modern-web-guidance@latest install` draait een wizard waarvan de
+  bestandsschrijfacties niet gedocumenteerd zijn. Na het installeren te observeren, in het
+  `/plugin`-scherm. Deze repo houdt zijn skills ingecheckt onder `.claude/skills/`; een plugin op
+  gebruikersniveau zou niet met de repo meereizen.
+- **Updates en pinnen.** Niets is gepind: elk commando gebruikt `@latest`, het pakket zit op
+  0.0.x en verandert vaak. De plugin heeft een AutoUpdate-schakelaar in `/plugin`. Of een vaste
+  versie kan worden gebruikt, is niet gedocumenteerd. npm zelf zou `modern-web-guidance@0.0.195`
+  toestaan, maar de skilltekst zegt `@latest`, dus een gepinde run zou iets anders zijn dan wat de
+  leverancier uitlevert. Niet getest.
+- **Telemetrie.** De README zegt dat Google anonieme gebruiksinformatie verzamelt:
+  installatieaantallen, de naam van de aanroepende agent, opgehaalde gids-id's en de
+  **CLI-zoekopdrachten**, geen ruwe prompts; opt-out met `DISABLE_TELEMETRY=1`. `SKILL.md`
+  beschrijft niets daarvan. **De twee bronnen spreken elkaar tegen; de README is de specifiekere,
+  dus behandel telemetrie als aan.** Het zoeken zelf draait een offline model (geen
+  netwerkaanroep); het netwerk is nodig om het pakket via `npx` op te halen.
+- **Verwijderen.** Niet vermeld.
+- **Baseline-target.** Niet instelbaar volgens de README. De Chrome-documentatie noemt één regel
+  in `CLAUDE.md` of `AGENTS.md` ("This project's Baseline target is Baseline 2024."), en
+  `SKILL.md` volgt een eigen ondersteuningsbeleid als er een is ingesteld. Zonder valt hij terug
+  op Baseline Widely available.
 
-**Not read:** the CLI's own code (`skills/modern-web-guidance/modern-web.mjs`). The telemetry
-claim therefore cannot be verified from here beyond the README.
+**Niet gelezen:** de eigen code van de CLI (`skills/modern-web-guidance/modern-web.mjs`). De
+telemetriebewering kan vanaf hier dus niet worden geverifieerd buiten de README om.
 
-## Decisions before the status moves to `in-progress`
+## Besluiten voordat de status naar `in-progress` gaat
 
-Taken by the human on 2026-10-23:
+Genomen door de mens op 2026-10-23:
 
-1. **Telemetry: off.** `DISABLE_TELEMETRY=1` for the agent's shell. The search queries are short
-   and about CSS, but they leave the machine. Setting the variable is a harness change of its
-   own: made on 2026-10-23 as an `env` block in `.claude/settings.json`. The name is generic, so
-   it may also reach other tools that read it. Verified 2026-10-23: the builder subagent's
-   shell has `DISABLE_TELEMETRY=1`.
-2. **Permission: approve each run by hand** for the duration of the trial. No allow-list entry.
-3. **The Baseline target: the default** (Baseline Widely available). Nothing is added to
-   `CLAUDE.md` for it.
-4. **The extra section in replies: leave it on.** The skill makes the agent end a reply with a
-   "Modern Web Guidance" section. Kept during the trial, because it lists the guide ids and
-   rules that shaped the code, which is the evidence for the one-line result in JNL-003 K10. To
-   watch on the first run: whether it disturbs the builder's fixed report format.
-5. **Install route: the `/plugin` commands.** Done on 2026-10-23, in a terminal window: the
-   `/plugin` command is not available in the VS Code extension ("isn't available in this
-   environment"), but `/reload-plugins` is. Result, read from `~/.claude/plugins/installed_plugins.json`:
-   version 0.0.195, **scope `local`** (this user, this project path only; enabled in the
-   gitignored `.claude/settings.local.json`), cached under `~/.claude/plugins/cache/googlechrome/`.
-   Consequence: nothing of it is in the repo, so it does not travel to another machine or
-   clone; fine for a trial, to be revisited if it is kept. The cached plugin is pinned at
-   0.0.195, but the CLI it calls is still fetched as `@latest` on each run. Uninstall is not
-   documented by the vendor; the `/plugin` screen in a terminal is the route.
+1. **Telemetrie: uit.** `DISABLE_TELEMETRY=1` voor de shell van de agent. De zoekopdrachten zijn
+   kort en gaan over CSS, maar ze verlaten de machine. Die variabele zetten is een harnesswijziging
+   op zich: gedaan op 2026-10-23 als `env`-blok in `.claude/settings.json`. De naam is generiek,
+   dus hij kan ook andere tools bereiken die hem lezen. Geverifieerd 2026-10-23: de shell van de
+   builder-subagent heeft `DISABLE_TELEMETRY=1`.
+2. **Toestemming: elke run met de hand goedkeuren** voor de duur van de proef. Geen
+   allowlist-regel.
+3. **Het Baseline-target: de default** (Baseline Widely available). Er wordt hiervoor niets aan
+   `CLAUDE.md` toegevoegd.
+4. **De extra sectie in antwoorden: laten staan.** De skill laat de agent een antwoord eindigen
+   met een sectie "Modern Web Guidance". Tijdens de proef aangehouden, omdat ze de gids-id's en
+   regels noemt die de code hebben gevormd, wat het bewijs is voor de eenregelige uitkomst in
+   JNL-003 K10. Te letten bij de eerste run: of ze het vaste rapportformat van de builder
+   verstoort.
+5. **Installatieroute: de `/plugin`-commando's.** Gedaan op 2026-10-23, in een terminalvenster: het
+   commando `/plugin` is niet beschikbaar in de VS Code-extensie ("isn't available in this
+   environment"), maar `/reload-plugins` wel. Resultaat, gelezen uit
+   `~/.claude/plugins/installed_plugins.json`: versie 0.0.195, **scope `local`** (deze gebruiker,
+   alleen dit projectpad; ingeschakeld in de gitignored `.claude/settings.local.json`), gecachet
+   onder `~/.claude/plugins/cache/googlechrome/`. Gevolg: er staat niets ervan in de repo, dus het
+   reist niet mee naar een andere machine of clone; prima voor een proef, opnieuw te bekijken als
+   het blijft. De gecachete plugin is gepind op 0.0.195, maar de CLI die hij aanroept wordt nog
+   steeds bij elke run als `@latest` opgehaald. Verwijderen is niet door de leverancier
+   gedocumenteerd; het `/plugin`-scherm in een terminal is de route.
 
-## Consequences
+## Gevolgen
 
-- If kept, it lands as a work rule in `CLAUDE.md` (the HDR is the reasoning, `CLAUDE.md` the
-  instruction). Proposed wording, not applied: *"For CSS and web-platform work, consult Modern
-  Web Guidance first; the project's Baseline target is X."* Changing `CLAUDE.md` follows the
-  duty to communicate: say what changes and ask for a check.
-- Installing is done by the human with the `/plugin` commands; the agent cannot run those.
-- Source: JNL-003, issue K10.
+- Als het blijft, komt het als werkregel in `CLAUDE.md` (de HDR is de redenering, `CLAUDE.md` de
+  instructie). Voorgestelde formulering, niet toegepast: *"For CSS and web-platform work, consult
+  Modern Web Guidance first; the project's Baseline target is X."* Het wijzigen van `CLAUDE.md`
+  volgt de communicatieplicht: zeg wat er verandert en vraag om een check.
+- Installeren doet de mens met de `/plugin`-commando's; de agent kan die niet uitvoeren.
+- Bron: JNL-003, issue K10.

@@ -5,36 +5,38 @@
 - **Implementation:** 100
 - **Type:** Harness Decision Record (HOW do we work)
 
-## Decision
+## Besluit
 
-`npm run docs:check` fails when a grootboek register or record carries a date after today.
-It reads the structured fields only: the register fields (`datum`, `implementatie-datum`,
-`laatste-sessie`), the front matter of a document, the `- **Date:**` and `- **Implemented:**`
-lines of a record, and the Dutch `datum: 27 oktober 2026` of a spec. Registers are read in full;
-a document is read in its first twenty lines. A date in running prose is not looked at.
+`npm run docs:check` faalt als een grootboekregister of -record een datum na vandaag draagt.
+Hij leest alleen de gestructureerde velden: de registervelden (`datum`, `implementatie-datum`,
+`laatste-sessie`), de front matter van een document, de regels `- **Date:**` en
+`- **Implemented:**` van een record, en de Nederlandse `datum: 27 oktober 2026` van een spec.
+Registers worden helemaal gelezen; een document wordt gelezen in zijn eerste twintig regels. Een
+datum in lopende tekst wordt niet bekeken.
 
-"Today" is the date in `Europe/Amsterdam`, not in UTC. CI runs in UTC, and a record written
-shortly after midnight here would otherwise look as if it comes from tomorrow.
+"Vandaag" is de datum in `Europe/Amsterdam`, niet in UTC. CI draait in UTC, en een record dat
+kort na middernacht hier is geschreven zou anders lijken uit morgen te komen.
 
-## Why
+## Waarom
 
-**Kernprincipe:** a date is a fact, and a fact that anyone can read from the clock should not be
-assumed. On 2026-10-27 22 dates in eight files were written as 2026-10-28, a day ahead of the
-clock and of every commit that carried them, because the day was taken to have turned over
-without looking. It was found by chance, in the reflog of a cold-start clone. A check would have
-caught it in the first `docs:check`.
+**Kernprincipe:** een datum is een feit, en een feit dat iedereen van de klok kan aflezen hoort
+niet te worden aangenomen. Op 2026-10-27 waren 22 data in acht bestanden geschreven als
+2026-10-28, een dag vóór de klok en vóór elke commit die ze droeg, omdat werd aangenomen dat de
+dag was omgeslagen zonder te kijken. Het werd bij toeval gevonden, in de reflog van een
+cold-start-clone. Een check had het bij de eerste `docs:check` gevangen.
 
-This is the mechanical half of the pattern `date-assumed` in the incident register (HDR-009),
-which it is the `maatregel` of.
+Dit is de mechanische helft van het patroon `date-assumed` in het incidentregister (HDR-009),
+waarvan dit de `maatregel` is.
 
-## Consequences
+## Gevolgen
 
-- It only catches a date after today. A date that is wrong but in the past, or a date in prose,
-  passes. A one-day-late error is invisible to it.
-- The timezone is a constant in `scripts/records.mjs`. Someone working from another timezone, at
-  the wrong hour, could trip it; the fix is the constant, not a looser check.
-- Covered by `scripts/record-dates.test.mjs`, including the exact mistake that was made: a
-  register dated one day ahead.
-- The other, non-mechanical half of the same incident is a claim made without reading its
-  source. That is the pattern `document-not-fully-read`, at two incidents and not yet at the
-  threshold, and it has no maatregel.
+- Hij vangt alleen een datum na vandaag. Een datum die fout is maar in het verleden ligt, of een
+  datum in lopende tekst, komt erdoor. Een fout van één dag te laat is er onzichtbaar voor.
+- De tijdzone is een constante in `scripts/records.mjs`. Wie vanuit een andere tijdzone werkt, op
+  het verkeerde uur, kan hem laten afgaan; de oplossing is de constante, geen losser gemaakte
+  check.
+- Gedekt door `scripts/record-dates.test.mjs`, inclusief de precieze fout die is gemaakt: een
+  register dat een dag vooruit is gedateerd.
+- De andere, niet-mechanische helft van hetzelfde incident is een bewering gedaan zonder de bron
+  te lezen. Dat is het patroon `document-not-fully-read`, op twee incidenten en nog niet op de
+  drempel, en het heeft geen maatregel.

@@ -2,181 +2,184 @@
 titel: "Instapjournaal: de software-balans"
 status: discovery
 datum: 2026-10-20
-kernvraag: What is the technical architecture of language-buddy, and which parts of it are decisions nobody has written down?
+kernvraag: Wat is de technische architectuur van language-buddy, en welke delen ervan zijn besluiten die niemand heeft vastgelegd?
 doel-records:
-  - "software-architectuur.md (v1.0, accepted 2026-10-20)"
+  - "software-architectuur.md (v1.0, geaccepteerd 2026-10-20)"
   - "ADR-001, ADR-002, ADR-003 (K2, K3, K5)"
   - "HDR-002, HDR-003 (K1, K4)"
 ---
 
 # JNL-001 — Instapjournaal: de software-balans
 
-**Core question.** What is the technical architecture of language-buddy, and which parts of
-it are decisions nobody has written down?
+**Kernvraag.** Wat is de technische architectuur van language-buddy, en welke delen ervan zijn
+besluiten die niemand heeft vastgelegd?
 
-**Main message.** The code and `docs/plan.md` already agree on almost everything the balance
-says. What the derivation could not establish is mostly about the delivery chain and about
-who may call the server routes. Those are the real questions below.
+**Hoofdboodschap.** De code en `docs/plan.md` komen al op bijna alles overeen wat de balans
+zegt. Wat de afleiding niet kon vaststellen gaat vooral over de delivery chain en over wie de
+server-routes mag aanroepen. Dat zijn de echte vragen hieronder.
 
-**How this was made.** Two read-only explorers (one for `src/lib` and `src/hooks`, one for
-the routes and the delivery chain) plus a targeted search of the git history. Every claim in
-the balance cites a file; the questions below are the places where the code did not say why.
+**Hoe dit is gemaakt.** Twee read-only explorers (een voor `src/lib` en `src/hooks`, een voor de
+routes en de delivery chain) plus een gerichte zoektocht door de git-geschiedenis. Elke bewering
+in de balans verwijst naar een bestand; de vragen hieronder zijn de plekken waar de code niet
+zei waarom.
 
-## Issues
+## Kwesties
 
-| # | Issue | Status |
+| # | Kwestie | Status |
 |---|---|---|
-| K1 | Balance next to plan.md: what is it for? | decided 2026-10-20 |
-| K2 | Environments: which branch deploys where? | decided 2026-10-20 |
-| K3 | The routes have no caller authentication or rate limit | decided 2026-10-20 (accepted for now) |
-| K4 | No CI in the repo | decided 2026-10-20 |
-| K5 | Why `gemini-3.1-flash-lite`? | decided 2026-10-20 |
-| K6 | Google TTS key travels as a URL query parameter | decided 2026-10-21 |
-| K7 | How to protect the routes (follow-up of K3) | open |
-| K8 | CI on pull requests to `main` (follow-up of K4) | decided, booked in HDR-003 |
+| K1 | Balans naast plan.md: waar is die voor? | besloten 2026-10-20 |
+| K2 | Omgevingen: welke branch wordt waar gedeployd? | besloten 2026-10-20 |
+| K3 | De routes hebben geen authenticatie van de aanroeper en geen rate limit | besloten 2026-10-20 (voor nu geaccepteerd) |
+| K4 | Geen CI in de repo | besloten 2026-10-20 |
+| K5 | Waarom `gemini-3.1-flash-lite`? | besloten 2026-10-20 |
+| K6 | De Google TTS-key reist mee als URL-queryparameter | besloten 2026-10-21 |
+| K7 | Hoe de routes te beschermen (vervolg op K3) | open |
+| K8 | CI op pull requests naar `main` (vervolg op K4) | besloten, geboekt in HDR-003 |
 
-### K1 — Balance next to plan.md: what is it for?
+### K1 — Balans naast plan.md: waar is die voor?
 
-`docs/plan.md` already describes the state model, the file layout and the standing decisions
-in detail. Most sections of the balance restate that from a technical lens, with files as
-evidence instead of rows. **Question for the human:** does the balance add something the plan
-does not (one place for the technical view, readable in one sitting), or is it a duplicate
-that will drift? This decides whether to keep going or to stop after this trial.
+`docs/plan.md` beschrijft het state-model, de bestandsindeling en de geldende besluiten al
+uitgebreid. De meeste secties van de balans zeggen dat opnieuw vanuit een technische bril, met
+bestanden als bewijs in plaats van rijen. **Vraag voor de mens:** voegt de balans iets toe wat
+het plan niet doet (één plek voor het technische beeld, in één keer te lezen), of is het een
+duplicaat dat gaat driften? Dit bepaalt of we doorgaan of na deze proef stoppen.
 
-The critique pass showed this concretely: two of the first four "candidate decisions" the
-balance listed (evaluation as its own call, the mock routes) turned out to be recorded in
-plan.md already. Still without a record anywhere, as far as I found: the reply being held
-until the evaluation settles, an unknown provider setting throwing instead of falling back,
-and native STT restarting after silence and giving up after three quick endings. I have not
-checked each against the plan's Decision log row by row.
+De critique-ronde liet dit concreet zien: twee van de eerste vier "kandidaat-besluiten" die de
+balans noemde (evaluatie als eigen aanroep, de mock-routes) bleken al in plan.md vastgelegd. Voor
+zover ik vond staat nog nergens een record van: het antwoord dat wordt vastgehouden tot de
+evaluatie klaar is, een onbekende provider-instelling die een fout gooit in plaats van terug te
+vallen, en de native STT die na stilte herstart en opgeeft na drie snelle beëindigingen. Ik heb
+dat niet rij voor rij gecontroleerd tegen het besluitenlog van het plan.
 
-**Decision (2026-10-20, the human):** keep the balance and use it to try drift detection
-(a DFT report: does the description still match the code?). `docs/plan.md` stays the source
-for now; the human intends to move the plan into the grootboek eventually, but wants to try
-the grootboek first. Until then the balance is a derived reading path next to the plan, and
-the drift risk between the two is accepted for the duration of the experiment. Not yet
-booked as a record; HDR-001 already says the plan stays the source until the experiment is
-settled. **Booked as HDR-002.**
+**Besluit (2026-10-20, de mens):** de balans houden en gebruiken om drift detection uit te
+proberen (een DFT-rapport: komt de beschrijving nog overeen met de code?). `docs/plan.md` blijft
+voorlopig de bron; de mens is van plan het plan uiteindelijk naar het grootboek te verhuizen,
+maar wil het grootboek eerst uitproberen. Tot die tijd is de balans een afgeleid leespad naast
+het plan, en het driftrisico tussen die twee wordt voor de duur van het experiment geaccepteerd.
+Nog niet geboekt als record; HDR-001 zegt al dat het plan de bron blijft tot het experiment is
+afgerond. **Geboekt als HDR-002.**
 
-### K2 — Environments: which branch deploys where?
+### K2 — Omgevingen: welke branch wordt waar gedeployd?
 
-Vercel is named in README and plan, but there is no configuration file, so the
-branch-to-environment mapping, the per-environment env vars and whether `arc/*` branches get
-preview deployments are not visible from the repo.
+Vercel wordt genoemd in de README en het plan, maar er is geen configuratiebestand, dus de
+koppeling van branch aan omgeving, de env vars per omgeving en of `arc/*`-branches
+preview-deployments krijgen zijn vanuit de repo niet te zien.
 
-**Decision (2026-10-20, the human):** `main` is the production branch. Nothing has been
-configured in Vercel for other branches, so Vercel's defaults apply, which means other
-branches (including `arc/*`) deploy as previews, never to production. The human does not
-mind `arc/*` previews; the requirement is only that `arc/*` never reaches production, and
-that holds until something is merged into `main` (which goes through a pull request).
-Nothing to change.
+**Besluit (2026-10-20, de mens):** `main` is de productiebranch. Voor andere branches is niets
+geconfigureerd in Vercel, dus de standaardwaarden van Vercel gelden, wat betekent dat andere
+branches (ook `arc/*`) als preview worden gedeployd, nooit naar productie. De mens heeft geen
+bezwaar tegen previews van `arc/*`; de eis is alleen dat `arc/*` nooit in productie komt, en dat
+geldt tot er iets in `main` wordt gemerged (wat via een pull request gaat). Niets te wijzigen.
 
-**Env vars per environment (2026-10-20, the human, checked in the Vercel dashboard):** the
-public variables (`NEXT_PUBLIC_*`) are enabled for Preview as well; all secret variables
-(the API keys) are enabled for Production only. Consequences, from the code:
+**Env vars per omgeving (2026-10-20, de mens, gecontroleerd in het Vercel-dashboard):** de
+publieke variabelen (`NEXT_PUBLIC_*`) staan ook voor Preview aan; alle geheime variabelen (de
+API-keys) staan alleen voor Production aan. Gevolgen, uit de code:
 
-- A preview of an `arc/*` branch builds, but every route that calls a vendor (chat,
-  evaluation, TTS, both token routes) has no key and fails at runtime. Only the native
-  speech recognition, which needs no server, works there.
-- The mock routes do not help in a preview: they answer 404 outside `next dev`.
-- A preview therefore cannot spend any vendor key. That also bounds K3 to production.
+- Een preview van een `arc/*`-branch bouwt, maar elke route die een vendor aanroept (chat,
+  evaluatie, TTS, beide token-routes) heeft geen key en faalt tijdens runtime. Alleen de native
+  spraakherkenning, die geen server nodig heeft, werkt daar.
+- De mock-routes helpen in een preview niet: ze antwoorden 404 buiten `next dev`.
+- Een preview kan dus geen enkele vendor-key uitgeven. Dat begrenst K3 ook tot productie.
 
-Nothing to change; it is a consistent setup for the stated wish (no `arc/*` in production,
-no objection to previews). **Booked as ADR-001.**
+Niets te wijzigen; het is een sluitende inrichting voor de uitgesproken wens (geen `arc/*` in
+productie, geen bezwaar tegen previews). **Geboekt als ADR-001.**
 
-### K3 — The routes have no caller authentication or rate limit
+### K3 — De routes hebben geen authenticatie van de aanroeper en geen rate limit
 
-Nothing in the repo checks who calls `/api/chat`, `/api/evaluation`, `/api/tts` or the token
-routes, and each of them spends a paid vendor key. **Question:** is that a conscious choice
-for a personal project on an unshared URL (and accepted until the repo is shared), or a gap?
-Whether Vercel-side protection exists is not visible from the repo.
+Niets in de repo controleert wie `/api/chat`, `/api/evaluation`, `/api/tts` of de token-routes
+aanroept, en elk daarvan gebruikt een betaalde vendor-key. **Vraag:** is dat een bewuste keuze
+voor een persoonlijk project op een niet gedeelde URL (en geaccepteerd tot de repo wordt
+gedeeld), of een gat? Of er bescherming aan de Vercel-kant bestaat is vanuit de repo niet te
+zien.
 
-**Decision (2026-10-20, the human):** the risk is accepted for now, but the human wants to
-solve it soon (see K7). Production deploys on a merge into `main`. No Vercel Deployment
-Protection was set up deliberately; the dashboard shows Vercel Authentication ("require
-login") active with Standard Protection. Per Vercel's documentation that scope protects
-everything except the production domain: previews and generated deployment URLs ask for a
-Vercel login, the production domain stays public. So the production routes remain
-reachable by anyone who knows the URL, and K3 stands for production. (The sources differ
-on some older production URLs; check the dashboard if it matters.) Vendor spend limits exist at some vendors but the
-human no longer knows exactly which; getting that overview is the human's own task, outside
-the repo, to be picked up soon. It is the only cap on the damage that does not depend on
-code. **Booked as ADR-002** (provisional; K7 will supersede it).
+**Besluit (2026-10-20, de mens):** het risico wordt voor nu geaccepteerd, maar de mens wil het
+snel oplossen (zie K7). Productie wordt gedeployd bij een merge in `main`. Er is bewust geen
+Vercel Deployment Protection ingesteld; het dashboard toont Vercel Authentication ("require
+login") actief met Standard Protection. Volgens de documentatie van Vercel beschermt die scope
+alles behalve het productiedomein: previews en gegenereerde deployment-URL's vragen om een
+Vercel-login, het productiedomein blijft publiek. De productie-routes blijven dus bereikbaar voor
+iedereen die de URL kent, en K3 blijft staan voor productie. (De bronnen verschillen over
+sommige oudere productie-URL's; controleer het dashboard als het ertoe doet.) Bij sommige
+vendors bestaan uitgavenlimieten, maar de mens weet niet meer precies welke; dat overzicht
+krijgen is een eigen taak van de mens, buiten de repo, om snel op te pakken. Het is de enige
+begrenzing van de schade die niet van code afhangt. **Geboekt als ADR-002** (voorlopig; K7 zal
+het vervangen).
 
-### K4 — No CI in the repo
+### K4 — Geen CI in de repo
 
-Checks run by hand. README mentions CI when the repo goes public. Related to the plan's "no
-test suite" decision. **Question:** deliberate and settled, or something to revisit?
+Checks draaien met de hand. De README noemt CI zodra de repo openbaar wordt. Hangt samen met het
+besluit van het plan "geen testsuite". **Vraag:** bewust en afgedaan, of iets om te heroverwegen?
 
-**Decision (2026-10-20, the human):** the absence of CI was not a deliberate choice. The
-checks (lint, typecheck, build, `docs:check`) should run on a pull request to `main`. How
-that is set up is K8. **Booked as HDR-003.**
+**Besluit (2026-10-20, de mens):** het ontbreken van CI was geen bewuste keuze. De checks (lint,
+typecheck, build, `docs:check`) horen te draaien bij een pull request naar `main`. Hoe dat wordt
+ingericht is K8. **Geboekt als HDR-003.**
 
-### K5 — Why `gemini-3.1-flash-lite`?
+### K5 — Waarom `gemini-3.1-flash-lite`?
 
-The provider (Gemini) was specified up front in plan.md → Fixed constraints. The model
-string is the same constant in the chat and the evaluation code; the reason for this model
-is not recorded in the code or the plan.
+De provider (Gemini) lag vooraf vast in plan.md → Fixed constraints. De modelstring is dezelfde
+constante in de chat- en de evaluatiecode; de reden voor dit model is niet vastgelegd in de code
+of het plan.
 
-**Decision (2026-10-20, the human):** a deliberate choice, made on price. No extensive
-comparison with other models was done; the plan's measurements (10-06 to 10-10) describe
-how this model performs, they did not compare it with others. **Booked as ADR-003.**
+**Besluit (2026-10-20, de mens):** een bewuste keuze, gemaakt op prijs. Er is geen uitgebreide
+vergelijking met andere modellen gedaan; de metingen in het plan (10-06 tot 10-10) beschrijven
+hoe dit model presteert, ze vergeleken het niet met andere. **Geboekt als ADR-003.**
 
-### K6 — Google TTS key as a URL query parameter
+### K6 — Google TTS-key als URL-queryparameter
 
-`src/lib/tts/google.ts` sends the key in the URL; the other providers use a header. The
-reason is not recorded. **Question:** deliberate, or just how it was first written?
+`src/lib/tts/google.ts` stuurt de key mee in de URL; de andere providers gebruiken een header. De
+reden is niet vastgelegd. **Vraag:** bewust, of gewoon zoals het eerst is geschreven?
 
-**Answer (2026-10-20, the human):** not a deliberate choice. Still open: whether to change
-it. What was found: in the code path read, the URL is not logged on failure (the error
-message carries only the status and the response body, and the route logs it server-side);
-whether Node's `fetch` adds the URL to a network error was not tested. Google's general
-documentation describes sending an API key in the `x-goog-api-key` header for REST calls,
-but a search did not confirm that the Text-to-Speech endpoint accepts that; verify before
-changing the code.
+**Antwoord (2026-10-20, de mens):** geen bewuste keuze. Nog open: of het moet veranderen. Wat er
+is gevonden: in het gelezen codepad wordt de URL niet gelogd bij een fout (de foutmelding bevat
+alleen de status en de response body, en de route logt die server-side); of de `fetch` van Node
+de URL aan een netwerkfout toevoegt is niet getest. De algemene documentatie van Google
+beschrijft het meesturen van een API-key in de `x-goog-api-key`-header voor REST-aanroepen, maar
+een zoekopdracht bevestigde niet dat het Text-to-Speech-endpoint dat accepteert; verifieer dat
+voordat de code verandert.
 
-**Decision (2026-10-21, the human):** change it. The human tested both forms directly
-against the live endpoint with their own key (`Invoke-WebRequest`, once with `?key=`, once
-with the `x-goog-api-key` header) and got `200` on both, settling what a documentation
-search alone could not. **Booked as ADR-004** — the first grootboek decision in this repo
-that changed code, not only documentation.
+**Besluit (2026-10-21, de mens):** veranderen. De mens testte beide vormen rechtstreeks tegen het
+live endpoint met de eigen key (`Invoke-WebRequest`, een keer met `?key=`, een keer met de
+`x-goog-api-key`-header) en kreeg bij beide `200`, wat vastlegt wat een documentatiezoektocht
+alleen niet kon. **Geboekt als ADR-004** — het eerste grootboekbesluit in deze repo dat code
+veranderde, niet alleen documentatie.
 
-### K7 — How to protect the routes (follow-up of K3)
+### K7 — Hoe de routes te beschermen (vervolg op K3)
 
-Open. The human wants the exposure of the vendor-calling routes in production solved soon.
-Needs discovery before a decision: what kind of protection fits a personal app used from
-one browser and one iPhone (the options range from platform-level protection on the
-deployment to a check inside the routes), and what each costs in complexity and in the
-iPhone flow. Not researched yet.
+Open. De mens wil de blootstelling van de routes die een vendor aanroepen in productie snel
+oplossen. Heeft discovery nodig voor een besluit: welk soort bescherming past bij een persoonlijke
+app die vanuit één browser en één iPhone wordt gebruikt (de opties lopen van bescherming op
+platformniveau voor de deployment tot een controle binnen de routes), en wat elk kost aan
+complexiteit en in de iPhone-flow. Nog niet onderzocht.
 
-### K8 — CI on pull requests to `main` (follow-up of K4)
+### K8 — CI op pull requests naar `main` (vervolg op K4)
 
-Decided and built: see HDR-003. The history wrinkle turned out real; the workflow checks out
-with `fetch-depth: 0`.
+Besloten en gebouwd: zie HDR-003. De rimpel in de geschiedenis bleek echt; de workflow checkt uit
+met `fetch-depth: 0`.
 
-## Decision log
+## Besluitenlog
 
-- **2026-10-20 — balance accepted.** The human accepted `software-architectuur.md` as v1.0
-  (leading document), as a whole. Next: the drift trial (a DFT report), in a later session.
-- **2026-10-21 — K1, K2, K3, K4, K5 booked.** HDR-002, ADR-001, ADR-002, HDR-003 and ADR-003
-  crystallize those five decisions into their own records, per the grootboek's own rule that
-  a journal issue lands in a target record rather than staying a journal entry. K6 stays
-  unbooked: it is answered but not yet decided whether to act on it.
-- **2026-10-21 — balance extended with the frontend layer.** REQ-GG-01's scope gap closed;
-  most of what the explorer found was already decided in `plan.md` (09-29, 09-30, 10-02,
-  10-03), cited from the balance rather than duplicated.
-- **2026-10-21 — DFT-001: first reconciliation, no drift found.** REQ-GG-05 exercised once.
-  No code change has happened since the balance was written, so this proved the process
-  (a reconciliation can be requested and registered) rather than its ability to catch real
-  drift. The loop (journal → decision → document → code → drift) still has not closed
-  end-to-end; that needs a real code change to follow a decision, which has not happened
-  yet (REQ-GG-09).
-- **2026-10-21 — K6 decided and booked as ADR-004.** `src/lib/tts/google.ts` now sends the
-  key as a header. This is the code step the drift trial was missing: a future DFT against
-  this balance now has a real change to reconcile against, closing REQ-GG-09's loop once
-  that DFT runs.
+- **2026-10-20 — balans geaccepteerd.** De mens accepteerde `software-architectuur.md` als v1.0
+  (leidend document), als geheel. Hierna: de driftproef (een DFT-rapport), in een latere sessie.
+- **2026-10-21 — K1, K2, K3, K4, K5 geboekt.** HDR-002, ADR-001, ADR-002, HDR-003 en ADR-003
+  kristalliseren die vijf besluiten uit tot eigen records, volgens de eigen regel van het
+  grootboek: een kwestie uit een journaal komt in een doelrecord terecht en blijft
+  geen journaalpost. K6 blijft ongeboekt: het is beantwoord, maar nog niet besloten of we
+  ernaar handelen.
+- **2026-10-21 — balans uitgebreid met de frontendlaag.** Het scopegat van REQ-GG-01 is gedicht;
+  het meeste van wat de explorer vond was al besloten in `plan.md` (09-29, 09-30, 10-02, 10-03),
+  en wordt vanuit de balans aangehaald in plaats van gedupliceerd.
+- **2026-10-21 — DFT-001: eerste reconciliatie, geen drift gevonden.** REQ-GG-05 een keer
+  uitgeoefend. Sinds het schrijven van de balans is geen code veranderd, dus dit bewees het
+  proces (een reconciliatie kan worden aangevraagd en geregistreerd) en niet het vermogen om
+  echte drift te vangen. De lus (journaal → besluit → document → code → drift) is nog niet
+  end-to-end gesloten; daarvoor moet een echte codewijziging een besluit volgen, wat nog niet is
+  gebeurd (REQ-GG-09).
+- **2026-10-21 — K6 besloten en geboekt als ADR-004.** `src/lib/tts/google.ts` stuurt de key nu
+  als header. Dit is de codestap die de driftproef miste: een toekomstige DFT tegen deze balans
+  heeft nu een echte wijziging om tegen te reconciliëren, wat de lus van REQ-GG-09 sluit zodra
+  die DFT draait.
 
-- **2026-10-22 — K8 built (HDR-003).** `.github/workflows/checks.yml` runs on PRs to `main`
-  and `arc/arc-main`, with the REQ-AH-12 register drift check in the same workflow.
+- **2026-10-22 — K8 gebouwd (HDR-003).** `.github/workflows/checks.yml` draait op PR's naar
+  `main` en `arc/arc-main`, met de driftcontrole van het REQ-AH-12-register in dezelfde workflow.
 
-This journal closes when K7 is decided or parked.
+Dit journaal sluit als K7 is besloten of geparkeerd.

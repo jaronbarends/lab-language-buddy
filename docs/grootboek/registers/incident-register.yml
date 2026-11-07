@@ -1,96 +1,96 @@
-# Incident register — recurring faults, counted per pattern
-# Once is an incident, twice is chance, three times is a weakness of the harness
-# (REQ-GG-06). At three, the pattern is codified (a rule, hook or skill) and booked as an
-# HDR, whose id goes in `maatregel`. `npm run docs:check` warns until it is.
+# Incidentregister — terugkerende fouten, geteld per patroon
+# Eén keer is een incident, twee keer is toeval, drie keer is een zwakte van het harnas
+# (REQ-GG-06). Bij drie wordt het patroon vastgelegd (een regel, hook of skill) en als
+# HDR geboekt, waarvan het id in `maatregel` komt. `npm run docs:check` waarschuwt tot dat is gebeurd.
 #
-# An incident is a line, not a decision: no ids, no documents (HDR-001 books decisions).
-# Add an entry when Jarón corrects the agent, or a tool fails in a way that has happened
-# before, and say so in a sentence. Append-only, like the other registers.
+# Een incident is een regel, geen beslissing: geen ids, geen documenten (HDR-001 boekt beslissingen).
+# Voeg een regel toe als Jarón de agent corrigeert, of een tool faalt op een manier die eerder is
+# voorgekomen, en zeg dat in één zin. Alleen toevoegen, zoals de andere registers.
 #
-# Fields:
-#   patroon    — a slug; a new fault that looks like an existing pattern joins it
-#   maatregel  — the HDR that codified the pattern (empty until then)
+# Velden:
+#   patroon    — een slug; een nieuwe fout die op een bestaand patroon lijkt sluit daarbij aan
+#   maatregel  — de HDR die het patroon heeft vastgelegd (leeg tot dan)
 #   datum      — YYYY-MM-DD
-#   aantal     — optional, default 1: several of the same fault in one go
-#   wat, bron  — what happened, and where it was found
+#   aantal     — optioneel, standaard 1: meerdere keren dezelfde fout in één keer
+#   wat, bron  — wat er gebeurde, en waar het is gevonden
 
 patronen:
   - patroon: naming-precision
-    titel: "A name promises more or less than the code does"
+    titel: "Een naam belooft meer of minder dan de code doet"
     maatregel: HDR-010
     incidenten:
       - datum: 2026-10-10
         aantal: 7
-        wat: "Seven names corrected in one review, each with a reason and each right: a request body called a request, a status called running before anything ran, a function claiming the reply was spoken"
-        bron: "stage 4 review"
+        wat: "Zeven namen gecorrigeerd in één review, elk met een reden en elk terecht: een request body die request heette, een status running voordat er iets draaide, een functie die beweerde dat het antwoord was uitgesproken"
+        bron: "review van stage 4"
   - patroon: answer-first
-    titel: "A direct question gets the reasoning first and the answer buried in it"
+    titel: "Een directe vraag krijgt eerst de redenering en het antwoord zit erin verstopt"
     maatregel:
     incidenten:
       - datum: 2026-09-23
         aantal: 2
-        wat: "Asked whether Opus was the best model for the task and whether the plan was complete, the answer came wrapped in per-stage reasoning instead of first"
-        bron: "memory note feedback-answer-the-question-asked"
+        wat: "Gevraagd of Opus het beste model voor de taak was en of het plan compleet was, kwam het antwoord verpakt in redenering per stage in plaats van eerst"
+        bron: "geheugennotitie feedback-answer-the-question-asked"
   - patroon: act-on-question
-    titel: "A question or a description of a change is treated as an instruction to execute"
+    titel: "Een vraag of een beschrijving van een wijziging wordt behandeld als opdracht om uit te voeren"
     maatregel:
     incidenten:
       - datum: 2026-09-23
         aantal: 2
-        wat: "Deleting dead code was also committed, and a feasibility question about a branch was answered by restructuring git on the spot"
-        bron: "memory note feedback-dont-execute-on-questions"
+        wat: "Het verwijderen van dode code werd ook gecommit, en een haalbaarheidsvraag over een branch werd beantwoord door git ter plekke te herstructureren"
+        bron: "geheugennotitie feedback-dont-execute-on-questions"
   - patroon: review-point-context
-    titel: "A review finding is put to a decision before it stands on its own in the chat"
+    titel: "Een reviewbevinding wordt ter beslissing voorgelegd voordat ze in de chat op zichzelf staat"
     maatregel:
     incidenten:
       - datum: 2026-10-03
-        wat: "A finding described as a schema with three loose optional fields, so the review file had to be opened to understand it"
-        bron: "memory note feedback-review-points-self-contained"
+        wat: "Een bevinding beschreven als een schema met drie losse optionele velden, zodat het reviewbestand geopend moest worden om haar te begrijpen"
+        bron: "geheugennotitie feedback-review-points-self-contained"
   - patroon: id-with-title
-    titel: "A numbered record is cited by its id alone"
+    titel: "Een genummerd record wordt alleen met zijn id aangehaald"
     maatregel:
     incidenten:
       - datum: 2026-10-21
-        wat: "A bare requirement id in a status update, which sends the reader off to look it up"
-        bron: "memory note feedback-requirement-ids-need-titles"
+        wat: "Een kaal requirement-id in een statusupdate, waardoor de lezer het zelf moet opzoeken"
+        bron: "geheugennotitie feedback-requirement-ids-need-titles"
   - patroon: branch-before-edit
-    titel: "Work is edited on the integration branch before a branch exists"
+    titel: "Er wordt gewerkt op de integratiebranch voordat er een branch bestaat"
     maatregel: HDR-011
     incidenten:
       - datum: 2026-10-27
-        wat: "A fresh agent edited README.md directly on arc/arc-main, uncommitted, and said only afterwards that a branch and PR are needed"
-        bron: "cold-start run, phase 2 (JNL-002)"
+        wat: "Een verse agent bewerkte README.md direct op arc/arc-main, ongecommit, en zei pas achteraf dat een branch en PR nodig zijn"
+        bron: "koude-startrun, fase 2 (JNL-002)"
   - patroon: document-not-fully-read
-    titel: "A claim about a document is made without reading it in full"
+    titel: "Er wordt een bewering over een document gedaan zonder het volledig te lezen"
     maatregel:
     incidenten:
       - datum: 2026-10-27
-        wat: "Said the README lists only lint and build, from a search for npm run that misses lines starting with npx; it also listed the typecheck"
-        bron: "cold-start run 1, found when the agent's diff came back"
+        wat: "Zei dat de README alleen lint en build noemt, op basis van een zoekopdracht naar npm run die regels mist die met npx beginnen; ook de typecheck stond erin"
+        bron: "koude-startrun 1, gevonden toen de diff van de agent terugkwam"
       - datum: 2026-10-27
-        wat: "Wrote in the journal that no occasion had arisen to test the AI-or-self rule, without reading the global instruction that asks for a verdict before any new task"
-        bron: "found while preparing cold-start run 2"
+        wat: "Schreef in het journaal dat er geen aanleiding was geweest om de AI-of-zelf-regel te testen, zonder de globale instructie te lezen die vóór elke nieuwe taak om een oordeel vraagt"
+        bron: "gevonden bij de voorbereiding van koude-startrun 2"
   - patroon: date-assumed
-    titel: "A date is assumed instead of read from the clock"
+    titel: "Een datum wordt aangenomen in plaats van van de klok gelezen"
     maatregel: HDR-012
     incidenten:
       - datum: 2026-10-27
-        wat: "Wrote 2026-10-28 in 22 places in eight files, a day ahead of the clock and of every commit"
-        bron: "found in the reflog of cold-start run 2"
+        wat: "Schreef 2026-10-28 op 22 plekken in acht bestanden, een dag voor op de klok en op elke commit"
+        bron: "gevonden in de reflog van koude-startrun 2"
   - patroon: ai-vs-self-advice
-    titel: "Global instructions and the project disagree, and only private memory settles it"
+    titel: "Globale instructies en het project spreken elkaar tegen, en alleen privégeheugen beslist"
     maatregel:
     incidenten:
       - datum: 2026-10-03
-        wat: "A one-line AI-or-self verdict and learning-goal framing given in a project that does not want them"
-        bron: "memory note feedback-no-ai-vs-self-advice-here"
+        wat: "Een AI-of-zelf-oordeel van één regel en leerdoel-framing gegeven in een project dat die niet wil"
+        bron: "geheugennotitie feedback-no-ai-vs-self-advice-here"
   - patroon: reviewer-claim-unchecked
-    titel: "A reviewer's claim is passed on without being checked against the code"
+    titel: "Een bewering van een reviewer wordt doorgegeven zonder haar aan de code te toetsen"
     maatregel:
     incidenten:
       - datum: 2026-10-10
-        wat: "Two claims in stage 4 finding B1 turned out to be wrong when checked"
-        bron: "stage 4 review, finding B1"
+        wat: "Twee beweringen in bevinding B1 van stage 4 bleken fout toen ze werden gecontroleerd"
+        bron: "review van stage 4, bevinding B1"
       - datum: 2026-10-23
-        wat: "The reviewer approved the bubble spike on the reasoning that the position key is equal across the thinking-to-reply transition, missing that the waiting bubble and the reply sat in different child slots of the thread, so React remounted and no animation ran; the lead checked the tokens and the scope but did not trace the key claim, and it was found on the user's screen"
-        bron: "bubble animation spike, JNL-003 K10 process note"
+        wat: "De reviewer keurde de bubbelspike goed op de redenering dat de positiekey gelijk is over de overgang van denken naar antwoord, en miste dat de wachtbubbel en het antwoord in verschillende child-slots van de thread zaten, zodat React opnieuw mountte en er geen animatie draaide; de lead controleerde de tokens en de scope maar volgde de keybewering niet, en het werd op het scherm van de gebruiker gevonden"
+        bron: "bubbelanimatie-spike, procesnotitie bij JNL-003 K10"

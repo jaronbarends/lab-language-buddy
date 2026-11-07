@@ -9,15 +9,16 @@ auteurs: Jarón, Mama Claude
 
 # Een driftsignaal voor leidende documenten
 
-**The point.** REQ-GG-05 (Richt drift-detectie in) wants drift to be signalled, booked and
-followed up. DFT-001 proved the *process* of a reconciliation; nothing tells anyone *when* one
-is due. This feature adds that: a signal that says "the code this document describes has
-changed since the document was last touched". It is a signal, not a verdict. Whether the
-document is actually wrong is for a reconciliation to find out, and a DFT books the result.
+**Waar het om gaat.** REQ-GG-05 (Richt drift-detectie in) wil dat drift wordt gesignaleerd,
+geboekt en opgevolgd. DFT-001 bewees het *proces* van een reconciliatie; niets vertelt iemand
+*wanneer* er een aan de orde is. Deze feature voegt dat toe: een signaal dat zegt "de code die
+dit document beschrijft is veranderd sinds het document voor het laatst is aangeraakt". Het is
+een signaal, geen oordeel. Of het document echt fout is, moet een reconciliatie uitzoeken, en
+een DFT boekt het resultaat.
 
-## Part 1: the field `werkgebied`
+## Deel 1: het veld `werkgebied`
 
-A leading document that describes code says which code, in its own front matter:
+Een leidend document dat code beschrijft, zegt in zijn eigen front matter welke code:
 
 ```yaml
 werkgebied:
@@ -29,72 +30,78 @@ werkgebied:
   - .env.example
 ```
 
-- Paths are files or folders in the repo. The field lives with the document it belongs to, so a
-  new balance brings its own scope and nothing else has to be kept in step (the choice for
-  option 2 over a separate list).
-- First user: `docs/grootboek/software-architectuur.md`, the only balance so far. That is a
-  change to a leading document: reported and checked before it is committed.
-- **Left out on purpose: `package.json`.** Since the balance was last touched it changed four
-  times, all tooling (CI, Husky, scripts). Those say nothing about the balance, and a signal
-  that cries on day one gets ignored. A dependency that matters shows up in `src/` as well.
-- Scope is a judgment call per document. `src/app` is taken whole, not just `src/app/api`,
-  because the balance also describes the app shell; CSS changes there will fire the signal.
+- Paden zijn bestanden of mappen in de repo. Het veld staat bij het document waar het bij hoort,
+  dus een nieuwe balans brengt zijn eigen werkgebied mee en er hoeft verder niets gelijk
+  gehouden te worden (de keuze voor optie 2 boven een aparte lijst).
+- Eerste gebruiker: `docs/grootboek/software-architectuur.md`, tot nu toe de enige balans. Dat is
+  een wijziging aan een leidend document: gemeld en gecontroleerd vóór het wordt gecommit.
+- **Bewust weggelaten: `package.json`.** Sinds de balans voor het laatst is aangeraakt is hij
+  vier keer veranderd, steeds tooling (CI, Husky, scripts). Dat zegt niets over de balans, en
+  een signaal dat op dag één alarm slaat, wordt genegeerd. Een dependency die ertoe doet, laat
+  zich ook in `src/` zien.
+- Het werkgebied is per document een afweging. `src/app` wordt als geheel genomen, niet alleen
+  `src/app/api`, omdat de balans ook de app-schil beschrijft; CSS-wijzigingen daar laten het
+  signaal afgaan.
 
-## Part 2: the script, `npm run docs:drift`
+## Deel 2: het script, `npm run docs:drift`
 
-- Finds every `.md` under `docs/` whose front matter has `werkgebied`.
-- **Baseline** is the last commit that touched the document. Commits that touched the scope
-  after it are the drift: the script lists them (hash, date, subject) and the files changed.
-- A path in `werkgebied` that does not exist is a problem, not drift: the list itself has gone
-  stale (a folder was renamed). Exit code 1.
-- A document not yet committed has no baseline: skipped, and said so.
-- It never changes anything and always exits 0 unless there is a problem.
+- Vindt elk `.md`-bestand onder `docs/` waarvan de front matter `werkgebied` heeft.
+- **Baseline** is de laatste commit die het document aanraakte. Commits die het werkgebied
+  daarna aanraakten zijn de drift: het script toont ze (hash, datum, onderwerp) en de
+  gewijzigde bestanden.
+- Een pad in `werkgebied` dat niet bestaat is een probleem, geen drift: de lijst zelf is
+  verouderd (een map is hernoemd). Exitcode 1.
+- Een document dat nog niet gecommit is heeft geen baseline: wordt overgeslagen, met een melding.
+- Het verandert nooit iets en eindigt altijd met exitcode 0, tenzij er een probleem is.
 
-## Part 3: in `docs:check`
+## Deel 3: in `docs:check`
 
-- Drift is a **warning** (like the plan-staleness one), never an error: drift is normal, and a
-  red CI for it would be wrong. A missing scope path is an **error**.
-- `docs:check` is already on the list of checks to run before calling something done and runs
-  in CI on every PR, so the signal needs no new habit.
+- Drift is een **waarschuwing** (zoals die voor een verouderd plan), nooit een fout: drift is
+  normaal, en een rode CI daarvoor zou verkeerd zijn. Een ontbrekend pad in het werkgebied is
+  een **fout**.
+- `docs:check` staat al op de lijst van checks die je draait voordat je iets klaar noemt en
+  draait in CI bij elke PR, dus het signaal vraagt geen nieuwe gewoonte.
 
-## What it does not do
+## Wat het niet doet
 
-- **It does not judge.** "Behind" means the scope changed, not that the document is wrong.
-  The next step is a reconciliation (an agent pass against the code, as in DFT-001) and a DFT
-  that books the outcome.
-- **Baseline is "last touched", not "last checked".** Fixing a typo in the document resets the
-  signal. A stricter baseline (a field naming the commit a reconciliation last verified) is a
-  possible later step.
-- **Visibility is thin.** A CI warning is a line in a log. Nothing posts it on the PR.
-- **Other leading documents.** `CLAUDE.md` files could carry `werkgebied` too (the one in
-  `src/components` describes that folder). Not done here; the mechanism allows it.
+- **Het oordeelt niet.** "Achterlopend" betekent dat het werkgebied is veranderd, niet dat het
+  document fout is. De volgende stap is een reconciliatie (een agent-ronde tegen de code, zoals
+  in DFT-001) en een DFT die de uitkomst boekt.
+- **De baseline is "laatst aangeraakt", niet "laatst gecontroleerd".** Een typfout in het
+  document herstellen reset het signaal. Een strengere baseline (een veld dat de commit noemt
+  die een reconciliatie voor het laatst heeft geverifieerd) is een mogelijke latere stap.
+- **De zichtbaarheid is dun.** Een CI-waarschuwing is een regel in een log. Niets plaatst hem op
+  de PR.
+- **Andere leidende documenten.** `CLAUDE.md`-bestanden zouden ook `werkgebied` kunnen hebben
+  (die in `src/components` beschrijft die map). Hier niet gedaan; het mechanisme staat het toe.
 
 ## Tests
 
-`node:test` on a throwaway git repo, as for the renumber script: no change gives no drift; a
-change inside the scope after the document is reported with its file; a change outside the
-scope is not; editing the document afterwards resets it; a document without `werkgebied` is
-ignored; an uncommitted document is skipped; a missing scope path is a problem; a folder scope
-matches files below it.
+`node:test` op een wegwerp-repo, zoals voor het renumber-script: geen wijziging geeft geen
+drift; een wijziging binnen het werkgebied na het document wordt gemeld met zijn bestand; een
+wijziging buiten het werkgebied niet; het document daarna bewerken reset het; een document
+zonder `werkgebied` wordt genegeerd; een ongecommit document wordt overgeslagen; een ontbrekend
+pad in het werkgebied is een probleem; een mapwerkgebied matcht bestanden eronder.
 
-## Done when
+## Klaar wanneer
 
-- `npm run docs:drift` runs on the current repo and reports nothing behind (no change in the
-  scope since the balance was last touched, checked above).
-- The tests pass and run in CI (`test:scripts` already does).
-- `docs:check` warns on drift and fails on a missing scope path, shown on a throwaway repo.
-- The proof that it *finds* something real stays open until a change in the scope lands:
-  `arc/bubble-animation` (`ai-bubble.tsx`) is the first. That is named in the record, not
-  faked here.
-- A new HDR books the decision and how the signal leads to a reconciliation and a DFT.
+- `npm run docs:drift` draait op de huidige repo en meldt niets dat achterloopt (geen wijziging in het
+  werkgebied sinds de balans voor het laatst is aangeraakt, hierboven gecontroleerd).
+- De tests slagen en draaien in CI (`test:scripts` doet dat al).
+- `docs:check` waarschuwt bij drift en faalt bij een ontbrekend pad in het werkgebied, getoond
+  op een wegwerp-repo.
+- Het bewijs dat het echt iets *vindt*, blijft open tot er een wijziging in het werkgebied
+  landt: `arc/bubble-animation` (`ai-bubble.tsx`) is de eerste. Dat staat in het record, niet
+  hier nagebootst.
+- Een nieuwe HDR boekt het besluit en hoe het signaal leidt tot een reconciliatie en een DFT.
 
-## Sources
+## Bronnen
 
-- **The thinking:** this session; DFT-001 (the reconciliation process, no drift found);
+- **Het denkwerk:** deze sessie; DFT-001 (het reconciliatieproces, geen drift gevonden);
   REQ-GG-05.
-- **The pattern:** `.claude/hooks/leading-documents.json` and HDR-006 (a list as data);
-  `scripts/renumber-records.mjs` and HDR-007 (script, test on a throwaway repo, check in
-  `docs:check`); the plan-staleness warning in `scripts/check-docs.mjs`.
-- **Where it lands:** `scripts/drift-signal.mjs`, `scripts/check-docs.mjs`, `package.json`,
-  the front matter of `docs/grootboek/software-architectuur.md`.
-- **The first real test:** branch `arc/bubble-animation`.
+- **Het patroon:** `.claude/hooks/leading-documents.json` en HDR-006 (een lijst als data);
+  `scripts/renumber-records.mjs` en HDR-007 (script, test op een wegwerp-repo, check in
+  `docs:check`); de waarschuwing voor een verouderd plan in `scripts/check-docs.mjs`.
+- **Waar het landt:** `scripts/drift-signal.mjs`, `scripts/check-docs.mjs`, `package.json`, de
+  front matter van `docs/grootboek/software-architectuur.md`.
+- **De eerste echte test:** branch `arc/bubble-animation`.

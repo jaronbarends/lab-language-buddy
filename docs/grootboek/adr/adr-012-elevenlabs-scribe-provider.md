@@ -68,7 +68,7 @@ controls-componenten.
 
 - **Wat is gecontroleerd.** Op desktop Chrome en op een iPhone werkten de ElevenLabs-provider en
   de Deepgram-provider (ADR-011: Deepgram-provider), na de renames van die dag, in de app
-  "zoals eerder" (Jarón's woorden). Niet vastgelegd: het aantal runs, de iOS-versie, of de tweede
+  "zoals eerder" (Jaróns woorden). Niet vastgelegd: het aantal runs, de iOS-versie, of de tweede
   beurt na een AI-antwoord is geprobeerd, het volume van de AI-spraak en andere talen dan de
   gebruikte. Dit stelt vast dat de nieuwe provider en de hernoemde Deepgram-route draaien; het
   breidt het spike-resultaat van 11 van 11 beurten niet uit naar de app. De open vraag over de

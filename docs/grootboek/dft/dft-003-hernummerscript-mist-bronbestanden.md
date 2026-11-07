@@ -2,56 +2,60 @@
 
 - **Status:** in_progress
 - **Date:** 2026-10-27
-- **Trigger:** found by the animation session after `arc/arc-main` was merged into
-  `arc/bubble-animation` (the first time `npm run docs:renumber` ran on a branch that touches
-  `src/`): three comments in `src/` still said JNL-002, which by then was the cold-start
-  journal and no longer the bubble journal.
+- **Trigger:** gevonden door de animatiesessie nadat `arc/arc-main` in `arc/bubble-animation`
+  was gemerged (de eerste keer dat `npm run docs:renumber` draaide op een branch die `src/`
+  aanraakt): drie comments in `src/` zeiden nog JNL-002, dat inmiddels het journaal over de
+  koude start was en niet meer het journaal over de bubbel.
 
 ## SOLL vs IST
 
-**SOLL:** HDR-005, step 3: a renumbering rewrites the file name, the register lines,
+**SOLL:** HDR-005, stap 3: een hernummering herschrijft de bestandsnaam, de registerregels,
 `docs/index.yml` "and every reference in prose (other records, the balance, **code comments**)".
-HDR-007 made that step mechanical and describes the script as covering the registers,
-`docs/index.yml`, the record and the journals that mention it.
+HDR-007 maakte die stap mechanisch en beschrijft het script als dekkend voor de registers,
+`docs/index.yml`, het record en de journalen die het noemen.
 
-**IST:** `scripts/renumber-records.mjs` rewrote only files ending in `.md`, `.yml`, `.yaml` or
-`.json`. A reference in a `.ts` or `.tsx` comment was never looked at. On 2026-10-27 that left
-three comments pointing at the wrong journal, in `ai-bubble.tsx` (two) and
-`conversation-thread.tsx` (one). No behaviour changed; a reader who followed the reference
-would have landed in the wrong document.
+**IST:** `scripts/renumber-records.mjs` herschreef alleen bestanden die eindigen op `.md`,
+`.yml`, `.yaml` of `.json`. Een verwijzing in een comment in een `.ts` of `.tsx` werd nooit
+bekeken. Op 2026-10-27 liet dat drie comments achter die naar het verkeerde journaal wezen, in
+`ai-bubble.tsx` (twee) en `conversation-thread.tsx` (één). Er veranderde geen gedrag; een
+lezer die de verwijzing volgde, kwam in het verkeerde document terecht.
 
-**Weight:** medium. The pointer is wrong silently, nothing fails, and only a person reading the
-code finds it. It was found by chance, by the session that owns those files.
+**Gewicht:** middel. De verwijzing is stilzwijgend fout, niets faalt, en alleen iemand die de
+code leest ziet het. Het werd bij toeval gevonden, door de sessie die die bestanden beheert.
 
-## Pattern
+## Patroon
 
-None yet; this is the first renumbering on a branch that touches `src/`, and so the first time
-the gap could show. It is not an incident of the kind the incident register counts (a repeat);
-it is a defect in a tool, found on first use.
+Nog geen; dit is de eerste hernummering op een branch die `src/` aanraakt, en dus de eerste
+keer dat het gat kon opvallen. Het is geen incident van het soort dat het incidentregister telt
+(een herhaling); het is een defect in een tool, gevonden bij het eerste gebruik.
 
-## Decisions
+## Besluiten
 
-1. **The script now also rewrites `.css` and every JavaScript or TypeScript file extension**
-   (`js`, `jsx`, `ts`, `tsx`, `mjs`, `cjs`, `mts`, `cts`), on the lines the branch added, like
-   the documents. Done on `arc/renumber-source-files`. Covered by two tests: a comment the
-   branch added is rewritten, and a line in a source file that the branch did not add is left
-   alone.
-2. **Replayed on the real case** on a throwaway checkout of `arc/bubble-animation` from before
-   its renumbering: the script changed eight files instead of six, and the three comments read
-   JNL-003.
-3. **The three comments that are already wrong** on `arc/bubble-animation` cannot be repaired by
-   the script now (the collision is resolved), so the animation session fixes them by hand
-   through a builder (`regime: trivial`, comments only). **This DFT stays `in_progress` until
-   that has landed.**
-4. HDR-005 and HDR-007 are not edited: both are implemented. This record is the correction.
+1. **Het script herschrijft nu ook `.css` en elke extensie van JavaScript- of
+   TypeScript-bestanden** (`js`, `jsx`, `ts`, `tsx`, `mjs`, `cjs`, `mts`, `cts`), op de regels
+   die de branch heeft toegevoegd, net als bij de documenten. Gedaan op
+   `arc/renumber-source-files`. Gedekt door twee tests: een comment die de branch heeft
+   toegevoegd wordt herschreven, en een regel in een bronbestand die de branch niet heeft
+   toegevoegd blijft ongemoeid.
+2. **Herhaald op het echte geval** op een wegwerp-checkout van `arc/bubble-animation` van vóór
+   zijn hernummering: het script veranderde acht bestanden in plaats van zes, en de drie
+   comments luidden JNL-003.
+3. **De drie comments die al fout zijn** op `arc/bubble-animation` kan het script nu niet meer
+   herstellen (de botsing is opgelost), dus de animatiesessie verbetert ze met de hand via een
+   builder (`regime: trivial`, alleen comments). **Deze DFT blijft `in_progress` tot dat
+   is gelukt.**
+4. HDR-005 en HDR-007 worden niet aangepast: beide zijn geïmplementeerd. Dit record is de
+   correctie.
 
-## Consequences
+## Gevolgen
 
-- **Limits.** A reference in a file type outside the list (an `.html`, an `.svg`, a binary) is
-  still not rewritten. A source comment that cites a record by id still has no check that the
-  id exists, and such a check could not have caught this case: JNL-002 exists, it is just the
-  other journal.
-- The assumption that makes the replacement safe still holds, and now covers source files too:
-  before the merge, a colliding id on a line the branch added means the branch's own record.
-- Not an incident in the register. A tool defect found on first use is a fix, not a pattern; if
-  the same kind of gap turns up again, it is a candidate for one.
+- **Grenzen.** Een verwijzing in een bestandstype buiten de lijst (een `.html`, een `.svg`, een
+  binary) wordt nog steeds niet herschreven. Voor een broncomment die een record met id citeert
+  is er nog steeds geen controle of dat id bestaat, en zo'n controle had dit geval niet kunnen
+  vangen: JNL-002 bestaat, het is alleen het andere journaal.
+- De aanname die de vervanging veilig maakt, geldt nog steeds en omvat nu ook bronbestanden:
+  vóór de merge betekent een botsend id op een regel die de branch heeft toegevoegd het eigen
+  record van de branch.
+- Geen incident in het register. Een tooldefect dat bij het eerste gebruik wordt gevonden is een
+  reparatie, geen patroon; als hetzelfde soort gat opnieuw opduikt, is het een kandidaat voor
+  een patroon.

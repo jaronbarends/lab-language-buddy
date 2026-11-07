@@ -1,65 +1,68 @@
-# iPhone: native speech recognition, second turn and volume — run summary
+# iPhone: native spraakherkenning, tweede beurt en volume — samenvatting van de runs
 
-The runs behind issue K9 in JNL-004 (Openstaande kwesties; found 10-13, investigated 10-14). One
-iPhone (iOS version not recorded), Safari, `NEXT_PUBLIC_STT_PROVIDER=native` unless a row says
-Deepgram, Dutch unless noted, the AI opening the conversation, two user turns per run.
+De runs achter kwestie K9 in JNL-004 (Openstaande kwesties; gevonden 10-13, onderzocht 10-14).
+Eén iPhone (iOS-versie niet vastgelegd), Safari, `NEXT_PUBLIC_STT_PROVIDER=native` tenzij een
+rij Deepgram zegt, Nederlands tenzij anders vermeld, de AI opent het gesprek, twee beurten van
+de gebruiker per run.
 
-The raw console logs are not in the repo: they are two thousand lines of repeated `result`
-and `audio` events plus a temporary tunnel address. They are kept next to the repo, in
-`resources/stt-ios-logs/` (`stt-logging.md`, `-round2.md`, `-round3.md`), and the counts below
-can be checked against them.
+De ruwe consolelogs staan niet in de repo: het zijn tweeduizend regels herhaalde `result`- en
+`audio`-events plus een tijdelijk tunneladres. Ze staan naast de repo, in
+`resources/stt-ios-logs/` (`stt-logging.md`, `-round2.md`, `-round3.md`), en de aantallen
+hieronder kunnen daartegen worden gecontroleerd.
 
-## Terms
+## Termen
 
-- **natural**: the AI's speech played to its end by itself (the audio element reached `ended`).
-- **cut**: Reply was tapped while the AI was still speaking; **cut late**: in its last second.
-- **EP**: early pause, speech paused 0.15 s before its end so the element never ends.
-- **HS**: a `getUserMedia` stream held open next to the recognition.
-- **ok / fail** for a turn: the native engine returned text / it started (`audiostart`) and
-  then received nothing, ending after 20 to 40 s in `audio-capture` ("Source is stopped").
-  With HS the held stream's own track also ended ("MediaStreamTrack ended due to a capture
-  failure") in each failed turn.
-- **gap**: seconds from the end of the AI's speech to `start requested`.
+- **natural**: de spraak van de AI werd uit zichzelf tot het einde afgespeeld (het audio-element
+  bereikte `ended`).
+- **cut**: er werd op Reply getikt terwijl de AI nog sprak; **cut late**: in de laatste seconde.
+- **EP**: early pause, de spraak werd 0.15 s voor het einde gepauzeerd, zodat het element nooit
+  eindigt.
+- **HS**: een `getUserMedia`-stream die naast de herkenning openstaat.
+- **ok / fail** voor een beurt: de native engine gaf tekst terug / hij startte (`audiostart`) en
+  ontving daarna niets, en eindigde na 20 tot 40 s in `audio-capture` ("Source is stopped").
+  Met HS eindigde ook de eigen track van de vastgehouden stream ("MediaStreamTrack ended due to
+  a capture failure") in elke mislukte beurt.
+- **gap**: seconden van het einde van de spraak van de AI tot `start requested`.
 
-## Counts
+## Aantallen
 
-| Setup | Turn 1 | Turn 2 |
+| Setup | Beurt 1 | Beurt 2 |
 |---|---|---|
-| natural, no EP, no HS | 14 of 15 ok | **2 of 13 ok** |
-| cut or cut late, no EP, no HS | 7 of 8 ok | 8 of 8 ok |
-| natural, **EP**, no HS | 4 of 4 ok | **4 of 4 ok** |
-| natural, no EP, **HS** | 3 of 4 ok | 0 of 3 ok |
-| natural, **EP + HS** (2 unlogged runs) | 2 of 2 ok | 2 of 2 ok |
+| natural, no EP, no HS | 14 van 15 ok | **2 van 13 ok** |
+| cut or cut late, no EP, no HS | 7 van 8 ok | 8 of 8 ok |
+| natural, **EP**, no HS | 4 van 4 ok | **4 van 4 ok** |
+| natural, no EP, **HS** | 3 van 4 ok | 0 of 3 ok |
+| natural, **EP + HS** (2 unlogged runs) | 2 van 2 ok | 2 of 2 ok |
 
-Volume of the AI's speech in turn 2 against turn 1, by ear: quieter without HS, also with
-EP alone (a general impression, not noted per run); **equal with HS**, in the three logged
-round 3 runs that reached turn 2 and in the two EP + HS runs. No difference was heard with
-Deepgram as the STT engine. The AI's voice is TTS and does not depend on
-the STT engine; a fixed sentence was used in round 3 and the EP + HS runs, so the comparison
-did not depend on what the AI said.
+Volume van de spraak van de AI in beurt 2 ten opzichte van beurt 1, op het gehoor: zachter
+zonder HS, ook met alleen EP (een algemene indruk, niet per run genoteerd); **gelijk met HS**,
+in de drie gelogde runs van ronde 3 die beurt 2 bereikten en in de twee EP + HS-runs. Met
+Deepgram als STT-engine werd geen verschil gehoord. De stem van de AI is TTS en hangt niet af van
+de STT-engine; in ronde 3 en de EP + HS-runs werd een vaste zin gebruikt, zodat de vergelijking
+niet afhing van wat de AI zei.
 
-Not counted: tests 18 to 21 of round 1, run just before the phone was restarted, with EP on
-(18: native, turn 1 fail; 19: Deepgram, turn 1 fail, socket closed for lack of audio;
-20: Deepgram, turn 1 ok, the AI made no sound; 21: native, turn 1 fail, the AI made no
-sound). The playback log looked normal in all four.
+Niet meegeteld: tests 18 tot 21 van ronde 1, vlak vóór de telefoon opnieuw werd opgestart, met
+EP aan (18: native, beurt 1 fail; 19: Deepgram, beurt 1 fail, socket gesloten bij gebrek aan
+audio; 20: Deepgram, beurt 1 ok, de AI maakte geen geluid; 21: native, beurt 1 fail, de AI maakte
+geen geluid). Het afspeellog zag er in alle vier normaal uit.
 
-## Round 1 (`stt-logging.md`)
+## Ronde 1 (`stt-logging.md`)
 
-| Test | Setup | T1 | T2 | Note |
+| Test | Setup | T1 | T2 | Opmerking |
 |---|---|---|---|---|
-| 1–5 | cut | ok | ok | 5 in Norwegian; events logged, audio element not yet |
-| 6–9 | natural | ok | fail | 6 never reported an error; 7 to 9 `audio-capture` |
-| 10 | natural | ok | fail | audio element events logged from here |
+| 1–5 | cut | ok | ok | 5 in het Noors; events gelogd, audio-element nog niet |
+| 6–9 | natural | ok | fail | 6 meldde nooit een fout; 7 tot 9 `audio-capture` |
+| 10 | natural | ok | fail | events van het audio-element gelogd vanaf hier |
 | 11 | cut | ok | ok | |
-| 12 | natural; silent clip of `unlockAudio()` paused at once | ok | fail | |
-| 13 | natural; `audioSession.type = "play-and-record"` set before `start()` | ok | fail | the type was already that in turn 2 |
-| 14 | cut; as 13 | **fail** | – | the one failed turn after a cut |
-| 15 | natural, then cut late; as 13 | ok | ok | |
-| 16 | cut, then cut late; as 13 | ok | ok | |
-| 17 | EP | ok | ok | third AI message still played |
-| 18–21 | EP, before the restart | see above | | not counted |
+| 12 | natural; stille clip van `unlockAudio()` meteen gepauzeerd | ok | fail | |
+| 13 | natural; `audioSession.type = "play-and-record"` gezet vóór `start()` | ok | fail | het type was in beurt 2 al zo |
+| 14 | cut; als 13 | **fail** | – | de enige mislukte beurt na een cut |
+| 15 | natural, daarna cut late; als 13 | ok | ok | |
+| 16 | cut, daarna cut late; als 13 | ok | ok | |
+| 17 | EP | ok | ok | derde bericht van de AI werd nog afgespeeld |
+| 18–21 | EP, vóór de herstart | zie hierboven | | niet meegeteld |
 
-## Round 2 (`stt-logging-round2.md`, after the restart)
+## Ronde 2 (`stt-logging-round2.md`, na de herstart)
 
 | Test | Setup | T1 (gap) | T2 (gap) |
 |---|---|---|---|
@@ -69,30 +72,32 @@ sound). The playback log looked normal in all four.
 | 4 | natural | **fail** (0.9) | – |
 | 5 | natural | ok (0.5) | ok (32.2) |
 | 6 | natural | ok (25.6) | fail (1.5) |
-| 7 | natural, short gap asked | ok (0.6) | fail (0.3) |
-| 8 | natural, short gap asked | ok (0.2) | fail (0.2) |
-| 9 | natural, long gap asked | ok (23.7) | fail (23.2) |
-| 10 | natural, long gap asked | ok (26.6) | ok (22.2) |
+| 7 | natural, korte gap gevraagd | ok (0.6) | fail (0.3) |
+| 8 | natural, korte gap gevraagd | ok (0.2) | fail (0.2) |
+| 9 | natural, lange gap gevraagd | ok (23.7) | fail (23.2) |
+| 10 | natural, lange gap gevraagd | ok (26.6) | ok (22.2) |
 
-The gap does not predict the result: failures came at 0.2 s and at 23 s, successes at 0.2 s,
-0.5 s and 27 s.
+De gap voorspelt het resultaat niet: mislukkingen kwamen bij 0.2 s en bij 23 s, successen bij
+0.2 s, 0.5 s en 27 s.
 
-## Round 3 (`stt-logging-round3.md`, no EP, HS, fixed AI sentence)
+## Ronde 3 (`stt-logging-round3.md`, geen EP, HS, vaste zin van de AI)
 
-| Test | T1 (gap) | T2 (gap) | Volume T2 against T1 |
+| Test | T1 (gap) | T2 (gap) | Volume T2 ten opzichte van T1 |
 |---|---|---|---|
 | 1 | **fail** (1.1) | – | – |
-| 2 | ok (1.2) | fail (1.6) | equal |
-| 3 | ok (1.2) | fail (1.7) | equal |
-| 4 | ok (0.8) | fail (1.7) | equal |
+| 2 | ok (1.2) | fail (1.6) | gelijk |
+| 3 | ok (1.2) | fail (1.7) | gelijk |
+| 4 | ok (0.8) | fail (1.7) | gelijk |
 
-## What the runs show
+## Wat de runs laten zien
 
-- The second turn fails when the AI's speech ended by itself, and for the held stream's own
-  track too, so the microphone source is dead for any user, not only for `SpeechRecognition`.
-- EP restores the recording (4 of 4 against 2 of 13, p about 0.006 if it made no difference)
-  but not the volume; HS restores the volume but not the recording; both together did both.
-- Not an experiment in the strict sense: runs were not randomized, EP runs came first in
-  round 2, and the phone was restarted before round 2.
-- Not understood: why either measure works, the failed first turns (14, 18, 19, 21, round 2
-  test 4, round 3 test 1), and the silent AI in tests 20 and 21.
+- De tweede beurt mislukt wanneer de spraak van de AI uit zichzelf eindigde, en ook voor de eigen
+  track van de vastgehouden stream, dus de microfoonbron is dood voor elke gebruiker, niet alleen
+  voor `SpeechRecognition`.
+- EP herstelt de opname (4 van 4 tegenover 2 van 13, p ongeveer 0.006 als het geen verschil
+  maakte) maar niet het volume; HS herstelt het volume maar niet de opname; beide samen
+  herstelden beide.
+- Geen experiment in strikte zin: de runs waren niet gerandomiseerd, de EP-runs kwamen eerst in
+  ronde 2, en de telefoon werd vóór ronde 2 opnieuw opgestart.
+- Niet begrepen: waarom beide maatregelen werken, de mislukte eerste beurten (14, 18, 19, 21,
+  test 4 van ronde 2, test 1 van ronde 3), en de stille AI in tests 20 en 21.

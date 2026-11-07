@@ -9,83 +9,90 @@ auteurs: Jarón, Mama Claude
 
 # Automatisch hernummeren van grootboekrecords bij een merge
 
-**The point.** HDR-005 says the branch that merges second renumbers its own records, before
-the merge. Today that rests on someone remembering it. This feature makes it mechanical, in
-three parts: a check that makes a duplicate id loud, a script that does the renumbering, and a
-hook that stops a merge of `arc/arc-main` or `main` until the script has run.
+**Waar het om gaat.** HDR-005 zegt dat de branch die als tweede merget zijn eigen records
+hernummert, vóór de merge. Nu hangt dat ervan af dat iemand eraan denkt. Deze feature maakt het
+mechanisch, in drie delen: een check die een dubbel id luid laat klinken, een script dat het
+hernummeren doet, en een hook die een merge van `arc/arc-main` of `main` tegenhoudt tot het
+script heeft gedraaid.
 
-## The flow
+## De flow
 
-1. Jarón asks Claude Code to merge `arc/arc-main` (or `main`) into a branch.
-2. The hook sees the merge, checks the branch's records against that ref, and finds ids that
-   collide. It denies the merge and names them.
-3. Claude runs `npm run docs:renumber`. The branch's own records get the next free numbers.
-   One commit.
-4. Claude retries the merge. The registers still conflict where both sides appended, but they
-   now hold different ids, so the fix is to keep both sides.
-5. In a plain terminal there is no hook. Jarón runs the script before every such merge; with
-   nothing to renumber it does nothing. The duplicate check is the net if it is forgotten.
+1. Jarón vraagt Claude Code om `arc/arc-main` (of `main`) in een branch te mergen.
+2. De hook ziet de merge, controleert de records van de branch tegen die ref en vindt id's die
+   botsen. Hij weigert de merge en noemt ze.
+3. Claude draait `npm run docs:renumber`. De eigen records van de branch krijgen de eerstvolgende
+   vrije nummers. Eén commit.
+4. Claude probeert de merge opnieuw. De registers conflicteren nog steeds waar beide kanten iets
+   toevoegden, maar ze bevatten nu verschillende id's, dus de oplossing is beide kanten houden.
+5. In een gewone terminal is er geen hook. Jarón draait het script vóór elke zulke merge; als er
+   niets te hernummeren is, doet het niets. De check op dubbele id's is het vangnet als het
+   vergeten wordt.
 
-## Part 1: duplicate-id check in `docs:check`
+## Deel 1: check op dubbele id's in `docs:check`
 
-- Each register (adr, hdr, pdr, dft, jnl) holds each id once.
-- The file named in `bestand` exists and starts with its id, lowercase (`hdr-007-…`).
-- It fails like the other checks in `scripts/check-docs.mjs`, locally and in CI on every PR.
+- Elk register (adr, hdr, pdr, dft, jnl) bevat elk id één keer.
+- Het bestand dat in `bestand` staat bestaat en begint met zijn id, in kleine letters
+  (`hdr-007-…`).
+- Het faalt zoals de andere checks in `scripts/check-docs.mjs`, lokaal en in CI bij elke PR.
 
-## Part 2: the script, `npm run docs:renumber`
+## Deel 2: het script, `npm run docs:renumber`
 
-- Compares the branch with a base ref, default `origin/arc/arc-main`; it runs `git fetch`
-  first. `--check` reports collisions and changes nothing (the hook uses this).
-- **A collision** is an id that is in the base register and in the branch's register with a
-  different `bestand`. Same id and same file means the record has already landed: it stays.
-- The branch's record takes the next free number: one past the highest id of that type in the
-  base and in the branch. Merged records never change number (HDR-005).
-- **Scope of the replacement.** Only lines the branch itself added or changed since the
-  merge-base (`git diff -U0 <merge-base>`). Inside those lines `HDR-006` becomes `HDR-007`
-  and `hdr-006-` becomes `hdr-007-`; the record file is renamed. This is why it is safe:
-  before the merge, every mention of the colliding id in those lines means the branch's own
-  record.
-- **It refuses** when a merge is in progress, or when the branch already holds duplicate ids
-  (the references are ambiguous by then). The message says to abort the merge and start over.
-- Running it twice does nothing the second time.
+- Vergelijkt de branch met een basis-ref, standaard `origin/arc/arc-main`; het draait eerst
+  `git fetch`. `--check` meldt botsingen en verandert niets (de hook gebruikt dit).
+- **Een botsing** is een id dat in het basisregister staat en in het register van de branch met
+  een ander `bestand`. Hetzelfde id en hetzelfde bestand betekent dat het record al is
+  geland: het blijft staan.
+- Het record van de branch krijgt het eerstvolgende vrije nummer: één na het hoogste id van dat
+  type in de basis en in de branch. Gemergede records veranderen nooit van nummer (HDR-005).
+- **Reikwijdte van de vervanging.** Alleen regels die de branch zelf heeft toegevoegd of
+  gewijzigd sinds de merge-base (`git diff -U0 <merge-base>`). Binnen die regels wordt `HDR-006`
+  `HDR-007` en `hdr-006-` wordt `hdr-007-`; het recordbestand krijgt een nieuwe naam. Daarom is
+  het veilig: vóór de merge betekent elke vermelding van het botsende id in die regels het eigen
+  record van de branch.
+- **Het weigert** als er een merge bezig is, of als de branch al dubbele id's bevat (de
+  verwijzingen zijn dan dubbelzinnig). De melding zegt dat je de merge moet afbreken en opnieuw
+  moet beginnen.
+- Twee keer draaien doet de tweede keer niets.
 
-## Part 3: the hook
+## Deel 3: de hook
 
-- A PreToolUse hook on `Bash`, lead thread only (like `guard-push-sweep`), for
-  `git merge <ref>` where `<ref>` is `arc/arc-main`, `origin/arc/arc-main`, `main` or
-  `origin/main`. `main` is included because `arc/arc-main` is expected to merge into `main`
-  and become the central branch.
-- It runs the script with `--check` against that ref. Collisions: deny, name them, say
-  `npm run docs:renumber` then retry. None: pass.
-- Not covered: `git pull`, merges made in another tool, a merge written in a script. Same
-  blind spot as the other hooks (HDR-004).
+- Een PreToolUse-hook op `Bash`, alleen voor de lead thread (zoals `guard-push-sweep`), voor
+  `git merge <ref>` waarbij `<ref>` `arc/arc-main`, `origin/arc/arc-main`, `main` of
+  `origin/main` is. `main` is erbij genomen omdat `arc/arc-main` naar verwachting in `main`
+  gemerged wordt en de centrale branch wordt.
+- Hij draait het script met `--check` tegen die ref. Botsingen: weigeren, ze noemen, zeggen dat
+  `npm run docs:renumber` moet draaien en dan opnieuw proberen. Geen botsingen: doorlaten.
+- Niet gedekt: `git pull`, merges in een andere tool, een merge in een script. Dezelfde blinde
+  vlek als de andere hooks (HDR-004).
 
 ## Tests
 
-A first automated test in this repo, with `node:test` (built into Node) on a throwaway git
-repo built in a temp folder: a base with an HDR-006 and a branch with its own HDR-006.
-Cases: renumbers to HDR-007 and updates the register, `index.yml` and the references; leaves
-a record that already landed alone; does nothing on a second run; refuses during a merge;
-refuses on existing duplicates; the duplicate check fails and then passes.
+Een eerste geautomatiseerde test in deze repo, met `node:test` (ingebouwd in Node) op een
+wegwerp-repo die in een tijdelijke map wordt opgebouwd: een basis met een HDR-006 en een
+branch met een eigen HDR-006. Gevallen: hernummert naar HDR-007 en werkt het register,
+`index.yml` en de verwijzingen bij; laat een record dat al is geland met rust; doet niets bij een
+tweede run; weigert tijdens een merge; weigert bij bestaande duplicaten; de check op duplicaten
+faalt en slaagt daarna.
 
-The real test is `arc/bubble-animation`: its Modern Web Guidance trial holds HDR-006 and must
-become the next free number, which is after the HDR this feature books.
+De echte test is `arc/bubble-animation`: de Modern Web Guidance-proef daar bevat HDR-006 en moet
+het eerstvolgende vrije nummer worden, dat na de HDR komt die deze feature boekt.
 
-## Done when
+## Klaar wanneer
 
-- `npm run docs:check` fails on a duplicated id and passes on the current repo.
-- The test suite passes, and the real run on `arc/bubble-animation` gives the expected
-  result with no hand-editing beyond keeping both sides of the append conflict.
-- The hook denies a colliding merge and passes a clean one, for `arc/arc-main` and `main`.
-- A new HDR books the decision. It extends HDR-005 (its step 3 is no longer manual), and the
-  numbering section of `docs/grootboek/CLAUDE.md` is updated. That file is a leading
-  document, so the change is reported and checked.
+- `npm run docs:check` faalt op een gedupliceerd id en slaagt op de huidige repo.
+- De testsuite slaagt, en de echte run op `arc/bubble-animation` geeft het verwachte resultaat
+  zonder handwerk, behalve beide kanten houden bij het append-conflict.
+- De hook weigert een botsende merge en laat een schone door, voor `arc/arc-main` en `main`.
+- Een nieuwe HDR boekt het besluit. Hij breidt HDR-005 uit (stap 3 is niet langer handmatig) en
+  de nummeringssectie van `docs/grootboek/CLAUDE.md` wordt bijgewerkt. Dat bestand is een
+  leidend document, dus de wijziging wordt gemeld en gecontroleerd.
 
-## Sources
+## Bronnen
 
-- **The thinking:** this session; HDR-005 (the rule being made mechanical).
-- **The pattern:** `.claude/hooks/guard-push-sweep.cjs` and HDR-004 (deny, name the files,
-  retry); `.claude/hooks/notify-leading-document.cjs` and HDR-006 (procedure as data).
-- **Where it lands:** `scripts/check-docs.mjs`, `package.json`, `.claude/settings.json`,
+- **Het denkwerk:** deze sessie; HDR-005 (de regel die mechanisch wordt gemaakt).
+- **Het patroon:** `.claude/hooks/guard-push-sweep.cjs` en HDR-004 (weigeren, de bestanden
+  noemen, opnieuw proberen); `.claude/hooks/notify-leading-document.cjs` en HDR-006 (procedure
+  als data).
+- **Waar het landt:** `scripts/check-docs.mjs`, `package.json`, `.claude/settings.json`,
   `docs/grootboek/CLAUDE.md`.
-- **The test case:** branch `arc/bubble-animation`, its HDR-006 (Modern Web Guidance trial).
+- **Het testgeval:** branch `arc/bubble-animation`, zijn HDR-006 (Modern Web Guidance-proef).

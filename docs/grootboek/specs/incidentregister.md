@@ -9,16 +9,15 @@ auteurs: Jarón, Mama Claude
 
 # Een incidentregister: terugkerende fouten worden geteld en bij drie vastgelegd
 
-**The point.** REQ-GG-06 (Bouw het immuunsysteem) wants recurring faults to become a rule, hook
-or skill in the harness: once is an incident, twice is chance, three times is a weakness of the
-harness. Today nothing counts. The corrections Jarón gives live in Claude's private memory,
-outside the repo, and no builder or other clone sees them. This feature adds the front half of
-the immune system: a place where incidents are logged by pattern, a counter that shouts at
-three, and a rule for what happens then.
+**Waar het om gaat.** REQ-GG-06 (Bouw het immuunsysteem) wil dat terugkerende fouten een regel,
+hook of skill in de harness worden: één keer is een incident, twee keer toeval, drie keer een
+zwakte van de harness. Nu telt niets. De correcties die Jarón geeft leven in Claudes privégeheugen, buiten de repo, en geen builder of andere clone ziet ze. Deze feature voegt de
+voorste helft van het immuunsysteem toe: een plek waar incidenten per patroon worden gelogd, een
+teller die bij drie alarm slaat, en een regel voor wat er dan gebeurt.
 
-## Part 1: the register
+## Deel 1: het register
 
-`docs/grootboek/registers/incident-register.yml`, grouped by pattern:
+`docs/grootboek/registers/incident-register.yml`, gegroepeerd per patroon:
 
 ```yaml
 patronen:
@@ -32,86 +31,89 @@ patronen:
         bron: "stage 4 review"
 ```
 
-- **No ids and no numbered documents.** An incident is a line, not a decision (HDR-001 books
-  decisions). Without ids the register cannot collide across parallel branches the way record
-  numbers do (HDR-007). Two branches that both log still conflict on the same lines: keep both.
-- A pattern is a slug. When a new fault looks like an existing pattern, it joins it; the
-  judgment whether it is "the same fault" is the agent's, checked by Jarón.
-- **`maatregel`** names the HDR that codified the pattern. The HDR names the place: a rule, a
-  hook, a skill, a line in `CLAUDE.md`.
+- **Geen id's en geen genummerde documenten.** Een incident is een regel, geen besluit (HDR-001
+  boekt besluiten). Zonder id's kan het register niet botsen tussen parallelle branches zoals
+  recordnummers dat kunnen (HDR-007). Twee branches die allebei loggen conflicteren nog steeds op
+  dezelfde regels: houd beide.
+- Een patroon is een slug. Als een nieuwe fout op een bestaand patroon lijkt, sluit hij daarbij
+  aan; het oordeel of het "dezelfde fout" is, is aan de agent, gecontroleerd door Jarón.
+- **`maatregel`** noemt de HDR die het patroon heeft vastgelegd. De HDR noemt de plek: een regel,
+  een hook, een skill, een regel in `CLAUDE.md`.
 
-## Part 2: the counter, `npm run docs:incidents`
+## Deel 2: de teller, `npm run docs:incidents`
 
-- Reads the register and prints each pattern with its count and whether it is codified.
-- **Threshold three**, a constant in the script (the requirement says three; the grootboek
-  skill's HDR guide says "more than three", which is stricter and not followed here).
-- It never changes anything and exits 0, unless the register is malformed.
+- Leest het register en toont elk patroon met zijn aantal en of het is vastgelegd.
+- **Drempel drie**, een constante in het script (de requirement zegt drie; de HDR-gids van de
+  grootboek-skill zegt "meer dan drie", wat strenger is en hier niet wordt gevolgd).
+- Het verandert nooit iets en eindigt met exitcode 0, tenzij het register misvormd is.
 
-## Part 3: in `docs:check`
+## Deel 3: in `docs:check`
 
-- A pattern with three or more incidents and no `maatregel` is a **warning**: "codify it and
-  book an HDR". Not an error: the weakness is real but the day it is found should not turn CI
-  red.
-- **Errors:** a `maatregel` naming an HDR that is not in the HDR register; a duplicate pattern
-  slug; an incident without `datum` or `wat`.
+- Een patroon met drie of meer incidenten en geen `maatregel` is een **waarschuwing**: "leg het
+  vast en boek een HDR". Geen fout: de zwakte is echt, maar de dag dat hij wordt gevonden mag
+  CI niet rood kleuren.
+- **Fouten:** een `maatregel` die een HDR noemt die niet in het HDR-register staat; een dubbele
+  patroon-slug; een incident zonder `datum` of `wat`.
 
-## Part 4: the logging duty
+## Deel 4: de logplicht
 
-A line in the root `CLAUDE.md`: when Jarón corrects the agent, or a tool fails in a way that
-has happened before, add one entry to the incident register and say so in a sentence. No hook
-can see a human correction, so **logging depends on the agent**. The register makes repetition
-visible and countable once it is logged; it does not make the agent log. That limit goes in the
-HDR. `CLAUDE.md` is a leading document: the change is reported and checked.
+Een regel in de `CLAUDE.md` in de root: als Jarón de agent corrigeert, of een tool faalt op een
+manier die al eerder is voorgekomen, voeg dan één regel toe aan het incidentregister en zeg dat in
+één zin. Geen hook kan een correctie door een mens zien, dus **het loggen hangt af van de
+agent**. Het register maakt herhaling zichtbaar en telbaar zodra die is gelogd; het zorgt er niet
+voor dat de agent logt. Die beperking komt in de HDR. `CLAUDE.md` is een leidend document: de
+wijziging wordt gemeld en gecontroleerd.
 
-## Part 5: seeding, and the first use
+## Deel 5: zaaien en het eerste gebruik
 
-The six feedback notes in Claude's memory are the first incidents, counted by what the notes
-themselves say, not by a complete history:
+De zes feedbacknotities in Claudes geheugen zijn de eerste incidenten, geteld naar wat de
+notities zelf zeggen, niet naar een volledige geschiedenis:
 
-| Pattern | Count | Codified? |
+| Patroon | Aantal | Vastgelegd? |
 |---|---|---|
-| naming-precision | 7 (one review, 2026-10-10) | No: the rules cover how names are written, not what they promise |
-| answer-first | 2 (2026-09-23) | No |
-| act-on-question | 2 (2026-09-23) | No |
-| review-point-context | 1 (2026-10-03) | No |
-| id-with-title | 1 (2026-10-21) | No |
-| ai-vs-self-advice | 1 (2026-10-03) | Special case, see below |
+| naming-precision | 7 (één review, 2026-10-10) | Nee: de regels dekken hoe namen worden geschreven, niet wat ze beloven |
+| answer-first | 2 (2026-09-23) | Nee |
+| act-on-question | 2 (2026-09-23) | Nee |
+| review-point-context | 1 (2026-10-03) | Nee |
+| id-with-title | 1 (2026-10-21) | Nee |
+| ai-vs-self-advice | 1 (2026-10-03) | Bijzonder geval, zie hieronder |
 
-**The first use of the mechanism:** `naming-precision` is at seven, so the register warns on
-day one. Codifying it is the proof that the chain works: an HDR plus a rule in
-`.claude/rules/code-style.md` (a name says what the function returns or does, uses the word of
-its neighbours, and a correction is accepted without defence). The rule file is not a leading
-document, so no duty to communicate; it is shown before it is committed anyway.
+**Het eerste gebruik van het mechanisme:** `naming-precision` staat op zeven, dus het register
+waarschuwt op dag één. Het vastleggen ervan is het bewijs dat de keten werkt: een HDR plus een
+regel in `.claude/rules/code-style.md` (een naam zegt wat de functie teruggeeft of doet, gebruikt
+het woord van zijn buren, en een correctie wordt zonder verdediging geaccepteerd). Het
+regelbestand is geen leidend document, dus geen communicatieplicht; het wordt toch getoond vóór
+het wordt gecommit.
 
-**`ai-vs-self-advice` is a different kind of fault.** It is not a repeated mistake but a
-conflict: Jarón's global instructions ask for a verdict, this project says to skip it, and the
-project says so only in Claude's private memory. A session without that memory gives the verdict
-again. One incident is enough to fix that, because the fix is a line in the project
-`CLAUDE.md`. Decided separately, not by the counter.
+**`ai-vs-self-advice` is een andere soort fout.** Het is geen herhaalde vergissing maar een
+conflict: Jaróns globale instructies vragen om een oordeel, dit project zegt het over te slaan,
+en het project zegt dat alleen in Claudes privégeheugen. Een sessie zonder dat geheugen geeft
+het oordeel opnieuw. Eén incident is genoeg om dat te herstellen, want de oplossing is een regel
+in de `CLAUDE.md` van het project. Apart besloten, niet door de teller.
 
 ## Tests
 
-`node:test` on a throwaway repo, as for the other scripts: a pattern with two incidents is quiet;
-three, uncodified, warns; `aantal` counts as its value; a codified pattern with an existing HDR
-is quiet; a `maatregel` naming a missing HDR is an error; a duplicate slug is an error; an
-incident without `datum` or `wat` is an error.
+`node:test` op een wegwerp-repo, zoals voor de andere scripts: een patroon met twee incidenten is
+stil; drie, niet vastgelegd, waarschuwt; `aantal` telt als zijn waarde; een vastgelegd patroon
+met een bestaande HDR is stil; een `maatregel` die een ontbrekende HDR noemt is een fout; een
+dubbele slug is een fout; een incident zonder `datum` of `wat` is een fout.
 
-## Done when
+## Klaar wanneer
 
-- The register exists, seeded as above, and `docs:check` warns on `naming-precision` and
-  nothing else.
-- Codifying `naming-precision` (HDR and rule) turns that warning off.
-- The tests pass and run in CI.
-- A new HDR books the decision, the threshold, and the limit on logging.
-- Not claimed: that the agent logs reliably. That is only known after weeks of use.
+- Het register bestaat, gezaaid zoals hierboven, en `docs:check` waarschuwt op `naming-precision`
+  en op niets anders.
+- Het vastleggen van `naming-precision` (HDR en regel) zet die waarschuwing uit.
+- De tests slagen en draaien in CI.
+- Een nieuwe HDR boekt het besluit, de drempel en de beperking van het loggen.
+- Niet beweerd: dat de agent betrouwbaar logt. Dat is pas bekend na weken gebruik.
 
-## Sources
+## Bronnen
 
-- **The thinking:** this session; the kennisdocument het-gedirigeerde-grootboek, immune system
+- **Het denkwerk:** deze sessie; het kennisdocument het-gedirigeerde-grootboek, immuunsysteem
   ("één keer is een incident, twee keer toeval, drie keer een harnas-zwakte"); REQ-GG-06.
-- **The pattern:** `scripts/drift-signal.mjs` and HDR-008 (a signal in `docs:check`);
+- **Het patroon:** `scripts/drift-signal.mjs` en HDR-008 (een signaal in `docs:check`);
   `.claude/skills/grootboek/references/hdr-schrijfgids.md` ("Uit het immuunsysteem").
-- **The incidents:** the six `feedback-*` notes in Claude's memory for this project.
-- **Where it lands:** `docs/grootboek/registers/incident-register.yml`,
-  `scripts/incidents.mjs`, `scripts/check-docs.mjs`, `package.json`, root `CLAUDE.md`,
+- **De incidenten:** de zes `feedback-*`-notities in Claudes geheugen voor dit project.
+- **Waar het landt:** `docs/grootboek/registers/incident-register.yml`,
+  `scripts/incidents.mjs`, `scripts/check-docs.mjs`, `package.json`, `CLAUDE.md` in de root,
   `.claude/rules/code-style.md`.

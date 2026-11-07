@@ -1,8 +1,8 @@
 # HDR-014: Documentatie is Nederlands; code, UI en commits blijven Engels
 
-- **Status:** in-progress
+- **Status:** implemented
 - **Date:** 2026-10-30
-- **Implementation:** 50
+- **Implementation:** 100
 - **Type:** Harness Decision Record (HOW do we work)
 
 ## Besluit
@@ -58,9 +58,10 @@ en de verwijzingen daarnaar bijgewerkt. Beslist door Jarón.
 
 ## Gevolgen
 
-- **De repo is tijdelijk gemengd.** Tot de vertaalronde klaar is, bestaan Engelse en
-  Nederlandse documenten naast elkaar. Daarom staat de implementatie op 50; die gaat naar 100
-  als de laatste Engelstalige documentatie vertaald is.
+- **De vertaalronde is op 2026-11-07 afgerond.** De Engelse documenten zijn vertaald; de
+  implementatie staat daarom op 100. Eén bewuste uitzondering: de prompttemplates
+  `executor-prompt.md` en `reviewer-prompt.md` van de skill `stage-review` blijven Engels,
+  omdat die skill zelf bepaalt dat prompts voor subagents Engels zijn.
 - **Niets dwingt de taal af.** `docs:check` herkent geen taal. Een nieuw Engelstalig document
   valt alleen op in review. Een check bouwen we pas als dit zich herhaalt.
 - **De labels blijven Engels.** `scripts/records.mjs` leest `- **Date:**` om HDR-012 af te
@@ -70,4 +71,4 @@ en de verwijzingen daarnaar bijgewerkt. Beslist door Jarón.
   het Nederlands geschreven, zodat ze niet nog een keer vertaald hoeven te worden.
 - **Drie leidende documenten wijzigen:** de root-`CLAUDE.md` (twee regels) en
   `docs/grootboek/CLAUDE.md` (één regel). De wijziging is vóór de commit aan Jarón getoond.
-  De rest van die bestanden blijft Engels tot de vertaalronde.
+  De rest van die bestanden is in de vertaalronde vertaald.

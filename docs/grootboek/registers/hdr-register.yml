@@ -264,3 +264,14 @@ hdrs:
     beslissing: "Bij regime trivial start de lead de builder met model sonnet; normal en risky draaien op Opus, vastgepind in de frontmatter van builder.md zodat het niet afhangt van het model van de lead"
     notitie: "Uitkomst van een replay van de driftopdracht (PR #37) met een Sonnet-builder: dezelfde twee serieuze reviewbevindingen als Opus, alle verificatieclaims klopten, twee toelichtingen niet; 46.741 tegen 80.896 buildertokens. Jarón test normal later opnieuw, met de lezing van de beslisregel vooraf afgesproken"
     bestand: hdr-024-builder-model-per-regime.md
+  - id: "HDR-025"
+    titel: "Een bewering over een document of de omgeving komt uit de bron"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-11-08
+    implementatie-datum: 2026-11-08
+    beslissing: "Een werkafspraak in de root-CLAUDE.md: een bewering over wat een document zegt of wat de omgeving heeft komt uit de bron (het document helemaal lezen of het commando draaien); een zoekresultaat, een indexregel of een geheugennotitie is een aanwijzing, geen bewijs"
+    notitie: "Maatregel van het incidentpatroon document-not-fully-read (drie incidenten, alle drie een bewering dat iets ontbreekt). Een regel en geen hook: de hooks zien tool-aanroepen, geen beweringen in een antwoord, en of een bewering gedekt is, is een oordeel. Niet mechanisch te controleren: succes is geen vierde incident (zoals bij HDR-010)"
+    bestand: hdr-025-bewering-uit-de-bron.md

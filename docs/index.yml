@@ -28,7 +28,7 @@ documents:
     what: Waarom de technische balans wordt bijgehouden, als proef van de driftdetectie van het grootboek; plan.md blijft de bron tot de proef is afgerond.
     read_when: je beslist of de balans blijft, wijzigt of vervalt; voor de driftproef.
   - path: docs/grootboek/hdr/hdr-003-ci-checks-op-pull-requests.md
-    what: Besluit dat lint/typecheck/build/docs:check op PR's naar main moeten draaien; nog niet gebouwd (K8).
+    what: Besluit dat lint, typecheck, docs:check, test:scripts, register:check en build op PR's naar main draaien; gebouwd op 2026-10-22 in .github/workflows/checks.yml (K8).
     read_when: je CI voor deze repo inricht.
   - path: docs/grootboek/hdr/hdr-004-sessiegebonden-refactor-loop.md
     what: Waarom de refactor loop van REQ-AH-13 een sessiegebonden PreToolUse-hook is en niet de onbewaakte push-hook op git-niveau van ARC (geweigerd door de safety classifier).
@@ -238,7 +238,7 @@ documents:
     what: GOOGLE_CLOUD_API_KEY is van een URL-queryparameter naar de header x-goog-api-key verhuisd; eerst bevestigd tegen het live endpoint.
     read_when: je src/lib/tts/google.ts of de auth ervan aanraakt.
   - path: docs/grootboek/software-architectuur.md
-    what: Technische balans v1.0 (geaccepteerd 2026-10-20), afgeleid uit de code — componenten, datastroom, omgevingen, auth-matrix, keuzes. Open vragen staan in JNL-001. Nog niet op drift gecontroleerd.
+    what: Technische balans v1.0 (geaccepteerd 2026-10-20), afgeleid uit de code — componenten, datastroom, omgevingen, auth-matrix, keuzes. Open vragen staan in JNL-001. Gereconcilieerd in DFT-004 (2026-11-07, het eerste echte driftsignaal); DFT-001 was een proef zonder codewijzigingen.
     read_when: je aan routes, providers, deployment of env vars werkt; bij de driftproef.
   - path: docs/grootboek/journaal/jnl-001-instap-software-balans.md
     what: Instapjournaal voor de proef met de software-balans; acht kwesties (balans versus plan, omgevingen, route-auth en het vervolg, CI en het vervolg, modelkeuze, Google-key).
@@ -268,8 +268,8 @@ documents:
     what: Plan om het hernummeren van HDR-005 mechanisch te maken — een controle op dubbele ids in docs:check, een renumber-script en een hook die merges van arc/arc-main of main tegenhoudt tot het is gedraaid. Wegwerpdocument zodra het gebouwd is.
     read_when: je het renumber-script, de controle op dubbele ids of de merge-hook bouwt of wijzigt.
   - path: docs/grootboek/dft/dft-003-hernummerscript-mist-bronbestanden.md
-    what: Driftrapport; het renumber-script herschreef alleen documenten, terwijl HDR-005 ook codecommentaar belooft. Opgelost in het script; blijft in uitvoering tot de drie verouderde commentaren op arc/bubble-animation zijn gecorrigeerd.
-    read_when: je renumber-records.mjs of de REWRITABLE-bestandstypen aanraakt; je controleert of de drie verouderde JNL-002-commentaren in src/ zijn gerepareerd.
+    what: Opgelost driftrapport; het renumber-script herschreef alleen documenten, terwijl HDR-005 ook codecommentaar belooft. Opgelost in het script; de drie verouderde commentaren zijn op 2026-10-27 gecorrigeerd, de DFT is pas op 2026-11-08 gesloten.
+    read_when: je renumber-records.mjs of de REWRITABLE-bestandstypen aanraakt.
   - path: docs/grootboek/dft/dft-004-eerste-reconciliatie-op-een-echt-signaal.md
     what: Driftrapport; de eerste reconciliatie op een echt signaal (HDR-022). src/components/CLAUDE.md beschreef een state-context die nooit bestond, balans § 5 miste de CI, de dev-previews van de bubbels stonden niet in de balans; src/lib/CLAUDE.md klopte.
     read_when: je de regel over schermen en dispatch in src/components/CLAUDE.md, § 3 of § 5 van de balans aanraakt; je een volgende reconciliatie doet en een voorbeeld zoekt.

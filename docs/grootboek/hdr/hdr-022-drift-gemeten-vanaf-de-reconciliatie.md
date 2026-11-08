@@ -21,7 +21,10 @@ oordeel, `docs:check` waarschuwt bij drift en faalt alleen bij een kapotte verwi
   documenten die hij controleerde (`documenten`) en de commit waarvan de code is vergeleken
   (`getoetst-tegen`). Het nulpunt van een document is de nieuwste `getoetst-tegen`-commit van een
   afgesloten DFT (`status: resolved`) die het document noemt. Telt de nieuwste commit, niet het
-  hoogste id. Een DFT die nog `open` of `in_progress` is telt niet: dan klopt het document nog niet.
+  hoogste id: een commit die voorouder is van een andere kandidaat valt af, en tussen commits
+  zonder voorouderrelatie beslist de commitdatum, bij gelijke datum de hash. Zo hangt de uitkomst
+  niet af van de volgorde in het register. Een DFT die nog `open` of `in_progress` is telt niet:
+  dan klopt het document nog niet.
 - **Een aanraking van het document reset niets meer**, ook niet een commit die document en code
   samen wijzigt. Zo'n commit kan eerdere, ongecontroleerde commits verbergen.
 - **Nooit gereconcilieerd:** dan meet het signaal vanaf de commit die het document toevoegde, en
@@ -35,6 +38,7 @@ oordeel, `docs:check` waarschuwt bij drift en faalt alleen bij een kapotte verwi
   vanwege `prompt.ts`.
 - **Fouten** waarop `docs:check` faalt:
   - een `getoetst-tegen` die geen commit-hash is, of een hash die git niet kent;
+  - een `getoetst-tegen` van een afgesloten DFT die niet in de geschiedenis van `HEAD` staat;
   - een pad onder `documenten` dat niet exact het pad van een leidend document is, zoals
     `docs:drift` het noemt (forward slashes, dezelfde hoofdletters). Het register blijft canoniek
     en Windows en CI gedragen zich gelijk;
@@ -102,9 +106,12 @@ HDR-008 noemde ze al als mogelijke uitbreiding.
     hernoeming telt de commit van de nieuwe naam. Wordt een document hernoemd dat al in een
     afgesloten DFT staat, dan wordt het oude pad onder `documenten` een fout tot iemand die
     registerregel bijwerkt. Dat is bewust: de fout zegt waar het nulpunt kwijt is.
-  - Een `getoetst-tegen` die na een squash of rebase geen voorouder van `HEAD` meer is, laat het
-    signaal te veel melden, nooit te weinig. Met de merge commits die deze repo gebruikt, speelt
-    dat niet.
+  - Een `getoetst-tegen` die na een squash of rebase niet meer in de geschiedenis van `HEAD`
+    staat, is een fout: zet hem op de commit die de gereconcilieerde code bevat. Eerst stond hier
+    dat zo'n commit het signaal alleen luider maakt. CodeRabbit vond op PR #37 het geval waarin
+    het juist stil wordt: de commit bevat code in het werkgebied die `HEAD` niet heeft, en `HEAD`
+    veranderde het werkgebied sinds de merge-base niet. Met de merge commits die deze repo
+    gebruikt, speelt dit niet.
   - De root-`CLAUDE.md`, `docs/grootboek/CLAUDE.md` en `docs/code-architectuur.md` zijn leidende
     documenten zonder werkgebied: ze beschrijven werkafspraken en doctrine, geen code. Ze kunnen
     niet onder `documenten` in een DFT worden geboekt. Moet zo'n document tegen de code worden

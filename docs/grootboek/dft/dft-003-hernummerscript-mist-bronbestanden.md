@@ -1,6 +1,6 @@
 # DFT-003: Het hernummerscript laat record-ids in broncommentaar ongewijzigd, terwijl HDR-005 zegt van wel
 
-- **Status:** in_progress
+- **Status:** resolved
 - **Date:** 2026-10-27
 - **Trigger:** gevonden door de animatiesessie nadat `arc/arc-main` in `arc/bubble-animation`
   was gemerged (de eerste keer dat `npm run docs:renumber` draaide op een branch die `src/`
@@ -43,7 +43,10 @@ keer dat het gat kon opvallen. Het is geen incident van het soort dat het incide
 3. **De drie comments die al fout zijn** op `arc/bubble-animation` kan het script nu niet meer
    herstellen (de botsing is opgelost), dus de animatiesessie verbetert ze met de hand via een
    builder (`regime: trivial`, alleen comments). **Deze DFT blijft `in_progress` tot dat
-   is gelukt.**
+   is gelukt.** *Gelukt op 2026-10-27 in 54e7e7b: alle zeven verwijzingen in `ai-bubble.tsx` en
+   `conversation-thread.tsx` zeggen JNL-003, en `src/` noemt JNL-002 nergens meer. De DFT is pas
+   op 2026-11-08 gesloten, na een opmerking van CodeRabbit op PR #37. Dat hij zo lang open
+   bleef, is het derde incident van het patroon `promised-follow-up-dropped` (HDR-023).*
 4. HDR-005 en HDR-007 worden niet aangepast: beide zijn geïmplementeerd. Dit record is de
    correctie.
 

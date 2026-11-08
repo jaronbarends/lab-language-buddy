@@ -92,14 +92,16 @@ vond:
 2. HDR-008 zei dat de eerste reconciliatie aan de beurt was bij de merge van
    `arc/bubble-animation`. Die merge was op 2026-10-30, en de reconciliatie is toen niet gedaan
    (HDR-022, Waarom).
-3. DFT-003 (Het hernummerscript laat record-ids in broncommentaar ongewijzigd) staat nog op
-   `in_progress`, hoewel aan zijn sluitvoorwaarde al is voldaan: de drie comments zeggen JNL-003.
+3. DFT-003 (Het hernummerscript laat record-ids in broncommentaar ongewijzigd) stond op
+   `in_progress`, hoewel al sinds 2026-10-27 aan zijn sluitvoorwaarde was voldaan: de drie
+   comments zeggen JNL-003. Hij is op 2026-11-08 gesloten, na een opmerking van CodeRabbit op
+   PR #37.
 
 Ze hebben gemeen dat de vervolgstap afhangt van iemands geheugen en niet van een signaal. Voor
-drift maakt HDR-022 een signaal dat alleen stil wordt na een controle. Voor de andere twee
-vormen (een record dat implemented wordt zonder het document mee te nemen, een DFT die niet wordt
-gesloten) is er nog geen signaal. Bevinding 1 hoort er in een andere vorm bij: een document dat
-nooit tegen de code is gelegd.
+drift maakt HDR-022 een signaal dat alleen stil wordt na een controle. Dat dekt ook een record dat
+code verandert zonder het document mee te nemen, zolang die code in een werkgebied valt. Voor een
+DFT die niet wordt gesloten, boekt HDR-023 een signaal. Bevinding 1 hoort er in een andere vorm
+bij: een document dat nooit tegen de code is gelegd.
 
 ## Besluiten
 

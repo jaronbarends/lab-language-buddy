@@ -13,6 +13,7 @@ const DOC = "docs/grootboek/balance.md";
 const NOTES = "src/lib/CLAUDE.md";
 const REGISTER = "docs/grootboek/registers/dft-register.yml";
 const EARLY = "2026-01-01 12:00:00 +0000";
+const MIDDLE = "2026-03-01 12:00:00 +0000";
 const LATE = "2026-06-01 12:00:00 +0000";
 const roots = [];
 
@@ -62,6 +63,10 @@ function changeCode(root, message, committerDate) {
 
 function head(root) {
   return git(root, "log", "-1", "--format=%h").trim();
+}
+
+function fullHash(root, revision) {
+  return git(root, "rev-parse", revision).trim();
 }
 
 // A DFT register in the shape of docs/grootboek/registers/dft-register.yml. An entry without
@@ -157,6 +162,19 @@ describe("reading the DFT register", () => {
     const [entry] = parseDftRegister(text);
     assert.deepEqual(entry.documenten, ["docs/a.md"]);
     assert.equal(entry.documentenInline, null);
+  });
+
+  it("ends a quoted value at its closing quote, also when a comment after it holds quotes", () => {
+    const text = [
+      "dfts:",
+      '  - id: "DFT-001"',
+      "    documenten:",
+      '      - "docs/x.md" # the "balance"',
+      '    getoetst-tegen: "abc1234" # checked "today"',
+    ].join("\n");
+    const [entry] = parseDftRegister(text);
+    assert.deepEqual(entry.documenten, ["docs/x.md"]);
+    assert.equal(entry.getoetstTegen, "abc1234");
   });
 });
 
@@ -350,6 +368,65 @@ describe("the baseline", () => {
     }
   });
 
+  it("leaves out an ancestor before it compares dates, whatever the order of the register", () => {
+    const root = makeRepo();
+    git(root, "checkout", "-q", "-b", "side");
+    write(root, "src/lib/side.ts", "export const side = 1;\n");
+    commit(root, "A, on the side line", MIDDLE);
+    const a = head(root);
+    git(root, "checkout", "-q", "main");
+    changeCode(root, "B, an ancestor of C with a later date", LATE);
+    const b = head(root);
+    changeCode(root, "C, after B with an earlier date", EARLY);
+    const c = head(root);
+    git(root, "merge", "-q", "--no-edit", "side");
+    // Without B, A and C are left, and A has the later date.
+    for (const order of [
+      [a, b, c],
+      [a, c, b],
+    ]) {
+      writeResolved(root, order);
+      assert.equal(documentAt(root, DOC).baseline.hash, a, `register order ${order.join(", ")}`);
+    }
+  });
+
+  it("takes the larger full hash for two commits with the same date, whatever the order of the register", () => {
+    const root = makeRepo();
+    git(root, "checkout", "-q", "-b", "side");
+    write(root, "src/lib/side.ts", "export const side = 1;\n");
+    commit(root, "on the side line", MIDDLE);
+    const side = head(root);
+    git(root, "checkout", "-q", "main");
+    write(root, "src/lib/main.ts", "export const main = 1;\n");
+    commit(root, "on the main line", MIDDLE);
+    const main = head(root);
+    git(root, "merge", "-q", "--no-edit", "side");
+    const larger = fullHash(root, side) > fullHash(root, main) ? side : main;
+    for (const order of [
+      [side, main],
+      [main, side],
+    ]) {
+      writeResolved(root, order);
+      assert.equal(documentAt(root, DOC).baseline.hash, larger, `register order ${order.join(", ")}`);
+    }
+  });
+
+  it("names the highest id when several resolved DFTs name the same commit", () => {
+    const root = makeRepo();
+    changeCode(root, "the reconciled change");
+    const checked = head(root);
+    for (const ids of [
+      ["DFT-001", "DFT-002"],
+      ["DFT-002", "DFT-001"],
+    ]) {
+      writeRegister(
+        root,
+        ids.map((id) => ({ id, status: "resolved", documenten: [DOC], getoetstTegen: checked })),
+      );
+      assert.equal(documentAt(root, DOC).baseline.dft, "DFT-002", `register order ${ids.join(", ")}`);
+    }
+  });
+
   it("is the commit that added the document when it was never reconciled", () => {
     const root = makeRepo();
     const second = "docs/grootboek/second.md";
@@ -364,6 +441,21 @@ describe("the baseline", () => {
     assert.equal(document.baseline.dft, null);
     assert.equal(document.baseline.hash, added);
     assert.deepEqual(subjects(document), ["after the second document"]);
+  });
+
+  it("is the commit that added the document itself when its path holds glob characters", () => {
+    const root = makeRepo();
+    const odd = "docs/notes/[ab].md";
+    write(root, "docs/notes/a.md", "# a\n");
+    commit(root, "add a note the glob matches");
+    changeCode(root, "between the note and the document");
+    write(root, odd, "---\nwerkgebied:\n  - src/lib\n---\n");
+    commit(root, "add a document whose name is a glob");
+    const added = head(root);
+    changeCode(root, "after the document");
+    const document = documentAt(root, odd);
+    assert.equal(document.baseline.hash, added);
+    assert.deepEqual(subjects(document), ["after the document"]);
   });
 });
 
@@ -468,6 +560,31 @@ describe("problems in the DFT register", () => {
     assert.match(problems[0], /DFT-001 .* has getoetst-tegen deadbeef, which git cannot resolve to a commit$/);
   });
 
+  it("reports a resolved DFT whose getoetst-tegen HEAD does not have, and measures without it", () => {
+    const root = makeRepo();
+    const added = head(root);
+    changeCode(root, "on main");
+    git(root, "checkout", "-q", "-b", "side");
+    write(root, "src/lib/side.ts", "export const side = 1;\n");
+    commit(root, "on a branch that is not merged");
+    const unmerged = head(root);
+    git(root, "checkout", "-q", "main");
+    writeRegister(root, [{ id: "DFT-001", status: "resolved", documenten: [DOC], getoetstTegen: unmerged }]);
+    commit(root, "book a DFT against the unmerged branch");
+    const { documents, problems } = findDrift(root);
+    assert.equal(problems.length, 1);
+    assert.match(
+      problems[0],
+      new RegExp(
+        `^drift: DFT-001 .* has getoetst-tegen ${unmerged}, which is not in the history of HEAD; ` +
+          "point it at the commit that holds the reconciled code$",
+      ),
+    );
+    assert.equal(documents[0].baseline.dft, null);
+    assert.equal(documents[0].baseline.hash, added);
+    assert.deepEqual(subjects(documents[0]), ["on main"]);
+  });
+
   it("reports a resolved DFT with documenten but no getoetst-tegen, and not one in progress", () => {
     const root = makeRepo();
     writeRegister(root, [
@@ -543,6 +660,13 @@ describe("a DFT that stays open", () => {
   it("skips a DFT without a datum, or with one that is not a date, without crashing", () => {
     assert.deepEqual(
       findStaleDfts([dft("DFT-001", "open", null), dft("DFT-002", "open", "last week")], TODAY),
+      [],
+    );
+  });
+
+  it("skips a datum in the right form that is no real date, even years later", () => {
+    assert.deepEqual(
+      findStaleDfts([dft("DFT-001", "open", "2026-02-31"), dft("DFT-002", "open", "2026-13-01")], "2030-01-01"),
       [],
     );
   });

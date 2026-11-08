@@ -16,13 +16,15 @@
 // The baseline is the last closed reconciliation: the DFT register entry with `status: resolved`
 // that lists the document under `documenten`, and the commit it names in `getoetst-tegen`, the
 // commit the code was compared against. When several do, the newest commit wins, not the highest
-// id. A path under `documenten` is the path of a document this script tracks, exactly as it lists
-// it (forward slashes, from the root, same case). Nothing is normalised and anything else is a
-// problem, so the register stays canonical and Windows and Linux agree; a leading document without
-// a werkgebied, which this script does not track, cannot be booked there. A document no resolved
-// DFT names was never reconciled and is measured from the
-// commit that added it. Touching the document resets nothing, not even a commit that changes
-// document and code together: that commit could hide earlier commits that nobody checked.
+// id: an ancestor of another one is older whatever its date, and the order of the register never
+// decides. A commit that is not in the history of HEAD does not count. A path under `documenten`
+// is the path of a document this script tracks, exactly as it lists it (forward slashes, from the
+// root, same case). Nothing is normalised and anything else is a problem, so the register stays
+// canonical and Windows and Linux agree; a leading document without a werkgebied, which this
+// script does not track, cannot be booked there. A document no resolved DFT names was never
+// reconciled and is measured from the commit that added it. Touching the document resets nothing,
+// not even a commit that changes document and code together: that commit could hide earlier
+// commits that nobody checked.
 //
 // The drift is every commit that touched the werkgebied after the baseline. Leading documents are
 // never drift of themselves or of each other: the path of every leading document is left out of
@@ -31,8 +33,9 @@
 // This is a signal, not a verdict: "behind" means the code changed, not that the document is
 // wrong. A reconciliation (a DFT) finds out which.
 // Exit code 1 only for a problem: a werkgebied path that does not exist, or a DFT register entry
-// whose documenten is not a block list of documents this script tracks, whose getoetst-tegen is not a commit
-// hash or not one git can resolve, or that is resolved and lists documenten without getoetst-tegen.
+// whose documenten is not a block list of documents this script tracks, whose getoetst-tegen is
+// not a commit hash or not one git can resolve, or that is resolved and lists documenten without
+// getoetst-tegen or names a getoetst-tegen that is not in the history of HEAD.
 import { execFileSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join, posix } from "node:path";
@@ -80,9 +83,10 @@ export function parseWerkgebied(text) {
 }
 
 // A YAML scalar without its quotes; an unquoted one also loses a trailing comment, which may be
-// all there is (`documenten:  # the documents it checked`).
+// all there is (`documenten:  # the documents it checked`). A quoted one ends at its first closing
+// quote; escapes are not read, as the values are paths, hashes, statuses and dates.
 function unquote(value) {
-  const quoted = value.match(/^(["'])(.*)\1/);
+  const quoted = value.match(/^(["'])(.*?)\1/);
   if (quoted) {
     return quoted[2];
   }
@@ -168,11 +172,17 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 export function findStaleDfts(entries, today) {
   const warnings = [];
   for (const entry of entries) {
-    if (!UNFINISHED_STATUSES.has(entry.status) || !/^\d{4}-\d{2}-\d{2}$/.test(entry.datum ?? "")) {
+    if (!UNFINISHED_STATUSES.has(entry.status)) {
+      continue;
+    }
+    // Date.parse rolls a date that does not exist over (2026-02-31 is 3 March), so only a datum
+    // that comes back unchanged as YYYY-MM-DD counts.
+    const opened = Date.parse(entry.datum ?? "");
+    if (Number.isNaN(opened) || new Date(opened).toISOString().slice(0, 10) !== entry.datum) {
       continue;
     }
     // Both dates parse as UTC midnight, so the difference is a whole number of days.
-    const days = Math.round((Date.parse(today) - Date.parse(entry.datum)) / DAY_MS);
+    const days = Math.round((Date.parse(today) - opened) / DAY_MS);
     if (days > DFT_MAX_OPEN_DAYS) {
       warnings.push(
         `dft: ${entry.id} is still ${entry.status} ${days} days after it was opened (${entry.datum}); ` +
@@ -208,7 +218,7 @@ function commitInfo(root, revision) {
 // that was moved is measured from the move.
 function addedCommit(root, path) {
   try {
-    const [first] = git(root, ["log", "--reverse", "--format=%H", "--", path]).split("\n");
+    const [first] = git(root, ["log", "--reverse", "--format=%H", "--", `:(literal)${path}`]).split("\n");
     if (!first) {
       return null;
     }
@@ -227,25 +237,34 @@ function isAncestor(root, ancestor, descendant) {
   }
 }
 
-// The newer of two reconciliations: a descendant is newer than its ancestor. Two commits on
-// separate lines of history fall back to the committer date.
-function newer(root, current, candidate) {
-  if (!current) {
-    return candidate;
+function isNewer(candidate, best) {
+  if (candidate.timestamp !== best.timestamp) {
+    return candidate.timestamp > best.timestamp;
   }
-  if (isAncestor(root, current.full, candidate.full)) {
-    return candidate;
+  if (candidate.full !== best.full) {
+    return candidate.full > best.full;
   }
-  if (isAncestor(root, candidate.full, current.full)) {
-    return current;
-  }
-  return candidate.timestamp > current.timestamp ? candidate : current;
+  return candidate.dft > best.dft;
+}
+
+// The newest of the reconciliations of one document. A commit that is an ancestor of another one
+// is older whatever its date, so it drops out first: merge-base --independent keeps the commits no
+// other one reaches. Of those the later committer date wins, then the larger full hash, so the
+// order of the register never decides; several DFTs on one commit give the highest id.
+function newest(root, reconciliations) {
+  const commits = [...new Set(reconciliations.map((reconciliation) => reconciliation.full))];
+  const tips = new Set(
+    commits.length > 1 ? git(root, ["merge-base", "--independent", ...commits]).split("\n").filter(Boolean) : commits,
+  );
+  return reconciliations
+    .filter((reconciliation) => tips.has(reconciliation.full))
+    .reduce((best, candidate) => (isNewer(candidate, best) ? candidate : best));
 }
 
 // Per document path, the newest commit a resolved DFT reconciled it against, and the problems
 // in the register. `leadingPaths` holds the paths of the documents docs:drift tracks.
 function readReconciliations(root, leadingPaths) {
-  const baselines = new Map();
+  const reconciliations = new Map();
   const problems = [];
   for (const entry of readDftRegister(root)) {
     const where = `${entry.id} in ${DFT_REGISTER}`;
@@ -284,10 +303,22 @@ function readReconciliations(root, leadingPaths) {
     if (entry.status !== "resolved") {
       continue;
     }
+    // For a commit HEAD does not have, X..HEAD holds only what HEAD added since the two lines
+    // forked, so the document could read as up to date against code HEAD never had.
+    if (!isAncestor(root, commit.full, "HEAD")) {
+      problems.push(
+        `drift: ${where} has getoetst-tegen ${entry.getoetstTegen}, which is not in the history of HEAD; ` +
+          "point it at the commit that holds the reconciled code",
+      );
+      continue;
+    }
     for (const path of documenten) {
-      baselines.set(path, newer(root, baselines.get(path), { ...commit, dft: entry.id }));
+      reconciliations.set(path, [...(reconciliations.get(path) ?? []), { ...commit, dft: entry.id }]);
     }
   }
+  const baselines = new Map(
+    [...reconciliations].map(([path, candidates]) => [path, newest(root, candidates)]),
+  );
   return { baselines, problems };
 }
 

@@ -34,7 +34,7 @@ dfts:
     bestand: dft-002-guard-blokkeert-claude-md-onder-src.md
   - id: "DFT-003"
     titel: "Het hernummerscript laat record-ids in broncommentaar ongewijzigd, terwijl HDR-005 zegt van wel"
-    status: in_progress
+    status: resolved
     datum: 2026-10-27
     aanleiding: "Gevonden door de animatiesessie na het mergen van arc/arc-main in arc/bubble-animation: drie commentaren in src/ zeiden nog JNL-002, nu een ander journaal"
     bevindingen: 1

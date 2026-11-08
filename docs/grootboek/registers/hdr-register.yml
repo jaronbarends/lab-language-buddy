@@ -87,7 +87,7 @@ hdrs:
     datum: 2026-10-27
     implementatie-datum: 2026-10-27
     beslissing: "Een leidend document declareert zijn werkgebied in de front matter; npm run docs:drift somt de codewijzigingen in dat gebied op sinds het document het laatst is aangeraakt, docs:check waarschuwt bij drift en faalt bij een ontbrekend pad; een signaal wordt gevolgd door een reconciliatie en een DFT"
-    notitie: "REQ-GG-05. Signaal, geen oordeel. Bewezen op een wegwerp-checkout van arc/bubble-animation (750dc49, vier bestanden); de reconciliatie die op een echt signaal volgt is DFT-004 (2026-11-07), niet bij de merge van arc/bubble-animation zoals verwacht. Nummering: arc/bubble-animation heeft een eigen HDR-008 en hernummert via docs:renumber (HDR-007). De baseline (de laatste commit die het document aanraakte) is op 2026-11-07 vervangen door HDR-022 (de laatste afgesloten reconciliatie); de rest geldt nog"
+    notitie: "REQ-GG-05. Signaal, geen oordeel. Bewezen op een wegwerp-checkout van arc/bubble-animation (750dc49, vier bestanden); de reconciliatie die op een echt signaal volgt is DFT-004 (2026-11-07), niet bij de merge van arc/bubble-animation zoals verwacht. Nummering: arc/bubble-animation heeft een eigen HDR-008 en hernummert via docs:renumber (HDR-007). De baseline (de laatste commit die het document aanraakte) is op 2026-11-07 vervangen door HDR-022 (de laatste afgesloten reconciliatie). HDR-022 breidt ook uit: de CLAUDE.md-bestanden onder src/ zijn leidende documenten met hun eigen map als werkgebied en zonder front matter, en leidende documenten vallen buiten elk werkgebied. De rest geldt nog"
     bestand: hdr-008-driftsignaal.md
   - id: "HDR-009"
     titel: "Terugkerende fouten worden per patroon gelogd en bij drie vastgelegd als regel"
@@ -251,5 +251,5 @@ hdrs:
     datum: 2026-11-07
     implementatie-datum: 2026-11-07
     beslissing: "docs:check waarschuwt (nooit een fout) bij elke DFT met status open of in_progress waarvan de datum meer dan veertien dagen voor vandaag ligt, gelezen in Europe/Amsterdam"
-    notitie: "Maatregel van het incidentpatroon promised-follow-up-dropped, samen met HDR-022 (dat dekt de twee andere vormen). Veertien dagen is de keuze van Jarón; zeven was voorgesteld. Afgewezen: HDR-022 als enige maatregel (stil zonder controle) en alleen een regel (stond al in de skill). DFT-003 meldt zich op 2026-11-11. Dekt geen ADR of HDR die op in-progress blijft hangen"
+    notitie: "Maatregel van het incidentpatroon promised-follow-up-dropped, samen met HDR-022 (dat dekt de twee andere vormen). Veertien dagen is de keuze van Jarón; zeven was voorgesteld. Afgewezen: HDR-022 als enige maatregel (stil zonder controle) en alleen een regel (stond al in de skill). DFT-003 is op 2026-11-08 gesloten (anders had hij zich op 2026-11-11 gemeld). Dekt geen ADR of HDR die op in-progress blijft hangen"
     bestand: hdr-023-open-driftrapport-meldt-zich.md

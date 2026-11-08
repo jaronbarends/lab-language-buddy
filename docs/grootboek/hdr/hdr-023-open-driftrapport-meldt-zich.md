@@ -46,8 +46,8 @@ legitiem open mag staan, leert mensen CI te negeren.
 
 ## Gevolgen
 
-- **DFT-003 meldt zich op 2026-11-11** (geopend op 2026-10-27; 2026-11-10 is dag veertien),
-  tenzij hij eerder wordt gesloten.
+- **DFT-003 is op 2026-11-08 gesloten**, na een opmerking van CodeRabbit op PR #37. Anders had
+  hij zich op 2026-11-11 gemeld (geopend op 2026-10-27; 2026-11-10 is dag veertien).
 - De leeftijd wordt gemeten vanaf de `datum` van de DFT, het moment waarop hij werd geopend. Er is
   geen veld voor "sinds wanneer in deze status". Een DFT die lang `open` stond en net op
   `in_progress` is gezet, waarschuwt dus gewoon door. Dat is bedoeld: de vraag is of hij dicht

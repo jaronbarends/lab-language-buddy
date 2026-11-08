@@ -67,8 +67,8 @@ documents:
     what: Waarom docs:check faalt op een record dat na vandaag is gedateerd (gelezen in Europe/Amsterdam), wat het leest en wat het niet kan vangen; de maatregel van het incidentpatroon date-assumed.
     read_when: je een datum in een record of register schrijft; een docs:check-fout over een datum na vandaag; je de tijdzoneconstante wijzigt.
   - path: docs/grootboek/hdr/hdr-013-modern-web-guidance-proef.md
-    what: Proef met Modern Web Guidance op de bubbelanimatie; de baseline van de agent wordt geschreven voordat de guidance wordt geraadpleegd, daarna houdt de mens de guidance, zet hij haar uit of past hij haar aan.
-    read_when: je guidance-tooling voor het webplatform voor de agent overweegt; je JNL-003 K10 afsluit.
+    what: Proef met Modern Web Guidance op de bubbelanimatie, met eerst de baseline van de agent; drie tests, alle drie hetzelfde, en toch gehouden voor de zekerheid (2026-11-08). De werkregel in CLAUDE.md en de keuzes over scope en goedkeuring per run zijn nog open.
+    read_when: je guidance-tooling voor het webplatform voor de agent overweegt; je de werkregel voor Modern Web Guidance in CLAUDE.md toevoegt.
   - path: docs/grootboek/hdr/hdr-014-documentatie-nederlands.md
     what: Welke taal waar geldt (documentatie Nederlands; code, UI, commits, README, AGENTS.md en spikes Engels), dat vertalen geen nieuwe beslissing is, en welke labels niet vertaald worden.
     read_when: je een document schrijft of vertaalt; je twijfelt over de taal van een tekst; je de taalregels in een CLAUDE.md wijzigt.

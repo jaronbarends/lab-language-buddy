@@ -8,7 +8,6 @@ doel-records:
   - "HDR-013 (K10), geboekt 2026-10-23"
   - "PDR-019 (K6), screenreaders zijn geen doel, geboekt 2026-11-08"
   - "PDR-013, het bewegingsgedrag, overgezet uit plan.md (HDR-015)"
-  - "een spec als bouwplan, zodra de kwesties besloten zijn"
 ---
 
 # JNL-003 — Animatie van chatbubbels
@@ -44,7 +43,7 @@ dateert van vóór 2026-10-20 en verwijst hiernaartoe, zodat de twee plekken nie
 | K7 | De bubbel van de gebruiker die groeit als zijn evaluatie binnenkomt | besloten 2026-10-23 (voorlopig alleen de AI-bubbel) |
 | K8 | `prefers-reduced-motion` | besloten 2026-10-23 |
 | K9 | Overlap met de pulse van de live-indicator en de richting van puntjes en bounce | besloten 2026-10-23 (buiten scope); de pulse van de live-indicator is op 2026-10-27 opgepakt als K13 |
-| K10 | Modern Web Guidance: geeft het een beter antwoord voor K3? | proef afgesproken, uitkomst open |
+| K10 | Modern Web Guidance: geeft het een beter antwoord voor K3? | besloten 2026-11-08 (hetzelfde in alle drie de tests; HDR-013 toch gehouden) |
 | K11 | De bubbel van de gebruiker bij het versturen: wat animeert | besloten en gebouwd 2026-10-27, iPhone-test open; het krimpen in de balk en de vertraging van de denkbubbel volgen daarna |
 | K12 | Start van de spraak tegenover het einde van de onthulling | geparkeerd 2026-10-27 |
 | K13 | De live-indicator pulseert zolang de microfoon live is | besloten en gebouwd 2026-10-27, getest op de iPhone |
@@ -245,11 +244,15 @@ Geboekt als **HDR-013**: een proef met Google's Modern Web Guidance (agent skill
 guidance over het webplatform), afgebakend tot deze feature. De vergelijking is de baseline van K3
 hierboven tegenover wat de guidance aanbeveelt, met het resultaat als één regel hier na de
 iPhone-spike. De guides omvatten `css/animate-to-intrinsic-sizes`, `ui-behaviors/motion` en
-`ui-behaviors/animate-element-entry-exit`, en daarom is K3 het testgeval. De uitkomst is open; het
-exitcriterium staat in HDR-013.
+`ui-behaviors/animate-element-entry-exit`, en daarom is K3 het testgeval. Het exitcriterium staat
+in HDR-013; het resultaat staat hieronder.
 
-**Resultaat (in te vullen na de spike):** hetzelfde / anders en beter / anders en slechter /
-niets toegevoegd; en of de iPhone het bevestigde.
+**Resultaat (2026-11-08, de mens):** **hetzelfde**, in alle drie de tests van de proef (K3, K11 en
+K13; het proeflog staat in HDR-013). De iPhone: test 1 deels (de eerste spike draaide, het
+uiteindelijke ontwerp is op het oog afgesteld), test 2 niet getest, test 3 bevestigd. Besluit over
+HDR-013: **houden**, "simpelweg voor de zekerheid: baat het niet, dan schaadt het niet". Dat wijkt
+bewust af van het exitcriterium, dat "hetzelfde" een reden noemt om niet te houden; HDR-013 legt
+die afwijking vast.
 
 **Feiten tot nu toe (2026-10-23; het oordeel is aan de mens en is nog niet geschreven).** De
 builder raadpleegde de guidance voordat hij de K3-baseline las (guides
@@ -681,6 +684,13 @@ uiteenlopen als het anker van de AI-bubbel ooit veranderde.
   sloeg daarop aan en is gereconcilieerd in DFT-005, zonder drift. Wat de lus niet laat zien: een
   besluit dat code stuurt voordat die code bestaat. Dat deed de lus van ADR-004 in JNL-001; hier
   volgde het record de code.
+- **2026-11-08 — de spec vervalt als doel-record.** Besluit van de mens. Alles waar de spec het
+  bouwplan voor moest zijn, is gebouwd, en een spec is wegwerp: na oplevering is de code de
+  waarheid (`docs/grootboek/CLAUDE.md`, Schrijfafspraken). De voorwaarde om dit journaal te sluiten
+  noemt hem niet meer.
+- **2026-11-08 — K10 besloten.** Het oordeel van de mens over de drie tests van HDR-013 is
+  hetzelfde; de guidance blijft toch, voor de zekerheid. HDR-013 blijft `in-progress` tot de
+  werkregel in `CLAUDE.md` staat en besloten is over de installatiescope en de goedkeuring per run.
 
 **Waar je verder gaat (geschreven voor de volgende sessie):**
 
@@ -693,9 +703,9 @@ uiteenlopen als het anker van de AI-bubbel ooit veranderde.
   gedupliceerd in `AiBubble`. Gedaan 2026-10-27: `ThinkingBubble` is nu `ThinkingIndicator` (de
   keuze van de mens, genoemd naar zijn functie in plaats van zijn vorm, zodat een andere animatie
   niet nog een hernoeming afdwingt; de agent had `ThinkingDots` voorgesteld).
-- Nog niet geschreven: de spec, het K10-oordeel en het besluit over HDR-013 (behouden, uitzetten
-  of bijstellen). De ADR voor K2 is ADR-031 (2026-11-08).
+- K10 is besloten (2026-11-08): de guidance blijft. Wat dat meebrengt (de werkregel in
+  `CLAUDE.md`, de installatiescope, de goedkeuring per run) staat in HDR-013 en is nog niet gedaan.
+  De ADR voor K2 is ADR-031 (2026-11-08); de spec is vervallen (2026-11-08).
 - Geparkeerd: K12 (spraakstart na de onthulling) en K15 (de Retry-vertraging).
 
-Dit journaal sluit wanneer K1 tot en met K9 besloten of geparkeerd zijn en de ADR (K2) en de spec
-bestaan.
+Dit journaal sluit wanneer K1 tot en met K9 besloten of geparkeerd zijn en de ADR (K2) bestaat.

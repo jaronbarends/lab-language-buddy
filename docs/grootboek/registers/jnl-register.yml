@@ -33,15 +33,14 @@ jnls:
     datum: 2026-10-23
     laatste-sessie: 2026-11-08
     kwesties-totaal: 15
-    kwesties-besloten: 12
-    kwesties-open: 1
+    kwesties-besloten: 13
+    kwesties-open: 0
     kwesties-geparkeerd: 2
     doel-records:
       - "ADR-031 (K2, K4)"
       - "HDR-013 (K10)"
       - "PDR-019 (K6)"
       - "PDR-013 (bewegingsgedrag)"
-      - "een spec als bouwplan, zodra besloten"
     bestand: jnl-003-animatie-van-chatbubbels.md
   - id: "JNL-004"
     titel: "Openstaande kwesties"

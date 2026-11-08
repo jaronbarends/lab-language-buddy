@@ -12,4 +12,4 @@
   bij (zie de balans, § 2 en § 3).
 - De Safari/iPhone-regels in `.claude/rules/safari-ios.md` gelden voor alles hier.
 - Verschillende keuzes lijken willekeurig en zijn bewust (geen Stop-knop, `editing` als eigen
-  state, het live transcript buiten de thread). De redenering staat in het grootboek: PDR-003 (Een set bediening zonder stop), ADR-006 (`editing` is een eigen beurtstatus met `draftBeforeEdit`) en, voor de rest, `docs/index.yml`.
+  state, het live transcript buiten de thread, de key op positie van de AI-bubbel). De redenering staat in het grootboek: PDR-003 (Een set bediening zonder stop), ADR-006 (`editing` is een eigen beurtstatus met `draftBeforeEdit`), ADR-031 (De AI-bubbel blijft één element, van wachten tot antwoord) en, voor de rest, `docs/index.yml`.

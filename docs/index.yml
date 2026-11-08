@@ -285,6 +285,9 @@ documents:
   - path: docs/grootboek/dft/dft-004-eerste-reconciliatie-op-een-echt-signaal.md
     what: Driftrapport; de eerste reconciliatie op een echt signaal (HDR-022). src/components/CLAUDE.md beschreef een state-context die nooit bestond, balans § 5 miste de CI, de dev-previews van de bubbels stonden niet in de balans; src/lib/CLAUDE.md klopte.
     read_when: je de regel over schermen en dispatch in src/components/CLAUDE.md, § 3 of § 5 van de balans aanraakt; je een volgende reconciliatie doet en een voorbeeld zoekt.
+  - path: docs/grootboek/dft/dft-005-reconciliatie-na-adr-031.md
+    what: Driftrapport; reconciliatie van de balans en src/components/CLAUDE.md na het omzetten van de bubbelcommentaren naar ADR-031 — geen drift. Sluit de driftstap van de lus van JNL-003 K2.
+    read_when: je een voorbeeld zoekt van een kleine reconciliatie na een verwacht signaal, of de lus van JNL-003 K2 naloopt.
   - path: docs/grootboek/registers
     what: YAML-registers (adr, hdr, pdr, dft, jnl) — de goedkope index van het grootboek; lees ze voordat je een record opent.
     read_when: je een beslissing, de status ervan of een open driftrapport in het grootboek zoekt.

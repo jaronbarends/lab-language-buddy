@@ -57,3 +57,17 @@ dfts:
       - src/lib/CLAUDE.md
     getoetst-tegen: ddab397
     bestand: dft-004-eerste-reconciliatie-op-een-echt-signaal.md
+  - id: "DFT-005"
+    titel: "Reconciliatie na ADR-031 — geen drift"
+    status: resolved
+    datum: 2026-11-08
+    aanleiding: "Verwacht driftsignaal (HDR-022) na fa016bb, dat vier commentaren in src/components/conversation/ van JNL-003 naar ADR-031 omzette; sluit de driftstap van de lus van JNL-003 K2 (REQ-GG-09)"
+    bevindingen: 0
+    hoog: 0
+    midden: 0
+    laag: 0
+    documenten:
+      - docs/grootboek/software-architectuur.md
+      - src/components/CLAUDE.md
+    getoetst-tegen: fa016bb
+    bestand: dft-005-reconciliatie-na-adr-031.md

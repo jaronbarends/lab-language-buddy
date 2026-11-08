@@ -675,8 +675,12 @@ uiteenlopen als het anker van de AI-bubbel ooit veranderde.
   in JNL-001 kwam de code hier vóór het record. De structuur is gebouwd in 750dc49 (2026-10-23)
   en staat sinds PR #33 (2026-10-30) in main; het record legt vast wat al draaide. De codestap die
   op het besluit volgt, is klein: de commentaren in `src/components/conversation/` die naar
-  JNL-003 K2 en K4 verwezen, gaan naar ADR-031. Stand bij het schrijven: § 3 van de balans, de
-  commentaren en de reconciliatie wachten op het akkoord van de mens, dus de lus is nog niet rond.
+  JNL-003 K2 en K4 verwezen, gaan naar ADR-031.
+- **2026-11-08 — de lus van K2 is rond.** Document: § 3 van de balans noemt ADR-031 (door de
+  mens gecontroleerd). Code: fa016bb zet de vier commentaren om. Drift: het signaal van HDR-022
+  sloeg daarop aan en is gereconcilieerd in DFT-005, zonder drift. Wat de lus niet laat zien: een
+  besluit dat code stuurt voordat die code bestaat. Dat deed de lus van ADR-004 in JNL-001; hier
+  volgde het record de code.
 
 **Waar je verder gaat (geschreven voor de volgende sessie):**
 

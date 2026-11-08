@@ -29,7 +29,7 @@ jnls:
     bestand: jnl-002-koude-start-onboarding.md
   - id: "JNL-003"
     titel: "Animatie van chatbubbels"
-    status: discovery
+    status: afgerond
     datum: 2026-10-23
     laatste-sessie: 2026-11-08
     kwesties-totaal: 15
@@ -46,11 +46,11 @@ jnls:
     titel: "Openstaande kwesties"
     status: discovery
     datum: 2026-11-06
-    laatste-sessie: 2026-11-06
-    kwesties-totaal: 9
-    kwesties-besloten: 0
-    kwesties-open: 5
-    kwesties-geparkeerd: 4
+    laatste-sessie: 2026-11-08
+    kwesties-totaal: 13
+    kwesties-besloten: 1
+    kwesties-open: 6
+    kwesties-geparkeerd: 6
     doel-records:
       - "per kwestie een record zodra er een besluit valt"
     bestand: jnl-004-openstaande-kwesties.md

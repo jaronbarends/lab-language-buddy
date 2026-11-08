@@ -135,13 +135,14 @@ hdrs:
     bestand: hdr-012-geen-record-gedateerd-na-vandaag.md
   - id: "HDR-013"
     titel: "Modern Web Guidance proberen op de bubbelanimatie, met eerst de eigen baseline"
-    status: in-progress
+    status: implemented
     versie: "1.0"
-    implementatie: 75
+    implementatie: 100
     omgeving: geen
     datum: 2026-10-23
+    implementatie-datum: 2026-11-08
     beslissing: "Proef met Modern Web Guidance voor JNL-003 K3: de eigen baseline van de agent wordt geschreven voordat de guidance wordt geraadpleegd en na de iPhone-spike vergeleken; daarna houdt de mens de guidance, zet hij haar uit of past hij haar aan"
-    notitie: "De bevindingen van vóór de installatie staan in het record (geen installscripts, niet vastgepind @latest, telemetrie volgens de README); geïnstalleerd 2026-10-23 (scope local, v0.0.195); genomen besluiten: telemetrie uit via de env in .claude/settings.json, goedkeuring per run, default Baseline, antwoordsectie behouden, route via /plugin; proef op 2026-10-23 uitgebreid naar meerdere CSS-taken (eerst baseline, dan guidance; proeflog in het record); eindigt na in totaal drie tests. Uitkomst 2026-11-08: alle drie hetzelfde, toch gehouden (voor de zekerheid, bewust tegen het exitcriterium in); blijft in-progress tot de werkregel in CLAUDE.md staat en besloten is over scope local en de goedkeuring per run. Bron: JNL-003 K10"
+    notitie: "De bevindingen van vóór de installatie staan in het record (geen installscripts, niet vastgepind @latest, telemetrie volgens de README); geïnstalleerd 2026-10-23 (scope local, v0.0.195); genomen besluiten: telemetrie uit via de env in .claude/settings.json, goedkeuring per run, default Baseline, antwoordsectie behouden, route via /plugin; proef op 2026-10-23 uitgebreid naar meerdere CSS-taken (eerst baseline, dan guidance; proeflog in het record); eindigt na in totaal drie tests. Uitkomst 2026-11-08: alle drie hetzelfde, toch gehouden (voor de zekerheid, bewust tegen het exitcriterium in). Werkregel in CLAUDE.md (Werkafspraken, zonder Baseline-deel); scope local blijft; goedkeuring per run vervangen door een allowlist voor precies npx(.cmd) -y modern-web-guidance@latest in settings.local.json, met het risico van het ongepinde pakket bewust geaccepteerd; de procedure van de proef (baseline vooraf, proeflog) is gestopt. Bron: JNL-003 K10"
     bestand: hdr-013-modern-web-guidance-proef.md
   - id: "HDR-014"
     titel: "Documentatie is Nederlands; code, UI en commits blijven Engels"

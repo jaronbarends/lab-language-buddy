@@ -147,6 +147,9 @@ documents:
   - path: docs/grootboek/hdr/hdr-020-faalpaden-bewust-proberen.md
     what: Bij elke stage worden de faalpaden bewust geprobeerd en moeten ze in een herstelbare error-state landen; overgezet uit plan.md.
     read_when: je een stage verifieert of wilt weten welke faalpaden je met de hand probeert.
+  - path: docs/grootboek/hdr/hdr-024-builder-model-per-regime.md
+    what: Welk model de builder per triage-regime krijgt (Sonnet bij trivial, Opus bij normal en risky), met de proef die dat besliste en wat een hertest vooraf moet afspreken.
+    read_when: je een builder start; je de staffel, builder.md of de triage-skill wijzigt; je een ander model voor een agent overweegt of de proef voor normal opnieuw draait.
   - path: docs/grootboek/pdr/pdr-007-persona-van-de-ai.md
     what: De AI is een algemene vriendelijke kennis met vrij onderwerp, 2 tot 4 zinnen en hooguit één vraag per beurt; overgezet uit plan.md.
     read_when: je de persona, de toon of de prompt-opbouw uit benoemde secties wijzigt of een nieuwe persona toevoegt.

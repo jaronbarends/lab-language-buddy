@@ -253,3 +253,14 @@ hdrs:
     beslissing: "docs:check waarschuwt (nooit een fout) bij elke DFT met status open of in_progress waarvan de datum meer dan veertien dagen voor vandaag ligt, gelezen in Europe/Amsterdam"
     notitie: "Maatregel van het incidentpatroon promised-follow-up-dropped, samen met HDR-022 (dat dekt de twee andere vormen). Veertien dagen is de keuze van Jarón; zeven was voorgesteld. Afgewezen: HDR-022 als enige maatregel (stil zonder controle) en alleen een regel (stond al in de skill). DFT-003 is op 2026-11-08 gesloten (anders had hij zich op 2026-11-11 gemeld). Dekt geen ADR of HDR die op in-progress blijft hangen"
     bestand: hdr-023-open-driftrapport-meldt-zich.md
+  - id: "HDR-024"
+    titel: "Builders op Sonnet bij `trivial`, op Opus bij `normal` en `risky`"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-11-08
+    implementatie-datum: 2026-11-08
+    beslissing: "Bij regime trivial start de lead de builder met model sonnet; normal en risky draaien op Opus, vastgepind in de frontmatter van builder.md zodat het niet afhangt van het model van de lead"
+    notitie: "Uitkomst van een replay van de driftopdracht (PR #37) met een Sonnet-builder: dezelfde twee serieuze reviewbevindingen als Opus, alle verificatieclaims klopten, twee toelichtingen niet; 46.741 tegen 80.896 buildertokens. Jarón test normal later opnieuw, met de lezing van de beslisregel vooraf afgesproken"
+    bestand: hdr-024-builder-model-per-regime.md

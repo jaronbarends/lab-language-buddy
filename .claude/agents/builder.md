@@ -5,6 +5,7 @@ description: >
   voor een stuk werk is afgesproken, één builder per taak, parallel aan andere builders zolang
   hun bestandsgrenzen niet overlappen. Niet voor verkennen, reviewen of refactoren.
 tools: Read, Edit, Write, Bash, Grep, Glob
+model: opus
 ---
 
 # Builder

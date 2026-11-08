@@ -110,3 +110,10 @@ patronen:
       - datum: 2026-10-27
         wat: "DFT-003 bleef in_progress tot de drie comments JNL-003 zouden zeggen; dat deden ze dezelfde dag al (54e7e7b), en de DFT is nooit gesloten"
         bron: "coachingsronde op het-gedirigeerde-grootboek, 2026-11-07"
+  - patroon: recommendation-weak-ground
+    titel: "Een aanbeveling rust op een bijzaak en de optie wekt een verkeerd beeld"
+    maatregel:
+    incidenten:
+      - datum: 2026-11-08
+        wat: "Een nieuwe worktree aangeraden om de checkout van PR #37 in repo te sparen, een klein voordeel tegenover een extra junction en opruimstap; het label 'nieuwe worktree' wekte de indruk dat het werk buiten de originele repo zou landen. Na Jaróns vraag bijgesteld naar werken in repo zelf"
+        bron: "afronding van de proef sonnet-builder-replay (HDR-024)"

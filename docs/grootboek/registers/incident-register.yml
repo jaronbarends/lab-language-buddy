@@ -70,6 +70,9 @@ patronen:
       - datum: 2026-10-27
         wat: "Schreef in het journaal dat er geen aanleiding was geweest om de AI-of-zelf-regel te testen, zonder de globale instructie te lezen die vóór elke nieuwe taak om een oordeel vraagt"
         bron: "gevonden bij de voorbereiding van koude-startrun 2"
+      - datum: 2026-11-08
+        wat: "Zei dat gh hier niet geïnstalleerd is en dat Jarón de PR moest maken, op basis van de indexregel van een geheugennotitie; de notitie zelf zei dat gh er wel is en dat eerst gh auth status moet draaien"
+        bron: "correctie van Jarón bij de PR van drift-baseline-from-dft"
   - patroon: date-assumed
     titel: "Een datum wordt aangenomen in plaats van van de klok gelezen"
     maatregel: HDR-012

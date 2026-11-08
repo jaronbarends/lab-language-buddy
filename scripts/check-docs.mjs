@@ -14,11 +14,13 @@
 //   8. the incident register is well formed (error), and no pattern
 //      has three incidents without a codified fix                (warning)
 //   9. no grootboek record or register is dated after today      (error)
+//  10. no DFT has been open or in progress for more than
+//      14 days since its datum                                    (warning)
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
-import { findDrift } from "./drift-signal.mjs";
+import { findDrift, findStaleDfts, readDftRegister } from "./drift-signal.mjs";
 import { analyseIncidents } from "./incidents.mjs";
-import { checkRecordDates, checkRecords } from "./records.mjs";
+import { checkRecordDates, checkRecords, todayInAmsterdam } from "./records.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1");
 
@@ -133,6 +135,9 @@ for (const document of drift.documents) {
 
 // 9. no record is dated after today
 errors.push(...checkRecordDates(ROOT));
+
+// 10. a DFT that stays open is a follow-up nobody is reminded of: a signal, never an error
+warnings.push(...findStaleDfts(readDftRegister(ROOT), todayInAmsterdam()));
 
 // 8. recurring faults: a pattern at the threshold must be codified in an HDR
 const incidents = analyseIncidents(ROOT);

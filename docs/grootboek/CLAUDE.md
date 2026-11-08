@@ -36,8 +36,13 @@ nummer.
 - Elke feature of bugfix krijgt een spec in `docs/grootboek/specs/`
 - Specs zijn wegwerp: na oplevering is de code de waarheid
 - Een leidend document dat code beschrijft, een nieuwe balans inbegrepen, declareert zijn
-  `werkgebied` (de bestanden en mappen waar het over gaat) in zijn front matter; `npm run docs:drift`
-  en `npm run docs:check` gebruiken dat om drift te signaleren (HDR-008)
+  `werkgebied` (de bestanden en mappen waar het over gaat) in zijn front matter; een `CLAUDE.md`
+  onder `src/` heeft zijn eigen map als werkgebied, zonder front matter. `npm run docs:drift` en
+  `npm run docs:check` gebruiken dat om drift te signaleren (HDR-008)
+- Volg een driftsignaal op met een reconciliatie en boek die als DFT met `documenten` en
+  `getoetst-tegen` (de commit waarvan de code is vergeleken). Het signaal meet vanaf de nieuwste
+  afgesloten DFT die het document noemt; een aanraking van het document zet het niet stil
+  (HDR-022)
 
 ## Communicatieplicht
 

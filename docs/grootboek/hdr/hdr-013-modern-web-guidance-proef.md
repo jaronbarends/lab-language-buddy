@@ -1,7 +1,8 @@
 # HDR-013: Modern Web Guidance proberen op de bubbelanimatie, met eerst de eigen baseline
 
-- **Status:** in-progress
+- **Status:** implemented
 - **Date:** 2026-10-23
+- **Implementation:** 100
 - **Type:** Harness Decision Record (HOW do we work)
 
 ## Kernprincipe
@@ -77,12 +78,29 @@ Dat wijkt bewust af van het exitcriterium hierboven, dat "hetzelfde" een reden n
 te houden. Dit record legt die afwijking vast, zodat het besluit zijn eigen criterium niet stil
 tegenspreekt.
 
-Wat houden meebrengt, is nog niet gedaan, en daarom blijft dit record `in-progress`:
+### Wat houden meebrengt (2026-11-08, besloten door de mens)
 
-- de werkregel in `CLAUDE.md` (zie Gevolgen; een leidend document, dus via de communicatieplicht);
-- of de installatie op scope `local` blijft (besluit 5), nu ze niet meer alleen een proef is;
-- of elke run met de hand wordt goedgekeurd (besluit 2), wat alleen voor de duur van de proef was
-  besloten.
+- **De werkregel staat in `CLAUDE.md`**, onder Werkafspraken: *"Bij CSS- en webplatformwerk
+  raadpleegt de builder eerst Modern Web Guidance (`npx -y modern-web-guidance@latest search
+  "<query>"`, daarna `retrieve "<id>"`). De builder laadt de skill niet zelf, dus de lead thread
+  zet het in de opdracht, zoals tijdens de proef."* Drie verschillen met het voorstel onder
+  Gevolgen: het Baseline-deel is weggelaten, omdat het target de standaard blijft en daarvoor
+  niets in `CLAUDE.md` komt (besluit 3); de regel is Nederlands (HDR-014); en hij zegt wie het
+  doet, omdat de builder geen Skill-tool heeft. Door de mens gecontroleerd volgens de
+  communicatieplicht.
+- **De installatie blijft op scope `local`** (besluit 5 blijft staan): alleen voor deze gebruiker
+  en dit projectpad, niet in de repo.
+- **Geen goedkeuring per run meer, maar een allowlist** (vervangt besluit 2). In
+  `.claude/settings.local.json`, dat gitignored is en zo bij scope `local` past:
+  `Bash(npx -y modern-web-guidance@latest *)` en `Bash(npx.cmd -y modern-web-guidance@latest *)`.
+  Het eerste patroon is precies wat `SKILL.md` toestaat ("never bare `npx *`"); het tweede komt
+  erbij omdat dezelfde `SKILL.md` zegt dat `npx` op Windows kan falen en dan `npx.cmd` gebruikt.
+  Bewust geaccepteerd risico: het pakket is niet gepind, dus elke run haalt de nieuwste versie van
+  npm op en voert die nu zonder prompt uit; is het pakket ooit gecompromitteerd, dan draait die
+  code ongezien. De goedkeuring per run beschermde daar weinig tegen, want de code zelf was toen
+  ook niet te zien.
+- **De procedure van de proef stopt**: geen eigen baseline meer vooraf en geen rijen meer in het
+  proeflog. Telemetrie blijft uit (besluit 1).
 
 ## Waarom
 
@@ -169,9 +187,9 @@ Genomen door de mens op 2026-10-23:
 
 ## Gevolgen
 
-- Als het blijft, komt het als werkregel in `CLAUDE.md` (de HDR is de redenering, `CLAUDE.md` de
-  instructie). Voorgestelde formulering, niet toegepast: *"For CSS and web-platform work, consult
-  Modern Web Guidance first; the project's Baseline target is X."* Het wijzigen van `CLAUDE.md`
-  volgt de communicatieplicht: zeg wat er verandert en vraag om een check.
+- De werkregel staat sinds 2026-11-08 in `CLAUDE.md` (de HDR is de redenering, `CLAUDE.md` de
+  instructie). Het oorspronkelijke voorstel was *"For CSS and web-platform work, consult Modern
+  Web Guidance first; the project's Baseline target is X."*; waarom de toegepaste regel anders
+  luidt, staat onder Uitkomst.
 - Installeren doet de mens met de `/plugin`-commando's; de agent kan die niet uitvoeren.
 - Bron: JNL-003, issue K10.

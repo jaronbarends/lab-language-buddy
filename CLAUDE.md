@@ -104,6 +104,10 @@ dan in plaats van een van beide blind te volgen.
   volgens de skill). `trivial` krijgt een opdracht van één regel, een rapport van drie regels,
   geen reviewer en een builder op Sonnet (`model: "sonnet"`); al het andere houdt het volledige
   contract en de builder op Opus (HDR-024).
+- **Modern Web Guidance** (HDR-013). Bij CSS- en webplatformwerk raadpleegt de builder eerst
+  Modern Web Guidance (`npx -y modern-web-guidance@latest search "<query>"`, daarna
+  `retrieve "<id>"`). De builder laadt de skill niet zelf, dus de lead thread zet het in de
+  opdracht, zoals tijdens de proef.
 - **Fork mode.** Standaard aan, geen setup nodig. Gebruik hem voor synthesewerk waarbij het gesprek
   de bron is — een spec, een concept, een verslag waarbij de dialoog zelf de bron is. Levende
   documenten en registers (de grootboekregisters) blijven werk voor de lead thread; ze zijn geen

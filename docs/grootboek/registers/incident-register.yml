@@ -100,4 +100,4 @@ patronen:
     incidenten:
       - datum: 2026-11-08
         wat: "Een nieuwe worktree aangeraden om de checkout van PR #37 in repo te sparen, een klein voordeel tegenover een extra junction en opruimstap; het label 'nieuwe worktree' wekte de indruk dat het werk buiten de originele repo zou landen. Na Jaróns vraag bijgesteld naar werken in repo zelf"
-        bron: "afronding van de proef sonnet-builder-replay (HDR-022)"
+        bron: "afronding van de proef sonnet-builder-replay (HDR-024)"

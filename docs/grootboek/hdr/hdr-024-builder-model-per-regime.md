@@ -1,4 +1,4 @@
-# HDR-022: Builders op Sonnet bij `trivial`, op Opus bij `normal` en `risky`
+# HDR-024: Builders op Sonnet bij `trivial`, op Opus bij `normal` en `risky`
 
 - **Status:** implemented
 - **Date:** 2026-11-08
@@ -107,7 +107,8 @@ Jarón wil `normal` later opnieuw testen. Spreek daarvoor twee dingen vooraf af:
 - `builder.md`, de triage-skill en de root-`CLAUDE.md` zijn in dezelfde commit bijgewerkt. De
   root-`CLAUDE.md` is een leidend document: de wijziging is aan Jarón getoond en door hem
   gecontroleerd.
-- PR #37 boekt ook een HDR-022. De branch die als tweede merget, hernummert zijn records.
+- PR #37 boekte ook een HDR-022 en mergede eerst; dit record is daarom hernummerd van HDR-022
+  naar HDR-024 (HDR-005).
 
 Verwant: HDR-013 (Modern Web Guidance proberen op de bubbelanimatie, met eerst de eigen baseline)
 Verwant: HDR-018 (Contextlagen en een drift-check voor de documentatie)

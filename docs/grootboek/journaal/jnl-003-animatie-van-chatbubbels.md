@@ -95,7 +95,10 @@ Regel 314 is alsnog geopend: het is de `START`-actie, die een nieuwe sessie met 
 begint, dus de aanname klopte. De ADR beschrijft de code zoals die nu is, met de bijstelling van
 dezelfde dag (de wachtbubbel en het antwoord in dezelfde array, zie de procesnotitie bij K10) en
 de wachtbubbel die tijdens de vertraging van K14 gemount blijft. De heropenvoorwaarde staat erin,
-uitgebreid met een beurt die wordt tussengevoegd.
+aangescherpt tot AI-beurten: alleen een actie die een AI-beurt verwijdert, tussenvoegt of
+verplaatst, verschuift de keys, want de key telt alleen AI-beurten. Besluit van de mens op
+2026-11-08, na een review van CodeRabbit op PR #40; de bredere voorwaarde hierboven blijft staan
+als wat er op 2026-10-23 besloten werd.
 
 ### K3 — Groeien in hoogte en breedte
 
@@ -706,6 +709,11 @@ cosmetische punten hierboven.
 - **2026-11-08 — journaal gesloten (`afgerond`).** Alle kwesties zijn besloten of geparkeerd, wat
   nog moet gebeuren staat in JNL-004, en de doel-records (ADR-031, HDR-013, PDR-019, PDR-013)
   bestaan en verwijzen hiernaar terug.
+- **2026-11-08 — heropenvoorwaarde van K2 aangescherpt tot AI-beurten.** CodeRabbit wees er op
+  PR #40 op dat het verwijderen of tussenvoegen van een gebruikersbeurt geen AI-key verandert; de
+  agent had de voorwaarde in ADR-031 juist verbreed, op die verkeerde redenering. De mens koos
+  voor aanscherpen. ADR-031 noemt ook dat het verwijderen van welke beurt ook wel de
+  onthullingscheck van de gebruikersbubbel (K11) breekt.
 
 **Waar je verder gaat (geschreven voor de volgende sessie):**
 

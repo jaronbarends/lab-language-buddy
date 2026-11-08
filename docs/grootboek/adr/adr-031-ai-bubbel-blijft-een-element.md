@@ -106,14 +106,23 @@ app niet overgenomen (PDR-013).
 
 ## Gevolgen
 
-- **Wat K2 heropent.** Elke actie die één beurt verwijdert, of er een tussenvoegt, verschuift de
-  positie van de AI-bubbels erna; React zou dan de state van het ene element (zoals
-  `startedAsThinking`, `ai-bubble.tsx:51`) aan een andere beurt geven. Nu voegt de reducer alleen
+- **Wat K2 heropent.** Een actie die een AI-beurt verwijdert, tussenvoegt of verplaatst. De key
+  telt alleen de AI-beurten vóór de bubbel (`conversation-thread.tsx:25-28`), dus zo'n actie
+  verschuift de keys van de AI-bubbels erna, en React zou dan de state van het ene element (zoals
+  `startedAsThinking`, `ai-bubble.tsx:51`) aan een andere beurt geven. Een gebruikersbeurt
+  verwijderen of tussenvoegen verandert geen enkele AI-key. In JNL-003 K2 luidde de voorwaarde
+  breder ("elke toekomstige actie die één enkele beurt verwijdert"); Jarón scherpte haar op
+  2026-11-08 aan tot AI-beurten, na een review van CodeRabbit op PR #40. Nu voegt de reducer alleen
   toe (`src/lib/session-reducer.ts:253-254` en 467-468), werkt hij één beurt op haar plek bij
   (regel 496), of begint hij met een lege lijst bij `START` (regel 314); `SESSION_ENDED` verlaat de
   gespreksfase helemaal (regels 335-336). Komt zo'n actie er, dan is de key op positie niet meer
   veilig en moet dit record worden vervangen. Volgens JNL-003, K2 is (b) dan weer een kandidaat,
   net als wanneer een mislukte AI-beurt ooit inline met een retry wordt getoond.
+- **Buiten dit record: de onthulling van de gebruikersbubbel.** Die vergelijkt de index van een
+  beurt met het aantal beurten bij het mounten (`conversation-thread.tsx:45` en 108), en rekent er
+  dus op dat beurten alleen worden toegevoegd. Het verwijderen of tussenvoegen van welke beurt ook
+  breekt die aanname: een nieuwe gebruikersbubbel animeert daarna niet meer (redenering, niet
+  getest). Dat hoort bij JNL-003 K11 en PDR-013 (Animatie van bubbels), niet bij dit besluit.
 - **Niet "repareren" naar `turn.id`.** De positiekey lijkt de regel "nooit een array-index" uit
   ADR-018 en `.claude/rules/code-style.md` te breken. Dat doet hij niet: die regel gaat over wat
   naar een beurt wijst. Een key op `turn.id` breekt de animatie, want de wachtbubbel heeft geen

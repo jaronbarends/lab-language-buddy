@@ -347,5 +347,5 @@ adrs:
     datum: 2026-10-23
     implementatie-datum: 2026-10-30
     beslissing: "Eén AiBubble voor het wachten en het antwoord, met key ai-<aantal AI-beurten ervoor>, in dezelfde array als de beurten en gemount vanaf aiThinking; de layout staat meteen op de eindmaat en alleen scale animeert, zodat het scroll-effect ongewijzigd blijft"
-    notitie: "Besloten 2026-10-23 in JNL-003 K2 (optie a) en K4 (optie A), geboekt 2026-11-08 nadat K3 besloten was en K6 buiten scope viel (PDR-019). Gebouwd in 750dc49, in main sinds PR #33 (2026-10-30). Heropent bij een actie die één beurt verwijdert of tussenvoegt. De positiekey is geen uitzondering op de UUID-regel van ADR-018: die gaat over wat naar een beurt wijst"
+    notitie: "Besloten 2026-10-23 in JNL-003 K2 (optie a) en K4 (optie A), geboekt 2026-11-08 nadat K3 besloten was en K6 buiten scope viel (PDR-019). Gebouwd in 750dc49, in main sinds PR #33 (2026-10-30). Heropent bij een actie die een AI-beurt verwijdert, tussenvoegt of verplaatst (op 2026-11-08 aangescherpt van 'elke beurt', na review op PR #40). De positiekey is geen uitzondering op de UUID-regel van ADR-018: die gaat over wat naar een beurt wijst"
     bestand: adr-031-ai-bubbel-blijft-een-element.md

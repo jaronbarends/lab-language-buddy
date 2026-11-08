@@ -224,7 +224,7 @@ documents:
     read_when: je het evaluatieveld of de volgorde tussen correctie en antwoord in de reducer wijzigt, of wilt weten waarom evaluatie geen beurtstatus is.
   - path: docs/grootboek/adr/adr-031-ai-bubbel-blijft-een-element.md
     what: De AI-bubbel is één element van wachten tot antwoord — key op positie (ai-<n>), in dezelfde array als de beurten, layout meteen op de eindmaat en alleen scale animeert; uit JNL-003 K2 en K4.
-    read_when: je de keys of de opbouw van de thread wijzigt, een actie toevoegt die een beurt verwijdert of tussenvoegt, of de positiekey naar turn.id wilt "repareren".
+    read_when: je de keys of de opbouw van de thread wijzigt, een actie toevoegt die een AI-beurt verwijdert, tussenvoegt of verplaatst, of de positiekey naar turn.id wilt "repareren".
   - path: docs/grootboek/adr/adr-029-geen-mock-stt.md
     what: Besluit dat er geen mock voor speech-to-text komt, omdat de Edit-bediening getypte invoer dekt; overgezet uit plan.md.
     read_when: je een mock-STT-schakelaar of -route wilt toevoegen naast de mocks voor chat en TTS.

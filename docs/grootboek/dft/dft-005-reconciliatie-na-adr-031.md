@@ -7,22 +7,31 @@
   `src/components/CLAUDE.md` elk 1 commit achter op hun werkgebied: drie bestanden in
   `src/components/conversation/`. Een verwacht signaal: de commit die ADR-031 (De AI-bubbel blijft
   één element, van wachten tot antwoord) boekte, zette vier commentaren om van JNL-003 naar dat
-  record.
+  record. In dezelfde pull request sloeg het daarna nog een keer aan, op 7f47692, dat drie
+  verouderde commentaren in `ai-bubble.tsx` bijwerkte; deze DFT dekt beide commits.
 
 ## SOLL vs IST
 
 **SOLL:** `docs/grootboek/software-architectuur.md` en `src/components/CLAUDE.md` zoals ze op
-fa016bb staan.
-**IST:** de code op fa016bb. Sinds de vorige reconciliatie (DFT-004, op ddab397) veranderde in
-beide werkgebieden alleen fa016bb, met vier regels commentaar: `ai-bubble.tsx:34`,
-`conversation-thread.tsx:96` en `bubble-reveal.module.css:10` en 61 zeggen nu `(ADR-031)` in plaats
-van JNL-003 K2 of K4. Geen code, geen CSS-regel, geen gedrag.
+7f47692 staan.
+**IST:** de code op 7f47692. Sinds de vorige reconciliatie (DFT-004, op ddab397) veranderden in
+beide werkgebieden alleen commentaren, in twee commits:
+
+- fa016bb: `ai-bubble.tsx:34`, `conversation-thread.tsx:96` en `bubble-reveal.module.css:10` en 61
+  zeggen `(ADR-031)` in plaats van JNL-003 K2 of K4.
+- 7f47692, alleen in `ai-bubble.tsx`: de regel "Spike: expect this to be adjusted after the
+  iPhone test" is weg uit de docblock, het commentaar bij het layout effect begint met "Growth from
+  the dots' size" in plaats van "Spike", en het commentaar bij de rol en het label verwijst naar
+  PDR-019 in plaats van "K6 parked".
+
+Geen code, geen CSS-regel, geen gedrag.
 
 **Bevinding: geen verschil.**
 
 ### Wat klopt, met bewijs
 
-Paden zonder map staan in `src/components/conversation/`; regels op fa016bb.
+Paden zonder map staan in `src/components/conversation/`; regels op 7f47692 (`conversation-thread.tsx`
+en `bubble-reveal.module.css` zijn sinds fa016bb niet veranderd).
 
 - **De nieuwe rij in § 3 (Thread en AI-bubbel), in dezelfde commit toegevoegd.** Eén array voor
   de beurten en de wachtbubbel: `conversation-thread.tsx:94-97` en 130. De key `ai-<n>`:
@@ -34,8 +43,9 @@ Paden zonder map staan in `src/components/conversation/`; regels op fa016bb.
 - **§ 3, de rij Dev-previews** verwijst naar JNL-003 K11 met "nog geen record". Dat klopt nog:
   ADR-031 gaat over de structuur van de AI-bubbel, niet over de previews.
 - **`src/components/CLAUDE.md`: geen verschil.** Geen bewering in het bestand (tokens, dispatch
-  via de leaf controls, de Safari-regels, de lijst van bewuste keuzes) gaat over commentaar in
-  deze drie bestanden.
+  via de leaf controls, de Safari-regels) gaat over commentaar in deze drie bestanden. De lijst van
+  bewuste keuzes noemt sinds 7f47692 ook de key op positie van de AI-bubbel, met ADR-031; dat
+  klopt met `conversation-thread.tsx:113-122`.
 - **Het gat dat DFT-004 noemde, is gedicht.** DFT-004 schreef dat de structuur van de bubbel nog
   geen ADR had (JNL-003, K2), "een gat in de kringloop, geen balansdrift". Dat record is nu
   ADR-031, en § 3 noemt het.
@@ -50,20 +60,20 @@ is geen bewijs dat dat zo blijft.
 
 ## Besluiten
 
-1. **Geen documentwijziging.** De balans en `src/components/CLAUDE.md` kloppen met fa016bb.
+1. **Geen documentwijziging uit drift.** De balans en `src/components/CLAUDE.md` kloppen met
+   7f47692.
 2. **Deze DFT is `resolved`**, met beide documenten onder `documenten` en `getoetst-tegen:
-   fa016bb`. De commit die deze DFT boekt, raakt alleen `docs/`, buiten elk werkgebied, dus het
+   7f47692`. De commit die deze DFT bijwerkt, raakt alleen `docs/`, buiten elk werkgebied, dus het
    signaal is daarna stil.
-3. **Geen drift, wel een open voorstel aan Jarón:** `src/components/CLAUDE.md` noemt een paar
-   keuzes die "willekeurig lijken en bewust zijn"; de key op positie van de AI-bubbel is er zo
-   een, en staat er niet bij. Dat is geen tegenspraak met de code, dus geen bevinding. Of hij
-   erbij komt, is een wijziging van een leidend document en aan Jarón.
+3. **Een aanvulling, geen drift:** `src/components/CLAUDE.md` noemde de key op positie niet bij
+   de keuzes die "willekeurig lijken en bewust zijn". Dat was geen tegenspraak met de code, dus
+   geen bevinding. Op voorstel van de agent toegevoegd in 7f47692, na een check van Jarón.
 
 ## Gevolgen
 
 - REQ-GG-09 (Sluit de kringloop journaal → beslissing → document → code → drift): de stap code →
   drift voor de lus van JNL-003 K2 is hiermee gezet. Journaal (K2, 2026-10-23) → besluit (ADR-031)
-  → document (balans § 3) → code (fa016bb) → drift (deze DFT). Anders dan bij de lus van ADR-004
+  → document (balans § 3) → code (fa016bb, met 7f47692 als nazorg) → drift (deze DFT). Anders dan bij de lus van ADR-004
   ging de echte code (750dc49, in main sinds PR #33) hier vóór het record; de codestap ná het
   besluit is alleen het omzetten van de commentaren. Het besluitenlog van JNL-003 zegt dat ook.
 

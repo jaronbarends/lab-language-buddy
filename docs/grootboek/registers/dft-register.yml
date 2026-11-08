@@ -61,7 +61,7 @@ dfts:
     titel: "Reconciliatie na ADR-031 — geen drift"
     status: resolved
     datum: 2026-11-08
-    aanleiding: "Verwacht driftsignaal (HDR-022) na fa016bb, dat vier commentaren in src/components/conversation/ van JNL-003 naar ADR-031 omzette; sluit de driftstap van de lus van JNL-003 K2 (REQ-GG-09)"
+    aanleiding: "Verwacht driftsignaal (HDR-022) na fa016bb, dat vier commentaren in src/components/conversation/ van JNL-003 naar ADR-031 omzette, en opnieuw na 7f47692 (drie verouderde commentaren in ai-bubble.tsx); sluit de driftstap van de lus van JNL-003 K2 (REQ-GG-09)"
     bevindingen: 0
     hoog: 0
     midden: 0
@@ -69,5 +69,5 @@ dfts:
     documenten:
       - docs/grootboek/software-architectuur.md
       - src/components/CLAUDE.md
-    getoetst-tegen: fa016bb
+    getoetst-tegen: 7f47692
     bestand: dft-005-reconciliatie-na-adr-031.md

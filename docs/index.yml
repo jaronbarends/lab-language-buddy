@@ -198,6 +198,9 @@ documents:
   - path: docs/grootboek/pdr/pdr-018-geen-open-microfoonmodus.md
     what: Besluit dat de app geen open-microfoonmodus heeft en de AI niet te onderbreken is door erdoorheen te praten; overgezet uit plan.md.
     read_when: je doorlopende opname overweegt of het onderbreken van de AI door erdoorheen te praten.
+  - path: docs/grootboek/pdr/pdr-019-screenreaders-zijn-geen-doel.md
+    what: Besluit dat screenreaders (VoiceOver voorop) geen doel van de app zijn — niet testen, niet als bevinding of open kwestie opvoeren; bestaande rollen en labels blijven, ongegarandeerd.
+    read_when: je een review doet of een kwestie opent over wat een screenreader aankondigt, of ARIA-rollen en labels wijzigt.
   - path: docs/grootboek/adr/adr-023-safari-safe-area-en-beperkingen.md
     what: De bovenste safe-area-inset en de geaccepteerde Safari/iPhone-beperkingen (landscape, bediening onder het toetsenbord); overgezet uit plan.md.
     read_when: je aan de layout van het setup- of gesprekscherm op iPhone, aan safe-area-insets of aan het toetsenbordgedrag in editing werkt.
@@ -219,6 +222,9 @@ documents:
   - path: docs/grootboek/adr/adr-030-evaluatie-is-een-veld-van-de-beurt.md
     what: De evaluatie van een gebruikersbeurt is een veld van de beurt in plaats van een beurtstatus, met pendingReply voor de volgorderegel; overgezet uit plan.md.
     read_when: je het evaluatieveld of de volgorde tussen correctie en antwoord in de reducer wijzigt, of wilt weten waarom evaluatie geen beurtstatus is.
+  - path: docs/grootboek/adr/adr-031-ai-bubbel-blijft-een-element.md
+    what: De AI-bubbel is één element van wachten tot antwoord — key op positie (ai-<n>), in dezelfde array als de beurten, layout meteen op de eindmaat en alleen scale animeert; uit JNL-003 K2 en K4.
+    read_when: je de keys of de opbouw van de thread wijzigt, een actie toevoegt die een beurt verwijdert of tussenvoegt, of de positiekey naar turn.id wilt "repareren".
   - path: docs/grootboek/adr/adr-029-geen-mock-stt.md
     what: Besluit dat er geen mock voor speech-to-text komt, omdat de Edit-bediening getypte invoer dekt; overgezet uit plan.md.
     read_when: je een mock-STT-schakelaar of -route wilt toevoegen naast de mocks voor chat en TTS.
@@ -250,7 +256,7 @@ documents:
     what: Instapjournaal voor de proef met de software-balans; acht kwesties (balans versus plan, omgevingen, route-auth en het vervolg, CI en het vervolg, modelkeuze, Google-key).
     read_when: je de balans accepteert of verwerpt; je een van de open vragen beantwoordt.
   - path: docs/grootboek/journaal/jnl-003-animatie-van-chatbubbels.md
-    what: Discovery-journaal over het animeren van de chatbubbels (open vraag 11 uit het plan) — het blijvende element, groei in hoogte en breedte, scroll, meelezen, rollen; tien kwesties.
+    what: Discovery-journaal over het animeren van de chatbubbels (open vraag 11 uit het plan) — het blijvende element, groei in hoogte en breedte, scroll, meelezen, rollen; vijftien kwesties.
     read_when: je aan bubbel- of threadanimatie werkt; je een van de open kwesties beantwoordt.
   - path: docs/grootboek/journaal/jnl-004-openstaande-kwesties.md
     what: Journaal met de negen vragen die openstonden toen plan.md werd afgebouwd (tests, de Spaanse vlag, een sessie beëindigen, het afbreken bij 320px, bediening onder het toetsenbord, audio bufferen, de vastgehouden reply, de Gemini-wrappers, de native engine op iPhone), met bevindingen en metingen per kwestie.

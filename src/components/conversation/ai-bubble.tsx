@@ -31,7 +31,7 @@ type AiBubbleProps = {
  * The AI's bubble, for both the waiting state and the reply. The thread gives it the
  * same key in both (`ai-<position>`), so React keeps this one element and the text
  * replaces the dots in place, and the bubble grows out of its top-left corner
- * (JNL-003, K2 and K4(A)).
+ * (ADR-031).
  *
  * The layout takes the final size at once; only a scale (a transform, which does not
  * affect layout) is animated, so the thread's scroll effect sees the final size and

@@ -204,3 +204,14 @@ pdrs:
     beslissing: "Er is geen doorlopende open-microfoonmodus en de AI is niet te onderbreken door erdoorheen te praten; op Reply tikken terwijl de AI praat blijft wel binnen scope"
     notitie: "Overgezet uit plan.md (HDR-015): eerste alinea van de sectie Out of scope. De datum is die van de goedkeuring van het plan, niet uit de bron"
     bestand: pdr-018-geen-open-microfoonmodus.md
+  - id: "PDR-019"
+    titel: "Screenreaders zijn geen doel"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-11-08
+    implementatie-datum: 2026-11-08
+    beslissing: "Screenreaders (VoiceOver voorop) zijn geen doel van de app: er wordt niet mee getest, en een review of journaal voert screenreadergedrag niet op als bevinding of open kwestie; bestaande rollen en labels blijven staan, ongegarandeerd"
+    notitie: "Besluit van Jarón op 2026-11-08, bij het boeken van ADR-031. Sluit JNL-003 K6 (buiten scope). Alleen screenreaders: reduced motion en PDR-017 blijven gelden. Heropent als de app andere gebruikers krijgt of Jarón zelf een screenreader gaat gebruiken"
+    bestand: pdr-019-screenreaders-zijn-geen-doel.md

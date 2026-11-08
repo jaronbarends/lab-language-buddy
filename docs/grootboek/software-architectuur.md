@@ -13,7 +13,8 @@ werkgebied:
   - src/components
   - next.config.ts
   - .env.example
-notitie: Afgeleid uit de code en de git-geschiedenis (scope `src/lib`, `src/hooks`, `src/app/api`, de delivery chain), beoordeeld door een kritiekronde met verse context, en op 2026-10-20 door de mens geaccepteerd. Als geheel geaccepteerd, niet per sectie. Op 2026-10-21 uitgebreid met de frontend-componentlaag (`src/components`, de app shell), waarmee het scopegat van REQ-GG-01 is gedicht; het meeste wat de verkenner vond was al besloten, met vermelding waar. § 6 bijgewerkt op 2026-10-21 voor ADR-004 (Google TTS-key verhuisd naar een header). Open vragen staan in JNL-001, niet hier. Aangehouden als proef volgens HDR-002.
+  - .github/workflows
+notitie: Afgeleid uit de code en de git-geschiedenis (scope `src/lib`, `src/hooks`, `src/app/api`, de delivery chain), beoordeeld door een kritiekronde met verse context, en op 2026-10-20 door de mens geaccepteerd. Als geheel geaccepteerd, niet per sectie. Op 2026-10-21 uitgebreid met de frontend-componentlaag (`src/components`, de app shell), waarmee het scopegat van REQ-GG-01 is gedicht; het meeste wat de verkenner vond was al besloten, met vermelding waar. § 6 bijgewerkt op 2026-10-21 voor ADR-004 (Google TTS-key verhuisd naar een header). Open vragen staan in JNL-001, niet hier. Aangehouden als proef volgens HDR-002. Op 2026-11-07 gereconcilieerd in DFT-004.
 ---
 
 # Software-architectuur — language-buddy
@@ -115,6 +116,7 @@ als props — ze raken de reducer nooit rechtstreeks aan.
 | `LanguageBuddy` (`src/components/language-buddy.tsx`) | Bezit de reducer, koppelt elke effect hook, rendert precies één scherm voor de huidige `phase`, levert `dispatch` via context. | ADR-018 (Sessiestate: één reducer, beurtstatus als discriminated union) |
 | Schermen (`SetupScreen`, `ConversationScreen`) en de presentationele onderdelen eronder (thread, bubbels, weergave van de evaluatie, formuliervelden) | Ontvangen state en callbacks als props; renderen; roepen `dispatch` nooit rechtstreeks aan. | ADR-018 (Sessiestate: één reducer, beurtstatus als discriminated union) |
 | Leaf controls (`ComposingControls`, `IdleControls`, `ErrorControls`, dev-only `StateStepper`) | De enige componenten die `useSessionDispatch()` aanroepen. `ConversationControls` schakelt op `turnState.name` om precies één ervan te renderen. | De code (`src/components/conversation/conversation-controls.tsx`); geen record |
+| Dev-previews (`src/components/dev/`: `UserBubblePreview`, `AiBubblePreview`) | Alleen in development: `ConversationThread` mount ze achter `NODE_ENV === "development"`. Elk leest een eigen kleine store (`useSyncExternalStore`) die `StateStepper` vult. Bewust buiten de reducer, want een echte beurt zou de chat- en evaluatiedrivers starten. Geen sessiestate. | JNL-003 (Animatie van chatbubbels), K11; nog geen record |
 
 ## 4. Kern van de datastroom: één gespreksbeurt
 
@@ -172,8 +174,9 @@ staan ook voor Preview aan; de API-keys staan alleen voor Production aan, dus ee
 bouwt wel maar de routes die een leverancier aanroepen falen tijdens runtime en hij kan geen key
 uitgeven. Vercel Authentication is actief met Standard Protection: previews vragen om een
 Vercel-login; het productiedomein is publiek (ADR-002 behandelt wat dat openlaat).
-Er is geen CI-workflow in de repo; de checks zijn die uit `CLAUDE.md`. Ze op pull requests naar
-`main` draaien is gewenst maar niet gebouwd (HDR-003; JNL-001, K8).
+De checks uit `CLAUDE.md` draaien ook in CI: `.github/workflows/checks.yml` draait lint,
+typecheck, `docs:check`, `test:scripts`, `register:check` en build op elke pull request naar
+`main` (HDR-003, De checks van de repo draaien op pull requests naar `main`; JNL-001, K8).
 
 ## 6. Authenticatie tussen diensten
 

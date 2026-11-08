@@ -94,3 +94,16 @@ patronen:
       - datum: 2026-10-23
         wat: "De reviewer keurde de bubbelspike goed op de redenering dat de positiekey gelijk is over de overgang van denken naar antwoord, en miste dat de wachtbubbel en het antwoord in verschillende child-slots van de thread zaten, zodat React opnieuw mountte en er geen animatie draaide; de lead controleerde de tokens en de scope maar volgde de keybewering niet, en het werd op het scherm van de gebruiker gevonden"
         bron: "bubbelanimatie-spike, procesnotitie bij JNL-003 K10"
+  - patroon: promised-follow-up-dropped
+    titel: "Een toegezegde vervolgstap hangt af van iemands geheugen en blijft liggen tot een controle van buitenaf hem vindt"
+    maatregel: HDR-023
+    incidenten:
+      - datum: 2026-10-22
+        wat: "HDR-003 is gebouwd (CI op pull requests) zonder § 5 van de balans bij te werken, die bleef zeggen dat er geen CI was; de werkafspraak zegt record en document in dezelfde commit"
+        bron: "DFT-004, bevinding 2"
+      - datum: 2026-10-30
+        wat: "HDR-008 zei dat de eerste reconciliatie aan de beurt was bij de merge van arc/bubble-animation; die merge (PR #33) kwam, de reconciliatie niet, en een week later maakten vertaalcommits het signaal stil"
+        bron: "HDR-022, Waarom"
+      - datum: 2026-10-27
+        wat: "DFT-003 bleef in_progress tot de drie comments JNL-003 zouden zeggen; dat deden ze dezelfde dag al (54e7e7b), en de DFT is nooit gesloten"
+        bron: "coachingsronde op het-gedirigeerde-grootboek, 2026-11-07"

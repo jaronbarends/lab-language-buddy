@@ -3,6 +3,13 @@
 # (code, schema, omgeving)?
 #
 # Lifecycle: open → in_progress → resolved
+#
+# Een DFT die een leidend document tegen de code legt, noemt (HDR-022):
+#   documenten     — de leidende documenten die hij controleerde (paden)
+#   getoetst-tegen — de commit waarvan de code is vergeleken
+# `npm run docs:drift` meet de drift van een document vanaf de nieuwste getoetst-tegen-commit van
+# een afgesloten DFT die het noemt. Een DFT over iets anders dan een leidend document laat de
+# twee velden weg.
 
 dfts:
   - id: "DFT-001"
@@ -35,3 +42,18 @@ dfts:
     midden: 1
     laag: 0
     bestand: dft-003-hernummerscript-mist-bronbestanden.md
+  - id: "DFT-004"
+    titel: "Eerste reconciliatie op een echt signaal — src/components/CLAUDE.md beschrijft een context die nooit heeft bestaan, de balans mist de CI"
+    status: resolved
+    datum: 2026-11-07
+    aanleiding: "Het driftsignaal onder HDR-022: de balans en de twee CLAUDE.md-bestanden onder src/ waren nooit gereconcilieerd; de reconciliatie die HDR-008 bij de merge van arc/bubble-animation verwachtte"
+    bevindingen: 3
+    hoog: 1
+    midden: 1
+    laag: 1
+    documenten:
+      - docs/grootboek/software-architectuur.md
+      - src/components/CLAUDE.md
+      - src/lib/CLAUDE.md
+    getoetst-tegen: ddab397
+    bestand: dft-004-eerste-reconciliatie-op-een-echt-signaal.md

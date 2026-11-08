@@ -43,8 +43,14 @@ documents:
     what: Waarom het hernummeren van records een script is, met een controle op dubbele ids en een merge-guardhook, en waarom de volgorde eerst hernummeren, dan mergen is (draait de stappen van HDR-005 om).
     read_when: je main in een branch merget; je renumber-records, de guard-merge-renumber-hook of de controle op dubbele ids aanraakt.
   - path: docs/grootboek/hdr/hdr-008-driftsignaal.md
-    what: Waarom leidende documenten een werkgebied declareren en een script meldt wanneer de code daarin na het document is gewijzigd; signaal, geen oordeel, gevolgd door een reconciliatie en een DFT (REQ-GG-05).
+    what: Waarom leidende documenten een werkgebied declareren en een script meldt wanneer de code daarin is gewijzigd; signaal, geen oordeel, gevolgd door een reconciliatie en een DFT (REQ-GG-05). De baseline is vervangen door HDR-022.
     read_when: je drift-signal of het werkgebied-veld aanraakt; je een reconciliatie uitvoert; je een nieuwe balans maakt.
+  - path: docs/grootboek/hdr/hdr-022-drift-gemeten-vanaf-de-reconciliatie.md
+    what: Besluit dat het driftsignaal meet vanaf de laatste afgesloten reconciliatie (DFT-register, velden documenten en getoetst-tegen) in plaats van de laatste aanraking, en dat de CLAUDE.md-bestanden onder src/ eronder vallen.
+    read_when: je een driftsignaal opvolgt of een reconciliatie als DFT boekt; je drift-signal.mjs of het DFT-register aanraakt.
+  - path: docs/grootboek/hdr/hdr-023-open-driftrapport-meldt-zich.md
+    what: Besluit dat docs:check waarschuwt bij een DFT die langer dan veertien dagen open of in_progress staat; de maatregel van het incidentpatroon promised-follow-up-dropped, samen met HDR-022.
+    read_when: docs:check meldt een open DFT; je de leeftijdscheck in check-docs aanraakt; je een DFT open laat staan.
   - path: docs/grootboek/hdr/hdr-009-incidentregister.md
     what: Waarom terugkerende fouten per patroon in een incidentregister worden gelogd en bij drie worden vastgelegd (REQ-GG-06); de drempel, wat er bij drie gebeurt en waarom het loggen van de agent afhangt.
     read_when: je een incident logt; je het incidentregister of de teller aanraakt; een docs:check-waarschuwing over een patroon.
@@ -264,6 +270,9 @@ documents:
   - path: docs/grootboek/dft/dft-003-hernummerscript-mist-bronbestanden.md
     what: Driftrapport; het renumber-script herschreef alleen documenten, terwijl HDR-005 ook codecommentaar belooft. Opgelost in het script; blijft in uitvoering tot de drie verouderde commentaren op arc/bubble-animation zijn gecorrigeerd.
     read_when: je renumber-records.mjs of de REWRITABLE-bestandstypen aanraakt; je controleert of de drie verouderde JNL-002-commentaren in src/ zijn gerepareerd.
+  - path: docs/grootboek/dft/dft-004-eerste-reconciliatie-op-een-echt-signaal.md
+    what: Driftrapport; de eerste reconciliatie op een echt signaal (HDR-022). src/components/CLAUDE.md beschreef een state-context die nooit bestond, balans § 5 miste de CI, de dev-previews van de bubbels stonden niet in de balans; src/lib/CLAUDE.md klopte.
+    read_when: je de regel over schermen en dispatch in src/components/CLAUDE.md, § 3 of § 5 van de balans aanraakt; je een volgende reconciliatie doet en een voorbeeld zoekt.
   - path: docs/grootboek/registers
     what: YAML-registers (adr, hdr, pdr, dft, jnl) — de goedkope index van het grootboek; lees ze voordat je een record opent.
     read_when: je een beslissing, de status ervan of een open driftrapport in het grootboek zoekt.

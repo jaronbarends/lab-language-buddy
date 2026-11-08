@@ -182,4 +182,9 @@ met `fetch-depth: 0`.
 - **2026-10-22 — K8 gebouwd (HDR-003).** `.github/workflows/checks.yml` draait op PR's naar
   `main` en `arc/arc-main`, met de driftcontrole van het REQ-AH-12-register in dezelfde workflow.
 
+- **2026-11-07 — DFT-004: de reconciliatie na ADR-004 is gedraaid.** 8095deb stond in het
+  driftsignaal, en § 6 van de balans klopt ermee. Daarmee is de lus van K6 rond: journaal → besluit
+  (ADR-004) → document (§ 6) → code → drift (DFT-004) (REQ-GG-09). Dezelfde reconciliatie vond dat
+  § 5 van de balans de CI uit K8 nooit had opgenomen.
+
 Dit journaal sluit als K7 is besloten of geparkeerd.

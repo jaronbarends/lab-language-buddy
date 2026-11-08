@@ -338,3 +338,14 @@ adrs:
     beslissing: "De evaluatie van een gebruikersbeurt is een veld evaluation van de beurt (pending, ready of failed), geen beurtstatus; het antwoord wacht in de reducer als pendingReply tot de correctie is afgehandeld"
     notitie: "Overgezet uit plan.md (HDR-015): sectie State model zonder rij-ids, afgesplitst van ADR-028. De datum is die van stage 4, stap 2"
     bestand: adr-030-evaluatie-is-een-veld-van-de-beurt.md
+  - id: "ADR-031"
+    titel: "De AI-bubbel blijft één element, van wachten tot antwoord"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: prod
+    datum: 2026-10-23
+    implementatie-datum: 2026-10-30
+    beslissing: "Eén AiBubble voor het wachten en het antwoord, met key ai-<aantal AI-beurten ervoor>, in dezelfde array als de beurten en gemount vanaf aiThinking; de layout staat meteen op de eindmaat en alleen scale animeert, zodat het scroll-effect ongewijzigd blijft"
+    notitie: "Besloten 2026-10-23 in JNL-003 K2 (optie a) en K4 (optie A), geboekt 2026-11-08 nadat K3 besloten was en K6 buiten scope viel (PDR-019). Gebouwd in 750dc49, in main sinds PR #33 (2026-10-30). Heropent bij een actie die een AI-beurt verwijdert, tussenvoegt of verplaatst (op 2026-11-08 aangescherpt van 'elke beurt', na review op PR #40). De positiekey is geen uitzondering op de UUID-regel van ADR-018: die gaat over wat naar een beurt wijst"
+    bestand: adr-031-ai-bubbel-blijft-een-element.md

@@ -31,13 +31,11 @@ type AiBubbleProps = {
  * The AI's bubble, for both the waiting state and the reply. The thread gives it the
  * same key in both (`ai-<position>`), so React keeps this one element and the text
  * replaces the dots in place, and the bubble grows out of its top-left corner
- * (JNL-003, K2 and K4(A)).
+ * (ADR-031).
  *
  * The layout takes the final size at once; only a scale (a transform, which does not
  * affect layout) is animated, so the thread's scroll effect sees the final size and
  * needs no change. The text fades in after the growth has finished.
- *
- * Spike: expect this to be adjusted after the iPhone test.
  */
 export function AiBubble({
   turn,
@@ -64,11 +62,12 @@ export function AiBubble({
   // "from-nothing" (uniform scale from 0, as before).
   const [growFrom, setGrowFrom] = useState<GrowFrom | null>(null);
 
-  // Spike (JNL-003, K14, clarification of decision 2). Order, on purpose: the reply first
-  // renders WITHOUT the reveal class; this layout effect measures it (the read forces a
-  // layout, so nothing animates yet) and sets the state; the re-render then adds the
-  // class and the two custom properties in the same commit, so the animation can never
-  // start without them. Layout effects and the state update they cause run before paint.
+  // Growth from the dots' size (JNL-003, K14, clarification of decision 2). Order, on
+  // purpose: the reply first renders WITHOUT the reveal class; this layout effect
+  // measures it (the read forces a layout, so nothing animates yet) and sets the
+  // state; the re-render then adds the class and the two custom properties in the same
+  // commit, so the animation can never start without them. Layout effects and the state
+  // update they cause run before paint.
   useLayoutEffect(() => {
     const element = bubbleRef.current;
     if (!element) {
@@ -110,7 +109,8 @@ export function AiBubble({
   }, [turnIsWaiting, startedAsThinking, growFrom]);
 
   if (turn === null) {
-    // Role and label as the old ThinkingBubble had them (JNL-003, K6 parked).
+    // Role and label as the old ThinkingBubble had them (kept as they are, not tested:
+    // PDR-019).
     return (
       <Bubble
         ref={bubbleRef}

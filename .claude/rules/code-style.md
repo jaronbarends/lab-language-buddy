@@ -25,3 +25,6 @@ Lees het af van de bestaande code; als je een tegenvoorbeeld vindt, zeg dat.
 - Als de agent iets heeft besloten wat niet gespecificeerd was, zeg dat in een comment en zeg
   waarom. Verwijder geen comment die nog van toepassing is.
 - Identiteit is een `crypto.randomUUID()` per turn, nooit een array-index of `turns.length`.
+  Dat geldt voor alles wat naar een beurt wijst. De React-key van de AI-bubbel is geen
+  beurtidentiteit: die staat bewust op positie, omdat de wachtbubbel nog geen beurt heeft (ADR-031,
+  De AI-bubbel blijft één element, van wachten tot antwoord). Maak er geen `turn.id` van.

@@ -117,3 +117,10 @@ patronen:
       - datum: 2026-11-08
         wat: "Een nieuwe worktree aangeraden om de checkout van PR #37 in repo te sparen, een klein voordeel tegenover een extra junction en opruimstap; het label 'nieuwe worktree' wekte de indruk dat het werk buiten de originele repo zou landen. Na Jaróns vraag bijgesteld naar werken in repo zelf"
         bron: "afronding van de proef sonnet-builder-replay (HDR-024)"
+  - patroon: unanswered-choice-assumed
+    titel: "Een voorgelegde keuze waarop Jarón niet reageerde, wordt ingevuld als 'laten staan' in plaats van nagevraagd"
+    maatregel:
+    incidenten:
+      - datum: 2026-11-08
+        wat: "Na een bericht met vier vragen tegelijk antwoordde Jarón 'go'; de agent besloot zelf dat de twee extra commentaren, de spec en de verwijzingen naar ADR-031 bleven zoals ze waren, en zei dat pas achteraf. Jarón vroeg voortaan na te vragen of het negeren bewust was"
+        bron: "boeking van ADR-031 (JNL-003 K2), PR #40"

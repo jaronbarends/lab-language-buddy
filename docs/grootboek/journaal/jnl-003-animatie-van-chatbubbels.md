@@ -1,13 +1,13 @@
 ---
 titel: "Animatie van chatbubbels"
-status: discovery
+status: afgerond
 datum: 2026-10-23
 kernvraag: Hoe gaat een AI-bubbel van denkpuntjes naar zijn tekst als één element dat groeit, zonder de scroll, de meeleesmarkering of de screen reader te breken?
 doel-records:
-  - "ADR voor de structuur van de bubbel (K2), te schrijven zodra het besloten is"
+  - "ADR-031 (K2, K4), de structuur van de bubbel, geboekt 2026-11-08"
   - "HDR-013 (K10), geboekt 2026-10-23"
-  - "een spec als bouwplan, zodra de kwesties besloten zijn"
-  - "een PDR alleen als de mens het bewegingsgedrag als productbelofte behandelt"
+  - "PDR-019 (K6), screenreaders zijn geen doel, geboekt 2026-11-08"
+  - "PDR-013, het bewegingsgedrag, overgezet uit plan.md (HDR-015)"
 ---
 
 # JNL-003 — Animatie van chatbubbels
@@ -35,19 +35,19 @@ dateert van vóór 2026-10-20 en verwijst hiernaartoe, zodat de twee plekken nie
 | # | Kwestie | Status |
 |---|---|---|
 | K1 | Reikwijdte: alleen open vraag 11, of ook een enter-animatie op elke bubbel? | besloten 2026-10-23 |
-| K2 | Het overlevende element: key op positie (a) of een wachtende AI-beurt (b)? | besloten 2026-10-23 (a) |
-| K3 | Groeien in hoogte en breedte: welke techniek? (spike op een iPhone) | spike gebouwd 2026-10-23, tuning open |
+| K2 | Het overlevende element: key op positie (a) of een wachtende AI-beurt (b)? | besloten 2026-10-23 (a); geboekt als ADR-031 2026-11-08 |
+| K3 | Groeien in hoogte en breedte: welke techniek? (spike op een iPhone) | spike gebouwd 2026-10-23; besloten 2026-11-08 (timing akkoord, geen tuning meer) |
 | K4 | Het scroll-effect van de thread tegenover een bubbel die nog groeit | besloten 2026-10-23 (A) |
-| K5 | Meelezen: mag de highlight starten terwijl de tekst nog verschijnt? | besloten 2026-10-23 (alleen als volledig zichtbaar) |
-| K6 | Eén element, één rol: `status` of `log`? | geparkeerd 2026-10-23 |
+| K5 | Meelezen: mag de highlight starten terwijl de tekst nog verschijnt? | besloten 2026-10-23 (alleen als volledig zichtbaar); niet gebouwd, verplaatst naar JNL-004 K10 (2026-11-08) |
+| K6 | Eén element, één rol: `status` of `log`? | geparkeerd 2026-10-23; besloten 2026-11-08 (buiten scope, PDR-019) |
 | K7 | De bubbel van de gebruiker die groeit als zijn evaluatie binnenkomt | besloten 2026-10-23 (voorlopig alleen de AI-bubbel) |
 | K8 | `prefers-reduced-motion` | besloten 2026-10-23 |
 | K9 | Overlap met de pulse van de live-indicator en de richting van puntjes en bounce | besloten 2026-10-23 (buiten scope); de pulse van de live-indicator is op 2026-10-27 opgepakt als K13 |
-| K10 | Modern Web Guidance: geeft het een beter antwoord voor K3? | proef afgesproken, uitkomst open |
+| K10 | Modern Web Guidance: geeft het een beter antwoord voor K3? | besloten 2026-11-08 (hetzelfde in alle drie de tests; HDR-013 toch gehouden) |
 | K11 | De bubbel van de gebruiker bij het versturen: wat animeert | besloten en gebouwd 2026-10-27, iPhone-test open; het krimpen in de balk en de vertraging van de denkbubbel volgen daarna |
-| K12 | Start van de spraak tegenover het einde van de onthulling | geparkeerd 2026-10-27 |
+| K12 | Start van de spraak tegenover het einde van de onthulling | geparkeerd 2026-10-27; verplaatst naar JNL-004 K11 (2026-11-08) |
 | K13 | De live-indicator pulseert zolang de microfoon live is | besloten en gebouwd 2026-10-27, getest op de iPhone |
-| K15 | De denkbubbel wacht ook na een Retry 800ms | geparkeerd 2026-10-30 |
+| K15 | De denkbubbel wacht ook na een Retry 800ms | geparkeerd 2026-10-30; verplaatst naar JNL-004 K12 (2026-11-08) |
 | K14 | De denkbubbel van de AI verschijnt met dezelfde onthulling, na een vertraging als hij op een verstuurde beurt volgt | besloten en gebouwd 2026-10-28; het antwoord groeit uit de grootte van de denkbubbel (spike 2026-10-30); getest op de iPhone |
 
 ### K1 — Reikwijdte
@@ -88,6 +88,17 @@ verschuiven. Regel 314 is niet geopend; aangenomen wordt dat het de reset naar e
 is. De ADR is nog niet geschreven: die wacht op K3 tot en met K6, zodat één record de structuur
 dekt, inclusief de rol waarvoor gekozen wordt. Voorwaarde die dit heropent: elke toekomstige actie
 die één enkele beurt verwijdert.
+
+**Geboekt als ADR-031 (2026-11-08).** De reden om te wachten is vervallen: de mens besloot op
+2026-11-08 dat de timing van K3 niet verder getuned hoeft en dat K6 buiten scope valt (PDR-019).
+Regel 314 is alsnog geopend: het is de `START`-actie, die een nieuwe sessie met `turns: []`
+begint, dus de aanname klopte. De ADR beschrijft de code zoals die nu is, met de bijstelling van
+dezelfde dag (de wachtbubbel en het antwoord in dezelfde array, zie de procesnotitie bij K10) en
+de wachtbubbel die tijdens de vertraging van K14 gemount blijft. De heropenvoorwaarde staat erin,
+aangescherpt tot AI-beurten: alleen een actie die een AI-beurt verwijdert, tussenvoegt of
+verplaatst, verschuift de keys, want de key telt alleen AI-beurten. Besluit van de mens op
+2026-11-08, na een review van CodeRabbit op PR #40; de bredere voorwaarde hierboven blijft staan
+als wat er op 2026-10-23 besloten werd.
 
 ### K3 — Groeien in hoogte en breedte
 
@@ -131,6 +142,10 @@ gebouwd is niet de baseline en ook niet de eerste spike:
   wanneer de groei eindigt; één CSS-variabele (`--reveal-duration`) stuurt beide aan. De puntjes
   verdwijnen meteen. Reduced motion: geen scale, geen fade (beredeneerd, niet getest).
 - De layout staat meteen op de eindmaat, dus K4(A) blijft gelden: het scroll-effect is ongewijzigd.
+
+**Besluit (2026-11-08, de mens):** de timing is bekeken en akkoord; hij hoeft niet meer getuned te
+worden. De scrollcontrole uit "Waar je verder gaat" was al afgedekt door de iPhone-test van K14 op
+2026-10-30 (een heel lang antwoord en de scrollpositie).
 
 ### K4 — Het scroll-effect tegenover een groeiende bubbel
 
@@ -177,6 +192,9 @@ heropenen. Hoe de highlight wordt tegengehouden (de start van de audio, de `spok
 alleen de styling) is een bouwdetail, hier niet besloten, en vraagt eerst een blik op de
 playback-hook.
 
+**Verplaatst (2026-11-08)** naar JNL-004 (Openstaande kwesties), K10: besloten maar niet gebouwd,
+en het bouwen loopt daar verder.
+
 ### K6 — Eén element, één rol
 
 `ThinkingBubble` is `role="status"` met een `aria-label`; `TurnBubble` is een wrapper met een
@@ -190,6 +208,11 @@ en het label die er nu zijn blijven werken zoals ze doen, en de builder meldt he
 overlevend element dat onmogelijk maakt. Open risico, niet geverifieerd: de rol wisselen van een
 element dat gemount blijft is een ongebruikelijk patroon voor screen readers, en het kan zijn dat
 het niet zonder wijziging kan. Op te pakken met een echte VoiceOver-test, als eigen stuk werk.
+
+**Besloten (2026-11-08, de mens): buiten scope.** Screenreaders zijn geen doel van de app: de mens
+gebruikt er geen en gaat er niet mee testen. Geboekt als PDR-019 (Screenreaders zijn geen doel).
+De rollen en het label van nu blijven staan, ongetest en ongegarandeerd; ADR-031 beschrijft de
+wissel van rol op het overlevende element.
 
 ### K7 — De bubbel van de gebruiker die groeit
 
@@ -227,11 +250,15 @@ Geboekt als **HDR-013**: een proef met Google's Modern Web Guidance (agent skill
 guidance over het webplatform), afgebakend tot deze feature. De vergelijking is de baseline van K3
 hierboven tegenover wat de guidance aanbeveelt, met het resultaat als één regel hier na de
 iPhone-spike. De guides omvatten `css/animate-to-intrinsic-sizes`, `ui-behaviors/motion` en
-`ui-behaviors/animate-element-entry-exit`, en daarom is K3 het testgeval. De uitkomst is open; het
-exitcriterium staat in HDR-013.
+`ui-behaviors/animate-element-entry-exit`, en daarom is K3 het testgeval. Het exitcriterium staat
+in HDR-013; het resultaat staat hieronder.
 
-**Resultaat (in te vullen na de spike):** hetzelfde / anders en beter / anders en slechter /
-niets toegevoegd; en of de iPhone het bevestigde.
+**Resultaat (2026-11-08, de mens):** **hetzelfde**, in alle drie de tests van de proef (K3, K11 en
+K13; het proeflog staat in HDR-013). De iPhone: test 1 deels (de eerste spike draaide, het
+uiteindelijke ontwerp is op het oog afgesteld), test 2 niet getest, test 3 bevestigd. Besluit over
+HDR-013: **houden**, "simpelweg voor de zekerheid: baat het niet, dan schaadt het niet". Dat wijkt
+bewust af van het exitcriterium, dat "hetzelfde" een reden noemt om niet te houden; HDR-013 legt
+die afwijking vast.
 
 **Feiten tot nu toe (2026-10-23; het oordeel is aan de mens en is nog niet geschreven).** De
 builder raadpleegde de guidance voordat hij de K3-baseline las (guides
@@ -360,6 +387,8 @@ desktop Chrome, 2026-10-05, iPhone niet gemeten). De onthulling duurt 350ms en d
 kort antwoord, een snelle of gecachte respons, of de mock-TTS kan eerder starten. K5 blijft zoals
 besloten: de highlight start wanneer de tekst volledig zichtbaar is, na de fade (550ms), niet aan
 het einde van de scale (350ms). Er is niets gebouwd.
+
+**Verplaatst (2026-11-08)** naar JNL-004 (Openstaande kwesties), K11.
 
 ### K13 — De live-indicator pulseert zolang de microfoon live is
 
@@ -602,6 +631,9 @@ boven een nieuwe "verstuurde gebruikersbubbel"; en `.waiting` in `bubble-reveal.
 hardcodet `transform-origin: top left` terwijl `.reveal` `--reveal-origin` leest, wat zou
 uiteenlopen als het anker van de AI-bubbel ooit veranderde.
 
+**Verplaatst (2026-11-08)** naar JNL-004 (Openstaande kwesties), K12, samen met de twee
+cosmetische punten hierboven.
+
 ## Besluitenlog
 
 - **2026-10-23 — journaal geopend.** Kwesties K1 tot en met K10 uit een lezing van het plan en de
@@ -647,23 +679,59 @@ uiteenlopen als het anker van de AI-bubbel ooit veranderde.
   vanaf de gemeten maten is gebouwd als spike en geaccepteerd na de iPhone-test (alle vijf
   punten). De laatste open wens van de oorspronkelijke vraag 11 in `docs/plan.md` is daarmee
   gebouwd.
+- **2026-11-08 — K3 en K6 besloten, K2 geboekt als ADR-031.** De mens vond de timing akkoord
+  (K3) en zette screenreaders buiten scope voor de hele app (K6, geboekt als PDR-019). Daarmee
+  was de reden om de ADR voor K2 uit te stellen vervallen. PDR-013 (Animatie van bubbels), bij de
+  overzetting uit `docs/plan.md` ontstaan, staat nu ook bij de doel-records.
+- **2026-11-08 — de lus van K2 (REQ-GG-09, Sluit de kringloop journaal → beslissing → document →
+  code → drift).** Journaal (K2, besloten 2026-10-23) → besluit (ADR-031, geboekt 2026-11-08) →
+  document (§ 3 van de balans) → code → drift. Over de volgorde, eerlijk: anders dan bij ADR-004
+  in JNL-001 kwam de code hier vóór het record. De structuur is gebouwd in 750dc49 (2026-10-23)
+  en staat sinds PR #33 (2026-10-30) in main; het record legt vast wat al draaide. De codestap die
+  op het besluit volgt, is klein: de commentaren in `src/components/conversation/` die naar
+  JNL-003 K2 en K4 verwezen, gaan naar ADR-031.
+- **2026-11-08 — de lus van K2 is rond.** Document: § 3 van de balans noemt ADR-031 (door de
+  mens gecontroleerd). Code: fa016bb zet de vier commentaren om. Drift: het signaal van HDR-022
+  sloeg daarop aan en is gereconcilieerd in DFT-005, zonder drift. Wat de lus niet laat zien: een
+  besluit dat code stuurt voordat die code bestaat. Dat deed de lus van ADR-004 in JNL-001; hier
+  volgde het record de code.
+- **2026-11-08 — de spec vervalt als doel-record.** Besluit van de mens. Alles waar de spec het
+  bouwplan voor moest zijn, is gebouwd, en een spec is wegwerp: na oplevering is de code de
+  waarheid (`docs/grootboek/CLAUDE.md`, Schrijfafspraken). De voorwaarde om dit journaal te sluiten
+  noemt hem niet meer.
+- **2026-11-08 — K10 besloten.** Het oordeel van de mens over de drie tests van HDR-013 is
+  hetzelfde; de guidance blijft toch, voor de zekerheid. HDR-013 blijft `in-progress` tot de
+  werkregel in `CLAUDE.md` staat en besloten is over de installatiescope en de goedkeuring per run.
+- **2026-11-08 — K5, K12, K15 en de dode AI-tak in `TurnBubble` verplaatst naar JNL-004**
+  (Openstaande kwesties), als K10 tot en met K13, op verzoek van de mens: zo staat werk dat nog
+  moet gebeuren niet alleen in een journaal dat sluit. K5 is besloten maar niet gebouwd; K12 en
+  K15 zijn geparkeerd; de dode AI-tak was een opruimpunt uit "Waar je verder gaat".
+- **2026-11-08 — journaal gesloten (`afgerond`).** Alle kwesties zijn besloten of geparkeerd, wat
+  nog moet gebeuren staat in JNL-004, en de doel-records (ADR-031, HDR-013, PDR-019, PDR-013)
+  bestaan en verwijzen hiernaar terug.
+- **2026-11-08 — heropenvoorwaarde van K2 aangescherpt tot AI-beurten.** CodeRabbit wees er op
+  PR #40 op dat het verwijderen of tussenvoegen van een gebruikersbeurt geen AI-key verandert; de
+  agent had de voorwaarde in ADR-031 juist verbreed, op die verkeerde redenering. De mens koos
+  voor aanscherpen. ADR-031 noemt ook dat het verwijderen van welke beurt ook wel de
+  onthullingscheck van de gebruikersbubbel (K11) breekt.
 
 **Waar je verder gaat (geschreven voor de volgende sessie):**
 
-- Tunen op de telefoon: de tweede waarde van de cubic-bezier (1,56 geeft een piek van ongeveer
-  1,10; 1,3 ongeveer 1,03; 1,0 geen), de 350ms en 200ms. Controleer een hoog antwoord onderaan de
-  thread op een scrollverschuiving (een geschaald element vergroot de scrollbare ruimte even).
-- K5 is besloten maar niet gebouwd: de meelees-highlight start nog steeds meteen. Daarvoor eerst
-  een blik op de playback-hook.
-- K6 is geparkeerd: een VoiceOver-test van de rolwissel op het overlevende element is nog
-  verschuldigd.
+- Tunen op de telefoon: niet meer nodig. De mens vond de timing op 2026-11-08 akkoord (K3); de
+  scrollcontrole was al gedaan in de iPhone-test van K14.
+- K5 is besloten maar niet gebouwd; het bouwen staat nu in JNL-004, K10.
+- K6 is besloten: buiten scope (PDR-019). Er komt geen VoiceOver-test.
 - Opruiming die is blijven liggen: de AI-tak in `TurnBubble` is dode code en de markup ervan is
   gedupliceerd in `AiBubble`. Gedaan 2026-10-27: `ThinkingBubble` is nu `ThinkingIndicator` (de
   keuze van de mens, genoemd naar zijn functie in plaats van zijn vorm, zodat een andere animatie
-  niet nog een hernoeming afdwingt; de agent had `ThinkingDots` voorgesteld).
-- Nog niet geschreven: de ADR voor K2 (nadat K3 is afgerond), de spec, het K10-oordeel en het
-  besluit over HDR-013 (behouden, uitzetten of bijstellen).
-- Geparkeerd: K6 (VoiceOver), K12 (spraakstart na de onthulling) en K15 (de Retry-vertraging).
+  niet nog een hernoeming afdwingt; de agent had `ThinkingDots` voorgesteld). De dode AI-tak in
+  `TurnBubble` staat nu in JNL-004, K13.
+- K10 is besloten (2026-11-08): de guidance blijft. Wat dat meebrengt (de werkregel in
+  `CLAUDE.md`, de installatiescope, de goedkeuring per run) staat in HDR-013 en is nog niet gedaan.
+  De ADR voor K2 is ADR-031 (2026-11-08); de spec is vervallen (2026-11-08).
+- Geparkeerd: K12 (spraakstart na de onthulling) en K15 (de Retry-vertraging), nu in JNL-004 als
+  K11 en K12.
 
-Dit journaal sluit wanneer K1 tot en met K9 besloten of geparkeerd zijn en de ADR (K2) en de spec
-bestaan.
+Dit journaal is gesloten op 2026-11-08. De voorwaarde was dat K1 tot en met K9 besloten of
+geparkeerd zijn en de ADR (K2) bestaat; bij het sluiten waren alle vijftien kwesties besloten of
+geparkeerd. Open werk staat in JNL-004 (Openstaande kwesties), K10 tot en met K13.

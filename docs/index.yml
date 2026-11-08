@@ -67,8 +67,8 @@ documents:
     what: Waarom docs:check faalt op een record dat na vandaag is gedateerd (gelezen in Europe/Amsterdam), wat het leest en wat het niet kan vangen; de maatregel van het incidentpatroon date-assumed.
     read_when: je een datum in een record of register schrijft; een docs:check-fout over een datum na vandaag; je de tijdzoneconstante wijzigt.
   - path: docs/grootboek/hdr/hdr-013-modern-web-guidance-proef.md
-    what: Proef met Modern Web Guidance op de bubbelanimatie; de baseline van de agent wordt geschreven voordat de guidance wordt geraadpleegd, daarna houdt de mens de guidance, zet hij haar uit of past hij haar aan.
-    read_when: je guidance-tooling voor het webplatform voor de agent overweegt; je JNL-003 K10 afsluit.
+    what: Proef met Modern Web Guidance op de bubbelanimatie, met eerst de baseline van de agent; drie tests, alle drie hetzelfde, en toch gehouden voor de zekerheid (2026-11-08). De werkregel in CLAUDE.md en de keuzes over scope en goedkeuring per run zijn nog open.
+    read_when: je guidance-tooling voor het webplatform voor de agent overweegt; je de werkregel voor Modern Web Guidance in CLAUDE.md toevoegt.
   - path: docs/grootboek/hdr/hdr-014-documentatie-nederlands.md
     what: Welke taal waar geldt (documentatie Nederlands; code, UI, commits, README, AGENTS.md en spikes Engels), dat vertalen geen nieuwe beslissing is, en welke labels niet vertaald worden.
     read_when: je een document schrijft of vertaalt; je twijfelt over de taal van een tekst; je de taalregels in een CLAUDE.md wijzigt.
@@ -198,6 +198,9 @@ documents:
   - path: docs/grootboek/pdr/pdr-018-geen-open-microfoonmodus.md
     what: Besluit dat de app geen open-microfoonmodus heeft en de AI niet te onderbreken is door erdoorheen te praten; overgezet uit plan.md.
     read_when: je doorlopende opname overweegt of het onderbreken van de AI door erdoorheen te praten.
+  - path: docs/grootboek/pdr/pdr-019-screenreaders-zijn-geen-doel.md
+    what: Besluit dat screenreaders (VoiceOver voorop) geen doel van de app zijn — niet testen, niet als bevinding of open kwestie opvoeren; bestaande rollen en labels blijven, ongegarandeerd.
+    read_when: je een review doet of een kwestie opent over wat een screenreader aankondigt, of ARIA-rollen en labels wijzigt.
   - path: docs/grootboek/adr/adr-023-safari-safe-area-en-beperkingen.md
     what: De bovenste safe-area-inset en de geaccepteerde Safari/iPhone-beperkingen (landscape, bediening onder het toetsenbord); overgezet uit plan.md.
     read_when: je aan de layout van het setup- of gesprekscherm op iPhone, aan safe-area-insets of aan het toetsenbordgedrag in editing werkt.
@@ -219,6 +222,9 @@ documents:
   - path: docs/grootboek/adr/adr-030-evaluatie-is-een-veld-van-de-beurt.md
     what: De evaluatie van een gebruikersbeurt is een veld van de beurt in plaats van een beurtstatus, met pendingReply voor de volgorderegel; overgezet uit plan.md.
     read_when: je het evaluatieveld of de volgorde tussen correctie en antwoord in de reducer wijzigt, of wilt weten waarom evaluatie geen beurtstatus is.
+  - path: docs/grootboek/adr/adr-031-ai-bubbel-blijft-een-element.md
+    what: De AI-bubbel is één element van wachten tot antwoord — key op positie (ai-<n>), in dezelfde array als de beurten, layout meteen op de eindmaat en alleen scale animeert; uit JNL-003 K2 en K4.
+    read_when: je de keys of de opbouw van de thread wijzigt, een actie toevoegt die een AI-beurt verwijdert, tussenvoegt of verplaatst, of de positiekey naar turn.id wilt "repareren".
   - path: docs/grootboek/adr/adr-029-geen-mock-stt.md
     what: Besluit dat er geen mock voor speech-to-text komt, omdat de Edit-bediening getypte invoer dekt; overgezet uit plan.md.
     read_when: je een mock-STT-schakelaar of -route wilt toevoegen naast de mocks voor chat en TTS.
@@ -250,10 +256,10 @@ documents:
     what: Instapjournaal voor de proef met de software-balans; acht kwesties (balans versus plan, omgevingen, route-auth en het vervolg, CI en het vervolg, modelkeuze, Google-key).
     read_when: je de balans accepteert of verwerpt; je een van de open vragen beantwoordt.
   - path: docs/grootboek/journaal/jnl-003-animatie-van-chatbubbels.md
-    what: Discovery-journaal over het animeren van de chatbubbels (open vraag 11 uit het plan) — het blijvende element, groei in hoogte en breedte, scroll, meelezen, rollen; tien kwesties.
-    read_when: je aan bubbel- of threadanimatie werkt; je een van de open kwesties beantwoordt.
+    what: Afgerond journaal (2026-11-08) over het animeren van de chatbubbels (open vraag 11 uit het plan) — het blijvende element, groei in hoogte en breedte, scroll, meelezen, rollen; vijftien kwesties, het open werk is naar JNL-004 verhuisd.
+    read_when: je aan bubbel- of threadanimatie werkt en wilt weten hoe een keuze tot stand kwam; de open punten staan in JNL-004.
   - path: docs/grootboek/journaal/jnl-004-openstaande-kwesties.md
-    what: Journaal met de negen vragen die openstonden toen plan.md werd afgebouwd (tests, de Spaanse vlag, een sessie beëindigen, het afbreken bij 320px, bediening onder het toetsenbord, audio bufferen, de vastgehouden reply, de Gemini-wrappers, de native engine op iPhone), met bevindingen en metingen per kwestie.
+    what: Journaal met de negen vragen die openstonden toen plan.md werd afgebouwd (tests, de Spaanse vlag, een sessie beëindigen, het afbreken bij 320px, bediening onder het toetsenbord, audio bufferen, de vastgehouden reply, de Gemini-wrappers, de native engine op iPhone), met bevindingen en metingen per kwestie; sinds 2026-11-08 ook vier kwesties uit JNL-003 (de meelees-highlight na de onthulling, de spraakstart, de Retry-vertraging van de denkbubbel, de dode AI-tak in TurnBubble).
     read_when: je een van deze kwesties oppakt of beslist of je haar accepteert, bouwt of laat vallen; je aan de native spraakherkenning op iPhone werkt (kwestie K9 bevat alle runs).
   - path: docs/grootboek/journaal/jnl-005-metingen-van-de-corrector.md
     what: Journaal met de metingen van de corrector (drie varianten, echte prompts, context van 10-10) en de zwakke plekken die gemeten maar niet opgelost zijn.
@@ -279,6 +285,9 @@ documents:
   - path: docs/grootboek/dft/dft-004-eerste-reconciliatie-op-een-echt-signaal.md
     what: Driftrapport; de eerste reconciliatie op een echt signaal (HDR-022). src/components/CLAUDE.md beschreef een state-context die nooit bestond, balans § 5 miste de CI, de dev-previews van de bubbels stonden niet in de balans; src/lib/CLAUDE.md klopte.
     read_when: je de regel over schermen en dispatch in src/components/CLAUDE.md, § 3 of § 5 van de balans aanraakt; je een volgende reconciliatie doet en een voorbeeld zoekt.
+  - path: docs/grootboek/dft/dft-005-reconciliatie-na-adr-031.md
+    what: Driftrapport; reconciliatie van de balans en src/components/CLAUDE.md na het omzetten van de bubbelcommentaren naar ADR-031 — geen drift. Sluit de driftstap van de lus van JNL-003 K2.
+    read_when: je een voorbeeld zoekt van een kleine reconciliatie na een verwacht signaal, of de lus van JNL-003 K2 naloopt.
   - path: docs/grootboek/registers
     what: YAML-registers (adr, hdr, pdr, dft, jnl) — de goedkope index van het grootboek; lees ze voordat je een record opent.
     read_when: je een beslissing, de status ervan of een open driftrapport in het grootboek zoekt.

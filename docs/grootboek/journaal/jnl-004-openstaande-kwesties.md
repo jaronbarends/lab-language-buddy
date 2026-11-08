@@ -2,24 +2,29 @@
 titel: Openstaande kwesties
 status: discovery
 datum: 2026-11-06
-kernvraag: Welke vragen stonden open toen het plan werd afgebouwd, en wat is er per vraag bekend en niet bekend?
+kernvraag: Welke vragen stonden open toen het plan werd afgebouwd of toen een journaal sloot, en wat is er per vraag bekend en niet bekend?
 doel-records:
   - "per kwestie een record zodra er een besluit valt"
 ---
 
 # JNL-004 — Openstaande kwesties
 
-**Kernvraag.** Welke vragen stonden open toen het plan werd afgebouwd, en wat is er per vraag
-bekend en niet bekend?
+**Kernvraag.** Welke vragen stonden open toen het plan werd afgebouwd of toen een journaal sloot,
+en wat is er per vraag bekend en niet bekend?
 
 **Hoofdboodschap.** Het plan eindigde met negen open vragen. Dit journaal neemt ze over als
 kwesties, met de bevindingen, cijfers en voorbehouden zoals het plan ze vastlegde. Niets is hier
 besloten: waar een kwestie een status heeft (bewust geaccepteerd, niet gedaan, uitgesteld,
 gedeeltelijk gemitigeerd), is dat de status uit het plan. Richtingen die het plan noemt zijn
-onbevestigde ideeën, geen besluiten.
+onbevestigde ideeën, geen besluiten. Sinds 2026-11-08 staan hier ook vier kwesties uit JNL-003
+(Animatie van chatbubbels), dat die dag sloot terwijl ze nog openstonden: K10 tot en met K13. K10
+was daar al besloten, maar is niet gebouwd; K11 en K12 zijn daar geparkeerd; K13 was een
+opruimpunt dat bleef liggen.
 
-**Hoe dit is gemaakt.** Overgenomen uit de open vragen van `docs/plan.md` bij de overzetting van
-het plan naar het grootboek (HDR-015). Bewoording en getallen zijn niet aangepast.
+**Hoe dit is gemaakt.** K1 tot en met K9 zijn overgenomen uit de open vragen van `docs/plan.md`
+bij de overzetting van het plan naar het grootboek (HDR-015). Bewoording en getallen zijn niet
+aangepast. K10 tot en met K13 zijn op 2026-11-08 overgenomen uit JNL-003, met de bevindingen en
+voorbehouden zoals ze daar stonden.
 
 ## Kwesties
 
@@ -34,9 +39,15 @@ het plan naar het grootboek (HDR-015). Bewoording en getallen zijn niet aangepas
 | K7 | De invariant van het vastgehouden antwoord heeft geen enkele eigenaar | geparkeerd (uitgesteld) |
 | K8 | De twee Gemini-wrappers en -routes zijn bijna-kopieën | geparkeerd (uitgesteld) |
 | K9 | Native engine op iPhone: zacht geluid en geen opname in de tweede beurt | open (gedeeltelijk gemitigeerd, niet begrepen) |
+| K10 | Meelezen: de highlight start pas als de tekst volledig zichtbaar is | besloten, niet gebouwd (JNL-003, K5) |
+| K11 | De spraak start pas als de bubbel zijn eindmaat heeft | geparkeerd (JNL-003, K12) |
+| K12 | De denkbubbel wacht ook na een Retry 800ms | geparkeerd (JNL-003, K15) |
+| K13 | De AI-tak in `TurnBubble` is dode code | open (JNL-003, opruiming die bleef liggen) |
 
 Open betekent dat er niets over is besloten of gedaan; geparkeerd dat het bewust is uitgesteld of
-geaccepteerd. Tussen haakjes staat de status uit het plan.
+geaccepteerd; besloten, niet gebouwd dat het besluit er is en de code nog niet. Tussen haakjes
+staat de status uit het plan, of bij K10 tot en met K13 de plek in JNL-003 waar de kwestie vandaan
+komt.
 
 ### K1 — Geen tests
 
@@ -255,3 +266,83 @@ iOS toch standaard Deepgram moet gebruiken. De native standaard van 2026-10-12 r
 indruk uit de spike; Jarón liet hem op 2026-10-14 staan.
 
 Verwant: ADR-010 (Native engine op iPhone: herstart en twee mitigaties). De runs: `docs/ios-stt-runs.md`.
+
+### K10 — Meelezen: de highlight start pas als de tekst volledig zichtbaar is
+
+**Wat er open staat.** Het besluit is er, de code niet: de meelees-highlight start nog steeds
+zodra de state `aiSpeaking` is, terwijl de tekst van het antwoord nog infaadt.
+
+**Wat de bron zegt.** Besloten door Jarón op 2026-10-23 (JNL-003, K5): de highlight start pas als
+de tekst volledig zichtbaar is, dus na de fade (op 550 ms), niet aan het einde van de scale
+(350 ms). De prijs is een vertraging van ongeveer de duur van de onthulling; blijkt die merkbaar,
+dan is dit de kwestie om te heropenen. Onder reduced motion is er geen onthulling, dus ook geen
+vertraging (JNL-003, K8). Hoe de highlight wordt tegengehouden (de start van de audio, de
+`spokenWordCount` of alleen de styling) is een bouwdetail, niet besloten, en vraagt eerst een blik
+op de playback-hook.
+
+Verwant: PDR-015 (Markering van het gesproken woord), PDR-013 (Animatie van bubbels). Overgenomen
+uit JNL-003 (Animatie van chatbubbels), K5, op 2026-11-08.
+
+### K11 — De spraak start pas als de bubbel zijn eindmaat heeft
+
+**Wat er open staat.** Jarón wil dat de spraak van de AI pas start als de bubbel zijn eindmaat
+heeft. Er is niets gebouwd.
+
+**Wat de bron zegt.** Geparkeerd op 2026-10-27 tot het in de praktijk hindert (JNL-003, K12). Het
+TTS-verzoek start als het antwoord binnenkomt, samen met de animatie (`use-audio-playback.ts`), en
+de gemeten kloof tussen antwoord en spraak was ongeveer 0,85 s voor 240 tekens en 1,55 s voor 584
+(Azure, de standaardprovider; desktop Chrome, 2026-10-05, iPhone niet gemeten). De onthulling
+duurt 350 ms en de fade eindigt op 550 ms, dus met een echte provider start de spraak normaal
+gesproken sowieso na de animatie. Een kort antwoord, een snelle of gecachte respons, of de
+mock-TTS kan eerder starten. K10 blijft zoals besloten: de highlight start na de fade (550 ms),
+niet aan het einde van de scale (350 ms).
+
+Verwant: PDR-013 (Animatie van bubbels), ADR-020 (TTS-providers en stemmen). Overgenomen uit
+JNL-003, K12, op 2026-11-08.
+
+### K12 — De denkbubbel wacht ook na een Retry 800ms
+
+**Wat er open staat.** Na een fout drukt de gebruiker op Retry en gaat de sessie opnieuw naar
+`aiThinking`. De foutstate had de wachtbubbel verwijderd, dus hij mount vers, en de laatste beurt
+is nog steeds die van de gebruiker, dus `followsSentTurn` (`turns.at(-1)?.author === "user"`) is
+waar en de bubbel wacht 800 ms, onzichtbaar, op een "Evaluating…"-moment dat lang geleden voorbij
+is. De gebruiker ziet 800 ms niets na het drukken op Retry. Hetzelfde geldt als de thread tijdens
+`aiThinking` opnieuw mount.
+
+**Wat de bron zegt.** Gevonden in de review van JNL-003 K14 (2026-10-28) en op 2026-10-30 door
+Jarón geparkeerd als niet belangrijk (JNL-003, K15). De eenvoudige oplossing, als hij wordt
+opgepakt: in `conversation-thread.tsx` de vertraging alleen toepassen als de evaluatie van de
+laatste gebruikersbeurt nog pending is (`evaluation.status === "pending"`), wat bij een nieuwe
+verzending altijd zo is en bij een retry meestal niet. Kanttekeningen: het is een benadering (als
+de chat sneller mislukt dan de evaluatie, is de evaluatie bij Retry nog pending en komt de
+vertraging terug, een zeldzamer geval); het retry-pad in de reducer is niet nagelopen; en de
+propnaam `followsSentTurn` belooft dan te veel, dus hernoem hem met de wijziging (bijvoorbeeld
+`followsFreshTurn`; twee bestanden).
+
+Uit dezelfde review open gelaten, beide cosmetisch en dev-only of latent: nadat de
+gebruikerspreview vóór de AI-preview was verplaatst, staat een achtergebleven AI-previewantwoord
+boven een nieuwe "verstuurde gebruikersbubbel"; en `.waiting` in `bubble-reveal.module.css`
+hardcodet `transform-origin: top left` terwijl `.reveal` `--reveal-origin` leest, wat zou
+uiteenlopen als het anker van de AI-bubbel ooit veranderde.
+
+Verwant: ADR-031 (De AI-bubbel blijft één element, van wachten tot antwoord), ADR-021 (Fouten en
+herstel). Overgenomen uit JNL-003, K15, op 2026-11-08.
+
+### K13 — De AI-tak in `TurnBubble` is dode code
+
+**Wat er open staat.** `TurnBubble` heeft nog takken voor een AI-beurt (het anker op
+`turn-bubble.tsx:37-38`, het label `"AI: "` op regel 50), maar krijgt alleen beurten van de
+gebruiker: de thread rendert hem alleen voor `author === "user"` (`conversation-thread.tsx:101-111`)
+en de dev-preview maakt een beurt met `author: "user"` (`user-bubble-preview-store.ts:53`). De
+AI-bubbel is sinds 2026-10-23 een eigen component, `AiBubble` (ADR-031), met zijn eigen versie van
+die markup.
+
+**Wat de bron zegt.** In JNL-003 genoteerd als opruiming die bleef liggen: "de AI-tak in
+`TurnBubble` is dode code en de markup ervan is gedupliceerd in `AiBubble`". Op 2026-11-08
+nagekeken in de code (commit 9c15d01): nog steeds zo. Er is niets over besloten.
+
+**Richting (onbevestigd idee, geen besluit).** De AI-takken weghalen en de prop van `TurnBubble`
+versmallen tot een gebruikersbeurt, zodat het type zegt wat de component krijgt.
+
+Verwant: ADR-031 (De AI-bubbel blijft één element, van wachten tot antwoord). Overgenomen uit
+JNL-003 ("Waar je verder gaat"), op 2026-11-08.

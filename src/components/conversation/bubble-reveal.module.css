@@ -7,7 +7,7 @@
  * Then the text fades in, starting exactly when the growth ends.
  *
  * The layout is already at its final size; scale is a transform, so it does not affect
- * layout and the thread's scroll effect sees the final size and needs no change (K4(A)).
+ * layout and the thread's scroll effect sees the final size and needs no change (ADR-031).
  *
  * The AI bubble that replaces the thinking bubble sets --grow-from-x and --grow-from-y
  * (old size / new size, measured in AiBubble), so it grows from the size of the dots
@@ -58,7 +58,7 @@
 /*
  * The waiting bubble's entry (JNL-003, K14): the same growth as `.reveal`, then the dots
  * fade in. It is rendered from the start and held at scale 0 by the backwards fill
- * through its delay, so it stays one element with the reply that replaces it (K2).
+ * through its delay, so it stays one element with the reply that replaces it (ADR-031).
  * Its own keyframes name (`grow-waiting`): an animation only restarts when its name
  * changes, so swapping to `.reveal` when the text arrives starts the reply's reveal
  * from scale 0, even in the middle of this one or during its delay (then the dots are

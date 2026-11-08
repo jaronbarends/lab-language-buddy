@@ -63,9 +63,26 @@ mens, 2026-10-23). Dan beslist de mens: houden, uitzetten of bijstellen.
 
 | # | Taak | Baseline (waar) | Aanbeveling van de richtlijnen | Verschil | iPhone bevestigd | Oordeel (mens) |
 |---|---|---|---|---|---|---|
-| 1 | Bubbel onthullen (JNL-003 K3) | JNL-003 K3 | `clip-path` voor onthullingen; `interpolate-size` alleen Chromium | Hetzelfde op het kernpunt; het uiteindelijke ontwerp kwam van de mens, buiten beide om | De eerste spike draaide; het uiteindelijke ontwerp is op het oog afgesteld | open |
-| 2 | Gebruikersbubbel onthullen bij verzenden (JNL-003 K11) | JNL-003 K11 | Een gedeelde module, alleen `scale` en `opacity`, reduced motion uit, dezelfde curve; één extra regel: identiteitsbasis `scale: 1` (`individual-transform-properties`); niets over een `transform-origin` die van de kant afhangt | Hetzelfde op elk inhoudelijk punt; de ene extra regel is bewust niet toegepast | Nog niet getest op de iPhone | open |
-| 3 | Pulse van de live-indicator (JNL-003 K13) | JNL-003 K13 | Geen gids voor een pulserende ring; de algemene `motion`-regels (compositor-properties, reduced motion per regel afgehandeld, geneste `@media`); de identiteitsbasis `scale: 1`; onder reduced motion de animatie vertragen in plaats van stoppen (`spinner`) | Dezelfde techniek en eindtoestand. De `scale: 1` is eerst toegepast en daarna verwijderd op besluit van de mens (2026-10-28), zoals bij test 2; "vertragen, niet stoppen" is in strijd met K13 "geen pulse onder reduced motion" en is niet gevolgd | Door de mens op de iPhone getest met de definitieve stip en minimale breedte: alle punten geslaagd | open |
+| 1 | Bubbel onthullen (JNL-003 K3) | JNL-003 K3 | `clip-path` voor onthullingen; `interpolate-size` alleen Chromium | Hetzelfde op het kernpunt; het uiteindelijke ontwerp kwam van de mens, buiten beide om | De eerste spike draaide; het uiteindelijke ontwerp is op het oog afgesteld | hetzelfde (2026-11-08) |
+| 2 | Gebruikersbubbel onthullen bij verzenden (JNL-003 K11) | JNL-003 K11 | Een gedeelde module, alleen `scale` en `opacity`, reduced motion uit, dezelfde curve; één extra regel: identiteitsbasis `scale: 1` (`individual-transform-properties`); niets over een `transform-origin` die van de kant afhangt | Hetzelfde op elk inhoudelijk punt; de ene extra regel is bewust niet toegepast | Nog niet getest op de iPhone | hetzelfde (2026-11-08) |
+| 3 | Pulse van de live-indicator (JNL-003 K13) | JNL-003 K13 | Geen gids voor een pulserende ring; de algemene `motion`-regels (compositor-properties, reduced motion per regel afgehandeld, geneste `@media`); de identiteitsbasis `scale: 1`; onder reduced motion de animatie vertragen in plaats van stoppen (`spinner`) | Dezelfde techniek en eindtoestand. De `scale: 1` is eerst toegepast en daarna verwijderd op besluit van de mens (2026-10-28), zoals bij test 2; "vertragen, niet stoppen" is in strijd met K13 "geen pulse onder reduced motion" en is niet gevolgd | Door de mens op de iPhone getest met de definitieve stip en minimale breedte: alle punten geslaagd | hetzelfde (2026-11-08) |
+
+## Uitkomst (2026-11-08): houden, voor de zekerheid
+
+Het oordeel van de mens over alle drie de tests is **hetzelfde**: de richtlijnen veranderden op
+geen enkel inhoudelijk punt wat er gebouwd is. Het besluit is **houden**. De reden, in de woorden
+van de mens: "simpelweg voor de zekerheid: baat het niet, dan schaadt het niet."
+
+Dat wijkt bewust af van het exitcriterium hierboven, dat "hetzelfde" een reden noemt om het niet
+te houden. Dit record legt die afwijking vast, zodat het besluit zijn eigen criterium niet stil
+tegenspreekt.
+
+Wat houden meebrengt, is nog niet gedaan, en daarom blijft dit record `in-progress`:
+
+- de werkregel in `CLAUDE.md` (zie Gevolgen; een leidend document, dus via de communicatieplicht);
+- of de installatie op scope `local` blijft (besluit 5), nu ze niet meer alleen een proef is;
+- of elke run met de hand wordt goedgekeurd (besluit 2), wat alleen voor de duur van de proef was
+  besloten.
 
 ## Waarom
 

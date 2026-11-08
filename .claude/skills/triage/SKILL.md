@@ -53,6 +53,9 @@ nodig: kijk naar wat de wijziging *is*.
 | **normal** | echte gedragswijziging, geen harde trigger | volledig builder-contract + reviewer met frisse ogen, zoals gebruikelijk |
 | **risky** | een of meer harde triggers | volledig regime plus extra zorg; leg de aanpak bij twijfel voor aan Jarón |
 
+**Model van de builder** (HDR-022): bij `trivial` start je de builder met `model: "sonnet"` in de
+aanroep. Bij `normal` en `risky` laat je het weg: `builder.md` pint Opus.
+
 **Vangrail:** bij twijfel → normal. De staffel bespaart tijd bij de duidelijke gevallen;
 twijfelgevallen zijn per definitie niet duidelijk.
 

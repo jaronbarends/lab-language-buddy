@@ -94,3 +94,10 @@ patronen:
       - datum: 2026-10-23
         wat: "De reviewer keurde de bubbelspike goed op de redenering dat de positiekey gelijk is over de overgang van denken naar antwoord, en miste dat de wachtbubbel en het antwoord in verschillende child-slots van de thread zaten, zodat React opnieuw mountte en er geen animatie draaide; de lead controleerde de tokens en de scope maar volgde de keybewering niet, en het werd op het scherm van de gebruiker gevonden"
         bron: "bubbelanimatie-spike, procesnotitie bij JNL-003 K10"
+  - patroon: recommendation-weak-ground
+    titel: "Een aanbeveling rust op een bijzaak en de optie wekt een verkeerd beeld"
+    maatregel:
+    incidenten:
+      - datum: 2026-11-08
+        wat: "Een nieuwe worktree aangeraden om de checkout van PR #37 in repo te sparen, een klein voordeel tegenover een extra junction en opruimstap; het label 'nieuwe worktree' wekte de indruk dat het werk buiten de originele repo zou landen. Na Jaróns vraag bijgesteld naar werken in repo zelf"
+        bron: "afronding van de proef sonnet-builder-replay (HDR-022)"

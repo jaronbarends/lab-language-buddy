@@ -231,3 +231,14 @@ hdrs:
     beslissing: "arc/arc-main vervalt als integratiebranch: elke branch vertrekt van main en gaat via een pull request terug naar main; de CI, het hernummerscript en de hook guard-merge-renumber kijken alleen nog naar main"
     notitie: "Vervangt het eerste deel van HDR-011; het tweede deel (de branch bestaat vóór de eerste bewerking) blijft gelden. Oudere records die arc/arc-main noemen blijven staan als geschiedenis"
     bestand: hdr-021-werk-vertakt-van-main.md
+  - id: "HDR-022"
+    titel: "Builders op Sonnet bij `trivial`, op Opus bij `normal` en `risky`"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-11-08
+    implementatie-datum: 2026-11-08
+    beslissing: "Bij regime trivial start de lead de builder met model sonnet; normal en risky draaien op Opus, vastgepind in de frontmatter van builder.md zodat het niet afhangt van het model van de lead"
+    notitie: "Uitkomst van een replay van de driftopdracht (PR #37) met een Sonnet-builder: dezelfde twee serieuze reviewbevindingen als Opus, alle verificatieclaims klopten, twee toelichtingen niet; 46.741 tegen 80.896 buildertokens. Jarón test normal later opnieuw, met de lezing van de beslisregel vooraf afgesproken"
+    bestand: hdr-022-builder-model-per-regime.md

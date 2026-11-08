@@ -98,8 +98,9 @@ dan in plaats van een van beide blind te volgen.
   (`regime: ... — <reden>`) op de eerste regel van de opdracht aan de builder. Een
   `triage-guard`-hook weigert een builderstart vanuit de lead thread zonder die regel (een builder
   die door een andere agent wordt gestart komt erdoor — de aansturende agent is daar de borging,
-  volgens de skill). `trivial` krijgt een opdracht van één regel en een rapport van drie regels,
-  geen reviewer; al het andere houdt het volledige contract.
+  volgens de skill). `trivial` krijgt een opdracht van één regel, een rapport van drie regels,
+  geen reviewer en een builder op Sonnet (`model: "sonnet"`); al het andere houdt het volledige
+  contract en de builder op Opus (HDR-022).
 - **Fork mode.** Standaard aan, geen setup nodig. Gebruik hem voor synthesewerk waarbij het gesprek
   de bron is — een spec, een concept, een verslag waarbij de dialoog zelf de bron is. Levende
   documenten en registers (de grootboekregisters) blijven werk voor de lead thread; ze zijn geen

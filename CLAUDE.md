@@ -65,6 +65,9 @@ dan in plaats van een van beide blind te volgen.
   aanwijst. Zou het lezen van een bestand echt tijd besparen, vraag dan eerst; noem hardop alles
   wat je wel leest. Kom je per ongeluk bij het materiaal uit, zeg dat dan in plaats van het
   stilletjes te gebruiken.
+- **Beweringen uit de bron** (HDR-025). Een bewering over wat een document zegt of wat de
+  omgeving heeft, komt uit de bron: lees het document helemaal of draai het commando. Een
+  zoekresultaat, een indexregel of een geheugennotitie is een aanwijzing, geen bewijs.
 - **Codestijl** in één regel: TypeScript strict, function declarations, `if`s met accolades en
   early returns, booleans die als zin lezen (`microphoneIsLive`), bestandsnamen in kleine letters
   met streepjes. De volledige lijst laadt zodra je `src/` aanraakt (`.claude/rules/code-style.md`).

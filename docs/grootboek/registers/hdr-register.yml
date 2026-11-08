@@ -87,7 +87,7 @@ hdrs:
     datum: 2026-10-27
     implementatie-datum: 2026-10-27
     beslissing: "Een leidend document declareert zijn werkgebied in de front matter; npm run docs:drift somt de codewijzigingen in dat gebied op sinds het document het laatst is aangeraakt, docs:check waarschuwt bij drift en faalt bij een ontbrekend pad; een signaal wordt gevolgd door een reconciliatie en een DFT"
-    notitie: "REQ-GG-05. Signaal, geen oordeel. Bewezen op een wegwerp-checkout van arc/bubble-animation (750dc49, vier bestanden); de reconciliatie die op een echt signaal volgt staat nog open. Nummering: arc/bubble-animation heeft een eigen HDR-008 en hernummert via docs:renumber (HDR-007)"
+    notitie: "REQ-GG-05. Signaal, geen oordeel. Bewezen op een wegwerp-checkout van arc/bubble-animation (750dc49, vier bestanden); de reconciliatie die op een echt signaal volgt is DFT-004 (2026-11-07), niet bij de merge van arc/bubble-animation zoals verwacht. Nummering: arc/bubble-animation heeft een eigen HDR-008 en hernummert via docs:renumber (HDR-007). De baseline (de laatste commit die het document aanraakte) is op 2026-11-07 vervangen door HDR-022 (de laatste afgesloten reconciliatie). HDR-022 breidt ook uit: de CLAUDE.md-bestanden onder src/ zijn leidende documenten met hun eigen map als werkgebied en zonder front matter, en leidende documenten vallen buiten elk werkgebied. De rest geldt nog"
     bestand: hdr-008-driftsignaal.md
   - id: "HDR-009"
     titel: "Terugkerende fouten worden per patroon gelogd en bij drie vastgelegd als regel"
@@ -231,6 +231,28 @@ hdrs:
     beslissing: "arc/arc-main vervalt als integratiebranch: elke branch vertrekt van main en gaat via een pull request terug naar main; de CI, het hernummerscript en de hook guard-merge-renumber kijken alleen nog naar main"
     notitie: "Vervangt het eerste deel van HDR-011; het tweede deel (de branch bestaat vóór de eerste bewerking) blijft gelden. Oudere records die arc/arc-main noemen blijven staan als geschiedenis"
     bestand: hdr-021-werk-vertakt-van-main.md
+  - id: "HDR-022"
+    titel: "Het driftsignaal meet vanaf de laatste reconciliatie, niet vanaf de laatste aanraking"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-11-07
+    implementatie-datum: 2026-11-07
+    beslissing: "Het nulpunt van een leidend document is de nieuwste getoetst-tegen-commit van een afgesloten DFT die het onder documenten noemt; een aanraking van het document reset niets; nooit gereconcilieerd betekent gemeten vanaf de commit die het document toevoegde; de CLAUDE.md-bestanden onder src/ vallen onder het signaal met hun eigen map als werkgebied; leidende documenten vallen buiten elk werkgebied; een pad onder documenten moet exact een leidend document zijn, en een afgesloten DFT met documenten zonder getoetst-tegen is een fout"
+    notitie: "Vervangt de baseline van HDR-008, de rest daarvan blijft. Aanleiding: na de merge van de bubbelanimatie (PR #33, 2026-10-30) waarschuwde docs:check een week, niemand reconcilieerde, en drie commits die de balans alleen vertaalden en verwijzingen bijwerkten (2026-11-06) maakten het signaal stil. Jarón koos het register boven een veld in het document. Eerste reconciliatie onder deze regel: DFT-004. Het signaal is luider; een ritme voor reconciliaties ligt nog niet vast"
+    bestand: hdr-022-drift-gemeten-vanaf-de-reconciliatie.md
+  - id: "HDR-023"
+    titel: "Een driftrapport dat langer dan veertien dagen open staat, meldt zich"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-11-07
+    implementatie-datum: 2026-11-07
+    beslissing: "docs:check waarschuwt (nooit een fout) bij elke DFT met status open of in_progress waarvan de datum meer dan veertien dagen voor vandaag ligt, gelezen in Europe/Amsterdam"
+    notitie: "Maatregel van het incidentpatroon promised-follow-up-dropped, samen met HDR-022 (dat dekt de twee andere vormen). Veertien dagen is de keuze van Jarón; zeven was voorgesteld. Afgewezen: HDR-022 als enige maatregel (stil zonder controle) en alleen een regel (stond al in de skill). DFT-003 is op 2026-11-08 gesloten (anders had hij zich op 2026-11-11 gemeld). Dekt geen ADR of HDR die op in-progress blijft hangen"
+    bestand: hdr-023-open-driftrapport-meldt-zich.md
   - id: "HDR-024"
     titel: "Builders op Sonnet bij `trivial`, op Opus bij `normal` en `risky`"
     status: implemented

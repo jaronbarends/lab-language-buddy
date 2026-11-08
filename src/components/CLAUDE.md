@@ -5,9 +5,11 @@
   `elements.css`. Gebruik de tokens; voer geen losse waarden in voor kleur, spacing of radius.
 - De tokens, `reset.css` en `elements.css` zijn overgenomen uit de bestaande Language
   Buddy-app en zijn nu van deze app zelf.
-- `language-buddy.tsx` bezit de session reducer en rendert per phase. Schermen lezen state
-  via de sessiecontext en sturen acties via de dispatch hook; ze houden zelf geen
-  sessiestate bij.
+- `language-buddy.tsx` bezit de session reducer, rendert per phase en geeft state als props
+  door. Alleen de leaf controls (`ComposingControls`, `IdleControls`, `ErrorControls`, de
+  dev-only `StateStepper`) sturen acties via `useSessionDispatch()`; schermen en de
+  onderdelen eronder krijgen state en callbacks als props en houden zelf geen sessiestate
+  bij (zie de balans, § 2 en § 3).
 - De Safari/iPhone-regels in `.claude/rules/safari-ios.md` gelden voor alles hier.
 - Verschillende keuzes lijken willekeurig en zijn bewust (geen Stop-knop, `editing` als eigen
   state, het live transcript buiten de thread). De redenering staat in het grootboek: PDR-003 (Een set bediening zonder stop), ADR-006 (`editing` is een eigen beurtstatus met `draftBeforeEdit`) en, voor de rest, `docs/index.yml`.

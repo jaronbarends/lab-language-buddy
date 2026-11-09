@@ -68,6 +68,9 @@ dan in plaats van een van beide blind te volgen.
 - **Beweringen uit de bron** (HDR-025). Een bewering over wat een document zegt of wat de
   omgeving heeft, komt uit de bron: lees het document helemaal of draai het commando. Een
   zoekresultaat, een indexregel of een geheugennotitie is een aanwijzing, geen bewijs.
+- **Ids met titel.** Haal je een genummerd document aan (ADR, HDR, PDR, DFT, JNL, REQ,
+  een kwestie zoals K7), zet dan bij de eerste vermelding in elk bericht de titel
+  erbij. Zoek de titel op in het register; leid hem niet af uit de bestandsnaam.
 - **Codestijl** in één regel: TypeScript strict, function declarations, `if`s met accolades en
   early returns, booleans die als zin lezen (`microphoneIsLive`), bestandsnamen in kleine letters
   met streepjes. De volledige lijst laadt zodra je `src/` aanraakt (`.claude/rules/code-style.md`).

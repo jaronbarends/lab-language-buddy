@@ -46,6 +46,15 @@ nummer.
 - Sluit een pull request die code in een werkgebied raakt af met die reconciliatie, in dezelfde
   pull request, ook als alleen commentaar veranderde (HDR-026)
 
+**Tijdelijk, tot en met DFT-010: wat kost een reconciliatie?** (HDR-026)
+
+- Meld het vlak voordat je aan de reconciliatie begint en wacht op Jaróns go. Jarón noteert dan
+  `/usage`.
+- Meld het opnieuw als de DFT en eventuele documentaanpassingen klaar zijn.
+- Zet wat Jarón opgeeft als één regel in de DFT:
+  `Kosten: <x>% sessielimiet, <y> min van Jarón`.
+- Na DFT-010 volgt de heroverweging uit HDR-026; haal dit blok dan weg.
+
 ## Communicatieplicht
 
 Zie de root-`CLAUDE.md`: daar staat de lijst met leidende documenten en de regel.

@@ -80,17 +80,26 @@ balans niet meenam (HDR-003). De keuze rust dus op de reden van Jarón, niet op 
 
 - **Meer records en meer vaste kosten.** Elke reconciliatie betaalt het document lezen, het record
   schrijven, register en `index.yml` bijwerken en de checks draaien, ook bij een wijziging van een
-  paar commentaren. De kosten zijn niet gemeten. Dit record accepteert dat voor kleine, scherpe
+  paar commentaren. De kosten waren bij het besluit niet gemeten; een tijdelijke meting tot en met
+  DFT-010 haalt dat in (zie hieronder). Dit record accepteert de kosten voor kleine, scherpe
   reviews in plaats van één grote.
 - **HDR-022 is aangepast:** zijn Gevolgen zeggen niet meer dat het ritme niet vastligt, maar
   verwijzen hiernaar.
 - **HDR-023 vuurt hier zelden.** Een DFT die in dezelfde pull request wordt geopend en afgesloten,
   wordt nooit veertien dagen oud. HDR-023 blijft dekken wat wel blijft liggen.
-- **Te heroverwegen als het knelt.** Blijken de DFT's vooral "geen verschil" te zijn en voelt het
-  als administratie, dan is de variant "alleen bij gedragswijziging" het volgende te wegen. Dat is
-  geen vast getal maar een moment om opnieuw te kijken.
-- **`docs/grootboek/CLAUDE.md` is een leidend document.** De werkregel daarin is aan Jarón getoond
-  en gecontroleerd (communicatieplicht).
+- **Heroverwegen na de vijfde DFT onder dit record.** Na de vijfde DFT die onder HDR-026 wordt
+  geboekt weegt Jarón de regel opnieuw, wat die DFT's ook vonden. DFT-010 is het markeerpunt: de
+  laatste DFT was bij dit besluit DFT-005, dus de vijf onder dit record zijn DFT-006 tot en met
+  DFT-010. Blijken ze vooral "geen verschil" te zijn en voelt het als administratie, dan is de
+  variant "alleen bij gedragswijziging" het volgende te wegen. Een drempel die alleen bij
+  "knelt" vuurt, vuurt niet als niemand het meldt; vandaar het vaste getal.
+- **Tijdelijke kostenmeting tot en met DFT-010.** Bij die heroverweging horen de gemeten kosten
+  van een reconciliatie. `docs/grootboek/CLAUDE.md` bevat daarvoor een tijdelijk blok naast de
+  werkregel: Jarón noteert `/usage` voor en na, en de agent zet het resultaat als één regel
+  (`Kosten: <x>% sessielimiet, <y> min van Jarón`) in de DFT. Na DFT-010 vervalt het blok. De
+  meting staat bewust niet in de DFT-schrijfgids van de grootboek-skill: één plek is genoeg.
+- **`docs/grootboek/CLAUDE.md` is een leidend document.** De werkregel daarin, en het tijdelijke
+  meetblok ernaast, zijn aan Jarón getoond en gecontroleerd (communicatieplicht).
 
 Verwant: HDR-022 (Het driftsignaal meet vanaf de laatste reconciliatie, niet vanaf de laatste aanraking)
 Verwant: HDR-023 (Een driftrapport dat langer dan veertien dagen open staat, meldt zich)

@@ -279,11 +279,11 @@ hdrs:
   - id: "HDR-026"
     titel: "Een pull request die code in een werkgebied raakt, sluit met een reconciliatie"
     status: implemented
-    versie: "1.0"
+    versie: "1.1"
     implementatie: 100
     omgeving: geen
     datum: 2026-11-09
     implementatie-datum: 2026-11-09
     beslissing: "Een pull request die code wijzigt in het werkgebied van een leidend document bevat een reconciliatie van dat document, geboekt als DFT met documenten en getoetst-tegen en status resolved in dezelfde pull request; ook bij alleen commentaar; een pull request buiten elk werkgebied krijgt geen DFT; een achterstand wordt door de eerstvolgende reconciliatie meegenomen"
-    notitie: "Jarón koos per pull request op 2026-11-09, omdat hij dan goed weet wat hij deed. Het bewijs is dun (DFT-004 dekte 16 commits uit meerdere pull requests, DFT-005 één pull request met alleen commentaar; geen van beide liet zien dat uitstel drift verborg) en de kosten zijn niet gemeten. Afgewogen: niets vastleggen, per stage of drempel, alleen bij gedragswijziging, per week. De werkregel staat in docs/grootboek/CLAUDE.md, door Jarón gecontroleerd"
+    notitie: "Jarón koos per pull request op 2026-11-09, omdat hij dan goed weet wat hij deed. Het bewijs is dun (DFT-004 dekte 16 commits uit meerdere pull requests, DFT-005 één pull request met alleen commentaar; geen van beide liet zien dat uitstel drift verborg) en de kosten waren bij het besluit niet gemeten. Afgewogen: niets vastleggen, per stage of drempel, alleen bij gedragswijziging, per week. Na de vijfde DFT onder dit record (markeerpunt DFT-010) weegt Jarón de regel opnieuw, wat die DFT's ook vonden; tot en met DFT-010 loopt een tijdelijke kostenmeting (blok in docs/grootboek/CLAUDE.md, resultaat als regel in elke DFT). De werkregel staat in docs/grootboek/CLAUDE.md, door Jarón gecontroleerd. Versie 1.1 (2026-11-09): vaste heroverweging na DFT-010 en tijdelijke kostenmeting toegevoegd"
     bestand: hdr-026-reconciliatie-per-pull-request.md

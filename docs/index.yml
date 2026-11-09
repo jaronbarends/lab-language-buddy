@@ -154,8 +154,8 @@ documents:
     what: De werkafspraak dat een bewering over een document of de omgeving uit de bron komt, niet uit een zoekresultaat, indexregel of geheugennotitie; de maatregel van het incidentpatroon document-not-fully-read, en waarom een regel en geen hook.
     read_when: je beweert wat een document zegt of wat de omgeving heeft; een correctie van Jarón op zo'n bewering; je overweegt het patroon tot een hook te laten doorgroeien.
   - path: docs/grootboek/hdr/hdr-026-reconciliatie-per-pull-request.md
-    what: Besluit dat een pull request die code in een werkgebied raakt sluit met een reconciliatie als DFT, in dezelfde pull request, ook bij alleen commentaar; wat is afgewogen en dat het bewijs dun is.
-    read_when: je een pull request afsluit die code in een werkgebied wijzigt; je overweegt het reconciliatieritme te veranderen; je een DFT boekt.
+    what: Besluit dat een pull request die code in een werkgebied raakt sluit met een reconciliatie als DFT, in dezelfde pull request, ook bij alleen commentaar; wat is afgewogen en dat het bewijs dun is; de vaste heroverweging na DFT-010 en de tijdelijke kostenmeting tot dan.
+    read_when: je een pull request afsluit die code in een werkgebied wijzigt; je overweegt het reconciliatieritme te veranderen; je een DFT boekt; je de kosten van een reconciliatie meet of DFT-010 bereikt.
   - path: docs/grootboek/pdr/pdr-007-persona-van-de-ai.md
     what: De AI is een algemene vriendelijke kennis met vrij onderwerp, 2 tot 4 zinnen en hooguit één vraag per beurt; overgezet uit plan.md.
     read_when: je de persona, de toon of de prompt-opbouw uit benoemde secties wijzigt of een nieuwe persona toevoegt.

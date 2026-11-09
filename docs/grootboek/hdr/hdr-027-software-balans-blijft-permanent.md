@@ -63,8 +63,9 @@ werkte de balans niet bij. Dat is wat het houden van de balans kost.
 - **De notitie in de front matter van de balans** zegt niet meer "Aangehouden als proef volgens
   HDR-002", maar verwijst naar dit record. Dat is een wijziging van een leidend document en is aan
   Jarón getoond voordat ze werd doorgevoerd.
-- **HDR-023 noemt HDR-002 als voorbeeld van een record dat blijft hangen.** Dat voorbeeld is met dit
-  record achterhaald; HDR-023 zelf blijft ongewijzigd.
+- **HDR-023 noemde HDR-002 als voorbeeld van een record dat blijft hangen.** Dat voorbeeld was met
+  dit record achterhaald; de zin in HDR-023 is op 2026-11-09 aangepast ("HDR-002 stond er zo bij, tot
+  HDR-027 het verving"). Verder blijft HDR-023 ongewijzigd.
 
 Vervangt: HDR-002 (De software-balans naast `plan.md` houden, als proef voor driftdetectie)
 Verwant: HDR-015 (plan.md vervalt als bron; beslissingen leven in het grootboek)

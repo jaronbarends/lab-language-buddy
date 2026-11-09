@@ -255,7 +255,7 @@ hdrs:
     datum: 2026-11-07
     implementatie-datum: 2026-11-07
     beslissing: "docs:check waarschuwt (nooit een fout) bij elke DFT met status open of in_progress waarvan de datum meer dan veertien dagen voor vandaag ligt, gelezen in Europe/Amsterdam"
-    notitie: "Maatregel van het incidentpatroon promised-follow-up-dropped, samen met HDR-022 (dat dekt de twee andere vormen). Veertien dagen is de keuze van Jarón; zeven was voorgesteld. Afgewezen: HDR-022 als enige maatregel (stil zonder controle) en alleen een regel (stond al in de skill). DFT-003 is op 2026-11-08 gesloten (anders had hij zich op 2026-11-11 gemeld). Dekt geen ADR of HDR die op in-progress blijft hangen"
+    notitie: "Maatregel van het incidentpatroon promised-follow-up-dropped, samen met HDR-022 (dat dekt de twee andere vormen). Veertien dagen is de keuze van Jarón; zeven was voorgesteld. Afgewezen: HDR-022 als enige maatregel (stil zonder controle) en alleen een regel (stond al in de skill). DFT-003 is op 2026-11-08 gesloten (anders had hij zich op 2026-11-11 gemeld). Dekt geen ADR of HDR die op in-progress blijft hangen. Op 2026-11-09 is het voorbeeld HDR-002 in Gevolgen in de verleden tijd gezet, omdat HDR-027 het verving"
     bestand: hdr-023-open-driftrapport-meldt-zich.md
   - id: "HDR-024"
     titel: "Builders op Sonnet bij `trivial`, op Opus bij `normal` en `risky`"

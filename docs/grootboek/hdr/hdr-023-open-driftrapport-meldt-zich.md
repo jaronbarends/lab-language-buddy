@@ -53,8 +53,8 @@ legitiem open mag staan, leert mensen CI te negeren.
   `in_progress` is gezet, waarschuwt dus gewoon door. Dat is bedoeld: de vraag is of hij dicht
   kan.
 - **Grens:** dit vangt een DFT die blijft liggen, niet een record (ADR, HDR) dat op `in-progress`
-  blijft hangen. HDR-002 staat er zo bij. Breidt het patroon zich uit naar die records, dan is dat
-  een volgend incident.
+  blijft hangen. HDR-002 stond er zo bij, tot HDR-027 het verving. Breidt het patroon zich uit naar
+  die records, dan is dat een volgend incident.
 
 Verwant: HDR-022 (Het driftsignaal meet vanaf de laatste reconciliatie, niet vanaf de laatste aanraking)
 Verwant: HDR-009 (Terugkerende fouten worden per patroon gelogd en bij drie vastgelegd als regel)

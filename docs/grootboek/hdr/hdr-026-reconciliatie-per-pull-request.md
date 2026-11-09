@@ -11,6 +11,25 @@ Reconcilieer terwijl de maker nog weet wat er veranderde en waarom. Een reconcil
 vergelijking van document en code, en die gaat het beste door wie net heeft gebouwd. Hoe langer je
 wacht, hoe meer je opnieuw moet uitzoeken wat een commit bedoelde.
 
+## Wat een reconciliatie is
+
+- **Vergelijken.** Je neemt de beweringen in het leidende document (SOLL) en toetst ze aan de code
+  zoals die nu is (IST). De diff van de pull request wijst aan welke beweringen geraakt kunnen
+  zijn, maar de toets is bewering tegen code, met bestand en regel als bewijs (DFT-004, DFT-005).
+- **Het verschil heeft geen vaste richting.** Een reconciliatie stelt vast dat document en code
+  verschillen. Wat je ermee doet, staat per bevinding in de Besluiten van de DFT: het document
+  aanpassen aan bedoelde code (DFT-004), of de code aanpassen (of het record vervangen) wanneer het
+  document is wat bedoeld was. Jarón beslist; de agent signaleert.
+- **Code aanpassen is een nieuwe commit in het werkgebied.** `getoetst-tegen` moet dan de commit
+  zijn waarvan de uiteindelijke code is vergeleken. Een aangepast leidend document volgt de
+  communicatieplicht.
+- **De DFT legt vast:** welke documenten je controleerde (`documenten`), tegen welke commit
+  (`getoetst-tegen`), de bevindingen of "geen verschil" met bewijs, en het besluit per bevinding.
+- **"Het signaal wordt stil"** betekent: `docs:check` telt per leidend document de commits in zijn
+  werkgebied sinds het nulpunt (de `getoetst-tegen`-commit van de nieuwste afgesloten DFT die het
+  document noemt). Zijn dat er nul, dan is er geen drift-waarschuwing meer. Het document aanraken
+  of een DFT die nog open staat, verandert dat niet (HDR-022).
+
 ## Besluit
 
 HDR-022 liet open hoe vaak er wordt gereconcilieerd. Dit record kiest: **per pull request**.

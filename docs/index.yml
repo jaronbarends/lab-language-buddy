@@ -25,8 +25,8 @@ documents:
     what: Waarom het grootboek naast plan.md bestaat en welke beslissingen het bevat (vanaf 2026-10-20).
     read_when: je beslist of een beslissing in het grootboek of in plan.md hoort.
   - path: docs/grootboek/hdr/hdr-002-balans-naast-plan-driftproef.md
-    what: Waarom de technische balans wordt bijgehouden, als proef van de driftdetectie van het grootboek; plan.md blijft de bron tot de proef is afgerond.
-    read_when: je beslist of de balans blijft, wijzigt of vervalt; voor de driftproef.
+    what: Voorgeschiedenis van de balans als proef van de driftdetectie, naast plan.md; vervangen door HDR-027 (2026-11-09).
+    read_when: je wilt weten waarom de balans ooit als proef werd aangehouden; voor de driftproef (DFT-001).
   - path: docs/grootboek/hdr/hdr-003-ci-checks-op-pull-requests.md
     what: Besluit dat lint, typecheck, docs:check, test:scripts, register:check en build op PR's naar main draaien; gebouwd op 2026-10-22 in .github/workflows/checks.yml (K8).
     read_when: je CI voor deze repo inricht.
@@ -156,6 +156,9 @@ documents:
   - path: docs/grootboek/hdr/hdr-026-reconciliatie-per-pull-request.md
     what: Besluit dat een pull request die code in een werkgebied raakt sluit met een reconciliatie als DFT, in dezelfde pull request, ook bij alleen commentaar; wat is afgewogen en dat het bewijs dun is; de vaste heroverweging na DFT-010 en de tijdelijke kostenmeting tot dan.
     read_when: je een pull request afsluit die code in een werkgebied wijzigt; je overweegt het reconciliatieritme te veranderen; je een DFT boekt; je de kosten van een reconciliatie meet of DFT-010 bereikt.
+  - path: docs/grootboek/hdr/hdr-027-software-balans-blijft-permanent.md
+    what: Besluit dat de software-balans permanent blijft als leidend document en HDR-002 vervangt; het gemengde bewijs uit DFT-001, DFT-004 en DFT-005 en wat is afgewogen (parkeren, opheffen).
+    read_when: je beslist of de balans blijft, wijzigt of vervalt; je een pull request in het werkgebied van de balans afsluit.
   - path: docs/grootboek/pdr/pdr-007-persona-van-de-ai.md
     what: De AI is een algemene vriendelijke kennis met vrij onderwerp, 2 tot 4 zinnen en hooguit één vraag per beurt; overgezet uit plan.md.
     read_when: je de persona, de toon of de prompt-opbouw uit benoemde secties wijzigt of een nieuwe persona toevoegt.

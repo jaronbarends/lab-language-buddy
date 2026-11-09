@@ -1,8 +1,12 @@
 # HDR-002: De software-balans naast `plan.md` houden, als proef voor driftdetectie
 
-- **Status:** in-progress
+- **Status:** implemented
 - **Date:** 2026-10-20
+- **Implementation:** 100
 - **Type:** Harness Decision Record (HOW do we work)
+
+> Vervangen door HDR-027 (De software-balans blijft bestaan als leidend document) op 2026-11-09. De
+> proef is afgerond en `plan.md` bestaat niet meer (HDR-015); de tekst hieronder is voorgeschiedenis.
 
 ## Besluit
 

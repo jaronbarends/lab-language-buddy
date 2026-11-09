@@ -5,13 +5,13 @@
 jnls:
   - id: "JNL-001"
     titel: "Instapjournaal: de software-balans"
-    status: discovery
+    status: afgerond
     datum: 2026-10-20
-    laatste-sessie: 2026-11-07
+    laatste-sessie: 2026-11-09
     kwesties-totaal: 8
     kwesties-besloten: 7
-    kwesties-open: 1
-    kwesties-geparkeerd: 0
+    kwesties-open: 0
+    kwesties-geparkeerd: 1
     doel-records:
       - "software-architectuur.md (v1.0, geaccepteerd 2026-10-20)"
     bestand: jnl-001-instap-software-balans.md
@@ -46,11 +46,11 @@ jnls:
     titel: "Openstaande kwesties"
     status: discovery
     datum: 2026-11-06
-    laatste-sessie: 2026-11-08
-    kwesties-totaal: 13
+    laatste-sessie: 2026-11-09
+    kwesties-totaal: 14
     kwesties-besloten: 1
     kwesties-open: 6
-    kwesties-geparkeerd: 6
+    kwesties-geparkeerd: 7
     doel-records:
       - "per kwestie een record zodra er een besluit valt"
     bestand: jnl-004-openstaande-kwesties.md

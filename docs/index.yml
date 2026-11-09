@@ -247,8 +247,8 @@ documents:
     what: main is production, andere branches krijgen standaard een preview, geheime env vars gelden alleen voor Production; ingesteld in Vercel, niet in de repo.
     read_when: je de branch- of env-var-instellingen in Vercel wijzigt.
   - path: docs/grootboek/adr/adr-002-routes-zonder-authenticatie-voorlopig-geaccepteerd.md
-    what: Geen authenticatie van de aanroeper of rate limit op de serverroutes; voorlopig geaccepteerd en vervangen zodra K7 een oplossing oplevert.
-    read_when: je de blootstelling van de serverroutes aanraakt; je K7 oppakt.
+    what: Geen authenticatie van de aanroeper of rate limit op de serverroutes; voorlopig geaccepteerd en vervangen zodra JNL-004 K14 (eerder JNL-001 K7, geparkeerd) een oplossing oplevert.
+    read_when: je de blootstelling van de serverroutes aanraakt; je JNL-004 K14 oppakt.
   - path: docs/grootboek/adr/adr-003-gemini-flash-lite-op-prijs.md
     what: Waarom gemini-3.1-flash-lite, en dat het op prijs is gekozen zonder uitgebreide modelvergelijking.
     read_when: je een ander model voor chat of evaluatie overweegt.
@@ -259,14 +259,14 @@ documents:
     what: Technische balans v1.0 (geaccepteerd 2026-10-20), afgeleid uit de code — componenten, datastroom, omgevingen, auth-matrix, keuzes. Open vragen staan in JNL-001. Gereconcilieerd in DFT-004 (2026-11-07, het eerste echte driftsignaal); DFT-001 was een proef zonder codewijzigingen.
     read_when: je aan routes, providers, deployment of env vars werkt; bij de driftproef.
   - path: docs/grootboek/journaal/jnl-001-instap-software-balans.md
-    what: Instapjournaal voor de proef met de software-balans; acht kwesties (balans versus plan, omgevingen, route-auth en het vervolg, CI en het vervolg, modelkeuze, Google-key).
-    read_when: je de balans accepteert of verwerpt; je een van de open vragen beantwoordt.
+    what: Afgerond instapjournaal (2026-11-09) voor de proef met de software-balans; acht kwesties (balans versus plan, omgevingen, route-auth en het vervolg, CI en het vervolg, modelkeuze, Google-key); de routebescherming (K7) is geparkeerd en naar JNL-004 verhuisd.
+    read_when: je wilt weten hoe een besluit over de balans, de omgevingen, CI, het model of de Google-key tot stand kwam; de open routebescherming staat in JNL-004 K14.
   - path: docs/grootboek/journaal/jnl-003-animatie-van-chatbubbels.md
     what: Afgerond journaal (2026-11-08) over het animeren van de chatbubbels (open vraag 11 uit het plan) — het blijvende element, groei in hoogte en breedte, scroll, meelezen, rollen; vijftien kwesties, het open werk is naar JNL-004 verhuisd.
     read_when: je aan bubbel- of threadanimatie werkt en wilt weten hoe een keuze tot stand kwam; de open punten staan in JNL-004.
   - path: docs/grootboek/journaal/jnl-004-openstaande-kwesties.md
-    what: Journaal met de negen vragen die openstonden toen plan.md werd afgebouwd (tests, de Spaanse vlag, een sessie beëindigen, het afbreken bij 320px, bediening onder het toetsenbord, audio bufferen, de vastgehouden reply, de Gemini-wrappers, de native engine op iPhone), met bevindingen en metingen per kwestie; sinds 2026-11-08 ook vier kwesties uit JNL-003 (de meelees-highlight na de onthulling, de spraakstart, de Retry-vertraging van de denkbubbel, de dode AI-tak in TurnBubble).
-    read_when: je een van deze kwesties oppakt of beslist of je haar accepteert, bouwt of laat vallen; je aan de native spraakherkenning op iPhone werkt (kwestie K9 bevat alle runs).
+    what: Journaal met de negen vragen die openstonden toen plan.md werd afgebouwd (tests, de Spaanse vlag, een sessie beëindigen, het afbreken bij 320px, bediening onder het toetsenbord, audio bufferen, de vastgehouden reply, de Gemini-wrappers, de native engine op iPhone), met bevindingen en metingen per kwestie; sinds 2026-11-08 ook vier kwesties uit JNL-003 (de meelees-highlight na de onthulling, de spraakstart, de Retry-vertraging van de denkbubbel, de dode AI-tak in TurnBubble); sinds 2026-11-09 ook K14 uit JNL-001, de bescherming van de serverroutes (geparkeerd, heroverwegen rond 2026-12-09).
+    read_when: je een van deze kwesties oppakt of beslist of je haar accepteert, bouwt of laat vallen; je de blootstelling van de serverroutes aanraakt (K14); je aan de native spraakherkenning op iPhone werkt (kwestie K9 bevat alle runs).
   - path: docs/grootboek/journaal/jnl-005-metingen-van-de-corrector.md
     what: Journaal met de metingen van de corrector (drie varianten, echte prompts, context van 10-10) en de zwakke plekken die gemeten maar niet opgelost zijn.
     read_when: je de cijfers achter de besluiten over de corrector nodig hebt of de spellingregel, transcriptiehint of aanhalingstekens wilt heroverwegen.

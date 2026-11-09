@@ -43,6 +43,8 @@ nummer.
   `getoetst-tegen` (de commit waarvan de code is vergeleken). Het signaal meet vanaf de nieuwste
   afgesloten DFT die het document noemt; een aanraking van het document zet het niet stil
   (HDR-022)
+- Sluit een pull request die code in een werkgebied raakt af met die reconciliatie, in dezelfde
+  pull request, ook als alleen commentaar veranderde (HDR-026)
 
 ## Communicatieplicht
 

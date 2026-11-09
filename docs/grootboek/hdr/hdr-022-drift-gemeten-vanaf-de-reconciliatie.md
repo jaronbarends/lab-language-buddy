@@ -94,9 +94,10 @@ HDR-008 noemde ze al als mogelijke uitbreiding.
 ## Gevolgen
 
 - **Het signaal is luider.** Elke codewijziging in een werkgebied blijft gemeld tot er een DFT is.
-  Hoe vaak er wordt gereconcilieerd (per PR, per stage, per week) ligt niet vast. Gaat de
-  waarschuwing in `docs:check` een vast onderdeel van het beeld worden dat niemand meer leest, dan
-  is dat het moment om een ritme te kiezen.
+  Hoe vaak er wordt gereconcilieerd, liet dit record open; HDR-026 (Een pull request die code in
+  een werkgebied raakt, sluit met een reconciliatie) kiest per pull request. Gaat de waarschuwing
+  in `docs:check` toch een vast onderdeel van het beeld worden dat niemand meer leest, dan is dat
+  het moment om dat ritme te heroverwegen.
 - **De eerste reconciliatie onder deze regel is DFT-004.** Zonder die DFT staan de balans en de
   twee `src/`-`CLAUDE.md`-bestanden direct op "behind".
 - **Grenzen, geaccepteerd:**

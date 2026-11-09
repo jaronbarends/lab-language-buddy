@@ -241,7 +241,7 @@ hdrs:
     datum: 2026-11-07
     implementatie-datum: 2026-11-07
     beslissing: "Het nulpunt van een leidend document is de nieuwste getoetst-tegen-commit van een afgesloten DFT die het onder documenten noemt; een aanraking van het document reset niets; nooit gereconcilieerd betekent gemeten vanaf de commit die het document toevoegde; de CLAUDE.md-bestanden onder src/ vallen onder het signaal met hun eigen map als werkgebied; leidende documenten vallen buiten elk werkgebied; een pad onder documenten moet exact een leidend document zijn, en een afgesloten DFT met documenten zonder getoetst-tegen is een fout"
-    notitie: "Vervangt de baseline van HDR-008, de rest daarvan blijft. Aanleiding: na de merge van de bubbelanimatie (PR #33, 2026-10-30) waarschuwde docs:check een week, niemand reconcilieerde, en drie commits die de balans alleen vertaalden en verwijzingen bijwerkten (2026-11-06) maakten het signaal stil. Jarón koos het register boven een veld in het document. Eerste reconciliatie onder deze regel: DFT-004. Het signaal is luider; een ritme voor reconciliaties ligt nog niet vast"
+    notitie: "Vervangt de baseline van HDR-008, de rest daarvan blijft. Aanleiding: na de merge van de bubbelanimatie (PR #33, 2026-10-30) waarschuwde docs:check een week, niemand reconcilieerde, en drie commits die de balans alleen vertaalden en verwijzingen bijwerkten (2026-11-06) maakten het signaal stil. Jarón koos het register boven een veld in het document. Eerste reconciliatie onder deze regel: DFT-004. Het signaal is luider; het ritme voor reconciliaties kiest HDR-026 (per pull request)"
     bestand: hdr-022-drift-gemeten-vanaf-de-reconciliatie.md
   - id: "HDR-023"
     titel: "Een driftrapport dat langer dan veertien dagen open staat, meldt zich"
@@ -276,3 +276,14 @@ hdrs:
     beslissing: "Een werkafspraak in de root-CLAUDE.md: een bewering over wat een document zegt of wat de omgeving heeft komt uit de bron (het document helemaal lezen of het commando draaien); een zoekresultaat, een indexregel of een geheugennotitie is een aanwijzing, geen bewijs"
     notitie: "Maatregel van het incidentpatroon document-not-fully-read (drie incidenten, alle drie een bewering dat iets ontbreekt). Een regel en geen hook: de hooks zien tool-aanroepen, geen beweringen in een antwoord, en of een bewering gedekt is, is een oordeel. Niet mechanisch te controleren: succes is geen vierde incident (zoals bij HDR-010)"
     bestand: hdr-025-bewering-uit-de-bron.md
+  - id: "HDR-026"
+    titel: "Een pull request die code in een werkgebied raakt, sluit met een reconciliatie"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-11-09
+    implementatie-datum: 2026-11-09
+    beslissing: "Een pull request die code wijzigt in het werkgebied van een leidend document bevat een reconciliatie van dat document, geboekt als DFT met documenten en getoetst-tegen en status resolved in dezelfde pull request; ook bij alleen commentaar; een pull request buiten elk werkgebied krijgt geen DFT; een achterstand wordt door de eerstvolgende reconciliatie meegenomen"
+    notitie: "Jarón koos per pull request op 2026-11-09, omdat hij dan goed weet wat hij deed. Het bewijs is dun (DFT-004 dekte 16 commits uit meerdere pull requests, DFT-005 één pull request met alleen commentaar; geen van beide liet zien dat uitstel drift verborg) en de kosten zijn niet gemeten. Afgewogen: niets vastleggen, per stage of drempel, alleen bij gedragswijziging, per week. De werkregel staat in docs/grootboek/CLAUDE.md, door Jarón gecontroleerd"
+    bestand: hdr-026-reconciliatie-per-pull-request.md

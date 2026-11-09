@@ -53,6 +53,9 @@ patronen:
       - datum: 2026-10-21
         wat: "Een kaal requirement-id in een statusupdate, waardoor de lezer het zelf moet opzoeken"
         bron: "geheugennotitie feedback-requirement-ids-need-titles"
+      - datum: 2026-11-09
+        wat: "Een reeks berichten in de lead sessie noemde records bij hun id zonder titel, terwijl de geheugennotitie in de context stond; één titel was afgeleid uit de bestandsnaam en klopte niet"
+        bron: "correctie van Jarón in de lead sessie van de grootboekronde"
   - patroon: branch-before-edit
     titel: "Er wordt gewerkt op de integratiebranch voordat er een branch bestaat"
     maatregel: HDR-011

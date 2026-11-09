@@ -14,15 +14,18 @@ hdrs:
     datum: 2026-10-20
     implementatie-datum: 2026-10-20
     beslissing: "Elke beslissing over architectuur, harnas, product en drift krijgt een genummerd document en een registerregel; plan.md blijft de bron voor beslissingen van vóór 2026-10-20"
+    notitie: "Gedeeltelijk vervangen door HDR-015 op 2026-11-06: plan.md is vervallen als bron en verwijderd; de bepaling dat plan.md de bron blijft is voorgeschiedenis"
     bestand: hdr-001-grootboek-stelsel.md
   - id: "HDR-002"
     titel: "De software-balans naast `plan.md` houden, als proef voor driftdetectie"
-    status: in-progress
+    status: implemented
     versie: "1.0"
-    implementatie: 50
+    implementatie: 100
     omgeving: geen
     datum: 2026-10-20
+    implementatie-datum: 2026-11-09
     beslissing: "software-architectuur.md blijft bestaan om het driftmechanisme van het grootboek te proberen; plan.md blijft de bron tot de proef is afgerond"
+    notitie: "Vervangen door HDR-027 op 2026-11-09: de proef is afgerond (DFT-001, DFT-004, DFT-005), plan.md is vervallen (HDR-015) en de balans blijft permanent"
     bestand: hdr-002-balans-naast-plan-driftproef.md
   - id: "HDR-003"
     titel: "De checks van de repo draaien op pull requests naar `main` en `arc/arc-main`"
@@ -287,3 +290,14 @@ hdrs:
     beslissing: "Een pull request die code wijzigt in het werkgebied van een leidend document bevat een reconciliatie van dat document, geboekt als DFT met documenten en getoetst-tegen en status resolved in dezelfde pull request; ook bij alleen commentaar; een pull request buiten elk werkgebied krijgt geen DFT; een achterstand wordt door de eerstvolgende reconciliatie meegenomen"
     notitie: "Jarón koos per pull request op 2026-11-09, omdat hij dan goed weet wat hij deed. Het bewijs is dun (DFT-004 dekte 16 commits uit meerdere pull requests, DFT-005 één pull request met alleen commentaar; geen van beide liet zien dat uitstel drift verborg) en de kosten waren bij het besluit niet gemeten. Afgewogen: niets vastleggen, per stage of drempel, alleen bij gedragswijziging, per week. Na de vijfde DFT onder dit record (markeerpunt DFT-010) weegt Jarón de regel opnieuw, wat die DFT's ook vonden; tot en met DFT-010 loopt een tijdelijke kostenmeting (blok in docs/grootboek/CLAUDE.md, resultaat als regel in elke DFT). De werkregel staat in docs/grootboek/CLAUDE.md, door Jarón gecontroleerd. Versie 1.1 (2026-11-09): vaste heroverweging na DFT-010 en tijdelijke kostenmeting toegevoegd"
     bestand: hdr-026-reconciliatie-per-pull-request.md
+  - id: "HDR-027"
+    titel: "De software-balans blijft bestaan als leidend document"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-11-09
+    implementatie-datum: 2026-11-09
+    beslissing: "software-architectuur.md blijft permanent bestaan als leidend document, onder de communicatieplicht en de reconciliatie per pull request (HDR-026); vervangt HDR-002; geen eigen heroverweging van de balans"
+    notitie: "Jarón koos permanent op 2026-11-09. Het bewijs uit de proef is gemengd: DFT-001 en DFT-005 vonden niets, DFT-004 vond twee balansbevindingen, waarvan één deels voortkwam uit het niet bijhouden van de balans. Afgewogen: parkeren tot DFT-010, opheffen. De heroverweging na DFT-010 (HDR-026) gaat over het reconciliatieritme, niet over de balans"
+    bestand: hdr-027-software-balans-blijft-permanent.md

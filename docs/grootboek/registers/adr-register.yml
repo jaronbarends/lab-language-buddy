@@ -30,7 +30,7 @@ adrs:
     omgeving: prod
     datum: 2026-10-20
     beslissing: "Geen authenticatie van de aanroeper en geen rate limit op een serverroute; risico voorlopig geaccepteerd, een oplossing is snel gewenst"
-    notitie: "Voorlopig; wordt vervangen door een nieuw ADR zodra K7 een beschermingsmechanisme oplevert"
+    notitie: "Voorlopig; wordt vervangen door een nieuw ADR zodra JNL-004 K14 (eerder JNL-001 K7, geparkeerd 2026-11-09, heroverwegen rond 2026-12-09) een beschermingsmechanisme oplevert"
     bestand: adr-002-routes-zonder-authenticatie-voorlopig-geaccepteerd.md
   - id: "ADR-003"
     titel: "Gemini `flash-lite` als model, gekozen op prijs"

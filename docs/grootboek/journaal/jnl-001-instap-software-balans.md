@@ -1,6 +1,6 @@
 ---
 titel: "Instapjournaal: de software-balans"
-status: discovery
+status: afgerond
 datum: 2026-10-20
 kernvraag: Wat is de technische architectuur van language-buddy, en welke delen ervan zijn besluiten die niemand heeft vastgelegd?
 doel-records:
@@ -33,7 +33,7 @@ zei waarom.
 | K4 | Geen CI in de repo | besloten 2026-10-20 |
 | K5 | Waarom `gemini-3.1-flash-lite`? | besloten 2026-10-20 |
 | K6 | De Google TTS-key reist mee als URL-queryparameter | besloten 2026-10-21 |
-| K7 | Hoe de routes te beschermen (vervolg op K3) | open |
+| K7 | Hoe de routes te beschermen (vervolg op K3) | geparkeerd 2026-11-09; verplaatst naar JNL-004 K14 |
 | K8 | CI op pull requests naar `main` (vervolg op K4) | besloten, geboekt in HDR-003 |
 
 ### K1 — Balans naast plan.md: waar is die voor?
@@ -151,6 +151,10 @@ app die vanuit één browser en één iPhone wordt gebruikt (de opties lopen van
 platformniveau voor de deployment tot een controle binnen de routes), en wat elk kost aan
 complexiteit en in de iPhone-flow. Nog niet onderzocht.
 
+**Geparkeerd (2026-11-09, de mens)** en verplaatst naar JNL-004 (Openstaande kwesties), K14: de
+kans dat iemand de productie-URL achterhaalt is volgens de mens heel klein. Heroverwegen rond
+2026-12-09, met het overzicht van de bestedingslimieten per leverancier erbij (K3).
+
 ### K8 — CI op pull requests naar `main` (vervolg op K4)
 
 Besloten en gebouwd: zie HDR-003. De rimpel in de geschiedenis bleek echt; de workflow checkt uit
@@ -187,4 +191,10 @@ met `fetch-depth: 0`.
   (ADR-004) → document (§ 6) → code → drift (DFT-004) (REQ-GG-09). Dezelfde reconciliatie vond dat
   § 5 van de balans de CI uit K8 nooit had opgenomen.
 
-Dit journaal sluit als K7 is besloten of geparkeerd.
+- **2026-11-09 — K7 geparkeerd en journaal gesloten (`afgerond`).** K7 verhuisde als K14 naar
+  JNL-004 (Openstaande kwesties), zoals JNL-003 dat op 2026-11-08 deed. ADR-002 (De serverroutes
+  hebben geen authenticatie van de aanroeper, voorlopig geaccepteerd) blijft `accepted` en
+  voorlopig; een nieuwe ADR vervangt hem pas als er een mechanisme is.
+
+Dit journaal is gesloten op 2026-11-09. De voorwaarde was dat K7 besloten of geparkeerd is; K7 is
+geparkeerd, en het open werk staat in JNL-004, K14.

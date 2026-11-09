@@ -14,7 +14,7 @@ werkgebied:
   - next.config.ts
   - .env.example
   - .github/workflows
-notitie: Afgeleid uit de code en de git-geschiedenis (scope `src/lib`, `src/hooks`, `src/app/api`, de delivery chain), beoordeeld door een kritiekronde met verse context, en op 2026-10-20 door de mens geaccepteerd. Als geheel geaccepteerd, niet per sectie. Op 2026-10-21 uitgebreid met de frontend-componentlaag (`src/components`, de app shell), waarmee het scopegat van REQ-GG-01 is gedicht; het meeste wat de verkenner vond was al besloten, met vermelding waar. § 6 bijgewerkt op 2026-10-21 voor ADR-004 (Google TTS-key verhuisd naar een header). § 3 bijgewerkt op 2026-11-08 voor ADR-031 (de AI-bubbel als één element). Open vragen staan in JNL-001, niet hier. Permanent aangehouden volgens HDR-027 (die HDR-002 vervangt). Op 2026-11-07 gereconcilieerd in DFT-004.
+notitie: Afgeleid uit de code en de git-geschiedenis (scope `src/lib`, `src/hooks`, `src/app/api`, de delivery chain), beoordeeld door een kritiekronde met verse context, en op 2026-10-20 door de mens geaccepteerd. Als geheel geaccepteerd, niet per sectie. Op 2026-10-21 uitgebreid met de frontend-componentlaag (`src/components`, de app shell), waarmee het scopegat van REQ-GG-01 is gedicht; het meeste wat de verkenner vond was al besloten, met vermelding waar. § 6 bijgewerkt op 2026-10-21 voor ADR-004 (Google TTS-key verhuisd naar een header). § 3 bijgewerkt op 2026-11-08 voor ADR-031 (de AI-bubbel als één element). Open vragen staan in JNL-004 (Openstaande kwesties), niet hier. Permanent aangehouden volgens HDR-027 (die HDR-002 vervangt). Op 2026-11-07 gereconcilieerd in DFT-004.
 ---
 
 # Software-architectuur — language-buddy
@@ -230,7 +230,7 @@ geheim moeten overeenstemmen: geen gevonden.
 | Waarden die in een system prompt terechtkomen zijn begrensd | `language` en `level` zijn zod-enums in het requestschema |
 | De omvang van invoer is begrensd | de chatinvoer en de tekst die naar TTS gaat hebben lengtelimieten in hun zod-schema's |
 | Een verlaten request stopt de call naar de leverancier | het requestsignaal van de route wordt doorgegeven aan de Gemini- en TTS-calls |
-| Aanroepers van onze eigen routes | geen principe gevonden; geen authenticatie of rate limit in de repo. Het risico is voorlopig geaccepteerd en een oplossing is binnenkort gewenst (ADR-002, voorlopig; JNL-001, K7) |
+| Aanroepers van onze eigen routes | geen principe gevonden; geen authenticatie of rate limit in de repo. Het risico is voorlopig geaccepteerd; de bescherming is geparkeerd en wordt rond 2026-12-09 heroverwogen (ADR-002, voorlopig; JNL-004, K14, eerder JNL-001, K7) |
 
 ## 10. Hoe dit document verandert
 

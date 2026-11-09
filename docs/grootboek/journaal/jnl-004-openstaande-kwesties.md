@@ -19,12 +19,13 @@ gedeeltelijk gemitigeerd), is dat de status uit het plan. Richtingen die het pla
 onbevestigde ideeën, geen besluiten. Sinds 2026-11-08 staan hier ook vier kwesties uit JNL-003
 (Animatie van chatbubbels), dat die dag sloot terwijl ze nog openstonden: K10 tot en met K13. K10
 was daar al besloten, maar is niet gebouwd; K11 en K12 zijn daar geparkeerd; K13 was een
-opruimpunt dat bleef liggen.
+opruimpunt dat bleef liggen. Sinds 2026-11-09 staat hier ook K14, de bescherming van de
+serverroutes, die uit JNL-001 (Instapjournaal: de software-balans) kwam toen dat sloot.
 
 **Hoe dit is gemaakt.** K1 tot en met K9 zijn overgenomen uit de open vragen van `docs/plan.md`
 bij de overzetting van het plan naar het grootboek (HDR-015). Bewoording en getallen zijn niet
 aangepast. K10 tot en met K13 zijn op 2026-11-08 overgenomen uit JNL-003, met de bevindingen en
-voorbehouden zoals ze daar stonden.
+voorbehouden zoals ze daar stonden. K14 is op 2026-11-09 overgenomen uit JNL-001, K7.
 
 ## Kwesties
 
@@ -43,6 +44,7 @@ voorbehouden zoals ze daar stonden.
 | K11 | De spraak start pas als de bubbel zijn eindmaat heeft | geparkeerd (JNL-003, K12) |
 | K12 | De denkbubbel wacht ook na een Retry 800ms | geparkeerd (JNL-003, K15) |
 | K13 | De AI-tak in `TurnBubble` is dode code | open (JNL-003, opruiming die bleef liggen) |
+| K14 | Hoe de serverroutes te beschermen (vervolg op ADR-002) | geparkeerd 2026-11-09, heroverwegen rond 2026-12-09 (JNL-001, K7) |
 
 Open betekent dat er niets over is besloten of gedaan; geparkeerd dat het bewust is uitgesteld of
 geaccepteerd; besloten, niet gebouwd dat het besluit er is en de code nog niet. Tussen haakjes
@@ -346,3 +348,31 @@ versmallen tot een gebruikersbeurt, zodat het type zegt wat de component krijgt.
 
 Verwant: ADR-031 (De AI-bubbel blijft één element, van wachten tot antwoord). Overgenomen uit
 JNL-003 ("Waar je verder gaat"), op 2026-11-08.
+
+### K14 — Hoe de serverroutes te beschermen (vervolg op ADR-002)
+
+**Wat er open staat.** Niets controleert wie `/api/chat`, `/api/evaluation`, `/api/tts` of de twee
+tokenroutes aanroept, en elk daarvan gebruikt een betaalde vendor-key. Iedereen die de
+productie-URL kent, kan ze aanroepen. ADR-002 (De serverroutes hebben geen authenticatie van de
+aanroeper, voorlopig geaccepteerd) heeft dat risico voorlopig geaccepteerd en zegt dat een nieuwe
+ADR hem vervangt zodra er een beschermingsmechanisme is.
+
+**Besluit: geparkeerd (2026-11-09, Jarón).** De kans dat iemand de productie-URL achterhaalt
+beoordeelt Jarón als heel klein; dat is een inschatting, geen meting. Heroverwegen rond
+2026-12-09. Er bestaat geen mechanisme dat hieraan herinnert: de datum staat alleen hier, en
+Jarón houdt hem zelf bij.
+
+**Voorwaarde voor de heroverweging.** ADR-002 noemt de bestedingslimieten per leverancier als
+enige vangnet buiten de code, en Jarón heeft daar nog geen overzicht van (JNL-001, K3). Dat
+overzicht hoort er bij de heroverweging te zijn; het bepaalt hoe groot de schade van een
+misbruikte key zou zijn. Het is een taak van Jarón, buiten de repo.
+
+**Wat de bron zegt.** JNL-001, K7, was nog niet onderzocht. Er is geen discovery gedaan en er ligt
+geen voorstel. K7 noemde als uiteinden van de opties bescherming op platformniveau voor de
+deployment (Vercel Deployment Protection, die voor het productiedomein bewust niet is ingesteld,
+JNL-001 K3) en een controle binnen de routes. Voor beide geldt wat K7 vroeg: wat het kost aan
+complexiteit en in de iPhone-flow. Dat is niet uitgezocht, en of Vercel Deployment Protection op
+het productiedomein werkt voor aanroepen vanuit de app is evenmin nagegaan.
+
+Verwant: ADR-002 (De serverroutes hebben geen authenticatie van de aanroeper, voorlopig
+geaccepteerd). Overgenomen uit JNL-001, K7, op 2026-11-09.

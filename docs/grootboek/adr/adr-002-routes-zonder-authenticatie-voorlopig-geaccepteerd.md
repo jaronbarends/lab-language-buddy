@@ -9,7 +9,8 @@
 Geen van de serverroutes (`/api/chat`, `/api/evaluation`, `/api/tts`, de twee tokenroutes)
 controleert wie ze aanroept, en geen enkele heeft een rate limit. Dit is een geaccepteerde,
 voorlopige toestand, geen definitieve: de mens wil dat het snel wordt opgelost (bijgehouden als
-het openstaande vervolg, JNL-001 kwestie K7). Vercel Authentication staat aan op het project
+het openstaande vervolg, JNL-004 kwestie K14, eerder JNL-001 kwestie K7; geparkeerd op
+2026-11-09, heroverwegen rond 2026-12-09). Vercel Authentication staat aan op het project
 met Standard Protection, die previews en gegenereerde deployment-URL's afschermt maar het
 productiedomein openbaar laat: de productieroutes blijven dus bereikbaar voor iedereen die de
 URL kent.
@@ -26,8 +27,8 @@ geaccepteerd als de bestaande situatie, met de bedoeling het te dichten.
 - Elke aanroep zonder authenticatie kan een betaalde key van een leverancier aanspreken
   (Gemini, Azure, Google, ElevenLabs, Deepgram). Het enige vangnet buiten de code zijn de
   bestedingslimieten per leverancier, waarvan de mens nu geen duidelijk overzicht heeft (ook
-  bijgehouden onder K3/K7).
-- Dit record is voorlopig van opzet: als K7 een beveiligingsmechanisme oplevert, vervangt een
+  bijgehouden onder JNL-001 K3 en JNL-004 K14).
+- Dit record is voorlopig van opzet: als JNL-004 K14 een beveiligingsmechanisme oplevert, vervangt een
   nieuwe ADR deze, in plaats van dat deze ter plekke wordt aangepast.
 - Vastgelegd in `docs/grootboek/software-architectuur.md` § 6 (Security principles) en § 9.
-- Bron: JNL-001, kwesties K3 en K7.
+- Bron: JNL-001, kwesties K3 en K7; het vervolg staat sinds 2026-11-09 in JNL-004, kwestie K14.

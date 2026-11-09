@@ -22,8 +22,8 @@ documents:
     what: Regels voor de grootboekmap — documenttypes, conventies, communicatieplicht.
     read_when: laadt vanzelf bij werk in docs/grootboek.
   - path: docs/grootboek/hdr/hdr-001-grootboek-stelsel.md
-    what: Waarom het grootboek naast plan.md bestaat en welke beslissingen het bevat (vanaf 2026-10-20).
-    read_when: je beslist of een beslissing in het grootboek of in plan.md hoort.
+    what: Waarom het grootboek werd ingevoerd en welke beslissingen het bevat; de bepaling dat plan.md de bron bleef is vervangen door HDR-015.
+    read_when: je wilt weten waarom en hoe het grootboekstelsel is ingevoerd.
   - path: docs/grootboek/hdr/hdr-002-balans-naast-plan-driftproef.md
     what: Voorgeschiedenis van de balans als proef van de driftdetectie, naast plan.md; vervangen door HDR-027 (2026-11-09).
     read_when: je wilt weten waarom de balans ooit als proef werd aangehouden; voor de driftproef (DFT-001).

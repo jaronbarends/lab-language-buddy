@@ -14,6 +14,7 @@ hdrs:
     datum: 2026-10-20
     implementatie-datum: 2026-10-20
     beslissing: "Elke beslissing over architectuur, harnas, product en drift krijgt een genummerd document en een registerregel; plan.md blijft de bron voor beslissingen van vóór 2026-10-20"
+    notitie: "Gedeeltelijk vervangen door HDR-015 op 2026-11-06: plan.md is vervallen als bron en verwijderd; de bepaling dat plan.md de bron blijft is voorgeschiedenis"
     bestand: hdr-001-grootboek-stelsel.md
   - id: "HDR-002"
     titel: "De software-balans naast `plan.md` houden, als proef voor driftdetectie"

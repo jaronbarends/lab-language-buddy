@@ -4,6 +4,9 @@
 - **Date:** 2026-10-20
 - **Type:** Harness Decision Record (HOW do we work)
 
+> Gedeeltelijk vervangen door HDR-015 (2026-11-06): `plan.md` is vervallen als bron en verwijderd.
+> De bepaling hieronder en de gevolgen over twee plekken zijn voorgeschiedenis.
+
 ## Besluit
 
 language-buddy voert het grootboekstelsel in, als experiment op de `arc/*`-branches. Elke

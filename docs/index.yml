@@ -61,8 +61,8 @@ documents:
     what: Historisch: waarom de root-CLAUDE.md arc/arc-main noemde als basis voor arc-werk en zegt dat de branch vóór de eerste bewerking komt; gevonden in de eerste koude-startrun. Het eerste deel is vervangen door HDR-021 (werk vertakt van main); het tweede deel geldt nog.
     read_when: je de geschiedenis van de basisbranch zoekt; voor de regel om een branch te maken, zie HDR-021.
   - path: docs/grootboek/journaal/jnl-002-koude-start-onboarding.md
-    what: Koude-startjournaal (REQ-GG-10) — wat een verse agent met alleen de repo goed deed en waar de repo zichzelf niet beschrijft; zes kwesties, twee besloten in HDR-011.
-    read_when: je de volgende koude-startronde draait; je beoordeelt of onboarding werkt; je de open kwesties beslist (checks niet gedraaid, de privé README-link, de AI-of-zelf-regel).
+    what: Koude-startjournaal (REQ-GG-10) — wat een verse agent met alleen de repo goed deed en waar de repo zichzelf niet beschrijft; drie rondes, elf kwesties. Ronde drie (2026-11-10) liet zien dat de reconciliatie per pull request een nieuwkomer die in src/ werkt niet bereikt.
+    read_when: je de volgende koude-startronde draait; je beoordeelt of onboarding werkt; je de open kwesties beslist (de reconciliatieregel voor wie in src/ werkt, npx zonder node_modules, gedekt pad bij triage, het model van de reviewer, een afwezigheidsclaim uit een grep).
   - path: docs/grootboek/hdr/hdr-012-geen-record-gedateerd-na-vandaag.md
     what: Waarom docs:check faalt op een record dat na vandaag is gedateerd (gelezen in Europe/Amsterdam), wat het leest en wat het niet kan vangen; de maatregel van het incidentpatroon date-assumed.
     read_when: je een datum in een record of register schrijft; een docs:check-fout over een datum na vandaag; je de tijdzoneconstante wijzigt.

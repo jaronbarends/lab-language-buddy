@@ -301,3 +301,14 @@ hdrs:
     beslissing: "software-architectuur.md blijft permanent bestaan als leidend document, onder de communicatieplicht en de reconciliatie per pull request (HDR-026); vervangt HDR-002; geen eigen heroverweging van de balans"
     notitie: "Jarón koos permanent op 2026-11-09. Het bewijs uit de proef is gemengd: DFT-001 en DFT-005 vonden niets, DFT-004 vond twee balansbevindingen, waarvan één deels voortkwam uit het niet bijhouden van de balans. Afgewogen: parkeren tot DFT-010, opheffen. De heroverweging na DFT-010 (HDR-026) gaat over het reconciliatieritme, niet over de balans"
     bestand: hdr-027-software-balans-blijft-permanent.md
+  - id: "HDR-028"
+    titel: "Mutatietests bij het risky-regime zijn geparkeerd tot `src/` een testsuite heeft"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-11-10
+    implementatie-datum: 2026-11-10
+    beslissing: "Geen mutatietests in het risky-regime zolang src/ geen testrunner heeft; triage-skill, reviewer.md en builder.md blijven ongewijzigd; het besluit gaat weer open zodra src/ een testrunner krijgt, met wie ze draait, risky of ook normal, en handmatig of met een tool als open vragen"
+    notitie: "Vraag E1 uit de grootboekronde. Aanleiding voor parkeren: er is geen testsuite onder src/ (alleen vier testbestanden onder scripts/), en mutatietests meten een suite. Jarón koos parkeren op 2026-11-10. Afgewogen: nee vastleggen, handmatige check door de builder met herhaling door de reviewer, de reviewer alleen, een tool in de lead of CI, alleen voor scripts/. Voorkeur voor later: reviewer, wat de zin strikt read-only in reviewer.md raakt"
+    bestand: hdr-028-mutatietests-geparkeerd-tot-src-een-suite-heeft.md

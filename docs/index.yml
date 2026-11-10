@@ -150,6 +150,9 @@ documents:
   - path: docs/grootboek/hdr/hdr-024-builder-model-per-regime.md
     what: Welk model de builder per triage-regime krijgt (Sonnet bij trivial, Opus bij normal en risky), met de proef die dat besliste en wat een hertest vooraf moet afspreken.
     read_when: je een builder start; je de staffel, builder.md of de triage-skill wijzigt; je een ander model voor een agent overweegt of de proef voor normal opnieuw draait.
+  - path: docs/grootboek/hdr/hdr-028-mutatietests-geparkeerd-tot-src-een-suite-heeft.md
+    what: Mutatietests bij het risky-regime zijn geparkeerd tot src/ een testrunner heeft, met de open vragen (wie draait ze, risky of ook normal, handmatig of tool) voor dat moment.
+    read_when: je een testrunner of testbestanden onder src/ toevoegt; je de staffel, reviewer.md of de triage-skill wijzigt; je mutatietests overweegt.
   - path: docs/grootboek/hdr/hdr-025-bewering-uit-de-bron.md
     what: De werkafspraak dat een bewering over een document of de omgeving uit de bron komt, niet uit een zoekresultaat, indexregel of geheugennotitie; de maatregel van het incidentpatroon document-not-fully-read, en waarom een regel en geen hook.
     read_when: je beweert wat een document zegt of wat de omgeving heeft; een correctie van Jarón op zo'n bewering; je overweegt het patroon tot een hook te laten doorgroeien.

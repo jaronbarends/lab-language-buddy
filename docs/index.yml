@@ -269,7 +269,7 @@ documents:
     read_when: je aan bubbel- of threadanimatie werkt en wilt weten hoe een keuze tot stand kwam; de open punten staan in JNL-004.
   - path: docs/grootboek/journaal/jnl-004-openstaande-kwesties.md
     what: Journaal met de negen vragen die openstonden toen plan.md werd afgebouwd (tests, de Spaanse vlag, een sessie beëindigen, het afbreken bij 320px, bediening onder het toetsenbord, audio bufferen, de vastgehouden reply, de Gemini-wrappers, de native engine op iPhone), met bevindingen en metingen per kwestie; sinds 2026-11-08 ook vier kwesties uit JNL-003 (de meelees-highlight na de onthulling, de spraakstart, de Retry-vertraging van de denkbubbel, de dode AI-tak in TurnBubble); sinds 2026-11-09 ook K14 uit JNL-001, de bescherming van de serverroutes (geparkeerd, heroverwegen rond 2026-12-09).
-    read_when: je een van deze kwesties oppakt of beslist of je haar accepteert, bouwt of laat vallen; je de blootstelling van de serverroutes aanraakt (K14); je aan de native spraakherkenning op iPhone werkt (kwestie K9 bevat alle runs).
+    read_when: je een van deze kwesties oppakt of beslist of je haar accepteert, bouwt of laat vallen; je een testrunner voor `src/` toevoegt (K1; dan gaat ook HDR-028 weer open); je de blootstelling van de serverroutes aanraakt (K14); je aan de native spraakherkenning op iPhone werkt (kwestie K9 bevat alle runs).
   - path: docs/grootboek/journaal/jnl-005-metingen-van-de-corrector.md
     what: Journaal met de metingen van de corrector (drie varianten, echte prompts, context van 10-10) en de zwakke plekken die gemeten maar niet opgelost zijn.
     read_when: je de cijfers achter de besluiten over de corrector nodig hebt of de spellingregel, transcriptiehint of aanhalingstekens wilt heroverwegen.

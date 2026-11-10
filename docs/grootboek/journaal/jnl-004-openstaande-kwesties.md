@@ -25,13 +25,15 @@ serverroutes, die uit JNL-001 (Instapjournaal: de software-balans) kwam toen dat
 **Hoe dit is gemaakt.** K1 tot en met K9 zijn overgenomen uit de open vragen van `docs/plan.md`
 bij de overzetting van het plan naar het grootboek (HDR-015). Bewoording en getallen zijn niet
 aangepast. K10 tot en met K13 zijn op 2026-11-08 overgenomen uit JNL-003, met de bevindingen en
-voorbehouden zoals ze daar stonden. K14 is op 2026-11-09 overgenomen uit JNL-001, K7.
+voorbehouden zoals ze daar stonden. K14 is op 2026-11-09 overgenomen uit JNL-001, K7. K1 kreeg op
+2026-11-10 een scherpere titel (eerst: "Er zijn geen tests; review is de enige kwaliteitspoort") en
+een gedateerde aanvulling; de tekst uit het plan staat er ongewijzigd boven.
 
 ## Kwesties
 
 | # | Kwestie | Status |
 |---|---|---|
-| K1 | Er zijn geen tests; review is de enige kwaliteitspoort | open |
+| K1 | `src/` heeft geen testsuite | open |
 | K2 | De Spaanse vlag is 81 KB | open (niet gedaan) |
 | K3 | Een sessie beëindigen is één tik en niet terug te draaien | open (consistent met de opdracht) |
 | K4 | "Cancel edit" breekt af op een 320px-viewport | open (niet opgelost) |
@@ -51,7 +53,7 @@ geaccepteerd; besloten, niet gebouwd dat het besluit er is en de code nog niet. 
 staat de status uit het plan, of bij K10 tot en met K13 de plek in JNL-003 waar de kwestie vandaan
 komt.
 
-### K1 — Geen tests
+### K1 — `src/` heeft geen testsuite
 
 **Wat er open staat.** Er zijn geen tests, dus review is nu de enige kwaliteitspoort.
 
@@ -59,7 +61,29 @@ komt.
 De Gemini-aanroep zit nu in `askGemini`, zodat de foutpaden van de route getest kunnen worden
 met die aanroep vervangen.
 
-Verwant: HDR-017 (Geen testsuite, behalve scripts die documenten herschrijven)
+**Aangevuld op 2026-11-10.** De vraag is nu: krijgt `src/` een testsuite, dus een testrunner (een
+script in `package.json` dat tests onder `src/` draait), en wat wordt er getest? De twee alinea's
+hierboven komen uit het plan en kloppen niet meer helemaal:
+
+- Er zijn wel tests, maar alleen onder `scripts/`, voor de tooling die documenten herschrijft
+  (`npm run test:scripts`); zo besliste HDR-017 (Geen testsuite, behalve scripts die documenten
+  herschrijven). Onder `src/` staat geen testbestand en geen testrunner, volgens de stand van
+  2026-11-10 in HDR-028 (Mutatietests bij het risky-regime zijn geparkeerd tot `src/` een
+  testsuite heeft).
+- Review is niet de enige poort. Voor `src/` leunt de staffel op lint en typecheck, ook bij
+  `risky` (triage-vraag 4, volgens HDR-028). Wat audio, opname of layout raakt, krijgt daarnaast
+  een handmatige test op een echte iPhone.
+
+**Wat ervan afhangt.** HDR-028 gaat pas weer open als `src/` een testrunner krijgt. De vragen
+die dan op tafel liggen (wie de mutaties draait, alleen `risky` of ook `normal`, handmatig of met
+een tool) staan in dat record.
+
+**Niet besloten.** Of `src/` een suite krijgt, welke runner, en wat er getest wordt. De richting
+uit het plan (Vitest, `word-timing.ts`, de reducer, `askGemini`) is niet aan de huidige code
+getoetst.
+
+Verwant: HDR-017 (Geen testsuite, behalve scripts die documenten herschrijven), HDR-028
+(Mutatietests bij het risky-regime zijn geparkeerd tot `src/` een testsuite heeft)
 
 ### K2 — De Spaanse vlag is 81 KB
 

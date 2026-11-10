@@ -76,7 +76,8 @@ function main() {
   }
 
   // Only a changed count writes and stages: a register that already matches is left alone, so the
-  // commit does not pick up edits to it that were never staged.
+  // commit does not pick up edits to it that were never staged. With drift, the whole working-tree
+  // register is written and staged, unstaged edits included.
   if (refreshed.drifted.length === 0) {
     return;
   }

@@ -17,15 +17,16 @@ jnls:
     bestand: jnl-001-instap-software-balans.md
   - id: "JNL-002"
     titel: "Koude-startjournaal: kan een nieuwkomer werken met alleen de repo?"
-    status: afgerond
+    status: discovery
     datum: 2026-10-27
-    laatste-sessie: 2026-10-27
-    kwesties-totaal: 6
+    laatste-sessie: 2026-11-10
+    kwesties-totaal: 11
     kwesties-besloten: 6
-    kwesties-open: 0
+    kwesties-open: 5
     kwesties-geparkeerd: 0
     doel-records:
       - "HDR-011 (K1, K2)"
+      - "per kwestie een record zodra er een besluit valt (K7 t/m K11)"
     bestand: jnl-002-koude-start-onboarding.md
   - id: "JNL-003"
     titel: "Animatie van chatbubbels"

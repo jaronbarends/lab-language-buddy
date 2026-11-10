@@ -127,3 +127,13 @@ patronen:
       - datum: 2026-11-08
         wat: "Na een bericht met vier vragen tegelijk antwoordde Jarón 'go'; de agent besloot zelf dat de twee extra commentaren, de spec en de verwijzingen naar ADR-031 bleven zoals ze waren, en zei dat pas achteraf. Jarón vroeg voortaan na te vragen of het negeren bewust was"
         bron: "boeking van ADR-031 (JNL-003 K2), PR #40"
+  - patroon: instructions-overloaded
+    titel: "Een voorstel of instructie aan Jarón geeft zoveel tekst en varianten tegelijk dat niet duidelijk is wat er gebeurt of wat hij nu moet doen"
+    maatregel:
+    incidenten:
+      - datum: 2026-11-10
+        wat: "Het voorstel voor koude start ronde 3 besloeg zes onderdelen met tabellen en vijf open vragen; Jarón kon er niet uit halen wat we gingen doen en dacht aan een vergelijking van twee builds"
+        bron: "correctie van Jarón bij de voorbereiding van koude start ronde 3"
+      - datum: 2026-11-10
+        wat: "De instructie om de run af te maken gaf zes stappen met vertakkingen (meetblok, kostenregel, prompt 3, stopzin) zonder te zeggen dat de bestaande sessie doorliep; Jarón wist niet of hij opnieuw moest beginnen en of er een reconciliatie kwam"
+        bron: "correctie van Jarón tijdens koude start ronde 3"

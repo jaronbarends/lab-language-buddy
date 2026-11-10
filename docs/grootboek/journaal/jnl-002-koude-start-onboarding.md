@@ -1,10 +1,11 @@
 ---
 titel: "Koude-startjournaal: kan een nieuwkomer werken met alleen de repo?"
-status: afgerond
+status: discovery
 datum: 2026-10-27
 kernvraag: Waar beschrijft de repo zichzelf niet goed genoeg voor een agent die niets heeft dan de repo?
 doel-records:
   - "HDR-011 (K1, K2)"
+  - "per kwestie een record zodra er een besluit valt (K7 t/m K11)"
 ---
 
 # JNL-002 — Koude-startjournaal: kan een nieuwkomer werken met alleen de repo?
@@ -18,6 +19,11 @@ geheugen en zonder hints beantwoordde vier oriëntatievragen uit de geladen `CLA
 zonder iets te verzinnen, en maakte een correcte kleine wijziging. Hij miste twee dingen die de
 repo nergens uitdrukkelijk zegt: van welke branch arc-werk uitgaat, en dat de branch vóór de
 eerste edit wordt gemaakt.
+
+**Na ronde drie (2026-11-10).** De werkwijze komt aan, op één regel na. Een verse agent die voor
+het eerst code wijzigde, maakte de branch op tijd, deed triage, liet een builder en een reviewer
+het werk doen en draaide alle checks. Hij zag het driftsignaal, maar boekte geen reconciliatie: die
+regel staat alleen in `docs/grootboek/CLAUDE.md`, en dat laadt niet bij werk in `src/` (K7).
 
 **Hoe dit is gemaakt.** Een verse clone in `repo-cold` (geen geheugen, geen lokale settings, push
 uitgeschakeld) op `arc/arc-main` bij bd508d5, en een nieuwe Claude Code-sessie. Twee prompts,
@@ -54,6 +60,11 @@ De oriëntatie kwam volledig uit de `CLAUDE.md`-bestanden die vanzelf laden: hij
 | K4 | De README linkt naar een privé-artifact dat een nieuwkomer niet kan openen | besloten 2026-10-27: de link blijft |
 | K5 | Wat bewijst een run van een uur? | besloten 2026-10-27 |
 | K6 | Houdt de regel "geen AI-of-zelf-oordeel" stand? | besloten 2026-10-27: houdt stand in twee runs |
+| K7 | De reconciliatieregel bereikt wie in `src/` werkt niet | open |
+| K8 | `npx next typegen` zonder `node_modules` wijzigt `package.json` | open |
+| K9 | Telt lint plus `tsc` als gedekt pad bij triage? | open |
+| K10 | De reviewer draait op het model van de lead | open |
+| K11 | Een afwezigheidsclaim uit een grep: incident of niet? | open |
 
 ### K1 — De basisbranch voor arc-werk staat niet in de root-`CLAUDE.md`
 
@@ -113,6 +124,60 @@ ervan tegen het verzoek van de sessie) en gaf geen oordeel. **Besloten (2026-10-
 opnieuw stand in ronde twee, bij een andere taak, dus het houdt stand in twee runs. Een eerdere
 versie van dit journaal zei ten onrechte dat er in ronde één geen aanleiding was geweest.
 
+### K7 — De reconciliatieregel bereikt wie in `src/` werkt niet
+
+In ronde drie gaf `docs:check` na de codewijziging twee waarschuwingen:
+
+```
+warning  drift: docs/grootboek/software-architectuur.md is 1 commit(s) behind its werkgebied (1 file(s)); run npm run docs:drift
+warning  drift: src/lib/CLAUDE.md is 1 commit(s) behind its werkgebied (1 file(s)); run npm run docs:drift
+```
+
+De agent draaide `docs:drift` niet. Hij oordeelde dat het labelformaat niet in die documenten staat,
+en wilde ze niet aanpassen vanwege de communicatieplicht. Hij las de waarschuwing dus als "pas het
+document aan", niet als "reconcilieer en boek een DFT". Ook toen Jarón om een pull request vroeg,
+kwam er geen DFT.
+
+De regel van HDR-026 (Een pull request die code in een werkgebied raakt, sluit met een
+reconciliatie) staat alleen in `docs/grootboek/CLAUDE.md`, dat laadt bij werk in die map. Wie
+alleen `src/` raakt, krijgt hem niet te zien, en de waarschuwing noemt geen DFT. Wat `docs:drift`
+bij een achterstand zegt, is niet getoetst: de agent draaide het niet.
+
+Mogelijke plekken voor een fix: de tekst van de waarschuwing, de controles in de root-`CLAUDE.md`
+(een leidend document), of `builder.md` en `reviewer.md`. **Open.**
+
+### K8 — `npx next typegen` zonder `node_modules` wijzigt `package.json`
+
+De builder draaide de checks in de verse clone vóór een `npm install`. `npx` haalde `next@16.4.6`
+op, niet de 16.3.6 uit `package.json`. Die installeerde dependencies en zette `@types/react` op
+`19.3.0` en `typescript` op `5.9.3`. De auto-mode-classifier weigerde de builder om dat terug te
+draaien (`git checkout --`), waarna de lead het aan Jarón vroeg. De README noemt `npm install`; de
+controles in de root-`CLAUDE.md` niet. **Open.**
+
+### K9 — Telt lint plus `tsc` als gedekt pad bij triage?
+
+Voor `trivial` vraagt de triage-skill onder meer een gedekt pad: een mechanische poort zoals een
+test, lint of een check. De agent las dat als "er is een test" en koos `normal` ("no test on the
+path"). De antwoordsleutel ging uit van lint en `tsc` als dekking, en dus `trivial`. HDR-028
+(Mutatietests bij het risky-regime zijn geparkeerd tot `src/` een testsuite heeft) noemt deze vraag
+al een eigen kwestie. Het verschil kostte hier een Opus-builder en een reviewer voor zes labels.
+**Open.**
+
+### K10 — De reviewer draait op het model van de lead
+
+`builder.md` pint `model: opus`; `reviewer.md` pint niets, en de reviewer nam Sonnet over van de
+lead. HDR-024 (Builders op Sonnet bij `trivial`, op Opus bij `normal` en `risky`) laat de reviewer
+buiten het besluit, maar rekent in zijn Waarom met een reviewer op Opus. Dit valt buiten de
+kernvraag van dit journaal; misschien hoort het elders. **Open.**
+
+### K11 — Een afwezigheidsclaim uit een grep: incident of niet?
+
+"Het labelformaat staat niet in die documenten" kwam uit een grep op `Intermediate|\(B1\)`, niet
+uit lezen. Het klopte (bevestigd met `git grep`), maar het is de vorm die HDR-025 (Een bewering
+over een document of de omgeving komt uit de bron) noemt. Telt het als vierde incident in het
+patroon `document-not-fully-read`? Het is gedrag van een koude agent, geen correctie in een
+werksessie. **Open**, aan Jarón.
+
 ## Ronde twee
 
 Een nieuwe clone (`repo-cold-2`) bij ad88f62, nadat HDR-011 was gemerged: geen geheugen, geen
@@ -144,6 +209,55 @@ zijn niet getest.
 De README-wijzigingen van ronde twee zijn overgenomen uit de diff van de clone op
 `arc/cold-start-round-2`.
 
+## Ronde drie
+
+Sinds ronde twee veranderde de werkwijze: werk vertakt van `main` (HDR-021, Werk vertakt van
+`main`; `arc/arc-main` vervalt), `plan.md` is vervangen door het grootboek (van 17 naar 84
+records), de documentatie is Nederlands, builders krijgen een model per regime (HDR-024), en een
+pull request die code in een werkgebied raakt, sluit met een reconciliatie (HDR-026). Ronde drie
+toetste of een nieuwkomer dat oppikt, met voor het eerst een taak die code raakt.
+
+**Hoe dit is gemaakt.**
+
+- Een clone `repo-cold-3` bij `92c2c27` (`main` na PR #49): geen geheugen, geen lokale settings,
+  push uit met `remote.origin.pushurl no-push`.
+- Dezelfde omgeving als ronde één en twee. Dit journaal legde die niet vast; ze komt uit hun
+  transcripts: Claude Code in VS Code, model `claude-sonnet-5-5`, permission mode `auto`, de
+  MCP-servers van het account aan, de globale instructies van Jarón geladen.
+- Drie prompts. De vier oriëntatievragen letterlijk als in ronde één en twee. Dan: "In de
+  level-select staat het CEFR-niveau tussen haakjes achter de omschrijving, bijvoorbeeld
+  "Intermediate (B1)". Ik wil dat omgedraaid hebben: "B1 (Intermediate)". Doe dat voor alle
+  niveaus." Daarna "commit en push de changes; maak een PR aan", zoals in ronde twee.
+- Protocol, antwoordsleutel en de volledige score staan buiten de repo, in
+  `../resources/trials/koude-start-ronde-3.md`, zodat een koude clone ze niet bevat.
+- **Een fout in de uitvoering.** Prompt 3 kwam eerst te vroeg: de agent had nog een vraag open en
+  had de reviewer en de meeste checks nog niet gedaan. Hij commitde toen alleen de wijziging. Na
+  "Ja, zet de package-bestanden terug. Maak het daarna af zoals je van plan was; push blijft uit."
+  maakte hij het af, en kwam prompt 3 opnieuw. De uitslag gaat over beide delen.
+
+| Onderdeel | Resultaat |
+|---|---|
+| Oriëntatie | Goed, uit de geladen `CLAUDE.md`-bestanden: grootboek en registers zonder `plan.md`, een branch vanaf `main` vóór de eerste bewerking, triage, builder, checks, communicatieplicht. Niet genoemd: de grootboek-skill en het model per regime. Het `Co-Authored-By`-conflict weer in het voordeel van het project beslecht |
+| Branch | Vanaf `main`, gemaakt 13 seconden vóór de eerste bewerking |
+| Triage en model | Skill geladen, regime `normal`, builder op Opus. De sleutel verwachtte `trivial` (K9) |
+| Builder, reviewer, checks | Builder schreef de code, reviewer APPROVED, alle zes checks groen |
+| Builderrapport | Tegen de diff gecontroleerd voordat hij het overnam |
+| Reconciliatie | **Gemist.** Zag beide driftwaarschuwingen, draaide `docs:drift` niet, geen DFT, ook niet bij het PR-moment (K7) |
+| Push | De blokkade gelezen en niet omzeild, twee keer |
+| Ids met titel | Niet van toepassing: hij noemde geen ids en zei waarom |
+| Correcties | 0 live, 1 nodig: de DFT |
+| Verbruik | 3 procentpunt van de sessielimiet en 1 van de week (Pro-plan), in 17 minuten |
+
+Volgens K5 is het criterium gehaald: één correctie die de repo al beantwoordt. Maar die ene
+correctie is precies de nieuwste regel. De beslisregel (alleen live ingrijpen, of ook wat achteraf
+nodig was) is niet vooraf vastgelegd; hier maakt dat niet uit, want beide blijven onder drie. De
+grenzen van ronde twee gelden nog: één run, een Sonnet-lead, de globale instructies van Jarón
+geladen.
+
+**Voor een volgende ronde.** Stuur prompt 3 pas na een expliciet "klaar", en beantwoord een vraag
+van de agent eerst. Leg de beslisregel vóór de run vast. Het protocol staat nu in het trials-bestand
+hierboven.
+
 ## Besluitenlog
 
 - **2026-10-27 — K1 en K2 besloten en geboekt als HDR-011.** Een zin in de root-regel
@@ -153,3 +267,6 @@ De README-wijzigingen van ronde twee zijn overgenomen uit de diff van de clone o
   blijft (Jarón), en de AI-of-zelf-regel hield een tweede keer stand. Elke kwestie is besloten en
   HDR-011 bestaat en wijst terug, dus het journaal is `afgerond`. REQ-GG-10 voldoet aan het
   criterium van K5, met de beperkingen hierboven.
+- **2026-11-10 — Ronde drie, en het journaal is heropend.** Vijf nieuwe kwesties, K7 t/m K11,
+  allemaal open. REQ-GG-10 voldoet ook in ronde drie aan K5, maar de reconciliatie per pull request
+  bereikt een nieuwkomer niet (K7).

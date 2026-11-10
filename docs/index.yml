@@ -139,20 +139,23 @@ documents:
     what: Waarom de context van het project gelaagd is (rules, CLAUDE.md per map, register, agents) en hoe npm run docs:check drift in de documentatie afdwingt; overgezet uit plan.md.
     read_when: je de lagen van de context wijzigt, een nieuw document registreert of de docs:check aanpast.
   - path: docs/grootboek/hdr/hdr-019-stage-verifieren-op-iphone.md
-    what: Elke bouwstap wordt op iPhone Safari geverifieerd, met voor live STT een uiting van meer dan 20 seconden; overgezet uit plan.md.
-    read_when: je een STT-provider toevoegt of wisselt en wilt weten wat er op de telefoon gecontroleerd moet worden.
+    what: Vervangen door HDR-029 (2026-11-10). Was het besluit dat elke bouwstap op iPhone Safari werd geverifieerd, met voor live STT een uiting van meer dan 20 seconden; overgezet uit plan.md.
+    read_when: je wilt weten waar de iPhone-test vandaan komt; de geldende regel staat in HDR-029.
   - path: docs/grootboek/hdr/hdr-021-werk-vertakt-van-main.md
     what: Besluit dat arc/arc-main vervalt en elke branch van main vertrekt en via een pull request terugkeert naar main.
     read_when: je een branch maakt of merget, of het hernummeren, de CI-trigger of de merge-hook aanraakt.
   - path: docs/grootboek/hdr/hdr-020-faalpaden-bewust-proberen.md
-    what: Bij elke stage worden de faalpaden bewust geprobeerd en moeten ze in een herstelbare error-state landen; overgezet uit plan.md.
-    read_when: je een stage verifieert of wilt weten welke faalpaden je met de hand probeert.
+    what: Vervangen door HDR-029 (2026-11-10). Was het besluit dat bij elke stage de faalpaden bewust werden geprobeerd en in een herstelbare error-state moesten landen; overgezet uit plan.md.
+    read_when: je wilt weten welke faalpaden tijdens de bouwstages met de hand werden geprobeerd en waarom dat stopte (HDR-029).
   - path: docs/grootboek/hdr/hdr-024-builder-model-per-regime.md
     what: Welk model de builder per triage-regime krijgt (Sonnet bij trivial, Opus bij normal en risky), met de proef die dat besliste en wat een hertest vooraf moet afspreken.
     read_when: je een builder start; je de staffel, builder.md of de triage-skill wijzigt; je een ander model voor een agent overweegt of de proef voor normal opnieuw draait.
   - path: docs/grootboek/hdr/hdr-028-mutatietests-geparkeerd-tot-src-een-suite-heeft.md
     what: Mutatietests bij het risky-regime zijn geparkeerd tot src/ een testrunner heeft, met de open vragen (wie draait ze, risky of ook normal, handmatig of tool) voor dat moment.
     read_when: je een testrunner of testbestanden onder src/ toevoegt; je de staffel, reviewer.md of de triage-skill wijzigt; je mutatietests overweegt.
+  - path: docs/grootboek/hdr/hdr-029-iphone-test-alleen-bij-audio-opname-layout.md
+    what: Vervangt HDR-019 en HDR-020; een wijziging die audio, opname of layout raakt gaat op een echte iPhone, een andere niet, en de faalpaden worden niet meer bij elke verificatie met de hand geprobeerd; gevonden in de proef besluiten toetsen.
+    read_when: je een wijziging verifieert en wilt weten of de iPhone-test of een ronde langs de faalpaden nodig is; je builder.md, reviewer.md of de controles in CLAUDE.md aanpast.
   - path: docs/grootboek/hdr/hdr-025-bewering-uit-de-bron.md
     what: De werkafspraak dat een bewering over een document of de omgeving uit de bron komt, niet uit een zoekresultaat, indexregel of geheugennotitie; de maatregel van het incidentpatroon document-not-fully-read, en waarom een regel en geen hook.
     read_when: je beweert wat een document zegt of wat de omgeving heeft; een correctie van Jarón op zo'n bewering; je overweegt het patroon tot een hook te laten doorgroeien.

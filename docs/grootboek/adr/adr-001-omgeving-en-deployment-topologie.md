@@ -1,7 +1,8 @@
 # ADR-001: Omgeving en deployment-topologie
 
-- **Status:** accepted
+- **Status:** implemented
 - **Date:** 2026-10-20
+- **Implementation:** 100
 - **Type:** Architecture Decision Record (WHAT do we build)
 
 ## Besluit

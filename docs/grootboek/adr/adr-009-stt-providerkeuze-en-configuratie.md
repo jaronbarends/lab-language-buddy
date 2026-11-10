@@ -25,7 +25,6 @@ geen automatische fallback.
   `DEFAULT_PROVIDER` en `isProviderName` in `src/lib/stt/index.ts`. Waar een zin de module bedoelt
   die het werk doet en niet de leverancier, zegt de code "the provider's engine" of "the native
   engine"; dat is bewust.
-- De ontwikkelomgeving (`.env.local`) staat weer op `native`, als stand van 10-14.
 - Gelijke dingen hebben in beide providers dezelfde naam: `TOKEN_URL` en `TokenResponseSchema` in
   de token-routes, `MessageSchema`, `parseMessage` en `startStreamingAudio` in `deepgram.ts` en
   `elevenlabs.ts`, en `ELEVENLABS_LISTEN_URL` en `ELEVENLABS_MODEL` naar de leverancier, zoals
@@ -116,5 +115,4 @@ levenscyclus-helper uit de review.
   `native` is `DEFAULT_PROVIDER`, een onbekende waarde gooit met de geldige namen.
 - Een wijziging van de variabele vraagt een herstart, want `NEXT_PUBLIC_`-waarden worden bij de build
   ingelijnd (uit de code, niet uit het plan).
-- De ontwikkelomgeving (`.env.local`) staat weer op `native` (stand van 10-14).
 - De providers zelf: ADR-011 (Deepgram-provider) en ADR-012 (ElevenLabs Scribe-provider).

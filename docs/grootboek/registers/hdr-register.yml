@@ -211,7 +211,7 @@ hdrs:
     datum: 2026-09-23
     implementatie-datum: 2026-09-23
     beslissing: "Elke bouwstap wordt op iPhone Safari (via ngrok) geverifieerd; de stap met live STT controleert ook een uiting van meer dan 20 seconden, de lengte waarop Google STT brak"
-    notitie: "Overgezet uit plan.md (HDR-015): punt 4 van de sectie Verification. De datum is die van de goedkeuring van het plan, niet uit de bron"
+    notitie: "Overgezet uit plan.md (HDR-015): punt 4 van de sectie Verification. De datum is die van de goedkeuring van het plan, niet uit de bron. Vervangen door HDR-029 op 2026-11-10: de iPhone-test geldt alleen bij een wijziging die audio, opname of layout raakt"
     bestand: hdr-019-stage-verifieren-op-iphone.md
   - id: "HDR-020"
     titel: "Faalpaden bewust proberen"
@@ -222,7 +222,7 @@ hdrs:
     datum: 2026-09-23
     implementatie-datum: 2026-09-23
     beslissing: "Bij de verificatie van elke stage worden de faalpaden bewust geprobeerd (microfoonrechten weigeren, netwerk afknippen midden in /api/chat, opname stoppen zonder iets te zeggen) en elk moet in een herstelbare error-state landen"
-    notitie: "Overgezet uit plan.md (HDR-015): punt 5 van de sectie Verification. De datum is die van de goedkeuring van het plan, niet uit de bron"
+    notitie: "Overgezet uit plan.md (HDR-015): punt 5 van de sectie Verification. De datum is die van de goedkeuring van het plan, niet uit de bron. Vervangen door HDR-029 op 2026-11-10: de faalpaden worden niet meer bij elke verificatie met de hand geprobeerd"
     bestand: hdr-020-faalpaden-bewust-proberen.md
   - id: "HDR-021"
     titel: "Werk vertakt van `main`; `arc/arc-main` vervalt"
@@ -312,3 +312,14 @@ hdrs:
     beslissing: "Geen mutatietests in het risky-regime zolang src/ geen testrunner heeft; triage-skill, reviewer.md en builder.md blijven ongewijzigd; het besluit gaat weer open zodra src/ een testrunner krijgt, met wie ze draait, risky of ook normal, en handmatig of met een tool als open vragen"
     notitie: "Vraag E1 uit de grootboekronde. Aanleiding voor parkeren: er is geen testsuite onder src/ (alleen vier testbestanden onder scripts/), en mutatietests meten een suite. Jarón koos parkeren op 2026-11-10. Afgewogen: nee vastleggen, handmatige check door de builder met herhaling door de reviewer, de reviewer alleen, een tool in de lead of CI, alleen voor scripts/. Voorkeur voor later: reviewer, wat de zin strikt read-only in reviewer.md raakt"
     bestand: hdr-028-mutatietests-geparkeerd-tot-src-een-suite-heeft.md
+  - id: "HDR-029"
+    titel: "De iPhone-test alleen bij audio, opname of layout, en geen vaste ronde langs de faalpaden"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-11-10
+    implementatie-datum: 2026-11-10
+    beslissing: "Vervangt HDR-019 en HDR-020: een wijziging die audio, opname of layout raakt gaat op een echte iPhone in Safari, een andere niet; de faalpaden (microfoon weigeren, netwerk afknippen, stoppen zonder spraak) worden niet meer bij elke verificatie met de hand geprobeerd"
+    notitie: "Gevonden in de proef besluiten toetsen (C3 uit de grootboekronde, ARC-skill grootboek-onderhoud): beide records stonden op implemented met 100, maar het harnas droeg ze niet meer zoals ze luidden. Jarón koos op 2026-11-10; de faalpaden vervallen omdat ze bij elke verificatie veel werk zijn en de kans op een fout daar te klein is. Afgewogen: de faalpaden opnemen in de controles van CLAUDE.md of builder.md. De werkregel stond al in CLAUDE.md"
+    bestand: hdr-029-iphone-test-alleen-bij-audio-opname-layout.md

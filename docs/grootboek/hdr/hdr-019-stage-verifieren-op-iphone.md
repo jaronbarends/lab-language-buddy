@@ -5,6 +5,10 @@
 - **Implementation:** 100
 - **Type:** Harness Decision Record (HOW do we work)
 
+> Vervangen door HDR-029 (De iPhone-test alleen bij audio, opname of layout, en geen vaste ronde
+> langs de faalpaden) op 2026-11-10. De iPhone-test geldt nu alleen voor een wijziging die audio,
+> opname of layout raakt; de tekst hieronder is voorgeschiedenis.
+
 ## Besluit
 
 Elke bouwstap wordt op iPhone Safari geverifieerd: `ngrok http 3000` draaien en de HTTPS-URL op de

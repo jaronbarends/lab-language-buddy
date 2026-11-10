@@ -14,13 +14,14 @@
 adrs:
   - id: "ADR-001"
     titel: "Omgeving en deployment-topologie"
-    status: accepted
+    status: implemented
     versie: "1.0"
     implementatie: 100
     omgeving: prod
     datum: 2026-10-20
+    implementatie-datum: 2026-10-20
     beslissing: "main is production; andere branches (incl. arc/*) worden standaard als Vercel-preview gedeployd; geheime env vars gelden alleen voor Production"
-    notitie: "Ingesteld in het Vercel-dashboard, niet in de repo; geen driftcontrole dekt het"
+    notitie: "Ingesteld in het Vercel-dashboard, niet in de repo; geen driftcontrole dekt het. Op 2026-11-10 van accepted naar implemented gezet: de implementatie stond al op 100 en er hoefde niets te veranderen (proef besluiten toetsen)"
     bestand: adr-001-omgeving-en-deployment-topologie.md
   - id: "ADR-002"
     titel: "De serverroutes hebben geen authenticatie van de aanroeper, voorlopig geaccepteerd"
@@ -99,13 +100,13 @@ adrs:
   - id: "ADR-009"
     titel: "STT: providerkeuze en configuratie"
     status: implemented
-    versie: "1.0"
+    versie: "1.1"
     implementatie: 100
     omgeving: geen
     datum: 2026-09-23
     implementatie-datum: 2026-09-23
     beslissing: "STT is een providerkeuze via de env var NEXT_PUBLIC_STT_PROVIDER (native default, deepgram en elevenlabs als alternatieven), zonder UI-keuze en zonder automatische fallback; een onbekende waarde gooit bij het laden van de pagina"
-    notitie: "Overgezet uit plan.md (HDR-015): de vaste randvoorwaarde never the Web Speech API en de eerste keuze alleen Deepgram staan in Voorgeschiedenis, net als de ontwikkelomgeving op deepgram, die is ingehaald door de terugkeer naar native. Bevat ook de hernoeming engine naar provider en de gelijkgetrokken namen in beide providers"
+    notitie: "Overgezet uit plan.md (HDR-015): de vaste randvoorwaarde never the Web Speech API en de eerste keuze alleen Deepgram staan in Voorgeschiedenis, net als de ontwikkelomgeving op deepgram, die is ingehaald door de terugkeer naar native. Bevat ook de hernoeming engine naar provider en de gelijkgetrokken namen in beide providers. Versie 1.1 (2026-11-10): de stand van .env.local is uit Besluit en Gevolgen gehaald, want een record legt de stand van een ongetrackt bestand niet vast (proef besluiten toetsen); de Voorgeschiedenis houdt hem als geschiedenis"
     bestand: adr-009-stt-providerkeuze-en-configuratie.md
   - id: "ADR-010"
     titel: "Native engine op iPhone: herstart en twee mitigaties"

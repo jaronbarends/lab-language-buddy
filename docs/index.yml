@@ -61,8 +61,8 @@ documents:
     what: Historisch: waarom de root-CLAUDE.md arc/arc-main noemde als basis voor arc-werk en zegt dat de branch vóór de eerste bewerking komt; gevonden in de eerste koude-startrun. Het eerste deel is vervangen door HDR-021 (werk vertakt van main); het tweede deel geldt nog.
     read_when: je de geschiedenis van de basisbranch zoekt; voor de regel om een branch te maken, zie HDR-021.
   - path: docs/grootboek/journaal/jnl-002-koude-start-onboarding.md
-    what: Koude-startjournaal (REQ-GG-10) — wat een verse agent met alleen de repo goed deed en waar de repo zichzelf niet beschrijft; drie rondes, elf kwesties. Ronde drie (2026-11-10) liet zien dat de reconciliatie per pull request een nieuwkomer die in src/ werkt niet bereikt; K7 is besloten (hook, HDR-030), K8 ook (npm-scripts voor de typecheck, `npm install` eerst; geen eigen record), K9 ook (lint en tsc als gedekt pad alleen zonder gedragseffect, HDR-031).
-    read_when: je de volgende koude-startronde draait; je beoordeelt of onboarding werkt; je de open kwesties beslist (het model van de reviewer, een afwezigheidsclaim uit een grep).
+    what: Koude-startjournaal (REQ-GG-10) — wat een verse agent met alleen de repo goed deed en waar de repo zichzelf niet beschrijft; drie rondes, elf kwesties. Ronde drie (2026-11-10) liet zien dat de reconciliatie per pull request een nieuwkomer die in src/ werkt niet bereikt; K7 is besloten (hook, HDR-030), K8 ook (npm-scripts voor de typecheck, `npm install` eerst; geen eigen record), K9 ook (lint en tsc als gedekt pad alleen zonder gedragseffect, HDR-031), K10 ook (de reviewer vastgepind op Opus, HDR-033).
+    read_when: je de volgende koude-startronde draait; je beoordeelt of onboarding werkt; je de open kwestie beslist (een afwezigheidsclaim uit een grep).
   - path: docs/grootboek/hdr/hdr-012-geen-record-gedateerd-na-vandaag.md
     what: Waarom docs:check faalt op een record dat na vandaag is gedateerd (gelezen in Europe/Amsterdam), wat het leest en wat het niet kan vangen; de maatregel van het incidentpatroon date-assumed.
     read_when: je een datum in een record of register schrijft; een docs:check-fout over een datum na vandaag; je de tijdzoneconstante wijzigt.
@@ -148,7 +148,7 @@ documents:
     what: Vervangen door HDR-029 (2026-11-10). Was het besluit dat bij elke stage de faalpaden bewust werden geprobeerd en in een herstelbare error-state moesten landen; overgezet uit plan.md.
     read_when: je wilt weten welke faalpaden tijdens de bouwstages met de hand werden geprobeerd en waarom dat stopte (HDR-029).
   - path: docs/grootboek/hdr/hdr-024-builder-model-per-regime.md
-    what: Welk model de builder per triage-regime krijgt (Sonnet bij trivial, Opus bij normal en risky), met de proef die dat besliste en wat een hertest vooraf moet afspreken.
+    what: Welk model de builder per triage-regime krijgt (Sonnet bij trivial, Opus bij normal en risky), met de proef die dat besliste en wat een hertest vooraf moet afspreken; voor de reviewer zie HDR-033.
     read_when: je een builder start; je de staffel, builder.md of de triage-skill wijzigt; je een ander model voor een agent overweegt of de proef voor normal opnieuw draait.
   - path: docs/grootboek/hdr/hdr-028-mutatietests-geparkeerd-tot-src-een-suite-heeft.md
     what: Mutatietests bij het risky-regime zijn geparkeerd tot src/ een testrunner heeft, met de open vragen (wie draait ze, risky of ook normal, handmatig of tool) voor dat moment.
@@ -174,6 +174,9 @@ documents:
   - path: docs/grootboek/hdr/hdr-032-feature-worktree-via-skill-vanaf-main.md
     what: Waarom een feature-worktree via de skill feature-worktree wordt opgezet, vanaf main, met .env.local, een eigen npm install en de eerste vrije poort vanaf 3001; wat is afgewogen (junction, vaste poort, review-worktree.sh uitbreiden) en wat de proef niet liet zien.
     read_when: je een worktree voor parallel werk opzet of opruimt; je feature-worktree.sh of de skill wijzigt; je wilt weten waarom een worktree een eigen node_modules heeft.
+  - path: docs/grootboek/hdr/hdr-033-reviewer-op-opus-vastgepind.md
+    what: Waarom reviewer.md model opus pint, zoals builder.md (het Waarom van HDR-024 rekende al met een reviewer op Opus), wat is afgewogen (de lead laten volgen, per regime kiezen), wat het kost bij een lead op Sonnet en dat /stage-review erbuiten valt; K10 uit JNL-002.
+    read_when: je reviewer.md of het model van een agent wijzigt; je een reviewer start met een lead op een ander model dan Opus; je HDR-024 opnieuw test.
   - path: docs/grootboek/pdr/pdr-007-persona-van-de-ai.md
     what: De AI is een algemene vriendelijke kennis met vrij onderwerp, 2 tot 4 zinnen en hooguit één vraag per beurt; overgezet uit plan.md.
     read_when: je de persona, de toon of de prompt-opbouw uit benoemde secties wijzigt of een nieuwe persona toevoegt.

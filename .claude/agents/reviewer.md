@@ -6,6 +6,7 @@ description: >
   voordat het werk bij Jarón komt. Strikt read-only. Niet voor bouwen of refactoren. De review
   aan het eind van een stage, zonder het plan, is de aparte skill /stage-review.
 tools: Read, Grep, Glob, Bash
+model: opus
 ---
 
 # Reviewer

@@ -46,6 +46,12 @@ patronen:
       - datum: 2026-10-03
         wat: "Een bevinding beschreven als een schema met drie losse optionele velden, zodat het reviewbestand geopend moest worden om haar te begrijpen"
         bron: "geheugennotitie feedback-review-points-self-contained"
+      - datum: 2026-11-13
+        wat: "Bij K9 van JNL-002 opties en een advies gegeven zonder eerst uit te leggen waar de kwestie over ging; Jarón noemde het irritant en zei dat het vaak gebeurt. De geheugennotitie werd verbreed naar elk beslispunt, maar de indexregel in MEMORY.md bleef over reviewbevindingen gaan en het register kreeg geen regel. Ook die sessie begon met een startprompt die een lead-sessie in Jaróns stem had geschreven"
+        bron: "correctie van Jarón in de sessie voor K9 van de grootboekronde"
+      - datum: 2026-11-13
+        wat: "Een kwartier later bij K10 van JNL-002 hetzelfde: eerst een vetgedrukt advies, dan een leesverslag en een optietabel, nergens wat de kwestie is. De sessie begon met een startprompt die een lead-sessie in Jaróns stem had geschreven: K10 in drie compacte zinnen en de vraag om opties met één advies, niet om uitleg, zodat het leek alsof Jarón de kwestie al kende. De indexregel van de geheugennotitie noemde alleen reviewbevindingen"
+        bron: "correctie van Jarón in de sessie voor K10 van de grootboekronde"
   - patroon: id-with-title
     titel: "Een genummerd record wordt alleen met zijn id aangehaald"
     maatregel:
@@ -137,3 +143,10 @@ patronen:
       - datum: 2026-11-10
         wat: "De instructie om de run af te maken gaf zes stappen met vertakkingen (meetblok, kostenregel, prompt 3, stopzin) zonder te zeggen dat de bestaande sessie doorliep; Jarón wist niet of hij opnieuw moest beginnen en of er een reconciliatie kwam"
         bron: "correctie van Jarón tijdens koude start ronde 3"
+  - patroon: reply-language
+    titel: "Een antwoord in de chat komt in een andere taal dan waarin Jarón schrijft"
+    maatregel:
+    incidenten:
+      - datum: 2026-11-13
+        wat: "Jarón vroeg in het Nederlands om een worktree voor een info-box; de skill feature-worktree is Nederlands, maar het slotbericht met de worktree-waarden kwam in het Engels"
+        bron: "correctie van Jarón bij het opzetten van de worktree add-info-box"

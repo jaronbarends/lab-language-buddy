@@ -65,9 +65,12 @@ dan in plaats van een van beide blind te volgen.
   aanwijst. Zou het lezen van een bestand echt tijd besparen, vraag dan eerst; noem hardop alles
   wat je wel leest. Kom je per ongeluk bij het materiaal uit, zeg dat dan in plaats van het
   stilletjes te gebruiken.
-- **Beweringen uit de bron** (HDR-025). Een bewering over wat een document zegt of wat de
-  omgeving heeft, komt uit de bron: lees het document helemaal of draai het commando. Een
-  zoekresultaat, een indexregel of een geheugennotitie is een aanwijzing, geen bewijs.
+- **Beweringen uit de bron** (HDR-025, HDR-035). Een bewering over wat een document zegt of wat
+  de omgeving heeft, komt uit de bron: lees het document helemaal of draai het commando. Een
+  zoekresultaat, een indexregel of een geheugennotitie is een aanwijzing, geen bewijs. Zeg je dat
+  iets ontbreekt, zeg er dan bij waar dat op rust: "helemaal gelezen", "grep op `X`: geen
+  treffers", "volgens de indexregel van Y". Een afwezigheid die op een aanwijzing rust, meld je
+  als vermoeden.
 - **Ids met titel.** Haal je een genummerd document aan (ADR, HDR, PDR, DFT, JNL, REQ,
   een kwestie zoals K7), zet dan bij de eerste vermelding in elk bericht de titel
   erbij. Zoek de titel op in het register; leid hem niet af uit de bestandsnaam.

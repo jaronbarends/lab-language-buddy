@@ -61,7 +61,9 @@ commit, alleen een zin in de chat.
 - **Sinds 2026-11-13 staat er een vierde incident.** In koude-startronde 3 (2026-11-10) oordeelde
   een koude agent, met deze regel in de geladen `CLAUDE.md`, op basis van een grep dat het
   labelformaat niet in twee documenten stond. De bewering klopte; ze telt omdat de regel de vorm
-  noemt, niet de uitkomst (K11 van JNL-002). Wat steviger is dan deze regel, is nog niet besloten.
+  noemt, niet de uitkomst (K11 van JNL-002). Wat steviger is, staat in HDR-035 (Een
+  afwezigheidsclaim noemt waar ze op rust): wie zegt dat iets ontbreekt, zegt erbij waar dat op
+  rust. Dat record is nu de `maatregel` van het patroon.
 - **Helemaal lezen kost context**, bij een groot document merkbaar. De regel geldt voor een
   bewering over wat het document zegt; een zoekopdracht om de plek te vinden blijft een goede
   eerste stap.

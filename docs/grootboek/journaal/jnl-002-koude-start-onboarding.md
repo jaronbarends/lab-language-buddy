@@ -9,7 +9,7 @@ doel-records:
   - "K8: geen eigen record; de regel staat in CLAUDE.md (Controles)"
   - "HDR-031 (K9)"
   - "HDR-033 (K10)"
-  - "K11: geen eigen record; een vierde regel in het incidentpatroon document-not-fully-read"
+  - "K11: een vierde regel in het incidentpatroon document-not-fully-read; het vervolg is HDR-035"
 ---
 
 # JNL-002 — Koude-startjournaal: kan een nieuwkomer werken met alleen de repo?
@@ -239,6 +239,11 @@ genoeg en groeit het patroon door naar iets steviger, terwijl dat record een hoo
 de definitie van een incident in HDR-009 en de root-`CLAUDE.md` is smaller dan wat het register
 telt.
 
+**Vervolg (Jarón, 2026-11-13):** het stevigere is HDR-035 (Een afwezigheidsclaim noemt waar ze op
+rust). Wie zegt dat iets ontbreekt, zegt erbij waar dat op rust; HDR-035 is nu de `maatregel` van
+het patroon. De twee andere punten hierboven, `docs:check` en de definitie in HDR-009, zijn daarmee
+niet besloten.
+
 ## Ronde twee
 
 Een nieuwe clone (`repo-cold-2`) bij ad88f62, nadat HDR-011 was gemerged: geen geheugen, geen
@@ -343,3 +348,6 @@ hierboven.
 - **2026-11-13 — K11 besloten, zonder eigen record, en het journaal is `afgerond`.** De
   afwezigheidsclaim uit een grep telt als vierde incident in `document-not-fully-read`; HDR-025
   noemt het (versie 1.1). Alle elf kwesties zijn besloten.
+- **2026-11-13 — Het vervolg op K11 geboekt als HDR-035.** Een afwezigheidsclaim noemt waar ze op
+  rust; een zin erbij in de root-`CLAUDE.md`. HDR-035 is de `maatregel` van
+  `document-not-fully-read`; HDR-025 wijst ernaar (versie 1.2).

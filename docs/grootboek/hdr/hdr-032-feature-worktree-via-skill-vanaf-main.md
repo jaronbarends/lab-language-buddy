@@ -37,6 +37,10 @@ hem op, met `scripts/feature-worktree.sh setup <naam>` en `teardown <naam> [--fo
   branch alleen met `git branch -d`.
 - **De skill start geen venster en geen dev server.** Jarón opent zelf `code <pad>` en start daar een
   eigen Claude-sessie; de sessie in `repo` blijft bij haar werk.
+- **De skill noemt de testpoort** (versie 1.1, 2026-11-13). Bij het doorgeven van `DEV_COMMAND` zegt
+  ze dat het werk op `DEV_PORT` te zien is en niet op 3000, waar de server van `repo` draait. Bij de
+  eerste echte feature (PR #58) keek Jarón naar die van `repo` en zag de wijziging niet (HDR-036, Een
+  nieuwe app-feature loopt via de skill `feature`).
 
 ## Waarom
 
@@ -57,8 +61,8 @@ De keuzes van Jarón (2026-11-13) bij drie vragen, de rest is afgewogen in het g
 ## Grenzen
 
 - **Eén proef.** Setup en teardown zijn op 2026-11-13 één keer geprobeerd met een wegwerpnaam
-  (`wt-test`): worktree, env-kopie, install en poort 3001 werkten, teardown liet niets achter. Niet
-  gebruikt voor een echte feature.
+  (`wt-test`): worktree, env-kopie, install en poort 3001 werkten, teardown liet niets achter. Daarna
+  gebruikt voor één echte feature, de infomelding (PR #58); dat leverde versie 1.1 op.
 - **`git branch -d` toetst tegen `HEAD` van de hoofdcheckout**, niet tegen `main`. Staat `repo` op een
   andere branch, dan kan een branch die daarin is gemerged als gemerged tellen zonder in `main` te
   zitten. Een branch die nergens in zit blijft staan (`BRANCH_KEPT`).

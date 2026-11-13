@@ -183,6 +183,9 @@ documents:
   - path: docs/grootboek/hdr/hdr-035-afwezigheidsclaim-noemt-haar-basis.md
     what: Waarom een bewering dat iets ontbreekt zegt waar ze op rust (helemaal gelezen, grep zonder treffers, een indexregel), het vervolg op HDR-025 na het vierde incident (K11 uit JNL-002); wat is afgewogen (succesmaat aanpassen, hook bij een lege zoekopdracht, koude-startprocedure, skill, prompt-hook op Stop) en hoe een volgend incident gelezen wordt; maatregel van document-not-fully-read.
     read_when: je zegt dat iets ontbreekt in een document of de omgeving; een incident in document-not-fully-read wordt gelogd; je overweegt het patroon tot een hook te laten doorgroeien.
+  - path: docs/grootboek/hdr/hdr-036-app-feature-via-skill-feature.md
+    what: Waarom een nieuwe app-feature via de skill feature loopt, die de volgorde van de route draagt en voor de inhoud verwijst; de spike met de infomelding en haar drie schuurpunten (dev-poort, doctrinecheck, twee commits); alleen app-features, vanzelf starten.
+    read_when: je de skill feature wijzigt; je wilt weten waarom de route voor harnaswerk anders is; een feature start niet via de skill.
   - path: docs/grootboek/pdr/pdr-007-persona-van-de-ai.md
     what: De AI is een algemene vriendelijke kennis met vrij onderwerp, 2 tot 4 zinnen en hooguit één vraag per beurt; overgezet uit plan.md.
     read_when: je de persona, de toon of de prompt-opbouw uit benoemde secties wijzigt of een nieuwe persona toevoegt.
@@ -366,6 +369,9 @@ documents:
   - path: .claude/skills/feature-worktree/SKILL.md
     what: Procedure om een worktree voor parallel werk aan een feature op te zetten en op te ruimen, met het script feature-worktree.sh.
     read_when: Jarón een worktree voor een feature vraagt of tegelijk aan iets anders wil werken.
+  - path: .claude/skills/feature/SKILL.md
+    what: De route voor een nieuwe app-feature in zeven stappen, van plek tot na de merge, met de momenten waarop Jarón beslist; verwijst voor de inhoud naar grootboek, triage, feature-worktree en de reconciliatieregel.
+    read_when: Jarón een nieuwe feature in de app wil; je de route voor features wijzigt.
   - path: .claude/skills/grootboek/SKILL.md
     what: De grootboek-skill van ARC (v1.5, gekopieerd uit de ARC MCP-resource arc://skill/grootboek/1.5) — schrijfgidsen en voorbeelden per documenttype, registers, drift. De tekst is Nederlands.
     read_when: je een document onder docs/grootboek schrijft of bijwerkt.

@@ -19,7 +19,9 @@ vijf momenten, gemarkeerd met **Jarón**. Al het andere doet de lead thread.
 ## 0. Plek
 
 - Een eigen branch vanaf `main`, vóór de eerste bewerking (HDR-011, HDR-021). Wil Jarón parallel
-  werken, gebruik dan de skill `feature-worktree`.
+  werken, gebruik dan de skill `feature-worktree`. De feature loopt daarna verder in een nieuwe
+  sessie die Jarón in die worktree start, niet in deze: geef hem de waarden uit die skill en stop
+  hier.
 - Werk je in een worktree, zoek dan de poort van de dev server op en noem die bij elke test. De
   server op 3000 draait meestal vanuit `repo` en laat de wijziging niet zien.
 
@@ -59,6 +61,7 @@ patroon in de buurt komt) voordat je vragen stelt.
 - Geef een korte checklist: per gedrag uit de spec wat Jarón moet zien, in de browser, en op de
   iPhone als het audio, opname of layout raakt (HDR-029). Noem wat niet te testen is zonder een
   codewijziging.
+- Vindt Jarón een fout, ga dan terug naar stap 3.
 - Noem de URL met de poort. Ziet Jarón de wijziging niet, kijk dan eerst welke server vanuit welke
   map draait:
 
@@ -74,14 +77,14 @@ patroon in de buurt komt) voordat je vragen stelt.
 2. Reconcilieer tegen de working tree en schrijf de DFT met een plaatshouder voor de commit. Het
    driftsignaal meet alleen gecommitte wijzigingen, dus het kan nog niet aanslaan. Meld het af en
    zet de kostenregel in de DFT.
-3. Zet de PDR (of ADR) op `implemented` zodra Jarón heeft getest. Toon de diff van elk gewijzigd
-   leidend document.
+3. Is de test van Jarón geslaagd, zet dan elke PDR en ADR van deze feature op `implemented`, in het
+   record en in het register. Toon de diff van elk gewijzigd leidend document.
 4. Vraag een go voor de commits, de push en de PR. **Jarón: go.**
 5. Commit 1: de code met haar records. Vul de hash in de DFT in, boek de DFT in het register en in
    `docs/index.yml`, draai `npm run docs:check` en `npm run docs:drift`, en maak commit 2. De DFT
    kan niet in commit 1, omdat hij naar die commit verwijst (zo ook DFT-005 en DFT-006).
-6. Haal `origin/main` op. Botsen er nummers, draai dan `npm run docs:renumber -- --base main`
-   (HDR-007). Push en open de PR; de hook `guard-reconciliatie-pr` controleert de DFT.
+6. Haal `origin/main` op. Botsen er nummers, draai dan `npm run docs:renumber -- --base origin/main`
+   (HDR-007); de lokale `main` loopt na een fetch achter. Push en open de PR; de hook `guard-reconciliatie-pr` controleert de DFT.
 
 ## 6. Na de merge — **Jarón merget**
 

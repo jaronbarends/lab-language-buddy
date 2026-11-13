@@ -34,8 +34,14 @@ nodig: kijk naar wat de wijziging *is*.
    verplaatsen breekt geen afnemer. Iets optioneels toevoegen breekt ook niemand.
 3. **Omkeerbaarheid** — wordt dit teruggedraaid met één revert of flag, of loopt het één keer
    tegen echte data of naar buiten (e-mail, deploy, betaling)?
-4. **Dekking en patroon** — staat er een mechanische poort op het pad (test, lint, snapshot,
-   check), en is dit een bekend patroon in dit project?
+4. **Dekking en patroon** — staat er een mechanische poort op het pad, en is dit een bekend
+   patroon in dit project? Een test, snapshot of check telt altijd. Lint en typecheck (`tsc`)
+   tellen alleen bij een wijziging zonder gedragseffect (weergavetekst, hernoemen, verplaatsen,
+   imports, types); bij tekst is de borging de diff die de lead naloopt, want lint en `tsc`
+   zien alleen een fout in de structuur. Een wijziging die gedrag verandert is `normal`, ook
+   bij groene lint en `tsc`. Tekst die een model of spraakdienst aanstuurt (een prompt) is
+   gedrag, en tekst die de gebruiker iets toezegt over wat de app doet ("je opname wordt niet
+   bewaard") ook: staat zo'n zin niet meer gelijk aan de code, dan zegt de app iets onwaars.
 
 ## De harde triggers → altijd RISKY, ongeacht de omvang
 
@@ -90,3 +96,6 @@ Bewust generiek: herken het type, niet het pad; dit werkt in elke stack:
   (machinecontract: dwingt afnemers zich aan te passen, ongeacht de omvang).
 - Een functionele wijziging in een scherm zonder test op het pad → **normal** (geen harde
   trigger, maar de dekking ontbreekt, dus niet trivial; de vangrail doet zijn werk).
+- In een scherm de volgorde van twee delen van een weergavelabel omdraaien, lint en typecheck
+  groen, geen logica geraakt → **trivial** (geen gedragseffect, omkeerbaar, bekend patroon; de
+  lead loopt de diff na).

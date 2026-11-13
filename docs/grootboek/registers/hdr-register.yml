@@ -271,13 +271,13 @@ hdrs:
   - id: "HDR-025"
     titel: "Een bewering over een document of de omgeving komt uit de bron"
     status: implemented
-    versie: "1.0"
+    versie: "1.1"
     implementatie: 100
     omgeving: geen
     datum: 2026-11-08
     implementatie-datum: 2026-11-08
     beslissing: "Een werkafspraak in de root-CLAUDE.md: een bewering over wat een document zegt of wat de omgeving heeft komt uit de bron (het document helemaal lezen of het commando draaien); een zoekresultaat, een indexregel of een geheugennotitie is een aanwijzing, geen bewijs"
-    notitie: "Maatregel van het incidentpatroon document-not-fully-read (drie incidenten, alle drie een bewering dat iets ontbreekt). Een regel en geen hook: de hooks zien tool-aanroepen, geen beweringen in een antwoord, en of een bewering gedekt is, is een oordeel. Niet mechanisch te controleren: succes is geen vierde incident (zoals bij HDR-010)"
+    notitie: "Maatregel van het incidentpatroon document-not-fully-read (drie incidenten, alle drie een bewering dat iets ontbreekt). Een regel en geen hook: de hooks zien tool-aanroepen, geen beweringen in een antwoord, en of een bewering gedekt is, is een oordeel. Niet mechanisch te controleren: succes is geen vierde incident (zoals bij HDR-010). Versie 1.1 (2026-11-13): het vierde incident staat er, een grep-claim van een koude agent in koude-startronde 3 (K11 uit JNL-002); wat steviger is dan de regel, is nog niet besloten"
     bestand: hdr-025-bewering-uit-de-bron.md
   - id: "HDR-026"
     titel: "Een pull request die code in een werkgebied raakt, sluit met een reconciliatie"

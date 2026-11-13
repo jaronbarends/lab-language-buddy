@@ -82,6 +82,9 @@ patronen:
       - datum: 2026-11-08
         wat: "Zei dat gh hier niet geïnstalleerd is en dat Jarón de PR moest maken, op basis van de indexregel van een geheugennotitie; de notitie zelf zei dat gh er wel is en dat eerst gh auth status moet draaien"
         bron: "correctie van Jarón bij de PR van drift-baseline-from-dft"
+      - datum: 2026-11-10
+        wat: "Een koude agent, met HDR-025 in de geladen CLAUDE.md, oordeelde dat het labelformaat niet in de software-balans en src/lib/CLAUDE.md staat, op basis van een grep naar Intermediate en (B1) zonder die documenten te lezen. De bewering klopte, maar ook de bevestiging was een git grep; geteld omdat HDR-025 de vorm noemt, niet de uitkomst"
+        bron: "koude-startronde 3, beoordeeld als K11 in JNL-002"
   - patroon: date-assumed
     titel: "Een datum wordt aangenomen in plaats van van de klok gelezen"
     maatregel: HDR-012

@@ -348,13 +348,13 @@ hdrs:
   - id: "HDR-032"
     titel: "Een feature-worktree zet de skill `feature-worktree` op, vanaf `main` en met een eigen install"
     status: implemented
-    versie: "1.0"
+    versie: "1.2"
     implementatie: 100
     omgeving: geen
     datum: 2026-11-13
     implementatie-datum: 2026-11-13
-    beslissing: "De skill feature-worktree (script setup/teardown) zet een worktree op in ../<repo>-<naam> met branch <naam> vanaf main, kopieert .env.local (niet .env.prd), draait een eigen npm install en kiest de eerste vrije dev-poort vanaf 3001; teardown weigert vuile worktrees en verwijdert de branch alleen met git branch -d"
-    notitie: "Jarón vroeg het op 2026-11-13 om parallel aan features te werken terwijl repo bezig blijft; geen incident. Jarón koos eigen install (geen junction), alleen .env.local en de eerste vrije poort. Eén proef met een wegwerpnaam, nog niet gebruikt voor een echte feature. git branch -d toetst tegen HEAD van de hoofdcheckout, niet tegen main. Root-CLAUDE.md bewust ongewijzigd. Nummering: geboekt als HDR-032 omdat HDR-031 toen nog alleen op de branch triage-gedekt-pad-lint-tsc stond; daarna is die branch eerst gemerged en is de volgorde gelijk gebleven"
+    beslissing: "De skill feature-worktree (script setup/teardown) zet een worktree op in ../<repo>-<naam> met branch <naam> vanaf main, kopieert .env.local (niet .env.prd), draait een eigen npm install en kiest de eerste vrije dev-poort vanaf 3001; teardown weigert vuile worktrees en verwijdert de branch alleen met git branch -d; teardown zonder naam toont alleen de kandidaten, de naam komt altijd van Jarón"
+    notitie: "Jarón vroeg het op 2026-11-13 om parallel aan features te werken terwijl repo bezig blijft; geen incident. Jarón koos eigen install (geen junction), alleen .env.local en de eerste vrije poort. Eén proef met een wegwerpnaam, daarna gebruikt voor één echte feature (PR #58). Versie 1.1 (2026-11-13): de skill noemt bij DEV_COMMAND de testpoort, omdat Jarón bij PR #58 naar de server van repo op 3000 keek (HDR-036). Versie 1.2 (2026-11-13): teardown zonder naam verwijdert niets en toont de kandidaten, nadat de agent bij een teardown zonder naam zelf de enige worktree (animation) koos en opruimde (incidentregister, patroon destructive-target-assumed). git branch -d toetst tegen HEAD van de hoofdcheckout, niet tegen main. Root-CLAUDE.md bewust ongewijzigd. Nummering: geboekt als HDR-032 omdat HDR-031 toen nog alleen op de branch triage-gedekt-pad-lint-tsc stond; daarna is die branch eerst gemerged en is de volgorde gelijk gebleven"
     bestand: hdr-032-feature-worktree-via-skill-vanaf-main.md
   - id: "HDR-033"
     titel: "De reviewer draait op Opus, vastgepind in `reviewer.md`"
@@ -389,6 +389,17 @@ hdrs:
     beslissing: "De werkafspraak Beweringen uit de bron in de root-CLAUDE.md krijgt twee zinnen: wie zegt dat iets ontbreekt, zegt erbij waar dat op rust (helemaal gelezen, grep op X zonder treffers, de indexregel van Y); een afwezigheid die op een aanwijzing rust, wordt als vermoeden gemeld"
     notitie: "Het stevigere dat HDR-025 bij een vierde incident in document-not-fully-read beloofde (K11 uit JNL-002), besloten door Jarón op 2026-11-13. Alle vier de incidenten zijn afwezigheidsclaims, met verschillend gereedschap; met een genoemde basis was elk zichtbaar geweest. Afgewogen: de regel laten staan en de succesmaat aanpassen (doelpaal verschuiven), een PostToolUse-hook bij een lege zoekopdracht (dekt één van de vier, ruis), een controle in de koude-startprocedure (mist gewone sessies), een skill, een prompt-hook op Stop. Nog steeds een regel: een overtreding valt op, ze wordt niet afgedwongen. Een volgend incident krijgt erbij of de basis genoemd was; zo niet, dan is de hook de overgebleven kandidaat, niet besloten. Maatregel van het patroon in plaats van HDR-025, met Jaróns akkoord. Eigen record zodat de titel van HDR-025 blijft kloppen. Versie 1.1 (2026-11-13): docs:check waarschuwt bij een volgend incident tot het is beoordeeld (HDR-037); het vijfde incident, een stille conclusie uit een grep, kwam dezelfde dag"
     bestand: hdr-035-afwezigheidsclaim-noemt-haar-basis.md
+  - id: "HDR-036"
+    titel: "Een nieuwe app-feature loopt via de skill `feature`"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-11-13
+    implementatie-datum: 2026-11-13
+    beslissing: "De skill feature draagt de route voor een nieuwe app-feature in zeven stappen (plek, begrip, spec, bouwen, testen, reconciliatie en afronden, na de merge) en verwijst voor de inhoud naar de bestaande skills en documenten; alleen app-features; start vanzelf en via /feature; de dev-poort, de doctrinecheck en de twee commits hebben elk een regel; de vijf momenten van Jarón staan op een rij"
+    notitie: "Uit de spike met de infomelding (PDR-020, PR #58) op 2026-11-13; geen incident. Jarón koos alleen app-features en vanzelf starten. Afgewogen: ook harnaswerk (splitsing in elke stap), alleen via /feature (commando onthouden), de inhoud kopiëren (drift). Eén run, en die met de hand; of een verse sessie de skill vindt, is niet getest. Geen hook. Root-CLAUDE.md bewust ongewijzigd, zoals bij HDR-032. HDR-032 gaat mee naar 1.1 (de dev-poort)"
+    bestand: hdr-036-app-feature-via-skill-feature.md
   - id: "HDR-037"
     titel: "Het incidentregister telt elke gevonden fout, en een incident na de maatregel vraagt een oordeel"
     status: implemented

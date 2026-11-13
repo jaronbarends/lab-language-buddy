@@ -31,12 +31,25 @@ Geef Jarón na afloop de waarden `WORKTREE`, `DEV_COMMAND` en `OPEN_COMMAND` uit
 bij dat hij zelf een nieuw venster opent (`code <pad>`) en daar een nieuwe sessie start: dat kun jij
 niet voor hem doen, en deze sessie blijft in `repo`.
 
+Zeg er ook bij dat hij het werk in de worktree test op `http://localhost:<DEV_PORT>`. De server op
+3000 draait vanuit `repo` en laat het niet zien; bij de eerste echte feature (PR #58) keek Jarón
+daardoor naar de verkeerde app (HDR-032, versie 1.1).
+
 Start je geen eigen werk in de worktree vanuit deze sessie. Het punt is juist dat de feature in een
 aparte sessie loopt.
 
 ## Opruimen
 
-Pas na een merge, of als Jarón de worktree weggooit:
+Pas na een merge, of als Jarón de worktree weggooit. Opruimen gooit een map weg, dus de naam komt
+altijd van Jarón. Noemde hij er geen, draai het script dan zonder naam:
+
+```bash
+bash .claude/skills/feature-worktree/scripts/feature-worktree.sh teardown
+```
+
+Dat verwijdert niets en geeft per worktree die in aanmerking komt een regel `CANDIDATE`. Toon die
+lijst aan Jarón en vraag welke weg moet. Kies nooit zelf, ook niet als er maar één staat of als hij
+schoon en gemerged lijkt. Draai daarna met de naam die hij noemt:
 
 ```bash
 bash .claude/skills/feature-worktree/scripts/feature-worktree.sh teardown <naam>

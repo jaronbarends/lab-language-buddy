@@ -153,6 +153,13 @@ patronen:
       - datum: 2026-11-08
         wat: "Na een bericht met vier vragen tegelijk antwoordde Jarón 'go'; de agent besloot zelf dat de twee extra commentaren, de spec en de verwijzingen naar ADR-031 bleven zoals ze waren, en zei dat pas achteraf. Jarón vroeg voortaan na te vragen of het negeren bewust was"
         bron: "boeking van ADR-031 (JNL-003 K2), PR #40"
+  - patroon: destructive-target-assumed
+    titel: "Het doel van een destructieve actie wordt aangenomen in plaats van nagevraagd"
+    maatregel:
+    incidenten:
+      - datum: 2026-11-13
+        wat: "Jarón riep /feature-worktree teardown aan zonder naam; de agent zag met git worktree list één worktree (animation), stelde vast dat die schoon en gemerged was en ruimde hem op zonder te vragen welke weg moest. Er ging niets verloren, maar de skill beschreef alleen teardown met een naam en de agent vulde die zelf in"
+        bron: "correctie van Jarón na het opruimen van de worktree animation"
   - patroon: instructions-overloaded
     titel: "Een voorstel of instructie aan Jarón geeft zoveel tekst en varianten tegelijk dat niet duidelijk is wat er gebeurt of wat hij nu moet doen"
     maatregel:

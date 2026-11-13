@@ -87,7 +87,7 @@ patronen:
   - patroon: document-not-fully-read
     titel: "Er wordt een bewering over een document gedaan zonder het volledig te lezen"
     maatregel: HDR-035
-    beoordeeld-tot: 4
+    beoordeeld-tot: 5
     incidenten:
       - datum: 2026-10-27
         wat: "Zei dat de README alleen lint en build noemt, op basis van een zoekopdracht naar npm run die regels mist die met npx beginnen; ook de typecheck stond erin"
@@ -102,7 +102,7 @@ patronen:
         wat: "Een koude agent, met HDR-025 in de geladen CLAUDE.md, oordeelde dat het labelformaat niet in de software-balans en src/lib/CLAUDE.md staat, op basis van een grep naar Intermediate en (B1) zonder die documenten te lezen. De bewering klopte, maar ook de bevestiging was een git grep; geteld omdat HDR-025 de vorm noemt, niet de uitkomst"
         bron: "koude-startronde 3, beoordeeld als K11 in JNL-002"
       - datum: 2026-11-13
-        wat: "De lead trok uit een grep stilzwijgend de conclusie dat de index geen HDR's bevat; docs:check ving het op, niet een correctie. Zonder uitgesproken zin was er ook geen plek voor de basis die HDR-035 vraagt. Hoe het precies ontstond, is niet nagegaan: dit is Jaróns samenvatting, en welke index en welke melding van docs:check het waren, weet hij niet meer zeker"
+        wat: "De lead trok uit een grep stilzwijgend de conclusie dat de index geen HDR's bevat; docs:check ving het op, niet een correctie. Zonder uitgesproken zin was er ook geen plek voor de basis die HDR-035 vraagt. Hoe het precies ontstond, is niet nagegaan: dit is Jaróns samenvatting, en welke index en welke melding van docs:check het waren, weet hij niet meer zeker. Oordeel (Jarón, 2026-11-13): de maatregel hield. Er was geen uitgesproken bewering, dus HDR-035 is hier niet getest; het incident viel in de sessie die de regel schreef, vermoedelijk voordat hij geladen was, en docs:check ving het gevolg op. Dit argument (buiten het bereik van de regel) geldt één keer: komt er een incident uit een lege zoekopdracht, dan is de spike op de hook bij een lege zoekopdracht (HDR-035, Afgewogen) de volgende stap"
         bron: "docs:check in de sessie die HDR-035 boekte, gemeld door Jarón in de startprompt over de escalatie van het incidentregister"
   - patroon: date-assumed
     titel: "Een datum wordt aangenomen in plaats van van de klok gelezen"

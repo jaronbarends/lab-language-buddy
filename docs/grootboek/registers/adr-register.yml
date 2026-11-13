@@ -89,13 +89,13 @@ adrs:
   - id: "ADR-008"
     titel: "Prompts van de corrector"
     status: implemented
-    versie: "1.1"
+    versie: "1.2"
     implementatie: 100
     omgeving: geen
     datum: 2026-10-06
     implementatie-datum: 2026-10-06
-    beslissing: "De prompts hebben een gedeeld deel en een deel per persona, de corrector verbiedt alle spelling-feedback en verzint geen correctie, het bericht gaat verpakt in <message>-tags naar de corrector, en er is geen code-guard op spelling-only correcties"
-    notitie: "Overgezet uit plan.md (HDR-015): zeven rijen uit het decision log. De spellingregel is verbreed van spaties, leestekens en diakrieten naar alle spelling (L120); de <message>-verpakking (L171) kwam erbij nadat prompt-regels alleen het lekken van eerdere berichten niet stopten. Versie 1.1 (2026-11-06): de spellingregel is aangescherpt tot NEVER EVER omdat er toch correcties over spelling en hoofdlettergebruik terugkwamen; het effect is nog niet vastgelegd. Een aanvullende null-regel voor correcties over hoe het bericht geschreven is staat als overwogen optie in Gevolgen, niet ingevoerd"
+    beslissing: "De prompts hebben een gedeeld deel en een deel per persona, de corrector verbiedt alle spelling-feedback, verzint geen correctie en laat een fout die de gebruiker in hetzelfde bericht zelf herstelt liggen, het bericht gaat verpakt in <message>-tags naar de corrector, en er is geen code-guard op spelling-only correcties"
+    notitie: "Overgezet uit plan.md (HDR-015): zeven rijen uit het decision log. De spellingregel is verbreed van spaties, leestekens en diakrieten naar alle spelling (L120); de <message>-verpakking (L171) kwam erbij nadat prompt-regels alleen het lekken van eerdere berichten niet stopten. Versie 1.1 (2026-11-06): de spellingregel is aangescherpt tot NEVER EVER omdat er toch correcties over spelling en hoofdlettergebruik terugkwamen; het effect is nog niet vastgelegd. Een aanvullende null-regel voor correcties over hoe het bericht geschreven is staat als overwogen optie in Gevolgen, niet ingevoerd. Versie 1.2 (2026-11-13): een regel over zelfcorrectie binnen één beurt; een correct herstelde fout krijgt geen correctie meer, en een herstel dat nog steeds fout is telt als gewone fout waarvan eventuele feedback over de tweede poging gaat; Jarón testte op 2026-11-13 vijf gevallen in de browser, alle zoals verwacht"
     bestand: adr-008-prompts-van-de-corrector.md
   - id: "ADR-009"
     titel: "STT: providerkeuze en configuratie"

@@ -71,6 +71,11 @@ dan in plaats van een van beide blind te volgen.
 - **Ids met titel.** Haal je een genummerd document aan (ADR, HDR, PDR, DFT, JNL, REQ,
   een kwestie zoals K7), zet dan bij de eerste vermelding in elk bericht de titel
   erbij. Zoek de titel op in het register; leid hem niet af uit de bestandsnaam.
+- **Beslispunten: eerst uitleg** (HDR-034). Leg je Jarón een keuze voor (een reviewbevinding,
+  een kwestie, een rij opties), begin dan met 4–6 regels in gewone woorden: wat er speelt, een
+  concreet voorbeeld, waarom het ertoe doet. Daarna de opties, het advies als laatste. Een directe
+  vraag krijgt juist eerst het antwoord, met de redenering eronder. Een geplakte startprompt is
+  geen bewijs dat Jarón de inhoud kent, ook niet als hij in zijn stem is geschreven.
 - **Codestijl** in één regel: TypeScript strict, function declarations, `if`s met accolades en
   early returns, booleans die als zin lezen (`microphoneIsLive`), bestandsnamen in kleine letters
   met streepjes. De volledige lijst laadt zodra je `src/` aanraakt (`.claude/rules/code-style.md`).

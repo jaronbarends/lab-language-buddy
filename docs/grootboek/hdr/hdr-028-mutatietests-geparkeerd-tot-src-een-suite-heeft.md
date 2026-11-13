@@ -66,6 +66,7 @@ krijgt; dit stond nergens vast.
 
 - Geen wijziging aan `triage/SKILL.md`, `reviewer.md`, `builder.md` of een leidend document.
 - Triage-vraag 4 ("staat er een mechanische poort op het pad") rust voor `src/` op lint en
-  typecheck. Dat is een eigen kwestie en geen onderdeel van dit besluit.
+  typecheck. Dat is een eigen kwestie en geen onderdeel van dit besluit; HDR-031 (Lint en `tsc`
+  tellen bij triage alleen als gedekt pad bij een wijziging zonder gedragseffect) beslist haar.
 
 Verwant: HDR-024 (Builders op Sonnet bij `trivial`, op Opus bij `normal` en `risky`)

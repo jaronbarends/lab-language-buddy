@@ -334,3 +334,14 @@ hdrs:
     beslissing: "De PreToolUse-hook guard-reconciliatie-pr weigert gh pr create van de lead thread (ook in een samengestelde regel) als de branch een bestand in een werkgebied raakt en geen nieuw DFT-bestand toevoegt; de werkgebieden komen uit scripts/drift-signal.mjs; de drift-waarschuwing van docs:check noemt voortaan ook de DFT"
     notitie: "K7 uit JNL-002, besloten door Jarón op 2026-11-13. Afgewogen: de tekst van de waarschuwing, de root-CLAUDE.md, builder.md en reviewer.md; gekozen is een hook omdat alleen die vuurt op het moment van handelen. Grove maat: de hook ziet alleen dat er een DFT-bestand bijkomt en vergelijkt met origin/main. Niet gemeten of K7 hiermee in de praktijk is opgelost. Versie 1.1 (2026-11-13): de werkregel in docs/grootboek/CLAUDE.md verwijst nu naar de hook"
     bestand: hdr-030-hook-houdt-pull-request-zonder-reconciliatie-tegen.md
+  - id: "HDR-031"
+    titel: "Lint en `tsc` tellen bij triage alleen als gedekt pad bij een wijziging zonder gedragseffect"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-11-13
+    implementatie-datum: 2026-11-13
+    beslissing: "Vraag 4 van de triage-skill: een test, snapshot of check telt altijd als gedekt pad; lint en tsc alleen bij een wijziging zonder gedragseffect (weergavetekst, hernoemen, verplaatsen, imports, types); een wijziging die gedrag verandert is normal, ook tekst die een model aanstuurt of de gebruiker iets toezegt over wat de app doet"
+    notitie: "K9 uit JNL-002, besloten door Jarón op 2026-11-13. Aanleiding: ronde drie las 'gedekt pad' als 'er is een test', koos normal voor zes labels waar de sleutel trivial verwachtte; src/ heeft geen tests (HDR-028). Afgewogen: lint en tsc tellen altijd, nooit, open laten; gekozen is een lezing per type wijziging. Bij tekst is de diff de borging, niet de poort. Of een tekst een belofte doet, beslist de lead; niets controleert dat. Niet gemeten of een volgende koude agent nu trivial kiest"
+    bestand: hdr-031-lint-en-tsc-tellen-als-gedekt-pad-zonder-gedragseffect.md

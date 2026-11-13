@@ -21,14 +21,15 @@ jnls:
     datum: 2026-10-27
     laatste-sessie: 2026-11-13
     kwesties-totaal: 11
-    kwesties-besloten: 8
-    kwesties-open: 3
+    kwesties-besloten: 9
+    kwesties-open: 2
     kwesties-geparkeerd: 0
     doel-records:
       - "HDR-011 (K1, K2)"
       - "HDR-030 (K7)"
       - "K8: geen eigen record; de regel staat in CLAUDE.md (Controles)"
-      - "per kwestie een record zodra er een besluit valt (K9 t/m K11)"
+      - "HDR-031 (K9)"
+      - "per kwestie een record zodra er een besluit valt (K10 en K11)"
     bestand: jnl-002-koude-start-onboarding.md
   - id: "JNL-003"
     titel: "Animatie van chatbubbels"

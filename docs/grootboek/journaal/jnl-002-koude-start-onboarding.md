@@ -7,7 +7,8 @@ doel-records:
   - "HDR-011 (K1, K2)"
   - "HDR-030 (K7)"
   - "K8: geen eigen record; de regel staat in CLAUDE.md (Controles)"
-  - "per kwestie een record zodra er een besluit valt (K9 t/m K11)"
+  - "HDR-031 (K9)"
+  - "per kwestie een record zodra er een besluit valt (K10 en K11)"
 ---
 
 # JNL-002 — Koude-startjournaal: kan een nieuwkomer werken met alleen de repo?
@@ -64,7 +65,7 @@ De oriëntatie kwam volledig uit de `CLAUDE.md`-bestanden die vanzelf laden: hij
 | K6 | Houdt de regel "geen AI-of-zelf-oordeel" stand? | besloten 2026-10-27: houdt stand in twee runs |
 | K7 | De reconciliatieregel bereikt wie in `src/` werkt niet | besloten 2026-11-13, geboekt in HDR-030 |
 | K8 | `npx next typegen` zonder `node_modules` wijzigt `package.json` | besloten 2026-11-13 |
-| K9 | Telt lint plus `tsc` als gedekt pad bij triage? | open |
+| K9 | Telt lint plus `tsc` als gedekt pad bij triage? | besloten 2026-11-13, geboekt in HDR-031 |
 | K10 | De reviewer draait op het model van de lead | open |
 | K11 | Een afwezigheidsclaim uit een grep: incident of niet? | open |
 
@@ -181,7 +182,18 @@ test, lint of een check. De agent las dat als "er is een test" en koos `normal` 
 path"). De antwoordsleutel ging uit van lint en `tsc` als dekking, en dus `trivial`. HDR-028
 (Mutatietests bij het risky-regime zijn geparkeerd tot `src/` een testsuite heeft) noemt deze vraag
 al een eigen kwestie. Het verschil kostte hier een Opus-builder en een reviewer voor zes labels.
-**Open.**
+
+**Besloten (Jarón, 2026-11-13):** lint en `tsc` tellen als gedekt pad bij een wijziging zonder
+gedragseffect (weergavetekst, hernoemen, verplaatsen, imports, types), en niet bij een wijziging
+die gedrag verandert. Daaronder valt tekst die een model aanstuurt en tekst die de gebruiker iets
+toezegt over wat de app doet; die twee tellen als gedrag, dus `normal`. Afgewogen: lint en `tsc`
+tellen altijd (een gedragswijziging kan dan zonder reviewer door), nooit (`trivial` is dan leeg
+voor `src/`, want daar zijn geen tests), en open laten. Bij tekst is de borging de diff die de
+lead naloopt, niet de poort: `tsc` ziet niet of een label goed staat. De regel staat in vraag 4
+van de triage-skill, met een ijkgeval. **Geboekt als HDR-031** (Lint en `tsc` tellen bij triage
+alleen als gedekt pad bij een wijziging zonder gedragseffect). Niet gemeten of een volgende koude
+agent nu `trivial` kiest: dat vraagt een volgende koude-startronde met een taak zonder
+gedragseffect.
 
 ### K10 — De reviewer draait op het model van de lead
 
@@ -294,3 +306,6 @@ hierboven.
   drift-waarschuwing noemt de DFT. K8 t/m K11 blijven open.
 - **2026-11-13 — K8 besloten, zonder eigen record.** Npm-scripts `typegen` en `typecheck`, en
   `npm install` als eerste controle. K9 t/m K11 blijven open.
+- **2026-11-13 — K9 besloten en geboekt als HDR-031.** Lint en `tsc` tellen als gedekt pad bij een
+  wijziging zonder gedragseffect; prompts en tekst die iets toezegt tellen als gedrag. K10 en K11
+  blijven open.

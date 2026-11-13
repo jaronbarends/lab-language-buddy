@@ -31,6 +31,10 @@ Geef Jarón na afloop de waarden `WORKTREE`, `DEV_COMMAND` en `OPEN_COMMAND` uit
 bij dat hij zelf een nieuw venster opent (`code <pad>`) en daar een nieuwe sessie start: dat kun jij
 niet voor hem doen, en deze sessie blijft in `repo`.
 
+Zeg er ook bij dat hij het werk in de worktree test op `http://localhost:<DEV_PORT>`. De server op
+3000 draait vanuit `repo` en laat het niet zien; bij de eerste echte feature (PR #58) keek Jarón
+daardoor naar de verkeerde app (HDR-032, versie 1.1).
+
 Start je geen eigen werk in de worktree vanuit deze sessie. Het punt is juist dat de feature in een
 aparte sessie loopt.
 

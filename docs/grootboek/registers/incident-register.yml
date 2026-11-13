@@ -72,6 +72,10 @@ patronen:
       - datum: 2026-11-09
         wat: "Een reeks berichten in de lead sessie noemde records bij hun id zonder titel, terwijl de geheugennotitie in de context stond; één titel was afgeleid uit de bestandsnaam en klopte niet"
         bron: "correctie van Jarón in de lead sessie van de grootboekronde"
+      - datum: 2026-11-13
+        aantal: 3
+        wat: "In de sessie van HDR-037 noemde de lead HDR-005 en HDR-007 kaal in het bericht over het mergeconflict, gaf HDR-037 kaal in een kop, en zette HDR-034 zonder titel in twee versies van een startprompt; de werkafspraak Ids met titel stond in de geladen root-CLAUDE.md"
+        bron: "correctie van Jarón in de sessie die HDR-037 boekte (incidentregister-escalatie)"
   - patroon: branch-before-edit
     titel: "Er wordt gewerkt op de integratiebranch voordat er een branch bestaat"
     maatregel: HDR-011

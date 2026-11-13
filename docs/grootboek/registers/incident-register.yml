@@ -76,6 +76,9 @@ patronen:
         aantal: 3
         wat: "In de sessie van HDR-037 noemde de lead HDR-005 en HDR-007 kaal in het bericht over het mergeconflict, gaf HDR-037 kaal in een kop, en zette HDR-034 zonder titel in twee versies van een startprompt; de werkafspraak Ids met titel stond in de geladen root-CLAUDE.md"
         bron: "correctie van Jarón in de sessie die HDR-037 boekte (incidentregister-escalatie)"
+      - datum: 2026-11-13
+        wat: "In de sessie over de corrector-prompt noemde de lead K1 en K2 uit JNL-005 kaal in een bericht aan Jarón, terwijl hij K4 in hetzelfde bericht wel met titel gaf"
+        bron: "de lead zelf, bij het nalezen tijdens het parkeren van K5"
   - patroon: branch-before-edit
     titel: "Er wordt gewerkt op de integratiebranch voordat er een branch bestaat"
     maatregel: HDR-011

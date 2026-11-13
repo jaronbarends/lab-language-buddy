@@ -3,10 +3,12 @@
 #
 #   feature-worktree.sh setup <name>
 #   feature-worktree.sh teardown <name> [--force]
+#   feature-worktree.sh teardown
 #
 #   name   short label of the feature; used for the folder (<repo>-<name>) and the branch (<name>)
 #
 # The branch always starts from main, never from the branch the main checkout is on.
+# Teardown without a name only lists the worktrees it could remove; it never picks one itself.
 # Output is KEY=value lines for Claude to read; progress and warnings go to stderr.
 set -euo pipefail
 
@@ -28,15 +30,51 @@ mixed_path() {
   echo "$1"
 }
 
-# Sets MAIN_ROOT (the main checkout, also when run from inside a worktree), WT and BRANCH.
+# The main checkout, also when run from inside a worktree.
+main_root() {
+  git worktree list --porcelain | sed -n '1s/^worktree //p'
+}
+
+# Sets MAIN_ROOT, WT and BRANCH.
 set_paths() {
   local name="$1"
   if [[ ! "$name" =~ ^[A-Za-z0-9._-]+$ ]]; then
     die "name must be letters, digits, dot, dash or underscore: '$name'"
   fi
-  MAIN_ROOT="$(git worktree list --porcelain | sed -n '1s/^worktree //p')"
+  MAIN_ROOT="$(main_root)"
   WT="$(cd "$MAIN_ROOT/.." && pwd)/$(basename "$MAIN_ROOT")-$name"
   BRANCH="$name"
+}
+
+# One "<path><TAB><branch>" line per worktree, the main checkout included.
+worktree_lines() {
+  git worktree list --porcelain | awk '
+    /^worktree / { path = substr($0, 10); branch = "(detached)" }
+    /^branch /   { branch = substr($0, 8); sub("^refs/heads/", "", branch) }
+    /^$/         { if (path != "") print path "\t" branch; path = "" }
+    END          { if (path != "") print path "\t" branch }
+  '
+}
+
+# The worktrees teardown could remove: <repo>-<name> next to the main checkout. Removes nothing;
+# which one goes is the user's call, also when there is only one.
+list_candidates() {
+  local root parent prefix path branch folder count=0
+  root="$(main_root)"
+  parent="${root%/*}"
+  prefix="${root##*/}-"
+  echo "REMOVED=none (no name given; ask which worktree to tear down, then rerun with that name)"
+  while IFS=$'\t' read -r path branch; do
+    folder="${path##*/}"
+    if [ "${path%/*}" != "$parent" ] || [[ "$folder" != "$prefix"* ]]; then
+      continue
+    fi
+    echo "CANDIDATE=${folder#"$prefix"} | $path | branch $branch"
+    count=$((count + 1))
+  done < <(worktree_lines)
+  if [ "$count" -eq 0 ]; then
+    echo "CANDIDATE=none"
+  fi
 }
 
 # Succeeds when something is listening on the port. Without netstat we cannot tell, so the
@@ -106,8 +144,10 @@ EOF
 
 teardown() {
   local name="${1:-}" force="no" arg
-  if [ -z "$name" ]; then
-    die "usage: feature-worktree.sh teardown <name> [--force]"
+  # Also "teardown --force": a flag is not a name.
+  if [ -z "$name" ] || [[ "$name" == -* ]]; then
+    list_candidates
+    return
   fi
   shift
   for arg in "$@"; do
@@ -155,6 +195,6 @@ case "${1:-}" in
     teardown "$@"
     ;;
   *)
-    die "usage: feature-worktree.sh setup <name> | teardown <name> [--force]"
+    die "usage: feature-worktree.sh setup <name> | teardown [<name> [--force]]"
     ;;
 esac

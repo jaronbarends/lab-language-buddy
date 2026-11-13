@@ -85,3 +85,17 @@ dfts:
       - src/components/CLAUDE.md
     getoetst-tegen: ebb12b5
     bestand: dft-006-reconciliatie-na-de-infomelding.md
+  - id: "DFT-007"
+    titel: "Reconciliatie na de zelfcorrectieregel van de corrector — geen drift"
+    status: resolved
+    datum: 2026-11-13
+    aanleiding: "Reconciliatie per pull request (HDR-026) voor de branch corrector-prompt-user-self-correction: de code-commit f0369c9 (ADR-008, versie 1.2) raakt src/lib, het werkgebied van de balans en van src/lib/CLAUDE.md. Kosten: niet gemeten, er liep tegelijk een andere sessie in dezelfde sessielimiet"
+    bevindingen: 0
+    hoog: 0
+    midden: 0
+    laag: 0
+    documenten:
+      - docs/grootboek/software-architectuur.md
+      - src/lib/CLAUDE.md
+    getoetst-tegen: f0369c9
+    bestand: dft-007-reconciliatie-na-de-zelfcorrectieregel.md

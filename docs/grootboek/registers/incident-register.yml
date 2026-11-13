@@ -25,7 +25,7 @@ patronen:
         bron: "review van stage 4"
   - patroon: answer-first
     titel: "Een directe vraag krijgt eerst de redenering en het antwoord zit erin verstopt"
-    maatregel:
+    maatregel: HDR-034
     incidenten:
       - datum: 2026-09-23
         aantal: 2
@@ -40,8 +40,8 @@ patronen:
         wat: "Het verwijderen van dode code werd ook gecommit, en een haalbaarheidsvraag over een branch werd beantwoord door git ter plekke te herstructureren"
         bron: "geheugennotitie feedback-dont-execute-on-questions"
   - patroon: review-point-context
-    titel: "Een reviewbevinding wordt ter beslissing voorgelegd voordat ze in de chat op zichzelf staat"
-    maatregel:
+    titel: "Een beslispunt wordt voorgelegd voordat het in de chat op zichzelf staat"
+    maatregel: HDR-034
     incidenten:
       - datum: 2026-10-03
         wat: "Een bevinding beschreven als een schema met drie losse optionele velden, zodat het reviewbestand geopend moest worden om haar te begrijpen"

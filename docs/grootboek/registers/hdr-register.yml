@@ -367,3 +367,14 @@ hdrs:
     beslissing: "reviewer.md pint model: opus in de frontmatter, zoals builder.md; het speelt alleen bij normal en risky, want bij trivial is er geen reviewer; een model in de aanroep gaat nog voor de pin"
     notitie: "K10 uit JNL-002, besloten door Jarón op 2026-11-13. Aanleiding: in koude-startronde drie nam de reviewer Sonnet over van de lead, terwijl het Waarom van HDR-024 met een reviewer op Opus rekende. Afgewogen: de lead laten volgen, per regime kiezen; gekozen is de pin. Eigen record in plaats van HDR-024 uit te breiden, zodat de titel van HDR-024 blijft kloppen. Kosten alleen bij een lead op Sonnet. /stage-review start een general-purpose subagent en valt erbuiten. Root-CLAUDE.md bewust ongewijzigd"
     bestand: hdr-033-reviewer-op-opus-vastgepind.md
+  - id: "HDR-034"
+    titel: "Een beslispunt begint met uitleg, een directe vraag met het antwoord"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-11-13
+    implementatie-datum: 2026-11-13
+    beslissing: "Werkafspraak in de root-CLAUDE.md: een keuze die aan Jarón wordt voorgelegd (reviewbevinding, kwestie, rij opties) begint met 4–6 regels uitleg in gewone woorden, dan de opties, het advies als laatste; een directe vraag krijgt eerst het antwoord; een geplakte startprompt is geen bewijs dat Jarón de inhoud kent"
+    notitie: "Maatregel voor de incidentpatronen review-point-context (drie: 2026-10-03, K9 en K10 van JNL-002 op 2026-11-13) en answer-first (twee), besloten door Jarón op 2026-11-13. De afspraak stond alleen in privégeheugen, met een indexregel die smaller was dan de notitie, en botste met de notitie over antwoord-eerst. Afgewogen: een regel aan de schrijfkant van startprompts, een hook die een herinnering bezorgt; gekozen is de leeskant, omdat alleen die alle drie de incidenten dekt. Titel van review-point-context verbreed van reviewbevinding naar beslispunt, met Jaróns akkoord. Niet mechanisch te controleren"
+    bestand: hdr-034-beslispunt-begint-met-uitleg.md

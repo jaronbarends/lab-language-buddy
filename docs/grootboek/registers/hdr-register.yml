@@ -271,13 +271,13 @@ hdrs:
   - id: "HDR-025"
     titel: "Een bewering over een document of de omgeving komt uit de bron"
     status: implemented
-    versie: "1.1"
+    versie: "1.2"
     implementatie: 100
     omgeving: geen
     datum: 2026-11-08
     implementatie-datum: 2026-11-08
     beslissing: "Een werkafspraak in de root-CLAUDE.md: een bewering over wat een document zegt of wat de omgeving heeft komt uit de bron (het document helemaal lezen of het commando draaien); een zoekresultaat, een indexregel of een geheugennotitie is een aanwijzing, geen bewijs"
-    notitie: "Maatregel van het incidentpatroon document-not-fully-read (drie incidenten, alle drie een bewering dat iets ontbreekt). Een regel en geen hook: de hooks zien tool-aanroepen, geen beweringen in een antwoord, en of een bewering gedekt is, is een oordeel. Niet mechanisch te controleren: succes is geen vierde incident (zoals bij HDR-010). Versie 1.1 (2026-11-13): het vierde incident staat er, een grep-claim van een koude agent in koude-startronde 3 (K11 uit JNL-002); wat steviger is dan de regel, is nog niet besloten"
+    notitie: "Maatregel van het incidentpatroon document-not-fully-read (drie incidenten, alle drie een bewering dat iets ontbreekt). Een regel en geen hook: de hooks zien tool-aanroepen, geen beweringen in een antwoord, en of een bewering gedekt is, is een oordeel. Niet mechanisch te controleren: succes is geen vierde incident (zoals bij HDR-010). Versie 1.1 (2026-11-13): het vierde incident staat er, een grep-claim van een koude agent in koude-startronde 3 (K11 uit JNL-002); wat steviger is dan de regel, is nog niet besloten. Versie 1.2 (2026-11-13): het stevigere is HDR-035, dat nu de maatregel van het patroon is"
     bestand: hdr-025-bewering-uit-de-bron.md
   - id: "HDR-026"
     titel: "Een pull request die code in een werkgebied raakt, sluit met een reconciliatie"
@@ -378,3 +378,14 @@ hdrs:
     beslissing: "Werkafspraak in de root-CLAUDE.md: een keuze die aan Jarón wordt voorgelegd (reviewbevinding, kwestie, rij opties) begint met 4–6 regels uitleg in gewone woorden, dan de opties, het advies als laatste; een directe vraag krijgt eerst het antwoord; een geplakte startprompt is geen bewijs dat Jarón de inhoud kent"
     notitie: "Maatregel voor de incidentpatronen review-point-context (drie: 2026-10-03, K9 en K10 van JNL-002 op 2026-11-13) en answer-first (twee), besloten door Jarón op 2026-11-13. De afspraak stond alleen in privégeheugen, met een indexregel die smaller was dan de notitie, en botste met de notitie over antwoord-eerst. Afgewogen: een regel aan de schrijfkant van startprompts, een hook die een herinnering bezorgt; gekozen is de leeskant, omdat alleen die alle drie de incidenten dekt. Titel van review-point-context verbreed van reviewbevinding naar beslispunt, met Jaróns akkoord. Niet mechanisch te controleren"
     bestand: hdr-034-beslispunt-begint-met-uitleg.md
+  - id: "HDR-035"
+    titel: "Een afwezigheidsclaim noemt waar ze op rust"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-11-13
+    implementatie-datum: 2026-11-13
+    beslissing: "De werkafspraak Beweringen uit de bron in de root-CLAUDE.md krijgt twee zinnen: wie zegt dat iets ontbreekt, zegt erbij waar dat op rust (helemaal gelezen, grep op X zonder treffers, de indexregel van Y); een afwezigheid die op een aanwijzing rust, wordt als vermoeden gemeld"
+    notitie: "Het stevigere dat HDR-025 bij een vierde incident in document-not-fully-read beloofde (K11 uit JNL-002), besloten door Jarón op 2026-11-13. Alle vier de incidenten zijn afwezigheidsclaims, met verschillend gereedschap; met een genoemde basis was elk zichtbaar geweest. Afgewogen: de regel laten staan en de succesmaat aanpassen (doelpaal verschuiven), een PostToolUse-hook bij een lege zoekopdracht (dekt één van de vier, ruis), een controle in de koude-startprocedure (mist gewone sessies), een skill, een prompt-hook op Stop. Nog steeds een regel: een overtreding valt op, ze wordt niet afgedwongen. Een volgend incident krijgt erbij of de basis genoemd was; zo niet, dan is de hook de overgebleven kandidaat, niet besloten. Maatregel van het patroon in plaats van HDR-025, met Jaróns akkoord. Eigen record zodat de titel van HDR-025 blijft kloppen"
+    bestand: hdr-035-afwezigheidsclaim-noemt-haar-basis.md

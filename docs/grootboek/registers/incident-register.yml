@@ -71,7 +71,7 @@ patronen:
         bron: "koude-startrun, fase 2 (JNL-002)"
   - patroon: document-not-fully-read
     titel: "Er wordt een bewering over een document gedaan zonder het volledig te lezen"
-    maatregel: HDR-025
+    maatregel: HDR-035
     incidenten:
       - datum: 2026-10-27
         wat: "Zei dat de README alleen lint en build noemt, op basis van een zoekopdracht naar npm run die regels mist die met npx beginnen; ook de typecheck stond erin"

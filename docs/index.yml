@@ -157,7 +157,7 @@ documents:
     what: Vervangt HDR-019 en HDR-020; een wijziging die audio, opname of layout raakt gaat op een echte iPhone, een andere niet, en de faalpaden worden niet meer bij elke verificatie met de hand geprobeerd; gevonden in de proef besluiten toetsen.
     read_when: je een wijziging verifieert en wilt weten of de iPhone-test of een ronde langs de faalpaden nodig is; je builder.md, reviewer.md of de controles in CLAUDE.md aanpast.
   - path: docs/grootboek/hdr/hdr-025-bewering-uit-de-bron.md
-    what: De werkafspraak dat een bewering over een document of de omgeving uit de bron komt, niet uit een zoekresultaat, indexregel of geheugennotitie; de maatregel van het incidentpatroon document-not-fully-read, en waarom een regel en geen hook. Sinds 2026-11-13 staat er een vierde incident (K11 uit JNL-002); het vervolg is nog niet besloten.
+    what: De werkafspraak dat een bewering over een document of de omgeving uit de bron komt, niet uit een zoekresultaat, indexregel of geheugennotitie; waarom een regel en geen hook. Sinds 2026-11-13 staat er een vierde incident (K11 uit JNL-002); het vervolg is HDR-035, dat nu de maatregel van het patroon document-not-fully-read is.
     read_when: je beweert wat een document zegt of wat de omgeving heeft; een correctie van Jarón op zo'n bewering; je overweegt het patroon tot een hook te laten doorgroeien.
   - path: docs/grootboek/hdr/hdr-026-reconciliatie-per-pull-request.md
     what: Besluit dat een pull request die code in een werkgebied raakt sluit met een reconciliatie als DFT, in dezelfde pull request, ook bij alleen commentaar; wat is afgewogen en dat het bewijs dun is; de vaste heroverweging na DFT-010 en de tijdelijke kostenmeting tot dan.
@@ -180,6 +180,9 @@ documents:
   - path: docs/grootboek/hdr/hdr-034-beslispunt-begint-met-uitleg.md
     what: Waarom een beslispunt met uitleg begint en een directe vraag met het antwoord, waarom de geheugennotitie niet genoeg was (privé, te smalle indexregel, botsing met antwoord-eerst, startprompts in Jaróns stem) en waarom een regel en geen hook of startprompt-regel; maatregel voor review-point-context en answer-first.
     read_when: je Jarón een keuze voorlegt of een startprompt met een beslisvraag schrijft; een incident in review-point-context of answer-first wordt gelogd; je de werkafspraak over beslispunten wijzigt.
+  - path: docs/grootboek/hdr/hdr-035-afwezigheidsclaim-noemt-haar-basis.md
+    what: Waarom een bewering dat iets ontbreekt zegt waar ze op rust (helemaal gelezen, grep zonder treffers, een indexregel), het vervolg op HDR-025 na het vierde incident (K11 uit JNL-002); wat is afgewogen (succesmaat aanpassen, hook bij een lege zoekopdracht, koude-startprocedure, skill, prompt-hook op Stop) en hoe een volgend incident gelezen wordt; maatregel van document-not-fully-read.
+    read_when: je zegt dat iets ontbreekt in een document of de omgeving; een incident in document-not-fully-read wordt gelogd; je overweegt het patroon tot een hook te laten doorgroeien.
   - path: docs/grootboek/pdr/pdr-007-persona-van-de-ai.md
     what: De AI is een algemene vriendelijke kennis met vrij onderwerp, 2 tot 4 zinnen en hooguit één vraag per beurt; overgezet uit plan.md.
     read_when: je de persona, de toon of de prompt-opbouw uit benoemde secties wijzigt of een nieuwe persona toevoegt.

@@ -17,12 +17,12 @@ jnls:
     bestand: jnl-001-instap-software-balans.md
   - id: "JNL-002"
     titel: "Koude-startjournaal: kan een nieuwkomer werken met alleen de repo?"
-    status: discovery
+    status: afgerond
     datum: 2026-10-27
     laatste-sessie: 2026-11-13
     kwesties-totaal: 11
-    kwesties-besloten: 10
-    kwesties-open: 1
+    kwesties-besloten: 11
+    kwesties-open: 0
     kwesties-geparkeerd: 0
     doel-records:
       - "HDR-011 (K1, K2)"
@@ -30,7 +30,7 @@ jnls:
       - "K8: geen eigen record; de regel staat in CLAUDE.md (Controles)"
       - "HDR-031 (K9)"
       - "HDR-033 (K10)"
-      - "per kwestie een record zodra er een besluit valt (K11)"
+      - "K11: geen eigen record; een vierde regel in het incidentpatroon document-not-fully-read"
     bestand: jnl-002-koude-start-onboarding.md
   - id: "JNL-003"
     titel: "Animatie van chatbubbels"

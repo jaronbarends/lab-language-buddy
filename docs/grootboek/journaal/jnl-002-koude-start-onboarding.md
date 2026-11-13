@@ -1,6 +1,6 @@
 ---
 titel: "Koude-startjournaal: kan een nieuwkomer werken met alleen de repo?"
-status: discovery
+status: afgerond
 datum: 2026-10-27
 kernvraag: Waar beschrijft de repo zichzelf niet goed genoeg voor een agent die niets heeft dan de repo?
 doel-records:
@@ -9,7 +9,7 @@ doel-records:
   - "K8: geen eigen record; de regel staat in CLAUDE.md (Controles)"
   - "HDR-031 (K9)"
   - "HDR-033 (K10)"
-  - "per kwestie een record zodra er een besluit valt (K11)"
+  - "K11: geen eigen record; een vierde regel in het incidentpatroon document-not-fully-read"
 ---
 
 # JNL-002 — Koude-startjournaal: kan een nieuwkomer werken met alleen de repo?
@@ -68,7 +68,7 @@ De oriëntatie kwam volledig uit de `CLAUDE.md`-bestanden die vanzelf laden: hij
 | K8 | `npx next typegen` zonder `node_modules` wijzigt `package.json` | besloten 2026-11-13 |
 | K9 | Telt lint plus `tsc` als gedekt pad bij triage? | besloten 2026-11-13, geboekt in HDR-031 |
 | K10 | De reviewer draait op het model van de lead | besloten 2026-11-13, geboekt in HDR-033 |
-| K11 | Een afwezigheidsclaim uit een grep: incident of niet? | open |
+| K11 | Een afwezigheidsclaim uit een grep: incident of niet? | besloten 2026-11-13: telt als vierde incident in `document-not-fully-read` |
 
 ### K1 — De basisbranch voor arc-werk staat niet in de root-`CLAUDE.md`
 
@@ -217,7 +217,27 @@ vastgepind in `reviewer.md`); HDR-024 wijst ernaar.
 uit lezen. Het klopte (bevestigd met `git grep`), maar het is de vorm die HDR-025 (Een bewering
 over een document of de omgeving komt uit de bron) noemt. Telt het als vierde incident in het
 patroon `document-not-fully-read`? Het is gedrag van een koude agent, geen correctie in een
-werksessie. **Open**, aan Jarón.
+werksessie.
+
+HDR-009 (Terugkerende fouten worden per patroon gelogd en bij drie vastgelegd als regel) noemt twee
+aanleidingen voor een incident: een correctie van Jarón, of een toolfout die eerder is gebeurd. Geen
+van beide past hier. Maar het register telt in de praktijk breder. `branch-before-edit` (K2) logt
+een koude agent zonder correctie en zonder schade, en van de drie eerdere incidenten in dit patroon
+was er maar één een correctie van Jarón; de andere twee vond de agent zelf.
+
+**Besloten (Jarón, 2026-11-13):** het telt, als vierde incident in `document-not-fully-read`.
+HDR-025 noemt de vorm, niet de uitkomst: een zoekopdracht die niets vindt, bewijst alleen dat het
+patroon niet trof. Dat de bewering klopte, rust zelf op een `git grep`. En de regel stond in de
+geladen root-`CLAUDE.md` van de clone (`92c2c27` bevat HDR-025); dit was de eerste keer dat hij een
+koude agent tegenkwam. Afgewogen: niet tellen, met een aantekening (dan verbergt het register dat
+de regel deze agent niet bereikte), en eerst de definitie in HDR-009 aanscherpen. **Geen eigen
+record:** het besluit is een regel in het incidentregister.
+
+Wat volgt, is hier niet besloten. `docs:check` waarschuwt niet, want het patroon heeft HDR-025 als
+`maatregel`. De escalatie staat alleen in HDR-025 zelf: bij een vierde incident was een regel niet
+genoeg en groeit het patroon door naar iets steviger, terwijl dat record een hook al uitsloot. En
+de definitie van een incident in HDR-009 en de root-`CLAUDE.md` is smaller dan wat het register
+telt.
 
 ## Ronde twee
 
@@ -320,3 +340,6 @@ hierboven.
   blijven open.
 - **2026-11-13 — K10 besloten en geboekt als HDR-033.** `reviewer.md` pint `model: opus`; HDR-024
   wijst ernaar (versie 1.1). K11 blijft open.
+- **2026-11-13 — K11 besloten, zonder eigen record, en het journaal is `afgerond`.** De
+  afwezigheidsclaim uit een grep telt als vierde incident in `document-not-fully-read`; HDR-025
+  noemt het (versie 1.1). Alle elf kwesties zijn besloten.

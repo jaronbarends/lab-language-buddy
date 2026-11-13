@@ -1,4 +1,4 @@
-# HDR-036: Het incidentregister telt elke gevonden fout, en een incident na de maatregel vraagt een oordeel
+# HDR-037: Het incidentregister telt elke gevonden fout, en een incident na de maatregel vraagt een oordeel
 
 - **Status:** implemented
 - **Date:** 2026-11-13
@@ -30,7 +30,7 @@ telling is een fout.
 
 De werkafspraak in de root-`CLAUDE.md` wordt:
 
-> **Incidentregister** (HDR-009, HDR-036): telt terugkerende fouten zodat ze regels kunnen worden.
+> **Incidentregister** (HDR-009, HDR-037): telt terugkerende fouten zodat ze regels kunnen worden.
 > Maakt de agent een fout in hoe hij werkt, wie of wat die ook vindt (Jarón, een review, een check,
 > een koude-startbeoordeling, de agent zelf), of faalt een tool opnieuw op dezelfde manier, voeg
 > dan één regel toe onder een passend patroon in `docs/grootboek/registers/incident-register.yml`

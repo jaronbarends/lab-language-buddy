@@ -9,7 +9,7 @@ doel-records:
   - "K8: geen eigen record; de regel staat in CLAUDE.md (Controles)"
   - "HDR-031 (K9)"
   - "HDR-033 (K10)"
-  - "K11: een vierde regel in het incidentpatroon document-not-fully-read; het vervolg is HDR-035 en HDR-036"
+  - "K11: een vierde regel in het incidentpatroon document-not-fully-read; het vervolg is HDR-035 en HDR-037"
 ---
 
 # JNL-002 — Koude-startjournaal: kan een nieuwkomer werken met alleen de repo?
@@ -244,7 +244,7 @@ rust). Wie zegt dat iets ontbreekt, zegt erbij waar dat op rust; HDR-035 is nu d
 het patroon. De twee andere punten hierboven, `docs:check` en de definitie in HDR-009, zijn daarmee
 niet besloten.
 
-**Vervolg (Jarón, 2026-11-13):** die twee punten zijn HDR-036 (Het incidentregister telt elke
+**Vervolg (Jarón, 2026-11-13):** die twee punten zijn HDR-037 (Het incidentregister telt elke
 gevonden fout, en een incident na de maatregel vraagt een oordeel). Een incident is een fout in hoe
 de agent werkt, wie of wat hem ook vond; dit incident telt dus ook volgens de tekst. En
 `docs:check` waarschuwt bij een incident na de maatregel tot iemand heeft geoordeeld of die hield.
@@ -356,6 +356,6 @@ hierboven.
 - **2026-11-13 — Het vervolg op K11 geboekt als HDR-035.** Een afwezigheidsclaim noemt waar ze op
   rust; een zin erbij in de root-`CLAUDE.md`. HDR-035 is de `maatregel` van
   `document-not-fully-read`; HDR-025 wijst ernaar (versie 1.2).
-- **2026-11-13 — De twee andere punten uit K11 geboekt als HDR-036.** Een incident telt, wie of wat
+- **2026-11-13 — De twee andere punten uit K11 geboekt als HDR-037.** Een incident telt, wie of wat
   de fout ook vond; een incident na de maatregel vraagt een oordeel, en `docs:check` waarschuwt
   tot dat er is. HDR-009, HDR-034 en HDR-035 wijzen ernaar (versie 1.1).

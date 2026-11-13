@@ -29,7 +29,7 @@ eis.
   Records (ADR, HDR, PDR, DFT, JNL) en de README vallen buiten deze plicht.
 - Een beslissing zonder registerregel bestaat niet voor de volgende sessie. Werk het register bij
   in dezelfde commit als het record.
-- **Incidentregister** (HDR-009, HDR-036): telt terugkerende fouten zodat ze regels kunnen worden.
+- **Incidentregister** (HDR-009, HDR-037): telt terugkerende fouten zodat ze regels kunnen worden.
   Maakt de agent een fout in hoe hij werkt, wie of wat die ook vindt (Jarón, een review, een check,
   een koude-startbeoordeling, de agent zelf), of faalt een tool opnieuw op dezelfde manier, voeg
   dan één regel toe onder een passend patroon in `docs/grootboek/registers/incident-register.yml`

@@ -3,7 +3,7 @@
 # (REQ-GG-06). Bij drie wordt het patroon vastgelegd (een regel, hook of skill) en als
 # HDR geboekt, waarvan het id in `maatregel` komt. `npm run docs:check` waarschuwt tot dat is gebeurd.
 # Een incident na de maatregel vraagt een oordeel: hield de maatregel, of is er iets stevigers
-# nodig? `docs:check` waarschuwt zolang de telling boven `beoordeeld-tot` staat (HDR-036).
+# nodig? `docs:check` waarschuwt zolang de telling boven `beoordeeld-tot` staat (HDR-037).
 #
 # Een incident is een regel, geen beslissing: geen ids, geen documenten (HDR-001 boekt beslissingen).
 # Een incident is een fout in hoe de agent werkt, wie of wat hem ook vond: een correctie van Jarón,
@@ -175,5 +175,5 @@ patronen:
     maatregel:
     incidenten:
       - datum: 2026-11-13
-        wat: "De opdracht voor de oordeelsteller van HDR-036 liet weg dat beoordeeld-tot pas omhooggaat met Jaróns akkoord; de waarschuwing in docs:check zei daardoor 'judge ... then raise beoordeeld-tot', zodat een agent zelf zou oordelen en ophogen, precies het gat dat HDR-036 noemt"
-        bron: "review van de builder-diff voor HDR-036, bevinding 1"
+        wat: "De opdracht voor de oordeelsteller van HDR-037 liet weg dat beoordeeld-tot pas omhooggaat met Jaróns akkoord; de waarschuwing in docs:check zei daardoor 'judge ... then raise beoordeeld-tot', zodat een agent zelf zou oordelen en ophogen, precies het gat dat HDR-037 noemt"
+        bron: "review van de builder-diff voor HDR-037, bevinding 1"

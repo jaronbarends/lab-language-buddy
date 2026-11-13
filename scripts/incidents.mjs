@@ -7,7 +7,7 @@
 // The register is docs/grootboek/registers/incident-register.yml, grouped by pattern, with no
 // ids (an incident is a line, not a decision), so two branches cannot collide on a number.
 // A codified pattern also carries `beoordeeld-tot`: the count up to which its incidents have been
-// judged against the `maatregel`. An incident beyond it asks whether the maatregel held (HDR-036).
+// judged against the `maatregel`. An incident beyond it asks whether the maatregel held (HDR-037).
 // Read by docs:check: a pattern at the threshold without a `maatregel`, or a codified pattern
 // whose count is above `beoordeeld-tot`, is a warning. A malformed register, a `maatregel` naming
 // an HDR that does not exist, a `maatregel` without `beoordeeld-tot` or the other way round, or a

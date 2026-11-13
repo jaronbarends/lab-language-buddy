@@ -9,19 +9,19 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .claude/hooks/guard-no-subagent-commit.cjs"
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard-no-subagent-commit.cjs\""
           },
           {
             "type": "command",
-            "command": "node .claude/hooks/guard-push-sweep.cjs"
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard-push-sweep.cjs\""
           },
           {
             "type": "command",
-            "command": "node .claude/hooks/guard-merge-renumber.cjs"
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard-merge-renumber.cjs\""
           },
           {
             "type": "command",
-            "command": "node .claude/hooks/guard-reconciliatie-pr.cjs"
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard-reconciliatie-pr.cjs\""
           }
         ]
       },
@@ -30,7 +30,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .claude/hooks/guard-kenniswerker.cjs"
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard-kenniswerker.cjs\""
           }
         ]
       },
@@ -39,7 +39,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .claude/hooks/guard-kenniswerker.cjs"
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard-kenniswerker.cjs\""
           }
         ]
       },
@@ -48,7 +48,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .claude/hooks/triage-guard.cjs"
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/triage-guard.cjs\""
           }
         ]
       }
@@ -59,7 +59,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .claude/hooks/notify-leading-document.cjs"
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/notify-leading-document.cjs\""
           }
         ]
       },
@@ -68,7 +68,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .claude/hooks/notify-leading-document.cjs"
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/notify-leading-document.cjs\""
           }
         ]
       }

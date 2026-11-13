@@ -95,6 +95,29 @@ describe("guard-reconciliatie-pr", () => {
     assert.equal(runHook("gh pr create --fill"), null);
   });
 
+  it("denies from a subfolder of the repository", () => {
+    git("checkout", "-q", "code-only");
+    const output = runHook("gh pr create --fill", { cwd: join(repo, "src", "lib") });
+    assert.equal(output.permissionDecision, "deny");
+  });
+
+  it("denies a rename out of a werkgebied", () => {
+    git("checkout", "-q", "main");
+    git("checkout", "-q", "-b", "rename-out", "origin/main");
+    git("mv", "src/lib/a.ts", "moved.ts");
+    git("commit", "-q", "-m", "rename-out");
+    const output = runHook("gh pr create --fill");
+    assert.equal(output.permissionDecision, "deny");
+    assert.match(output.permissionDecisionReason, /src\/lib\/a\.ts/);
+  });
+
+  it("denies a command that changes HEAD and creates the pull request in one go", () => {
+    git("checkout", "-q", "docs-only");
+    const output = runHook("git add -A && git commit -m x && gh pr create --fill");
+    assert.equal(output.permissionDecision, "deny");
+    assert.match(output.permissionDecisionReason, /aparte aanroep/);
+  });
+
   it("ignores commands that are not gh pr create, and subagents", () => {
     git("checkout", "-q", "code-only");
     assert.equal(runHook("gh pr view"), null);

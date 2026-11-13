@@ -40,25 +40,49 @@ function deny(reason) {
   );
 }
 
+function segmentsOf(command) {
+  return command.split(/&&|\|\||[;|\n]/);
+}
+
 // True when any command in a chain (`git push && gh pr create`) is `gh pr create`.
 function createsPullRequest(command) {
-  return command.split(/&&|\|\||[;|\n]/).some((segment) => /(^|\s)gh\s+pr\s+create(\s|$)/.test(segment));
+  return segmentsOf(command).some((segment) => /(^|\s)gh\s+pr\s+create(\s|$)/.test(segment));
+}
+
+// True when a command in the chain moves HEAD (`git commit && gh pr create`). The check below
+// reads the branch before the command runs, so it cannot judge the commit that is still to come.
+function changesHead(command) {
+  return segmentsOf(command).some((segment) =>
+    /(^|\s)git\s+(?:-\S+\s+)*(commit|merge|rebase|cherry-pick|revert|reset|am|pull)(\s|$)/.test(segment)
+  );
+}
+
+// The repository root: the werkgebieden are relative to it, and the hook may run from a subfolder.
+function repoRoot(cwd) {
+  return git(cwd, ['rev-parse', '--show-toplevel']).trim();
 }
 
 function git(cwd, args) {
   return execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
 }
 
-// What the branch changed against the base, as { status, file } with the new path of a rename.
+// What the branch changed against the base, as { status, file }. A rename or copy gives two entries,
+// the old path as a deletion and the new path, so it counts when either path is in a werkgebied.
 function branchChanges(cwd) {
   for (const base of BASE_REFS) {
     try {
       return git(cwd, ['diff', '--name-status', `${base}...HEAD`])
         .split('\n')
         .filter(Boolean)
-        .map((line) => {
+        .flatMap((line) => {
           const [status, ...paths] = line.split('\t');
-          return { status: status[0], file: paths.at(-1) };
+          if (paths.length < 2) {
+            return [{ status: status[0], file: paths[0] }];
+          }
+          return [
+            { status: 'D', file: paths[0] },
+            { status: status[0], file: paths[1] },
+          ];
         });
     } catch {
       // try the next base
@@ -106,8 +130,17 @@ async function main() {
     process.exit(0);
   }
 
+  if (changesHead(command)) {
+    deny(
+      'Pull request tegengehouden (HDR-026): dit commando wijzigt HEAD en maakt in dezelfde aanroep de ' +
+        'pull request, maar de hook kan de commit die nog komt niet toetsen. Voer de commit (of merge, ' +
+        'rebase of reset) eerst uit en maak de pull request in een aparte aanroep.'
+    );
+    process.exit(0);
+  }
+
   try {
-    const cwd = input.cwd || process.cwd();
+    const cwd = repoRoot(input.cwd || process.cwd());
     const changes = branchChanges(cwd);
     if (!changes || addsDft(changes)) {
       process.exit(0);

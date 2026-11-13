@@ -260,13 +260,13 @@ hdrs:
   - id: "HDR-024"
     titel: "Builders op Sonnet bij `trivial`, op Opus bij `normal` en `risky`"
     status: implemented
-    versie: "1.0"
+    versie: "1.1"
     implementatie: 100
     omgeving: geen
     datum: 2026-11-08
     implementatie-datum: 2026-11-08
     beslissing: "Bij regime trivial start de lead de builder met model sonnet; normal en risky draaien op Opus, vastgepind in de frontmatter van builder.md zodat het niet afhangt van het model van de lead"
-    notitie: "Uitkomst van een replay van de driftopdracht (PR #37) met een Sonnet-builder: dezelfde twee serieuze reviewbevindingen als Opus, alle verificatieclaims klopten, twee toelichtingen niet; 46.741 tegen 80.896 buildertokens. Jarón test normal later opnieuw, met de lezing van de beslisregel vooraf afgesproken"
+    notitie: "Uitkomst van een replay van de driftopdracht (PR #37) met een Sonnet-builder: dezelfde twee serieuze reviewbevindingen als Opus, alle verificatieclaims klopten, twee toelichtingen niet; 46.741 tegen 80.896 buildertokens. Jarón test normal later opnieuw, met de lezing van de beslisregel vooraf afgesproken. Versie 1.1 (2026-11-13): de zin over de reviewer verwijst naar HDR-033, dat de reviewer op Opus pint (K10 uit JNL-002)"
     bestand: hdr-024-builder-model-per-regime.md
   - id: "HDR-025"
     titel: "Een bewering over een document of de omgeving komt uit de bron"
@@ -356,3 +356,14 @@ hdrs:
     beslissing: "De skill feature-worktree (script setup/teardown) zet een worktree op in ../<repo>-<naam> met branch <naam> vanaf main, kopieert .env.local (niet .env.prd), draait een eigen npm install en kiest de eerste vrije dev-poort vanaf 3001; teardown weigert vuile worktrees en verwijdert de branch alleen met git branch -d"
     notitie: "Jarón vroeg het op 2026-11-13 om parallel aan features te werken terwijl repo bezig blijft; geen incident. Jarón koos eigen install (geen junction), alleen .env.local en de eerste vrije poort. Eén proef met een wegwerpnaam, nog niet gebruikt voor een echte feature. git branch -d toetst tegen HEAD van de hoofdcheckout, niet tegen main. Root-CLAUDE.md bewust ongewijzigd. Nummering: geboekt als HDR-032 omdat HDR-031 toen nog alleen op de branch triage-gedekt-pad-lint-tsc stond; daarna is die branch eerst gemerged en is de volgorde gelijk gebleven"
     bestand: hdr-032-feature-worktree-via-skill-vanaf-main.md
+  - id: "HDR-033"
+    titel: "De reviewer draait op Opus, vastgepind in `reviewer.md`"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-11-13
+    implementatie-datum: 2026-11-13
+    beslissing: "reviewer.md pint model: opus in de frontmatter, zoals builder.md; het speelt alleen bij normal en risky, want bij trivial is er geen reviewer; een model in de aanroep gaat nog voor de pin"
+    notitie: "K10 uit JNL-002, besloten door Jarón op 2026-11-13. Aanleiding: in koude-startronde drie nam de reviewer Sonnet over van de lead, terwijl het Waarom van HDR-024 met een reviewer op Opus rekende. Afgewogen: de lead laten volgen, per regime kiezen; gekozen is de pin. Eigen record in plaats van HDR-024 uit te breiden, zodat de titel van HDR-024 blijft kloppen. Kosten alleen bij een lead op Sonnet. /stage-review start een general-purpose subagent en valt erbuiten. Root-CLAUDE.md bewust ongewijzigd"
+    bestand: hdr-033-reviewer-op-opus-vastgepind.md

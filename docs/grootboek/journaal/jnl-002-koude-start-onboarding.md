@@ -8,7 +8,8 @@ doel-records:
   - "HDR-030 (K7)"
   - "K8: geen eigen record; de regel staat in CLAUDE.md (Controles)"
   - "HDR-031 (K9)"
-  - "per kwestie een record zodra er een besluit valt (K10 en K11)"
+  - "HDR-033 (K10)"
+  - "per kwestie een record zodra er een besluit valt (K11)"
 ---
 
 # JNL-002 — Koude-startjournaal: kan een nieuwkomer werken met alleen de repo?
@@ -66,7 +67,7 @@ De oriëntatie kwam volledig uit de `CLAUDE.md`-bestanden die vanzelf laden: hij
 | K7 | De reconciliatieregel bereikt wie in `src/` werkt niet | besloten 2026-11-13, geboekt in HDR-030 |
 | K8 | `npx next typegen` zonder `node_modules` wijzigt `package.json` | besloten 2026-11-13 |
 | K9 | Telt lint plus `tsc` als gedekt pad bij triage? | besloten 2026-11-13, geboekt in HDR-031 |
-| K10 | De reviewer draait op het model van de lead | open |
+| K10 | De reviewer draait op het model van de lead | besloten 2026-11-13, geboekt in HDR-033 |
 | K11 | Een afwezigheidsclaim uit een grep: incident of niet? | open |
 
 ### K1 — De basisbranch voor arc-werk staat niet in de root-`CLAUDE.md`
@@ -200,7 +201,15 @@ gedragseffect.
 `builder.md` pint `model: opus`; `reviewer.md` pint niets, en de reviewer nam Sonnet over van de
 lead. HDR-024 (Builders op Sonnet bij `trivial`, op Opus bij `normal` en `risky`) laat de reviewer
 buiten het besluit, maar rekent in zijn Waarom met een reviewer op Opus. Dit valt buiten de
-kernvraag van dit journaal; misschien hoort het elders. **Open.**
+kernvraag van dit journaal, maar het is hier gevonden en wordt hier gesloten.
+
+Bij `trivial` is er geen reviewer, dus de vraag speelt alleen bij `normal` en `risky`, waar de
+builder altijd op Opus draait. Afgewogen: de reviewer vastzetten op Opus, hem de lead laten volgen
+en dat in HDR-024 opschrijven, of per regime kiezen met het model in de aanroep. Jarón koos de pin:
+de controle is dan minstens zo sterk als het werk dat ze controleert, en het Waarom van HDR-024
+klopt weer. Het kost alleen iets bij een lead op Sonnet. `/stage-review` start een
+`general-purpose`-subagent en valt erbuiten. **Geboekt als HDR-033** (De reviewer draait op Opus,
+vastgepind in `reviewer.md`); HDR-024 wijst ernaar.
 
 ### K11 — Een afwezigheidsclaim uit een grep: incident of niet?
 
@@ -309,3 +318,5 @@ hierboven.
 - **2026-11-13 — K9 besloten en geboekt als HDR-031.** Lint en `tsc` tellen als gedekt pad bij een
   wijziging zonder gedragseffect; prompts en tekst die iets toezegt tellen als gedrag. K10 en K11
   blijven open.
+- **2026-11-13 — K10 besloten en geboekt als HDR-033.** `reviewer.md` pint `model: opus`; HDR-024
+  wijst ernaar (versie 1.1). K11 blijft open.

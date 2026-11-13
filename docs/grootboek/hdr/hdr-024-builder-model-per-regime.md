@@ -24,7 +24,8 @@ lezing pas kiest als de uitkomst er is, verschuift de doelpalen.
   waarop de lead draait.
 - De triage-skill noemt het model per regime onder zijn tabel; de alinea Staffel in de
   root-`CLAUDE.md` zegt het in één zin.
-- De reviewer valt buiten dit besluit.
+- De reviewer valt buiten dit besluit. Sinds 2026-11-13 pint `reviewer.md` hem op Opus: HDR-033
+  (De reviewer draait op Opus, vastgepind in `reviewer.md`).
 
 Geen hook dwingt het model af; `triage-guard` controleert alleen de regime-regel. Vergeet de lead
 `model: "sonnet"` bij `trivial`, dan draait de builder op Opus: de fout valt naar de duurdere,

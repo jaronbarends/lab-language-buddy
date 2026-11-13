@@ -143,3 +143,10 @@ patronen:
       - datum: 2026-11-10
         wat: "De instructie om de run af te maken gaf zes stappen met vertakkingen (meetblok, kostenregel, prompt 3, stopzin) zonder te zeggen dat de bestaande sessie doorliep; Jarón wist niet of hij opnieuw moest beginnen en of er een reconciliatie kwam"
         bron: "correctie van Jarón tijdens koude start ronde 3"
+  - patroon: reply-language
+    titel: "Een antwoord in de chat komt in een andere taal dan waarin Jarón schrijft"
+    maatregel:
+    incidenten:
+      - datum: 2026-11-13
+        wat: "Jarón vroeg in het Nederlands om een worktree voor een info-box; de skill feature-worktree is Nederlands, maar het slotbericht met de worktree-waarden kwam in het Engels"
+        bron: "correctie van Jarón bij het opzetten van de worktree add-info-box"

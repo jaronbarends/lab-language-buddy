@@ -323,3 +323,14 @@ hdrs:
     beslissing: "Vervangt HDR-019 en HDR-020: een wijziging die audio, opname of layout raakt gaat op een echte iPhone in Safari, een andere niet; de faalpaden (microfoon weigeren, netwerk afknippen, stoppen zonder spraak) worden niet meer bij elke verificatie met de hand geprobeerd"
     notitie: "Gevonden in de proef besluiten toetsen (C3 uit de grootboekronde, ARC-skill grootboek-onderhoud): beide records stonden op implemented met 100, maar het harnas droeg ze niet meer zoals ze luidden. Jarón koos op 2026-11-10; de faalpaden vervallen omdat ze bij elke verificatie veel werk zijn en de kans op een fout daar te klein is. Afgewogen: de faalpaden opnemen in de controles van CLAUDE.md of builder.md. De werkregel stond al in CLAUDE.md"
     bestand: hdr-029-iphone-test-alleen-bij-audio-opname-layout.md
+  - id: "HDR-030"
+    titel: "Een hook houdt een pull request zonder reconciliatie tegen"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-11-13
+    implementatie-datum: 2026-11-13
+    beslissing: "De PreToolUse-hook guard-reconciliatie-pr weigert gh pr create van de lead thread (ook in een samengestelde regel) als de branch een bestand in een werkgebied raakt en geen nieuw DFT-bestand toevoegt; de werkgebieden komen uit scripts/drift-signal.mjs; de drift-waarschuwing van docs:check noemt voortaan ook de DFT"
+    notitie: "K7 uit JNL-002, besloten door Jarón op 2026-11-13. Afgewogen: de tekst van de waarschuwing, de root-CLAUDE.md, builder.md en reviewer.md; gekozen is een hook omdat alleen die vuurt op het moment van handelen. Grove maat: de hook ziet alleen dat er een DFT-bestand bijkomt en vergelijkt met origin/main. Niet gemeten of K7 hiermee in de praktijk is opgelost"
+    bestand: hdr-030-hook-houdt-pull-request-zonder-reconciliatie-tegen.md

@@ -128,7 +128,8 @@ for (const document of drift.documents) {
   if (document.commits.length > 0) {
     warnings.push(
       `drift: ${document.path} is ${document.commits.length} commit(s) behind its werkgebied ` +
-        `(${document.files.length} file(s)); run npm run docs:drift`,
+        `(${document.files.length} file(s)); run npm run docs:drift, then book the reconciliation ` +
+        "as a DFT in the same pull request (HDR-026)",
     );
   }
 }

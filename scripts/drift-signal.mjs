@@ -324,7 +324,7 @@ function readReconciliations(root, leadingPaths) {
 
 // Every leading document with its werkgebied: the documents under docs/ that declare one in their
 // front matter, and every CLAUDE.md under src/, whose werkgebied is its own folder.
-function listLeadingDocuments(root) {
+export function listLeadingDocuments(root) {
   const leading = [];
   if (existsSync(join(root, "docs"))) {
     for (const path of listFiles(root, "docs", (entry) => entry.endsWith(".md"))) {

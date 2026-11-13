@@ -61,8 +61,8 @@ documents:
     what: Historisch: waarom de root-CLAUDE.md arc/arc-main noemde als basis voor arc-werk en zegt dat de branch vóór de eerste bewerking komt; gevonden in de eerste koude-startrun. Het eerste deel is vervangen door HDR-021 (werk vertakt van main); het tweede deel geldt nog.
     read_when: je de geschiedenis van de basisbranch zoekt; voor de regel om een branch te maken, zie HDR-021.
   - path: docs/grootboek/journaal/jnl-002-koude-start-onboarding.md
-    what: Koude-startjournaal (REQ-GG-10) — wat een verse agent met alleen de repo goed deed en waar de repo zichzelf niet beschrijft; drie rondes, elf kwesties. Ronde drie (2026-11-10) liet zien dat de reconciliatie per pull request een nieuwkomer die in src/ werkt niet bereikt.
-    read_when: je de volgende koude-startronde draait; je beoordeelt of onboarding werkt; je de open kwesties beslist (de reconciliatieregel voor wie in src/ werkt, npx zonder node_modules, gedekt pad bij triage, het model van de reviewer, een afwezigheidsclaim uit een grep).
+    what: Koude-startjournaal (REQ-GG-10) — wat een verse agent met alleen de repo goed deed en waar de repo zichzelf niet beschrijft; drie rondes, elf kwesties. Ronde drie (2026-11-10) liet zien dat de reconciliatie per pull request een nieuwkomer die in src/ werkt niet bereikt; K7 is besloten (hook, HDR-030).
+    read_when: je de volgende koude-startronde draait; je beoordeelt of onboarding werkt; je de open kwesties beslist (npx zonder node_modules, gedekt pad bij triage, het model van de reviewer, een afwezigheidsclaim uit een grep).
   - path: docs/grootboek/hdr/hdr-012-geen-record-gedateerd-na-vandaag.md
     what: Waarom docs:check faalt op een record dat na vandaag is gedateerd (gelezen in Europe/Amsterdam), wat het leest en wat het niet kan vangen; de maatregel van het incidentpatroon date-assumed.
     read_when: je een datum in een record of register schrijft; een docs:check-fout over een datum na vandaag; je de tijdzoneconstante wijzigt.
@@ -165,6 +165,9 @@ documents:
   - path: docs/grootboek/hdr/hdr-027-software-balans-blijft-permanent.md
     what: Besluit dat de software-balans permanent blijft als leidend document en HDR-002 vervangt; het gemengde bewijs uit DFT-001, DFT-004 en DFT-005 en wat is afgewogen (parkeren, opheffen).
     read_when: je beslist of de balans blijft, wijzigt of vervalt; je een pull request in het werkgebied van de balans afsluit.
+  - path: docs/grootboek/hdr/hdr-030-hook-houdt-pull-request-zonder-reconciliatie-tegen.md
+    what: De hook guard-reconciliatie-pr weigert gh pr create van de lead thread als de branch een werkgebied raakt zonder nieuwe DFT (HDR-026 afgedwongen), waar de werkgebieden vandaan komen, wat de grove maat niet ziet en dat het effect nog niet is gemeten; K7 uit JNL-002.
+    read_when: je een pull request opent die code in een werkgebied raakt; de hook een pull request weigert; je guard-reconciliatie-pr, de drift-waarschuwing van docs:check of HDR-026 wijzigt.
   - path: docs/grootboek/pdr/pdr-007-persona-van-de-ai.md
     what: De AI is een algemene vriendelijke kennis met vrij onderwerp, 2 tot 4 zinnen en hooguit één vraag per beurt; overgezet uit plan.md.
     read_when: je de persona, de toon of de prompt-opbouw uit benoemde secties wijzigt of een nieuwe persona toevoegt.

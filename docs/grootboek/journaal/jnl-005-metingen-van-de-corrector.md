@@ -21,6 +21,8 @@ varianten is klein en grof: lees haar als richting.
 
 **Hoe dit is gemaakt.** Overgenomen uit het gedeelte van `docs/plan.md` over de evaluatiefase bij de
 overzetting van het plan naar het grootboek (HDR-015). Bewoording en getallen zijn niet aangepast.
+K5 kwam er op 2026-11-13 bij, uit een gesprek met Jarón over iets wat hij in gebruik opmerkte; die
+kwestie staat niet in het plan.
 
 ## Kwesties
 
@@ -30,8 +32,10 @@ overzetting van het plan naar het grootboek (HDR-015). Bewoording en getallen zi
 | K2 | De transcriptiehint werkt voor een deel van de gevallen | open (gemeten, niet opgelost) |
 | K3 | De aparte call levert meer aanhalingstekens in de tekst | open (gemeten, niet opgelost) |
 | K4 | Speech-to-text-fouten worden als taalfouten gecorrigeerd | open (niet beoordeeld) |
+| K5 | Correcties volgens de schrijfnorm op wat in spreektaal gewoon is | geparkeerd 2026-11-13 (eerst voorbeelden verzamelen) |
 
-Tussen haakjes staat de status uit het plan: gemeten maar niet opgelost, of niet beoordeeld.
+Bij K1 tot en met K4 staat tussen haakjes de status uit het plan: gemeten maar niet opgelost, of
+niet beoordeeld. K5 is bewust uitgesteld tot er echte voorbeelden zijn.
 
 ## De metingen
 
@@ -127,3 +131,40 @@ worden. De prompt vraagt de corrector bij een mogelijke transcriptiefout dat te 
 van haar als taalfout uit te leggen; hoe goed dat werkt in gebruik is niet vastgelegd.
 
 Verwant: ADR-008 (Prompts van de corrector)
+
+### K5 — Correcties volgens de schrijfnorm
+
+**Wat er open staat.** Spreekt Jarón Nederlands met de app, dan krijgt hij af en toe een correctie
+waar hij het niet mee eens is: op iets wat in spreektaal heel gewoon is, maar wat je in een
+geschreven brief misschien anders zou doen. Er zijn nog geen transcripten van zulke gevallen.
+
+**Besluit: geparkeerd (2026-11-13, Jarón).** Eerst echte gevallen verzamelen: het transcript en de
+correctie zodra het weer gebeurt. Er is geen mechanisme dat eraan herinnert; Jarón verzamelt zelf.
+Een regel in de prompt nu, alleen op het vermoeden hieronder, is afgewezen: ongetoetst is niet te
+zien of hij de gevallen dekt of echte correcties onderdrukt.
+
+**Vermoeden (niet getoetst).** De prompt geeft de corrector geen maatstaf voor register. De
+Task-sectie vraagt naar een "nuance issue (technically correct but not what a native speaker would
+say)" en zegt nergens dat de maatstaf spreektaal in een informeel gesprek is; "spoken" komt alleen
+voor in de regel over hoe de corrector naar het bericht verwijst en in het spellingverbod
+(`src/lib/prompt.ts` helemaal gelezen op `84c238a`). Het model valt dan mogelijk terug op de
+geschreven norm. Het kan ook hetzelfde mechanisme zijn als bij K1: zonder echte fout zoekt het
+model iets anders om te corrigeren, en de null-regel noemt de schrijfnorm niet als verboden
+uitwijk. Een verzonnen voorbeeld, niet uit gebruik: bij "Weet ik niet, moet ik nog even kijken"
+stelt de corrector "Dat weet ik niet" voor.
+
+**De grens die een regel moet trekken.** Sommige dingen zijn in spreektaal gewoon en toch fout
+("hun hebben", "groter als"). Een te ruime regel ("beoordeel als spreektaal") laat ook die
+correcties verdwijnen. Waar de grens ligt, is een keuze van Jarón, te maken op echte zinnen.
+
+**Meetplan voor als het wordt opgepakt.**
+
+- Een set van ongeveer acht Nederlandse zinnen die in spreektaal normaal zijn maar die je anders
+  zou schrijven, gericht op de verzamelde gevallen, plus twee zinnen met een echte fout als
+  controle.
+- Elke zin drie keer via `/api/evaluation` op de dev server, met de prompt zoals hij dan is: de
+  nulmeting. Jarón beoordeelt de correcties.
+- Dan de regel formuleren en dezelfde set opnieuw draaien. Beide uitkomsten komen in dit journaal,
+  bij de andere metingen.
+
+Verwant: ADR-008 (Prompts van de corrector), K1

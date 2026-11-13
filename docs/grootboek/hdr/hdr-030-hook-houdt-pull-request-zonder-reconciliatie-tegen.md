@@ -63,7 +63,8 @@ gemiste stap in een vaste procedure, en dat is wat een hook goed kan afdwingen.
 - **Niet gemeten of dit K7 in de praktijk oplost.** Dat vraagt een volgende koude-startronde met
   een taak die code in een werkgebied raakt.
 - **HDR-026 blijft het besluit;** dit record is de afdwinging. De werkregel in
-  `docs/grootboek/CLAUDE.md` is niet gewijzigd.
+  `docs/grootboek/CLAUDE.md` bleef bij dit besluit ongewijzigd; later kreeg ze een verwijzing
+  naar de hook.
 
 Verwant: HDR-026 (Een pull request die code in een werkgebied raakt, sluit met een reconciliatie)
 Verwant: HDR-005 (De branch die als tweede merget hernummert zijn records), waarvan de hook `guard-merge-renumber` de vorm van deze hook voorbeeld was

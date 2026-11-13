@@ -44,7 +44,8 @@ nummer.
   afgesloten DFT die het document noemt; een aanraking van het document zet het niet stil
   (HDR-022)
 - Sluit een pull request die code in een werkgebied raakt af met die reconciliatie, in dezelfde
-  pull request, ook als alleen commentaar veranderde (HDR-026)
+  pull request, ook als alleen commentaar veranderde (HDR-026). De hook `guard-reconciliatie-pr`
+  houdt `gh pr create` vanuit Claude Code tegen zolang er geen nieuwe DFT bij zit (HDR-030)
 
 **Tijdelijk, tot en met DFT-010: wat kost een reconciliatie?** (HDR-026)
 

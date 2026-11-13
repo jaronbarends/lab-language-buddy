@@ -84,6 +84,11 @@ raakt, en per bewering een bijzin kost in plaats van een heel document lezen.
   zag het. Was ze niet genoemd, dan bereikt ook deze regel de agent niet, en is de hook bij een
   lege zoekopdracht de kandidaat die overblijft, na een spike op de ruis. Die hook is hier niet
   besloten.
+- **Sinds 2026-11-13 waarschuwt `docs:check` bij dat volgende incident** tot het is beoordeeld
+  (HDR-036, Het incidentregister telt elke gevonden fout, en een incident na de maatregel vraagt
+  een oordeel). Het vijfde incident kwam dezelfde dag, uit de sessie die dit record boekte: een
+  conclusie uit een grep die nooit werd uitgesproken. Er was geen zin, dus ook geen plek voor de
+  basis die dit record vraagt.
 - `document-not-fully-read` noemt dit record als `maatregel`, in plaats van HDR-025. Het register
   is verder alleen-toevoegen; deze aanpassing gebeurde met Jaróns akkoord. HDR-025 wijst hiernaar
   (versie 1.2).

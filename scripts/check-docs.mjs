@@ -12,7 +12,8 @@
 //   7. a leading document's werkgebied paths exist (error), and
 //      its code has not changed since the document did           (warning)
 //   8. the incident register is well formed (error), and no pattern
-//      has three incidents without a codified fix                (warning)
+//      has three incidents without a codified fix, or an incident
+//      after its fix that has not been judged                    (warning)
 //   9. no grootboek record or register is dated after today      (error)
 //  10. no DFT has been open or in progress for more than
 //      14 days since its datum                                    (warning)

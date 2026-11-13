@@ -29,11 +29,15 @@ eis.
   Records (ADR, HDR, PDR, DFT, JNL) en de README vallen buiten deze plicht.
 - Een beslissing zonder registerregel bestaat niet voor de volgende sessie. Werk het register bij
   in dezelfde commit als het record.
-- **Incidentregister** (HDR-009): telt terugkerende fouten zodat ze regels kunnen worden. Corrigeert
-  Jarón de agent, of faalt een tool opnieuw op dezelfde manier, voeg dan één regel toe onder een
-  passend patroon in `docs/grootboek/registers/incident-register.yml` (of begin een nieuw patroon)
-  en zeg dat in één zin. Waarschuwt `docs:check` dat een patroon er drie heeft, los de oorzaak dan
-  op met een regel, hook of skill, boek een HDR en zet het id in de `maatregel` van het patroon.
+- **Incidentregister** (HDR-009, HDR-036): telt terugkerende fouten zodat ze regels kunnen worden.
+  Maakt de agent een fout in hoe hij werkt, wie of wat die ook vindt (Jarón, een review, een check,
+  een koude-startbeoordeling, de agent zelf), of faalt een tool opnieuw op dezelfde manier, voeg
+  dan één regel toe onder een passend patroon in `docs/grootboek/registers/incident-register.yml`
+  (of begin een nieuw patroon) en zeg dat in één zin. Waarschuwt `docs:check` dat een patroon er
+  drie heeft, los de oorzaak dan op met een regel, hook of skill, boek een HDR en zet het id in de
+  `maatregel` van het patroon. Waarschuwt hij voor een incident na de maatregel, leg Jarón dan voor
+  of de maatregel hield of dat er iets stevigers nodig is, en hoog na zijn oordeel `beoordeeld-tot`
+  op.
 
 # Wat dit is
 

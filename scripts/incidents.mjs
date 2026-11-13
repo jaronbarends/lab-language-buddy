@@ -6,8 +6,12 @@
 //
 // The register is docs/grootboek/registers/incident-register.yml, grouped by pattern, with no
 // ids (an incident is a line, not a decision), so two branches cannot collide on a number.
-// Read by docs:check: a pattern at the threshold without a `maatregel` is a warning, a
-// malformed register or a `maatregel` naming an HDR that does not exist is an error.
+// A codified pattern also carries `beoordeeld-tot`: the count up to which its incidents have been
+// judged against the `maatregel`. An incident beyond it asks whether the maatregel held (HDR-036).
+// Read by docs:check: a pattern at the threshold without a `maatregel`, or a codified pattern
+// whose count is above `beoordeeld-tot`, is a warning. A malformed register, a `maatregel` naming
+// an HDR that does not exist, a `maatregel` without `beoordeeld-tot` or the other way round, or a
+// `beoordeeld-tot` that is not a whole number or exceeds the count, is an error.
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -16,6 +20,8 @@ import { parseRegister } from "./records.mjs";
 export const THRESHOLD = 3;
 const REGISTER = "docs/grootboek/registers/incident-register.yml";
 const HDR_REGISTER = "docs/grootboek/registers/hdr-register.yml";
+// A pattern field in the register and the property it fills on a parsed pattern.
+const PATTERN_FIELDS = { titel: "titel", maatregel: "maatregel", "beoordeeld-tot": "beoordeeldTot" };
 
 function unquote(raw) {
   const value = raw.trim();
@@ -34,7 +40,13 @@ export function parseIncidents(text) {
   for (const line of text.split(/\r?\n/)) {
     const patternStart = line.match(/^  - patroon:\s*(.*)$/);
     if (patternStart) {
-      pattern = { patroon: unquote(patternStart[1]), titel: null, maatregel: null, incidenten: [] };
+      pattern = {
+        patroon: unquote(patternStart[1]),
+        titel: null,
+        maatregel: null,
+        beoordeeldTot: null,
+        incidenten: [],
+      };
       patterns.push(pattern);
       incident = null;
       continue;
@@ -54,10 +66,11 @@ export function parseIncidents(text) {
       setIncidentField(incident, incidentField[1], unquote(incidentField[2]));
       continue;
     }
-    const patternField = line.match(/^    (titel|maatregel):\s*(.*)$/);
+    // beoordeeld-tot stays a string here, so analyseIncidents can report one that is not a number.
+    const patternField = line.match(/^    (titel|maatregel|beoordeeld-tot):\s*(.*)$/);
     if (patternField) {
       const value = unquote(patternField[2]);
-      pattern[patternField[1]] = value === "" || value === "null" ? null : value;
+      pattern[PATTERN_FIELDS[patternField[1]]] = value === "" || value === "null" ? null : value;
     }
   }
   return patterns;
@@ -65,6 +78,39 @@ export function parseIncidents(text) {
 
 function setIncidentField(incident, field, value) {
   incident[field] = field === "aantal" ? Number(value) : value;
+}
+
+// A maatregel is judged against the incidents up to `beoordeeld-tot`; one beyond that asks whether
+// the maatregel held, or whether something stronger is needed. Returns how many are not yet judged.
+function analyseJudgement(pattern, count, errors, warnings) {
+  const { patroon, maatregel, beoordeeldTot } = pattern;
+  if (beoordeeldTot === null) {
+    if (maatregel) {
+      errors.push(`incidents: ${patroon} has a maatregel but no beoordeeld-tot`);
+    }
+    return 0;
+  }
+  if (!maatregel) {
+    errors.push(`incidents: ${patroon} has beoordeeld-tot but no maatregel`);
+  }
+  if (!/^\d+$/.test(beoordeeldTot)) {
+    errors.push(`incidents: ${patroon} has beoordeeld-tot ${beoordeeldTot}, which is not a whole number of 0 or more`);
+    return 0;
+  }
+  const judged = Number(beoordeeldTot);
+  if (judged > count) {
+    errors.push(`incidents: ${patroon} has beoordeeld-tot ${judged}, more than its ${count} incident(s)`);
+    return 0;
+  }
+  const unjudged = count - judged;
+  if (!maatregel || unjudged === 0) {
+    return 0;
+  }
+  warnings.push(
+    `incidents: ${patroon} has ${unjudged} incident(s) after beoordeeld-tot ${judged} under maatregel ${maatregel}; ` +
+      `ask Jarón whether ${maatregel} held (note his verdict in the incident's wat) or whether something stronger is needed, then raise beoordeeld-tot with his approval`,
+  );
+  return unjudged;
 }
 
 export function analyseIncidents(root) {
@@ -110,7 +156,8 @@ export function analyseIncidents(root) {
           "codify it (a rule, hook or skill) and book an HDR",
       );
     }
-    return { ...pattern, count };
+    const unjudged = analyseJudgement(pattern, count, errors, warnings);
+    return { ...pattern, count, unjudged };
   });
   return { patterns: analysed, errors, warnings };
 }
@@ -122,8 +169,9 @@ function main() {
     console.log("incidents: the register is empty or missing.");
   }
   for (const pattern of patterns) {
+    const judgement = pattern.unjudged > 0 ? `, ${pattern.unjudged} not yet judged` : "";
     const state = pattern.maatregel
-      ? `codified in ${pattern.maatregel}`
+      ? `codified in ${pattern.maatregel}${judgement}`
       : pattern.count >= THRESHOLD
         ? `NOT CODIFIED, threshold ${THRESHOLD} reached`
         : `${THRESHOLD - pattern.count} more before it counts as a weakness`;

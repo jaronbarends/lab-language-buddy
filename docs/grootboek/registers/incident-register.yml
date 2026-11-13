@@ -2,22 +2,30 @@
 # Eén keer is een incident, twee keer is toeval, drie keer is een zwakte van het harnas
 # (REQ-GG-06). Bij drie wordt het patroon vastgelegd (een regel, hook of skill) en als
 # HDR geboekt, waarvan het id in `maatregel` komt. `npm run docs:check` waarschuwt tot dat is gebeurd.
+# Een incident na de maatregel vraagt een oordeel: hield de maatregel, of is er iets stevigers
+# nodig? `docs:check` waarschuwt zolang de telling boven `beoordeeld-tot` staat (HDR-036).
 #
 # Een incident is een regel, geen beslissing: geen ids, geen documenten (HDR-001 boekt beslissingen).
-# Voeg een regel toe als Jarón de agent corrigeert, of een tool faalt op een manier die eerder is
-# voorgekomen, en zeg dat in één zin. Alleen toevoegen, zoals de andere registers.
+# Een incident is een fout in hoe de agent werkt, wie of wat hem ook vond: een correctie van Jarón,
+# een review, een check, een koude-startbeoordeling of de agent zelf. Een toolfout telt als hij
+# eerder zo is voorgekomen. Voeg een regel toe en zeg dat in één zin. Alleen toevoegen, zoals de
+# andere registers; `maatregel` invullen en `beoordeeld-tot` ophogen gebeurt met Jaróns akkoord.
 #
 # Velden:
-#   patroon    — een slug; een nieuwe fout die op een bestaand patroon lijkt sluit daarbij aan
-#   maatregel  — de HDR die het patroon heeft vastgelegd (leeg tot dan)
-#   datum      — YYYY-MM-DD
-#   aantal     — optioneel, standaard 1: meerdere keren dezelfde fout in één keer
-#   wat, bron  — wat er gebeurde, en waar het is gevonden
+#   patroon        — een slug; een nieuwe fout die op een bestaand patroon lijkt sluit daarbij aan
+#   maatregel      — de HDR die het patroon heeft vastgelegd (leeg tot dan)
+#   beoordeeld-tot — de telling tot waar de incidenten tegen de maatregel zijn beoordeeld; staat
+#                    alleen naast `maatregel`, en is daar verplicht. Hoog het op na een oordeel:
+#                    "de maatregel hield" in de `wat` van het incident, of een stevigere maatregel
+#   datum          — YYYY-MM-DD
+#   aantal         — optioneel, standaard 1: meerdere keren dezelfde fout in één keer
+#   wat, bron      — wat er gebeurde, en waar het is gevonden
 
 patronen:
   - patroon: naming-precision
     titel: "Een naam belooft meer of minder dan de code doet"
     maatregel: HDR-010
+    beoordeeld-tot: 7
     incidenten:
       - datum: 2026-10-10
         aantal: 7
@@ -26,6 +34,7 @@ patronen:
   - patroon: answer-first
     titel: "Een directe vraag krijgt eerst de redenering en het antwoord zit erin verstopt"
     maatregel: HDR-034
+    beoordeeld-tot: 2
     incidenten:
       - datum: 2026-09-23
         aantal: 2
@@ -42,6 +51,7 @@ patronen:
   - patroon: review-point-context
     titel: "Een beslispunt wordt voorgelegd voordat het in de chat op zichzelf staat"
     maatregel: HDR-034
+    beoordeeld-tot: 3
     incidenten:
       - datum: 2026-10-03
         wat: "Een bevinding beschreven als een schema met drie losse optionele velden, zodat het reviewbestand geopend moest worden om haar te begrijpen"
@@ -65,6 +75,7 @@ patronen:
   - patroon: branch-before-edit
     titel: "Er wordt gewerkt op de integratiebranch voordat er een branch bestaat"
     maatregel: HDR-011
+    beoordeeld-tot: 1
     incidenten:
       - datum: 2026-10-27
         wat: "Een verse agent bewerkte README.md direct op arc/arc-main, ongecommit, en zei pas achteraf dat een branch en PR nodig zijn"
@@ -72,6 +83,7 @@ patronen:
   - patroon: document-not-fully-read
     titel: "Er wordt een bewering over een document gedaan zonder het volledig te lezen"
     maatregel: HDR-035
+    beoordeeld-tot: 4
     incidenten:
       - datum: 2026-10-27
         wat: "Zei dat de README alleen lint en build noemt, op basis van een zoekopdracht naar npm run die regels mist die met npx beginnen; ook de typecheck stond erin"
@@ -85,9 +97,13 @@ patronen:
       - datum: 2026-11-10
         wat: "Een koude agent, met HDR-025 in de geladen CLAUDE.md, oordeelde dat het labelformaat niet in de software-balans en src/lib/CLAUDE.md staat, op basis van een grep naar Intermediate en (B1) zonder die documenten te lezen. De bewering klopte, maar ook de bevestiging was een git grep; geteld omdat HDR-025 de vorm noemt, niet de uitkomst"
         bron: "koude-startronde 3, beoordeeld als K11 in JNL-002"
+      - datum: 2026-11-13
+        wat: "De lead trok uit een grep stilzwijgend de conclusie dat de index geen HDR's bevat; docs:check ving het op, niet een correctie. Zonder uitgesproken zin was er ook geen plek voor de basis die HDR-035 vraagt. Hoe het precies ontstond, is niet nagegaan: dit is Jaróns samenvatting, en welke index en welke melding van docs:check het waren, weet hij niet meer zeker"
+        bron: "docs:check in de sessie die HDR-035 boekte, gemeld door Jarón in de startprompt over de escalatie van het incidentregister"
   - patroon: date-assumed
     titel: "Een datum wordt aangenomen in plaats van van de klok gelezen"
     maatregel: HDR-012
+    beoordeeld-tot: 1
     incidenten:
       - datum: 2026-10-27
         wat: "Schreef 2026-10-28 op 22 plekken in acht bestanden, een dag voor op de klok en op elke commit"
@@ -112,6 +128,7 @@ patronen:
   - patroon: promised-follow-up-dropped
     titel: "Een toegezegde vervolgstap hangt af van iemands geheugen en blijft liggen tot een controle van buitenaf hem vindt"
     maatregel: HDR-023
+    beoordeeld-tot: 3
     incidenten:
       - datum: 2026-10-22
         wat: "HDR-003 is gebouwd (CI op pull requests) zonder § 5 van de balans bij te werken, die bleef zeggen dat er geen CI was; de werkafspraak zegt record en document in dezelfde commit"
@@ -153,3 +170,10 @@ patronen:
       - datum: 2026-11-13
         wat: "Jarón vroeg in het Nederlands om een worktree voor een info-box; de skill feature-worktree is Nederlands, maar het slotbericht met de worktree-waarden kwam in het Engels"
         bron: "correctie van Jarón bij het opzetten van de worktree add-info-box"
+  - patroon: brief-drops-decision
+    titel: "Een opdracht aan een builder laat een deel van het besluit weg, zodat de code het niet draagt"
+    maatregel:
+    incidenten:
+      - datum: 2026-11-13
+        wat: "De opdracht voor de oordeelsteller van HDR-036 liet weg dat beoordeeld-tot pas omhooggaat met Jaróns akkoord; de waarschuwing in docs:check zei daardoor 'judge ... then raise beoordeeld-tot', zodat een agent zelf zou oordelen en ophogen, precies het gat dat HDR-036 noemt"
+        bron: "review van de builder-diff voor HDR-036, bevinding 1"

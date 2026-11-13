@@ -71,3 +71,17 @@ dfts:
       - src/components/CLAUDE.md
     getoetst-tegen: 7f47692
     bestand: dft-005-reconciliatie-na-adr-031.md
+  - id: "DFT-006"
+    titel: "Reconciliatie na de infomelding en het Feedback-component — geen drift"
+    status: resolved
+    datum: 2026-11-13
+    aanleiding: "Reconciliatie per pull request (HDR-026) voor de branch add-info-box: de code-commit ebb12b5 (PDR-020) raakt src/components, het werkgebied van de balans en van src/components/CLAUDE.md. Kosten: 2% sessielimiet, 2 min van Jarón"
+    bevindingen: 0
+    hoog: 0
+    midden: 0
+    laag: 0
+    documenten:
+      - docs/grootboek/software-architectuur.md
+      - src/components/CLAUDE.md
+    getoetst-tegen: ebb12b5
+    bestand: dft-006-reconciliatie-na-de-infomelding.md

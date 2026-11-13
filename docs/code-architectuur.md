@@ -96,6 +96,16 @@ ze wegnam. Een agent die twee identieke blokken ziet, kan ze zelf extraheren zod
 aanroeper komt; een agent die een bestaande abstractie wil wijzigen, moet eerst uitzoeken wie
 ervan afhangt — dat is de duurdere fout.
 
+**Uitzondering: een gedeeld visueel recept.** Moet een wijziging aan het uiterlijk van het ene
+onderdeel altijd ook in het andere gebeuren, dan beslist de toets van 2.1 en niet de telling: het
+gedeelde uiterlijk staat op één plek, ook bij twee aanroepers. Dit geldt voor uiterlijk, niet voor
+gedeelde logica; daarvoor blijft de telling. Het argument van deze regel, een koppeling die moeilijk
+ongedaan te maken is, weegt licht bij een presentatiecomponent zonder logica.
+
+*Praktijkvoorbeeld:* `Feedback` in `src/components/ui/feedback.tsx`. De fout- en de infomelding
+delen hun hoeken, padding, borderdikte en de plek van icoon en tekst. Wat ze onderscheidt (kleur,
+icoon, role, tekst) zit in de varianten `ErrorFeedback` en `InfoFeedback` en in de children.
+
 ### 2.6 Geen barrel files
 
 Geen `index.ts` die alleen alles uit een map opnieuw exporteert. Importeer rechtstreeks uit de

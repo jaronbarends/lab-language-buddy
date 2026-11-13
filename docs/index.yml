@@ -228,6 +228,9 @@ documents:
   - path: docs/grootboek/pdr/pdr-019-screenreaders-zijn-geen-doel.md
     what: Besluit dat screenreaders (VoiceOver voorop) geen doel van de app zijn — niet testen, niet als bevinding of open kwestie opvoeren; bestaande rollen en labels blijven, ongegarandeerd.
     read_when: je een review doet of een kwestie opent over wat een screenreader aankondigt, of ARIA-rollen en labels wijzigt.
+  - path: docs/grootboek/pdr/pdr-020-infomelding-als-de-gebruiker-begint.md
+    what: Waarom de thread met een infomelding opent als de gebruiker zelf begint ("Ask a question or name a topic you want to discuss"), waarom hij blijft staan, op de foutbox lijkt en dezelfde tekstgrootte heeft; geen uitleg over de AI.
+    read_when: je de infomelding, de foutbox of het Feedback-component wijzigt; je wilt weten waarom de foutmelding geen kleinere tekst meer heeft.
   - path: docs/grootboek/adr/adr-023-safari-safe-area-en-beperkingen.md
     what: De bovenste safe-area-inset en de geaccepteerde Safari/iPhone-beperkingen (landscape, bediening onder het toetsenbord); overgezet uit plan.md.
     read_when: je aan de layout van het setup- of gesprekscherm op iPhone, aan safe-area-insets of aan het toetsenbordgedrag in editing werkt.
@@ -297,6 +300,9 @@ documents:
   - path: docs/grootboek/dft/dft-002-guard-blokkeert-claude-md-onder-src.md
     what: Opgelost driftrapport; de subagent-tenzij-hook blokkeerde CLAUDE.md-bestanden onder src/ voor de lead thread, terwijl de werkafspraak niet-codebestanden uitzondert. Opgelost door de hook Markdown toe te laten; het eerste driftrapport dat doorliep van boeking via besluit en wijziging tot afsluiting.
     read_when: je guard-kenniswerker of de werkmodelregel in CLAUDE.md aanraakt; je een voorbeeld zoekt van een driftrapport dat tot het einde is opgevolgd.
+  - path: docs/grootboek/specs/infomelding-als-de-gebruiker-begint.md
+    what: Bouwplan voor de infomelding bovenaan de thread als de gebruiker begint en het gedeelde Feedback-component (ErrorFeedback, InfoFeedback) waarop de foutbox wordt omgebouwd. Wegwerpdocument zodra het gebouwd is.
+    read_when: je de infomelding of het Feedback-component bouwt of reviewt.
   - path: docs/grootboek/specs/incidentregister.md
     what: Plan voor de voorste helft van het immuunsysteem (REQ-GG-06) — een incidentregister per patroon, een teller die bij drie zonder vastgelegde oplossing waarschuwt, een logplicht en het eerste gebruik op naming-precision. Wegwerpdocument zodra het gebouwd is.
     read_when: je het incidentregister of de teller bouwt of wijzigt; je een incident logt.
@@ -315,6 +321,9 @@ documents:
   - path: docs/grootboek/dft/dft-005-reconciliatie-na-adr-031.md
     what: Driftrapport; reconciliatie van de balans en src/components/CLAUDE.md na het omzetten van de bubbelcommentaren naar ADR-031 — geen drift. Sluit de driftstap van de lus van JNL-003 K2.
     read_when: je een voorbeeld zoekt van een kleine reconciliatie na een verwacht signaal, of de lus van JNL-003 K2 naloopt.
+  - path: docs/grootboek/dft/dft-006-reconciliatie-na-de-infomelding.md
+    what: Driftrapport; reconciliatie van de balans en src/components/CLAUDE.md na de infomelding en het Feedback-component (PDR-020) — geen drift. Met de kostenregel van de tijdelijke meting uit HDR-026.
+    read_when: je een voorbeeld zoekt van een reconciliatie tegen een code-commit in dezelfde pull request, of de kostenmeting van HDR-026 naloopt.
   - path: docs/grootboek/registers
     what: YAML-registers (adr, hdr, pdr, dft, jnl) — de goedkope index van het grootboek; lees ze voordat je een record opent.
     read_when: je een beslissing, de status ervan of een open driftrapport in het grootboek zoekt.

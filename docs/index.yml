@@ -171,6 +171,9 @@ documents:
   - path: docs/grootboek/hdr/hdr-031-lint-en-tsc-tellen-als-gedekt-pad-zonder-gedragseffect.md
     what: Wanneer lint en tsc bij triage als gedekt pad tellen (alleen bij een wijziging zonder gedragseffect), wat als gedrag telt (prompts, tekst die iets toezegt over wat de app doet) en wat is afgewogen.
     read_when: je een build-taak classificeert en twijfelt of er een gedekt pad is; je vraag 4 van de triage-skill wijzigt; src/ een testrunner krijgt (zie ook HDR-028).
+  - path: docs/grootboek/hdr/hdr-032-feature-worktree-via-skill-vanaf-main.md
+    what: Waarom een feature-worktree via de skill feature-worktree wordt opgezet, vanaf main, met .env.local, een eigen npm install en de eerste vrije poort vanaf 3001; wat is afgewogen (junction, vaste poort, review-worktree.sh uitbreiden) en wat de proef niet liet zien.
+    read_when: je een worktree voor parallel werk opzet of opruimt; je feature-worktree.sh of de skill wijzigt; je wilt weten waarom een worktree een eigen node_modules heeft.
   - path: docs/grootboek/pdr/pdr-007-persona-van-de-ai.md
     what: De AI is een algemene vriendelijke kennis met vrij onderwerp, 2 tot 4 zinnen en hooguit één vraag per beurt; overgezet uit plan.md.
     read_when: je de persona, de toon of de prompt-opbouw uit benoemde secties wijzigt of een nieuwe persona toevoegt.
@@ -342,6 +345,9 @@ documents:
   - path: .claude/skills/stage-review/SKILL.md
     what: Procedure voor de koude review aan het einde van een stage.
     read_when: je een bouwstage afsluit.
+  - path: .claude/skills/feature-worktree/SKILL.md
+    what: Procedure om een worktree voor parallel werk aan een feature op te zetten en op te ruimen, met het script feature-worktree.sh.
+    read_when: Jarón een worktree voor een feature vraagt of tegelijk aan iets anders wil werken.
   - path: .claude/skills/grootboek/SKILL.md
     what: De grootboek-skill van ARC (v1.5, gekopieerd uit de ARC MCP-resource arc://skill/grootboek/1.5) — schrijfgidsen en voorbeelden per documenttype, registers, drift. De tekst is Nederlands.
     read_when: je een document onder docs/grootboek schrijft of bijwerkt.

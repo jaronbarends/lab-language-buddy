@@ -345,3 +345,14 @@ hdrs:
     beslissing: "Vraag 4 van de triage-skill: een test, snapshot of check telt altijd als gedekt pad; lint en tsc alleen bij een wijziging zonder gedragseffect (weergavetekst, hernoemen, verplaatsen, imports, types); een wijziging die gedrag verandert is normal, ook tekst die een model aanstuurt of de gebruiker iets toezegt over wat de app doet"
     notitie: "K9 uit JNL-002, besloten door Jarón op 2026-11-13. Aanleiding: ronde drie las 'gedekt pad' als 'er is een test', koos normal voor zes labels waar de sleutel trivial verwachtte; src/ heeft geen tests (HDR-028). Afgewogen: lint en tsc tellen altijd, nooit, open laten; gekozen is een lezing per type wijziging. Bij tekst is de diff de borging, niet de poort. Of een tekst een belofte doet, beslist de lead; niets controleert dat. Niet gemeten of een volgende koude agent nu trivial kiest"
     bestand: hdr-031-lint-en-tsc-tellen-als-gedekt-pad-zonder-gedragseffect.md
+  - id: "HDR-032"
+    titel: "Een feature-worktree zet de skill `feature-worktree` op, vanaf `main` en met een eigen install"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-11-13
+    implementatie-datum: 2026-11-13
+    beslissing: "De skill feature-worktree (script setup/teardown) zet een worktree op in ../<repo>-<naam> met branch <naam> vanaf main, kopieert .env.local (niet .env.prd), draait een eigen npm install en kiest de eerste vrije dev-poort vanaf 3001; teardown weigert vuile worktrees en verwijdert de branch alleen met git branch -d"
+    notitie: "Jarón vroeg het op 2026-11-13 om parallel aan features te werken terwijl repo bezig blijft; geen incident. Jarón koos eigen install (geen junction), alleen .env.local en de eerste vrije poort. Eén proef met een wegwerpnaam, nog niet gebruikt voor een echte feature. git branch -d toetst tegen HEAD van de hoofdcheckout, niet tegen main. Root-CLAUDE.md bewust ongewijzigd. Nummering: geboekt als HDR-032 omdat HDR-031 toen nog alleen op de branch triage-gedekt-pad-lint-tsc stond; daarna is die branch eerst gemerged en is de volgorde gelijk gebleven"
+    bestand: hdr-032-feature-worktree-via-skill-vanaf-main.md

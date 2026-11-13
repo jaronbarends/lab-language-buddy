@@ -25,7 +25,8 @@ verzoek van Jarón op 2026-11-13, met de wens dat Claude het kan doen.
 ## Besluit
 
 De skill `feature-worktree` (`.claude/skills/feature-worktree/`) zet een feature-worktree op en ruimt
-hem op, met `scripts/feature-worktree.sh setup <naam>` en `teardown <naam> [--force]`.
+hem op, met `scripts/feature-worktree.sh setup <naam>` en `teardown <naam> [--force]`. Zonder naam
+toont `teardown` alleen wat er op te ruimen valt.
 
 - **Locatie en naam:** `../<repo>-<naam>`, met branch `<naam>`. Dat volgt de bestaande worktree
   `repo-animation`.
@@ -41,6 +42,13 @@ hem op, met `scripts/feature-worktree.sh setup <naam>` en `teardown <naam> [--fo
   ze dat het werk op `DEV_PORT` te zien is en niet op 3000, waar de server van `repo` draait. Bij de
   eerste echte feature (PR #58) keek Jarón naar die van `repo` en zag de wijziging niet (HDR-036, Een
   nieuwe app-feature loopt via de skill `feature`).
+- **Teardown zonder naam ruimt niets op** (versie 1.2, 2026-11-13). Het script geeft dan per
+  worktree `../<repo>-<naam>` een regel `CANDIDATE` en verwijdert niets; de skill legt die lijst aan
+  Jarón voor en vraagt welke weg moet, ook als er maar één staat. Opruimen gooit een map weg, met
+  ongetrackte bestanden als `.env.local` erin, dus het doel komt altijd van Jarón. Aanleiding: bij
+  `teardown` zonder naam koos de agent zelf de enige worktree, `animation`, en ruimde hem op. Er ging
+  niets verloren, maar Jarón wees de aanname af (incidentregister, patroon
+  `destructive-target-assumed`).
 
 ## Waarom
 
@@ -62,7 +70,9 @@ De keuzes van Jarón (2026-11-13) bij drie vragen, de rest is afgewogen in het g
 
 - **Eén proef.** Setup en teardown zijn op 2026-11-13 één keer geprobeerd met een wegwerpnaam
   (`wt-test`): worktree, env-kopie, install en poort 3001 werkten, teardown liet niets achter. Daarna
-  gebruikt voor één echte feature, de infomelding (PR #58); dat leverde versie 1.1 op.
+  gebruikt voor één echte feature, de infomelding (PR #58); dat leverde versie 1.1 op. Versie 1.2
+  is alleen in een wegwerprepo getest: zonder worktrees, met twee kandidaten naast een map met een
+  andere naam, `teardown --force` zonder naam, vanuit een worktree, en een gewone teardown met naam.
 - **`git branch -d` toetst tegen `HEAD` van de hoofdcheckout**, niet tegen `main`. Staat `repo` op een
   andere branch, dan kan een branch die daarin is gemerged als gemerged tellen zonder in `main` te
   zitten. Een branch die nergens in zit blijft staan (`BRANCH_KEPT`).

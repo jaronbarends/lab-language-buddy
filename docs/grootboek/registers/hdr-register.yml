@@ -348,13 +348,13 @@ hdrs:
   - id: "HDR-032"
     titel: "Een feature-worktree zet de skill `feature-worktree` op, vanaf `main` en met een eigen install"
     status: implemented
-    versie: "1.1"
+    versie: "1.2"
     implementatie: 100
     omgeving: geen
     datum: 2026-11-13
     implementatie-datum: 2026-11-13
-    beslissing: "De skill feature-worktree (script setup/teardown) zet een worktree op in ../<repo>-<naam> met branch <naam> vanaf main, kopieert .env.local (niet .env.prd), draait een eigen npm install en kiest de eerste vrije dev-poort vanaf 3001; teardown weigert vuile worktrees en verwijdert de branch alleen met git branch -d"
-    notitie: "Jarón vroeg het op 2026-11-13 om parallel aan features te werken terwijl repo bezig blijft; geen incident. Jarón koos eigen install (geen junction), alleen .env.local en de eerste vrije poort. Eén proef met een wegwerpnaam, daarna gebruikt voor één echte feature (PR #58). Versie 1.1 (2026-11-13): de skill noemt bij DEV_COMMAND de testpoort, omdat Jarón bij PR #58 naar de server van repo op 3000 keek (HDR-036). git branch -d toetst tegen HEAD van de hoofdcheckout, niet tegen main. Root-CLAUDE.md bewust ongewijzigd. Nummering: geboekt als HDR-032 omdat HDR-031 toen nog alleen op de branch triage-gedekt-pad-lint-tsc stond; daarna is die branch eerst gemerged en is de volgorde gelijk gebleven"
+    beslissing: "De skill feature-worktree (script setup/teardown) zet een worktree op in ../<repo>-<naam> met branch <naam> vanaf main, kopieert .env.local (niet .env.prd), draait een eigen npm install en kiest de eerste vrije dev-poort vanaf 3001; teardown weigert vuile worktrees en verwijdert de branch alleen met git branch -d; teardown zonder naam toont alleen de kandidaten, de naam komt altijd van Jarón"
+    notitie: "Jarón vroeg het op 2026-11-13 om parallel aan features te werken terwijl repo bezig blijft; geen incident. Jarón koos eigen install (geen junction), alleen .env.local en de eerste vrije poort. Eén proef met een wegwerpnaam, daarna gebruikt voor één echte feature (PR #58). Versie 1.1 (2026-11-13): de skill noemt bij DEV_COMMAND de testpoort, omdat Jarón bij PR #58 naar de server van repo op 3000 keek (HDR-036). Versie 1.2 (2026-11-13): teardown zonder naam verwijdert niets en toont de kandidaten, nadat de agent bij een teardown zonder naam zelf de enige worktree (animation) koos en opruimde (incidentregister, patroon destructive-target-assumed). git branch -d toetst tegen HEAD van de hoofdcheckout, niet tegen main. Root-CLAUDE.md bewust ongewijzigd. Nummering: geboekt als HDR-032 omdat HDR-031 toen nog alleen op de branch triage-gedekt-pad-lint-tsc stond; daarna is die branch eerst gemerged en is de volgorde gelijk gebleven"
     bestand: hdr-032-feature-worktree-via-skill-vanaf-main.md
   - id: "HDR-033"
     titel: "De reviewer draait op Opus, vastgepind in `reviewer.md`"

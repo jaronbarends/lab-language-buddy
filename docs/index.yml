@@ -315,6 +315,9 @@ documents:
   - path: docs/grootboek/dft/dft-005-reconciliatie-na-adr-031.md
     what: Driftrapport; reconciliatie van de balans en src/components/CLAUDE.md na het omzetten van de bubbelcommentaren naar ADR-031 — geen drift. Sluit de driftstap van de lus van JNL-003 K2.
     read_when: je een voorbeeld zoekt van een kleine reconciliatie na een verwacht signaal, of de lus van JNL-003 K2 naloopt.
+  - path: docs/grootboek/dft/dft-006-reconciliatie-na-de-infomelding.md
+    what: Driftrapport; reconciliatie van de balans en src/components/CLAUDE.md na de infomelding en het Feedback-component (PDR-020) — geen drift. Met de kostenregel van de tijdelijke meting uit HDR-026.
+    read_when: je een voorbeeld zoekt van een reconciliatie tegen een code-commit in dezelfde pull request, of de kostenmeting van HDR-026 naloopt.
   - path: docs/grootboek/registers
     what: YAML-registers (adr, hdr, pdr, dft, jnl) — de goedkope index van het grootboek; lees ze voordat je een record opent.
     read_when: je een beslissing, de status ervan of een open driftrapport in het grootboek zoekt.

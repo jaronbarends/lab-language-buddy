@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "typegen": "next typegen",
+    "typecheck": "tsc --noEmit",
     "docs:check": "node scripts/check-docs.mjs",
     "docs:renumber": "node scripts/renumber-records.mjs",
     "docs:drift": "node scripts/drift-signal.mjs",

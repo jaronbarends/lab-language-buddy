@@ -123,7 +123,9 @@ dan in plaats van een van beide blind te volgen.
   wacht. Een hook op git-niveau die dit onbewaakt start, naar ARC's eigen conventie, werd geweigerd
   door de eigen veiligheidsclassifier van het harnas ("Create Unsafe Agents") — wat echt is gebouwd
   is deze sessiegebonden versie; zie de REQ-AH-13-notitie in `docs/code-architectuur.md`.
-- **Controles voordat je iets af noemt.** `npm run lint`, dan `npx next typegen && npx tsc --noEmit`,
+- **Controles voordat je iets af noemt.** Eerst `npm install` (zonder `node_modules` haalt `npx`
+  stilletjes andere versies op en wijzigt `package.json`; de scripts hieronder falen dan
+  zichtbaar), dan `npm run lint`, dan `npm run typegen && npm run typecheck`,
   `npm run docs:check` (drift tussen docs en repo), `npm run test:scripts` (de tests van de scripts
   die documenten herschrijven), `npm run register:check` (het code-architectuurregister wijkt niet
   af), en dan `npm run build`. Alles wat audio, opname of layout raakt, vraagt ook een test op

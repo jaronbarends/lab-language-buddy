@@ -55,7 +55,7 @@ niet: vraag het voordat je iets aanraakt, en meld `NEEDS_CONTEXT` als het antwoo
 
 ## Verifiëren
 
-Er is geen testsuite. De checks zijn `npm run lint`, `npx next typegen && npx tsc --noEmit`,
+Er is geen testsuite. De checks zijn `npm run lint`, `npm run typegen && npm run typecheck`,
 `npm run docs:check`, en `npm run build` voor alles wat de build kan breken. Draai `next dev`
 niet: de dev server van Jarón gebruikt mogelijk al poort 3000. Alles wat audio, opname of
 layout raakt kan van hieruit niet geverifieerd worden; zeg dat in het rapport, want daar is

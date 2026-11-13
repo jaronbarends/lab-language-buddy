@@ -26,7 +26,7 @@ Rode bestanden gaan voor oranje. Beslis per bestand:
 
 - **Splitsen**, als de samenhangvraag (§2.2) met "nee" beantwoord wordt — zaken die om
   verschillende redenen veranderen. Splits op de naad (§2.1), verifieer met
-  `npx tsc --noEmit` en `npm run lint` op je gewijzigde bestanden, en bevestig dat je het
+  `npm run typecheck` en `npm run lint` op je gewijzigde bestanden, en bevestig dat je het
   gedrag niet hebt veranderd: dit is een refactor, geen functiewijziging en geen opschoning
   voorbij de eigen vorm van het bestand.
 - **Een besluit `ceiling` of `excluded`**, als het bestand samenhangend is en om een goede reden

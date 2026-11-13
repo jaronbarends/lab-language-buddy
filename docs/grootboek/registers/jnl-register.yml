@@ -30,7 +30,7 @@ jnls:
       - "K8: geen eigen record; de regel staat in CLAUDE.md (Controles)"
       - "HDR-031 (K9)"
       - "HDR-033 (K10)"
-      - "K11: een vierde regel in het incidentpatroon document-not-fully-read; het vervolg is HDR-035"
+      - "K11: een vierde regel in het incidentpatroon document-not-fully-read; het vervolg is HDR-035 en HDR-037"
     bestand: jnl-002-koude-start-onboarding.md
   - id: "JNL-003"
     titel: "Animatie van chatbubbels"

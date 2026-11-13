@@ -84,6 +84,10 @@ directe vraag, en zegt dat een startprompt geen bewijs is dat Jarón de inhoud k
 - **Niet mechanisch te controleren**, net als HDR-025. Succes is geen vierde incident in
   `review-point-context` en geen derde in `answer-first`. Komt er toch een, dan is een hook die een
   herinnering bezorgt de eerste kandidaat.
+- **Sinds 2026-11-13 is de succesmaat een oordeel per incident** (HDR-037, Het incidentregister
+  telt elke gevonden fout, en een incident na de maatregel vraagt een oordeel). Een incident na
+  deze maatregel betekent niet vanzelf dat ze faalde; `docs:check` waarschuwt tot het is
+  beoordeeld. Is het oordeel dat de regel niet hield, dan blijft de hook de eerste kandidaat.
 - De root-`CLAUDE.md` is een leidend document: de wijziging is aan Jarón getoond en door hem
   gecontroleerd.
 

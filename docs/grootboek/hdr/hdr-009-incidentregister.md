@@ -56,6 +56,11 @@ De drempel is drie, zoals de requirement zegt. De HDR-gids van de grootboek-skil
   keuze van de agent, gecontroleerd door Jarón. Een verkeerde koppeling scheeftrekt een telling.
 - **Parallelle branches** die allebei loggen botsen nog steeds op dezelfde regels van het
   register; de oplossing is beide kanten te houden.
+- **Sinds 2026-11-13 telt elke gevonden fout, en vraagt een incident na de maatregel een oordeel**
+  (HDR-037, Het incidentregister telt elke gevonden fout, en een incident na de maatregel vraagt
+  een oordeel). De logplicht hierboven noemde twee aanleidingen, terwijl het register al breder
+  telde. En "de waarschuwing stopt dan" geldt tot het volgende incident: daarna waarschuwt
+  `docs:check` tot iemand heeft geoordeeld of de maatregel hield.
 - De geheugennotities worden niet verwijderd. Ze blijven de bron van de eerste incidenten; het
   register is waar ze worden geteld.
 - **Nummering.** Deze branch boekt HDR-009 en HDR-010. `arc/bubble-animation` bevat een eigen

@@ -12,6 +12,7 @@
  * currentColor, which is what lets a button's text colour reach the icon.
  */
 import {
+  FaCircleInfo,
   FaCircleUser,
   FaComment,
   FaFlagCheckered,
@@ -23,7 +24,7 @@ import {
   FaXmark,
 } from "react-icons/fa6";
 
-type IconProps = {
+export type IconProps = {
   size?: number;
 };
 
@@ -65,4 +66,8 @@ export function PersonIcon({ size = 18 }: IconProps) {
 
 export function WarningIcon({ size = 18 }: IconProps) {
   return <FaTriangleExclamation {...decorative(size)} />;
+}
+
+export function InfoIcon({ size = 18 }: IconProps) {
+  return <FaCircleInfo {...decorative(size)} />;
 }

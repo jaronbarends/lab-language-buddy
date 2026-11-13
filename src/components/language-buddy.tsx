@@ -52,6 +52,7 @@ export function LanguageBuddy() {
             turns={state.turns}
             turnState={state.turnState}
             conversationLang={LANGUAGES[state.config.language].htmlLang}
+            starter={state.config.starter}
           />
           <StateStepper
             config={state.config}

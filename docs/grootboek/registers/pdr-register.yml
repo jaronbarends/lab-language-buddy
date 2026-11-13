@@ -174,13 +174,13 @@ pdrs:
   - id: "PDR-016"
     titel: "Typografie en iconen"
     status: implemented
-    versie: "1.0"
+    versie: "1.1"
     implementatie: 100
     omgeving: geen
     datum: 2026-09-28
     implementatie-datum: 2026-09-28
     beslissing: "De basislettergrootte is 18px, labels en level select zijn semibold, de iconen komen uit Font Awesome 6 Free via react-icons/fa6 en de foutbox krijgt een waarschuwingsicoon links van het tekstblok"
-    notitie: "Overgezet uit plan.md (HDR-015): vier rijen in twee groepen (typografie, iconen); het foutico is eerst gecentreerd met 8px gebouwd en daarna bovenaan met 12px (Voorgeschiedenis)"
+    notitie: "Overgezet uit plan.md (HDR-015): vier rijen in twee groepen (typografie, iconen); het foutico is eerst gecentreerd met 8px gebouwd en daarna bovenaan met 12px (Voorgeschiedenis). Versie 1.1 (2026-11-13): de foutmelding heeft de gewone tekstgrootte in plaats van --font-size-minor (PDR-020), dus alle regels van de foutbox staan op 27px"
     bestand: pdr-016-typografie-en-iconen.md
   - id: "PDR-017"
     titel: "Contrast en forced-colors: bewust geaccepteerd"
@@ -215,3 +215,14 @@ pdrs:
     beslissing: "Screenreaders (VoiceOver voorop) zijn geen doel van de app: er wordt niet mee getest, en een review of journaal voert screenreadergedrag niet op als bevinding of open kwestie; bestaande rollen en labels blijven staan, ongegarandeerd"
     notitie: "Besluit van Jarón op 2026-11-08, bij het boeken van ADR-031. Sluit JNL-003 K6 (buiten scope). Alleen screenreaders: reduced motion en PDR-017 blijven gelden. Heropent als de app andere gebruikers krijgt of Jarón zelf een screenreader gaat gebruiken"
     bestand: pdr-019-screenreaders-zijn-geen-doel.md
+  - id: "PDR-020"
+    titel: "Een infomelding als de gebruiker het gesprek begint"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-11-13
+    implementatie-datum: 2026-11-13
+    beslissing: "Kiest de gebruiker Me als wie begint, dan opent de thread met de infomelding 'Ask a question or name a topic you want to discuss': het eerste item, blijft de hele sessie staan en scrollt mee uit beeld; lijkt op de foutbox, in de infokleuren met FaCircleInfo; foutbox en infomelding hebben dezelfde, geërfde tekstgrootte"
+    notitie: "Besluit van Jarón op 2026-11-13 in het spec-gesprek (specs/infomelding-als-de-gebruiker-begint.md). Waarom: het lege scherm zegt niet dat jij begint, en niet waarover. Afgevallen: uitleggen dat je met een AI praat; overwogen: verdwijnen na de eerste beurt of wegklikken. Het gedeelde component Feedback staat als uitzondering in docs/code-architectuur.md § 2.5. Blauw naast de blauwe gebruikersbubbel: op 2026-11-13 door Jarón in de browser en op de iPhone bekeken, goed"
+    bestand: pdr-020-infomelding-als-de-gebruiker-begint.md

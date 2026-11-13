@@ -4,7 +4,8 @@ import { useLayoutEffect, useRef, useState } from "react";
 
 import { AiBubblePreview } from "@/components/dev/ai-bubble-preview";
 import { UserBubblePreview } from "@/components/dev/user-bubble-preview";
-import type { Turn, TurnState } from "@/lib/session-reducer";
+import { InfoFeedback } from "@/components/ui/feedback";
+import type { Starter, Turn, TurnState } from "@/lib/session-reducer";
 
 import { AiBubble } from "./ai-bubble";
 import { TurnBubble } from "./turn-bubble";
@@ -14,6 +15,8 @@ type ConversationThreadProps = {
   turns: Turn[];
   turnState: TurnState;
   conversationLang: string;
+  /** Who opens the conversation. When it is the user, the thread opens with a hint. */
+  starter: Starter;
 };
 
 /**
@@ -35,6 +38,7 @@ export function ConversationThread({
   turns,
   turnState,
   conversationLang,
+  starter,
 }: ConversationThreadProps) {
   const threadRef = useRef<HTMLDivElement | null>(null);
 
@@ -147,6 +151,16 @@ export function ConversationThread({
       role="log"
       aria-label="Conversation"
     >
+      {/* The opening hint when the user starts (PDR-020). It stays for the whole session
+          and scrolls away with the thread. Outside `items`: it is not a turn, and that
+          array is keyed for the turns and the waiting bubble (ADR-031). As the first
+          child it is the auto-scroll's newest item only while there are no turns; a box
+          this short fits, so the thread stays at the top, as it did when empty. */}
+      {starter === "user" && (
+        <InfoFeedback>
+          Ask a question or name a topic you want to discuss
+        </InfoFeedback>
+      )}
       {items}
       {/* Gated here, not only inside the component: NODE_ENV is replaced at build time,
           so in production this branch and the import are dead code. */}

@@ -101,6 +101,7 @@ balans niet meenam (HDR-003). De keuze rust dus op de reden van Jarón, niet op 
 - **`docs/grootboek/CLAUDE.md` is een leidend document.** De werkregel daarin, en het tijdelijke
   meetblok ernaast, zijn aan Jarón getoond en gecontroleerd (communicatieplicht).
 
+Verwant: HDR-030 (Een hook houdt een pull request zonder reconciliatie tegen), de afdwinging van dit besluit
 Verwant: HDR-022 (Het driftsignaal meet vanaf de laatste reconciliatie, niet vanaf de laatste aanraking)
 Verwant: HDR-023 (Een driftrapport dat langer dan veertien dagen open staat, meldt zich)
 Verwant: DFT-004 (Eerste reconciliatie op een echt signaal — `src/components/CLAUDE.md` beschrijft een context die nooit heeft bestaan, de balans mist de CI)

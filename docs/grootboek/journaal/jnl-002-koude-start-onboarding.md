@@ -5,7 +5,8 @@ datum: 2026-10-27
 kernvraag: Waar beschrijft de repo zichzelf niet goed genoeg voor een agent die niets heeft dan de repo?
 doel-records:
   - "HDR-011 (K1, K2)"
-  - "per kwestie een record zodra er een besluit valt (K7 t/m K11)"
+  - "HDR-030 (K7)"
+  - "per kwestie een record zodra er een besluit valt (K8 t/m K11)"
 ---
 
 # JNL-002 — Koude-startjournaal: kan een nieuwkomer werken met alleen de repo?
@@ -60,7 +61,7 @@ De oriëntatie kwam volledig uit de `CLAUDE.md`-bestanden die vanzelf laden: hij
 | K4 | De README linkt naar een privé-artifact dat een nieuwkomer niet kan openen | besloten 2026-10-27: de link blijft |
 | K5 | Wat bewijst een run van een uur? | besloten 2026-10-27 |
 | K6 | Houdt de regel "geen AI-of-zelf-oordeel" stand? | besloten 2026-10-27: houdt stand in twee runs |
-| K7 | De reconciliatieregel bereikt wie in `src/` werkt niet | open |
+| K7 | De reconciliatieregel bereikt wie in `src/` werkt niet | besloten 2026-11-13, geboekt in HDR-030 |
 | K8 | `npx next typegen` zonder `node_modules` wijzigt `package.json` | open |
 | K9 | Telt lint plus `tsc` als gedekt pad bij triage? | open |
 | K10 | De reviewer draait op het model van de lead | open |
@@ -144,7 +145,14 @@ alleen `src/` raakt, krijgt hem niet te zien, en de waarschuwing noemt geen DFT.
 bij een achterstand zegt, is niet getoetst: de agent draaide het niet.
 
 Mogelijke plekken voor een fix: de tekst van de waarschuwing, de controles in de root-`CLAUDE.md`
-(een leidend document), of `builder.md` en `reviewer.md`. **Open.**
+(een leidend document), of `builder.md` en `reviewer.md`.
+
+**Besloten (Jarón, 2026-11-13):** een hook. `guard-reconciliatie-pr` weigert `gh pr create` van de lead
+thread als de branch een werkgebied raakt zonder nieuwe DFT, en zegt dat de agent `docs:drift` moet
+draaien en een DFT moet boeken in dezelfde pull request. De waarschuwing van `docs:check` noemt
+voortaan ook de DFT. **Geboekt als HDR-030** (Een hook houdt een pull request zonder reconciliatie
+tegen). Niet gemeten of dit in de praktijk werkt: dat vraagt een volgende koude-startronde met een
+taak die code in een werkgebied raakt.
 
 ### K8 — `npx next typegen` zonder `node_modules` wijzigt `package.json`
 
@@ -270,3 +278,5 @@ hierboven.
 - **2026-11-10 — Ronde drie, en het journaal is heropend.** Vijf nieuwe kwesties, K7 t/m K11,
   allemaal open. REQ-GG-10 voldoet ook in ronde drie aan K5, maar de reconciliatie per pull request
   bereikt een nieuwkomer niet (K7).
+- **2026-11-13 — K7 besloten en geboekt als HDR-030.** Een hook op `gh pr create`; de
+  drift-waarschuwing noemt de DFT. K8 t/m K11 blijven open.

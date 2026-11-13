@@ -127,8 +127,9 @@ dev origin; without that, Next blocks the request.
 The same list runs in CI on every pull request (`.github/workflows/checks.yml`):
 
 ```bash
+npm install                             # first: without node_modules, npx would fetch other versions
 npm run lint
-npx next typegen && npx tsc --noEmit    # typegen first — v16 generates route types
+npm run typegen && npm run typecheck    # typegen first — v16 generates route types
 npm run docs:check                      # drift between docs and repo
 npm run test:scripts                    # tests of the scripts that rewrite documents
 npm run register:check                  # code-architecture register has not drifted

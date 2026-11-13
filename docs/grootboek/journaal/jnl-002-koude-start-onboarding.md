@@ -6,7 +6,8 @@ kernvraag: Waar beschrijft de repo zichzelf niet goed genoeg voor een agent die 
 doel-records:
   - "HDR-011 (K1, K2)"
   - "HDR-030 (K7)"
-  - "per kwestie een record zodra er een besluit valt (K8 t/m K11)"
+  - "K8: geen eigen record; de regel staat in CLAUDE.md (Controles)"
+  - "per kwestie een record zodra er een besluit valt (K9 t/m K11)"
 ---
 
 # JNL-002 — Koude-startjournaal: kan een nieuwkomer werken met alleen de repo?
@@ -62,7 +63,7 @@ De oriëntatie kwam volledig uit de `CLAUDE.md`-bestanden die vanzelf laden: hij
 | K5 | Wat bewijst een run van een uur? | besloten 2026-10-27 |
 | K6 | Houdt de regel "geen AI-of-zelf-oordeel" stand? | besloten 2026-10-27: houdt stand in twee runs |
 | K7 | De reconciliatieregel bereikt wie in `src/` werkt niet | besloten 2026-11-13, geboekt in HDR-030 |
-| K8 | `npx next typegen` zonder `node_modules` wijzigt `package.json` | open |
+| K8 | `npx next typegen` zonder `node_modules` wijzigt `package.json` | besloten 2026-11-13 |
 | K9 | Telt lint plus `tsc` als gedekt pad bij triage? | open |
 | K10 | De reviewer draait op het model van de lead | open |
 | K11 | Een afwezigheidsclaim uit een grep: incident of niet? | open |
@@ -160,7 +161,18 @@ De builder draaide de checks in de verse clone vóór een `npm install`. `npx` h
 op, niet de 16.3.6 uit `package.json`. Die installeerde dependencies en zette `@types/react` op
 `19.3.0` en `typescript` op `5.9.3`. De auto-mode-classifier weigerde de builder om dat terug te
 draaien (`git checkout --`), waarna de lead het aan Jarón vroeg. De README noemt `npm install`; de
-controles in de root-`CLAUDE.md` niet. **Open.**
+controles in de root-`CLAUDE.md` niet.
+
+**Besloten (Jarón, 2026-11-13):** allebei de maatregelen. De typecheck krijgt npm-scripts in
+`package.json` (`typegen` is `next typegen`, `typecheck` is `tsc --noEmit`), zodat een script
+zonder `node_modules` zichtbaar faalt in plaats van stil een andere versie op te halen. En
+`npm install` is de eerste stap van de controles. De root-`CLAUDE.md` (Controles), de README,
+`builder.md`, `reviewer.md`, `refactor-werkplaats.md` en `.claude/stage-review/project.conf`
+noemen nu de scripts; `.github/workflows/checks.yml` blijft ongemoeid (die draait eerst `npm ci`,
+en de map valt in het werkgebied van de balans). `npm install` staat alleen in `CLAUDE.md` en de
+README: builder en reviewer draaien in de checkout van de lead, waar `node_modules` er al is.
+**Geen eigen record:** de regel staat in `CLAUDE.md` zelf en het waarom staat hier. Niet gemeten
+of een verse agent nu eerst installeert: dat vraagt een volgende koude-startronde.
 
 ### K9 — Telt lint plus `tsc` als gedekt pad bij triage?
 
@@ -280,3 +292,5 @@ hierboven.
   bereikt een nieuwkomer niet (K7).
 - **2026-11-13 — K7 besloten en geboekt als HDR-030.** Een hook op `gh pr create`; de
   drift-waarschuwing noemt de DFT. K8 t/m K11 blijven open.
+- **2026-11-13 — K8 besloten, zonder eigen record.** Npm-scripts `typegen` en `typecheck`, en
+  `npm install` als eerste controle. K9 t/m K11 blijven open.

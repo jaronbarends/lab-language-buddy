@@ -29,7 +29,7 @@ commando ziet.
 1. **Tegen de opdracht.** Is alles wat erin staat geïmplementeerd? Is er iets gebouwd waar
    de opdracht niet om vroeg? Is er iets gewijzigd buiten de bestandsgrens, inclusief de
    grootboekregisters en `docs/index.yml` (builders bewerken die niet)?
-2. **Checks.** Draai `npm run lint`, `npx next typegen && npx tsc --noEmit` en
+2. **Checks.** Draai `npm run lint`, `npm run typegen && npm run typecheck` en
    `npm run docs:check`. Niet `npm run build` en niet `next dev`: die horen bij de checkout
    van de lead. Echte output telt.
 3. **Kwaliteit.** Correctheid, randgevallen en de huisregels. Onthoud wat alleen een apparaat

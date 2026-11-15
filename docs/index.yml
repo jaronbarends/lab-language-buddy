@@ -189,6 +189,9 @@ documents:
   - path: docs/grootboek/hdr/hdr-037-incident-telt-breder-oordeel-na-maatregel.md
     what: Waarom een incident elke gevonden fout is, wie of wat hem ook vond (niet alleen een correctie van Jarón of een herhaalde toolfout), en waarom een incident na de maatregel een oordeel vraagt via beoordeeld-tot en een waarschuwing in docs:check; wat is afgewogen (alleen tekst, op datum, smal houden, alleen bij een bestaande afspraak) en waarom de succesmaat van HDR-034 en HDR-035 een oordeel per incident werd; de twee open punten uit K11 van JNL-002.
     read_when: je een incident logt of twijfelt of iets telt; docs:check waarschuwt voor een incident na een maatregel; je beoordeeld-tot ophoogt of het incidentregister of scripts/incidents.mjs wijzigt.
+  - path: docs/grootboek/hdr/hdr-038-stop-hook-houdt-kaal-record-id-tegen.md
+    what: Waarom een Stop-hook na elke beurt een ADR-, HDR-, PDR-, DFT- of JNL-id zonder omschrijving tegenhoudt (per sessie, en per codeblok zonder taal), welke vormen als omschrijving tellen, waarom het slotbericht uit last_assistant_message komt, wat is afgewogen (alleen tekst, herinnering, prompt-hook, per bericht, exacte titel) en wat de hook mist of vals meldt.
+    read_when: de hook guard-id-with-title blokkeert en je wilt weten waarom; je wijzigt de hook of de werkafspraak Ids met titel; een incident in id-with-title vraagt een oordeel.
   - path: docs/grootboek/pdr/pdr-007-persona-van-de-ai.md
     what: De AI is een algemene vriendelijke kennis met vrij onderwerp, 2 tot 4 zinnen en hooguit één vraag per beurt; overgezet uit plan.md.
     read_when: je de persona, de toon of de prompt-opbouw uit benoemde secties wijzigt of een nieuwe persona toevoegt.

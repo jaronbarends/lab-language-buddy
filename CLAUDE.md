@@ -75,9 +75,11 @@ dan in plaats van een van beide blind te volgen.
   iets ontbreekt, zeg er dan bij waar dat op rust: "helemaal gelezen", "grep op `X`: geen
   treffers", "volgens de indexregel van Y". Een afwezigheid die op een aanwijzing rust, meld je
   als vermoeden.
-- **Ids met titel.** Haal je een genummerd document aan (ADR, HDR, PDR, DFT, JNL, REQ,
-  een kwestie zoals K7), zet dan bij de eerste vermelding in elk bericht de titel
-  erbij. Zoek de titel op in het register; leid hem niet af uit de bestandsnaam.
+- **Ids met titel** (HDR-038). Haal je een genummerd document aan (ADR, HDR, PDR, DFT, JNL,
+  REQ, een kwestie zoals K7), zeg dan bij de eerste vermelding in de sessie en in elke
+  startprompt waar het over gaat: de titel of een paar woorden daaruit. Zoek die op in het
+  register; leid hem niet af uit de bestandsnaam. De hook `guard-id-with-title` controleert
+  ADR, HDR, PDR, DFT en JNL na elke beurt; REQ-ids en kwesties niet.
 - **Beslispunten: eerst uitleg** (HDR-034). Leg je Jarón een keuze voor (een reviewbevinding,
   een kwestie, een rij opties), begin dan met 4–6 regels in gewone woorden: wat er speelt, een
   concreet voorbeeld, waarom het ertoe doet. Daarna de opties, het advies als laatste. Een directe

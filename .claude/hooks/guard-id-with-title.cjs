@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 'use strict';
 
-// Stop hook (not wired in settings yet) for the incident pattern id-with-title: a numbered record
-// is named by its bare id, so the reader has to look up what it is about. After a turn the hook
-// reads the assistant's text from the transcript and blocks the stop when a record id lacks a
-// short description where the reader first meets it. The check is loose on purpose: a few words
-// after the id are enough; whether they match the title is not checked.
+// Stop hook (HDR-038, wired in .claude/settings.json) for the incident pattern id-with-title: a
+// numbered record is named by its bare id, so the reader has to look up what it is about. After a
+// turn the hook reads the assistant's text from the transcript and blocks the stop when a record id
+// lacks a short description where the reader first meets it. The check is loose on purpose: a few
+// words after the id are enough; whether they match the title is not checked.
 //
 // Two kinds of unit:
 //   prose        all assistant text of the session outside fenced blocks; an id needs a
@@ -13,7 +13,8 @@
 //   bare fence   each fenced block without an info string, read outside this session (a
 //                startprompt or a hand-over); an id needs a description at its first mention in
 //                that block, whatever the session said before
-// Not checked: inline code, and fenced blocks with an info string (```diff, ```yaml), anywhere.
+// A fence is ``` or ~~~ (CommonMark). Not checked: inline code, and fenced blocks with an info
+// string (```diff, ~~~yaml), anywhere.
 //
 // Two modes:
 //   hook (default)          reads the Stop hook input on stdin, including the closing message
@@ -38,9 +39,10 @@ const NOT_AN_ID = '(?!(?:ADR|HDR|PDR|DFT|JNL)-\\d)';
 // (`HDR-005: **De branch ...**`).
 const CLOSING_MARKUP = '(?:[*_`]|\\]\\([^)\\s]*\\))*';
 const OPENING_MARKUP = '[*_`"\'“”‘’„]*';
-// The description may start on the directly following line, unless that line opens a fence. Without
-// a separator or a parenthesis there, a colon that ends a line introduces a list, not a description.
-const NEXT_LINE = '(?:\\r?\\n[ \\t]*(?!```))?';
+// The description may start on the directly following line, unless that line opens a fence (``` or
+// ~~~). Without a separator or a parenthesis there, a colon that ends a line introduces a list, not a
+// description.
+const NEXT_LINE = '(?:\\r?\\n[ \\t]*(?!```|~~~))?';
 const SEPARATOR_AFTER = new RegExp(
   `^${CLOSING_MARKUP}[ \\t]*[:—–,]${CLOSING_MARKUP}[ \\t]*${NEXT_LINE}${OPENING_MARKUP}${NOT_AN_ID}\\p{L}{2,}`,
   'u'
@@ -138,26 +140,33 @@ function maskInlineCode(line) {
   return line.replace(INLINE_CODE, (code) => ' '.repeat(code.length));
 }
 
-// A fence opens on a line of at least three backticks; what follows is the info string, which may
-// not contain a backtick. Without an info string the fence is bare.
+// A fence opens on a line of at least three backticks or at least three tildes (CommonMark); what
+// follows is the info string. After backticks the info string may not contain a backtick, after
+// tildes anything goes. Without an info string the fence is bare.
 function openingFence(line) {
-  const match = line.match(/^[ \t]*(`{3,})([^`]*)$/);
+  const match = line.match(/^[ \t]*(?:(`{3,})([^`]*)|(~{3,})(.*))$/);
   if (!match) {
     return null;
   }
-  return { length: match[1].length, fenceIsBare: match[2].trim() === '' };
+  const marker = match[1] ?? match[3];
+  const info = match[2] ?? match[4];
+  return { character: marker[0], length: marker.length, fenceIsBare: info.trim() === '' };
 }
 
-// The length of a closing fence (backticks only), or 0 when the line is none.
-function closingLength(line) {
-  const match = line.match(/^[ \t]*(`{3,})\s*$/);
-  return match ? match[1].length : 0;
+// Whether a line closes a fence: the same marker character as the opener, at least as long, and
+// nothing else but whitespace. So ``` does not close ~~~, nor ~~~ ```.
+function closesFence(line, fence) {
+  const match = line.match(/^[ \t]*(`{3,}|~{3,})\s*$/);
+  if (!match) {
+    return false;
+  }
+  return match[1][0] === fence.character && match[1].length >= fence.length;
 }
 
 // Per line: PROSE, SKIP (a fence marker, or code in a fence with an info string), or the index of
-// the bare fence it belongs to. A fence closes on a line of at least as many backticks; an unclosed
-// fence runs to the end. Inside a bare fence a nested fence is followed one level deep: a nested
-// block with an info string is code in the prompt and is skipped too.
+// the bare fence it belongs to. An unclosed fence runs to the end. Inside a bare fence a nested
+// fence is followed one level deep, with the same closing rule: a nested block with an info string
+// is code in the prompt and is skipped too.
 function classifyLines(lines) {
   const kinds = [];
   let outer = null;
@@ -174,8 +183,7 @@ function classifyLines(lines) {
       kinds.push(SKIP);
       continue;
     }
-    const close = closingLength(line);
-    if (close >= outer.length) {
+    if (closesFence(line, outer)) {
       outer = null;
       inner = null;
       kinds.push(SKIP);
@@ -186,7 +194,7 @@ function classifyLines(lines) {
       continue;
     }
     if (inner) {
-      if (close >= inner.length) {
+      if (closesFence(line, inner)) {
         inner = null;
         kinds.push(SKIP);
         continue;

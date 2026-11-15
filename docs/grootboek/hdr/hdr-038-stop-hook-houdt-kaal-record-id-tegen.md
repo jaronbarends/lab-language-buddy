@@ -100,8 +100,10 @@ vier extra vormen.
   uit JNL-005 (Metingen van de corrector), vallen erbuiten); een id dat laat in een lange sessie
   kaal terugkomt; een verkeerde omschrijving, zoals de titel uit een bestandsnaam op 9 november; een
   kaal id gevolgd door een komma en een ander lijstitem ("HDR-035, HDR-037, de kop van …").
-- **Waar hij vals alarm geeft:** citaten van tool-uitvoer of commitberichten, en een omschrijving
-  met een woord ertussen ("HDR-034 heet …"). Vals alarm in een startprompt is het duurst, omdat het
+- **Waar hij vals alarm geeft:** citaten van tool-uitvoer of commitberichten, een omschrijving
+  met een woord ertussen ("HDR-034 heet …"), en een id in inline code die over een regeleinde
+  doorloopt. Dat laatste is bewust gelaten (reviewbevinding op PR #65): maskeren over regels heen
+  zou ook de regels van een codeblok aan elkaar koppelen en elke startprompt wegmaskeren. Vals alarm in een startprompt is het duurst, omdat het
   hele codeblok opnieuw moet.
 - **Hij leunt op een optioneel veld.** Ontbreekt `last_assistant_message`, dan valt de hook terug op
   het transcript en mist hij het slotbericht, zoals in de eerste live test.

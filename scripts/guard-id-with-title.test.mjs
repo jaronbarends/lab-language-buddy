@@ -101,6 +101,7 @@ describe("guard-id-with-title: extra forms", () => {
   it("leaves an id bare when the next line holds an id, or opens a fence", () => {
     assert.deepEqual(flagsOf("Het gaat om HDR-009,\nHDR-034 en meer."), ["prose HDR-009", "prose HDR-034"]);
     assert.deepEqual(flagsOf("Volgens HDR-005:\n```yaml\nid: x\n```"), ["prose HDR-005"]);
+    assert.deepEqual(flagsOf("Volgens HDR-005:\n~~~yaml\nid: x\n~~~"), ["prose HDR-005"]);
   });
 
   it("accepts a quoted title", () => {
@@ -137,12 +138,34 @@ describe("guard-id-with-title: what is skipped", () => {
 
   it("skips a block with an info string nested in a bare fence", () => {
     assert.deepEqual(flagsOf("````\nStartprompt.\n```yaml\nid: HDR-005\n```\nEinde.\n````"), []);
+    assert.deepEqual(flagsOf("````\nStartprompt.\n~~~yaml\nid: HDR-005\n~~~\nEinde.\n````"), []);
+  });
+
+  it("skips a ~~~ block with an info string, which may contain a backtick", () => {
+    assert.deepEqual(flagsOf('Zo:\n~~~yaml\n  - id: "HDR-005"\n~~~\nKlaar.'), []);
+    assert.deepEqual(flagsOf("~~~yaml `config`\nid: HDR-005\n~~~"), []);
+  });
+
+  it("closes a fence only on the same marker, at least as long as the opener", () => {
+    assert.deepEqual(flagsOf("~~~yaml\nid: HDR-005\n```\nHDR-007 is nog code\n~~~\nNa HDR-009."), ["prose HDR-009"]);
+    assert.deepEqual(flagsOf("```yaml\nid: HDR-005\n~~~\nHDR-007 is nog code\n```\nNa HDR-009."), ["prose HDR-009"]);
+    assert.deepEqual(flagsOf("~~~~yaml\nid: HDR-005\n~~~\nHDR-007 is nog code\n~~~~\nNa HDR-009."), ["prose HDR-009"]);
+    assert.deepEqual(flagsOf("````yaml\nid: HDR-005\n```\nHDR-007 is nog code\n````\nNa HDR-009."), ["prose HDR-009"]);
+  });
+
+  it("applies the same closing rule to a block nested in a bare fence", () => {
+    assert.deepEqual(flagsOf("````\n~~~yaml\nid: HDR-005\n```\nHDR-007 is nog code\n~~~\nLees HDR-009.\n````"), ["fence HDR-009"]);
   });
 });
 
 describe("guard-id-with-title: units", () => {
   it("treats a bare fence as a unit of its own", () => {
     const text = "Volgens HDR-034 (beslispunten eerst uitleggen) doe ik dat.\n\n```\nLees HDR-034 eerst.\n```";
+    assert.deepEqual(flagsOf(text), ["fence HDR-034"]);
+  });
+
+  it("treats a bare ~~~ fence as a unit of its own", () => {
+    const text = "Volgens HDR-034 (beslispunten eerst uitleggen) doe ik dat.\n\n~~~\nLees HDR-034 eerst.\n~~~";
     assert.deepEqual(flagsOf(text), ["fence HDR-034"]);
   });
 

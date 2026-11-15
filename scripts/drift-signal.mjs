@@ -39,8 +39,9 @@
 import { execFileSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join, posix } from "node:path";
-import { fileURLToPath, pathToFileURL } from "node:url";
+import { fileURLToPath } from "node:url";
 import { RECORD_TYPES } from "./records.mjs";
+import { isRunDirectly } from "./run-directly.mjs";
 
 const DFT_REGISTER = RECORD_TYPES.find((type) => type.prefix === "DFT").register;
 
@@ -435,6 +436,6 @@ function main() {
   process.exit(problems.length > 0 ? 1 : 0);
 }
 
-if (process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url) {
+if (isRunDirectly(import.meta.url)) {
   main();
 }

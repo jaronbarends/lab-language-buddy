@@ -10,10 +10,11 @@
 // main() only runs when the file is run directly.
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
-import { pathToFileURL } from "node:url";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { isRunDirectly } from "./run-directly.mjs";
 
-const ROOT = new URL("..", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1");
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const REGISTER_PATH = "docs/code-architectuur-register.json";
 
 // The number of lines in a text: a final newline ends the last line, it does not start another.
@@ -86,6 +87,6 @@ function main() {
   console.log(`sync-code-architectuur-register: refreshed line counts in ${REGISTER_PATH}`);
 }
 
-if (process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url) {
+if (isRunDirectly(import.meta.url)) {
   main();
 }

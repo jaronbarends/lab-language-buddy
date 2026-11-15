@@ -18,12 +18,13 @@
 //  10. no DFT has been open or in progress for more than
 //      14 days since its datum                                    (warning)
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
-import { join, relative } from "node:path";
+import { dirname, join, relative } from "node:path";
+import { fileURLToPath } from "node:url";
 import { findDrift, findStaleDfts, readDftRegister } from "./drift-signal.mjs";
 import { analyseIncidents } from "./incidents.mjs";
 import { checkRecordDates, checkRecords, todayInAmsterdam } from "./records.mjs";
 
-const ROOT = new URL("..", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1");
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 const errors = [];
 const warnings = [];

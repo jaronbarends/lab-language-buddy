@@ -30,3 +30,11 @@ met `node:test`.
 
 - De vraag of er tests voor de app komen (bijvoorbeeld Vitest op de reducer en `word-timing.ts`)
   blijft open. "Geen testsuite" is dus geen definitief besluit voor de app.
+- **Tests bestaan ook buiten de uitzondering** (versie 1.1, 2026-11-15). Verplicht is een test
+  alleen voor een script dat documenten herschrijft: nu `renumber-records.mjs` en
+  `sync-code-architectuur-register.mjs`. `npm run test:scripts` draait daarnaast tests voor checks
+  die alleen lezen (`drift-signal`, `incidents`, `records`, `run-directly`,
+  `sweep-code-architectuur`) en voor twee hooks onder `.claude/hooks/` (`guard-id-with-title`,
+  `guard-reconciliatie-pr`). Dat was zo vanaf de dag van de uitzondering: `record-dates.test.mjs`
+  kwam op 2026-10-27. Voor die tests geldt geen regel; de andere hooks hebben er geen. Gevonden in
+  de tweede ronde van de proef besluiten toetsen.

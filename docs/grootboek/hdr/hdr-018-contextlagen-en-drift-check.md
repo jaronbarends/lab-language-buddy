@@ -9,9 +9,11 @@
 
 De context van het project is gelaagd, zodat een sessie laadt wat ze nodig heeft, en een script
 controleert of de documentatie nog klopt. De lagen zijn: `.claude/rules/` (code style en Safari),
-`CLAUDE.md` in `src/components` en `src/lib`, `docs/index.yml` als register, `docs/adr/`,
-`.claude/agents/` (builder en reviewer) en `npm run docs:check` (`scripts/check-docs.mjs`). De
-opzet komt uit de ARC-requirements van `projectidentiteit`.
+`CLAUDE.md` in `src/components` en `src/lib`, `docs/index.yml` als register, `docs/adr/` (sinds
+het grootboek `docs/grootboek/adr/`), `.claude/agents/` (builder en reviewer) en `npm run docs:check`
+(`scripts/check-docs.mjs`). Dat is de stand van 2026-10-20; de actuele lagen staan in de tabel
+"Waar de rest van de context staat" in de root-`CLAUDE.md`. De opzet komt uit de ARC-requirements
+van `projectidentiteit`.
 
 ## Waarom
 
@@ -28,5 +30,9 @@ opzet komt uit de ARC-requirements van `projectidentiteit`.
 - Destijds gold ook dat parallelle builders `plan.md` niet mochten bewerken (het ene gedeelde
   bestand) en dat de lead hun logrijen schreef. Die regel is vervallen met HDR-015 (plan.md vervalt
   als bron).
+- **Versie 1.1 (2026-11-15):** de map `docs/adr/` bestaat niet meer en er zijn lagen bijgekomen
+  (het grootboek, de skills, code-architectuur, een derde rule en een derde agent). Het besluit zelf
+  staat: gelaagde context, en `docs:check` maakt van drift een falend commando. Gevonden in de tweede
+  ronde van de proef besluiten toetsen.
 
 Verwant: HDR-015 (plan.md vervalt als bron; beslissingen leven in het grootboek)

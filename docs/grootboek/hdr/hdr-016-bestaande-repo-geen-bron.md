@@ -44,6 +44,13 @@ daarmee de enige.
   goedgekeurd.
 - **Het logboek van wat de agent heeft gezien** staat hieronder, als archief van wat toen
   gebeurd is. Het is geen regel en niet meer bijgehouden.
+- **De vierde bepaling draagt nu de tokenregel** (versie 1.1, 2026-11-15). Kleur, typografie,
+  spacing en de bevel staan niet als eigen regel in het harnas. Sinds de tokens, `reset.css` en
+  `elements.css` uit de bestaande app zijn overgenomen en van deze app zelf zijn, draagt
+  `src/components/CLAUDE.md` het: gebruik de tokens, geen losse waarden voor kleur, spacing of
+  radius. "Wijst Jarón ernaar" is daarmee voorgeschiedenis: hij wees, en de tokens zijn
+  overgenomen. Typografie noemt de tokenregel niet apart; de tokens hebben wel een eigen
+  `type`-bestand. Gevonden in de tweede ronde van de proef besluiten toetsen.
 
 ## Archief: wat de agent heeft gezien (uit plan.md)
 

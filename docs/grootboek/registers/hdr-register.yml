@@ -411,3 +411,14 @@ hdrs:
     beslissing: "Een incident is een fout in hoe de agent werkt, wie of wat hem ook vond (Jarón, review, check, koude-startbeoordeling, de agent zelf); een toolfout telt als hij eerder zo gebeurde. Elk patroon met een maatregel krijgt beoordeeld-tot; docs:check waarschuwt zolang de telling erboven staat, tot een oordeel (de maatregel hield, of een stevigere maatregel) en een ophoging met Jaróns akkoord"
     notitie: "De twee punten uit K11 van JNL-002 die HDR-035 niet besliste, besloten door Jarón op 2026-11-13. Afgewogen voor de escalatie: alleen tekst (een latere sessie ziet het niet), op datum (een incident op dezelfde dag is niet te plaatsen, elk incident erna telt als falen); voor de definitie: smal houden (botst met K11), alleen bij een bestaande afspraak of correctie (een nieuw soort fout begint geen telling). De succesmaat van HDR-034 en HDR-035 wordt een oordeel per incident. Ingevuld voor zeven patronen; document-not-fully-read staat op 4 van 5 omdat het vijfde incident nog niet is beoordeeld. Laat een gat in HDR-035 zien (een stille conclusie heeft geen zin om een basis bij te zetten), hier niet besloten"
     bestand: hdr-037-incident-telt-breder-oordeel-na-maatregel.md
+  - id: "HDR-038"
+    titel: "Een Stop-hook houdt de beurt tegen bij een record-id zonder omschrijving"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-11-15
+    implementatie-datum: 2026-11-15
+    beslissing: "De Stop-hook guard-id-with-title leest na elke beurt de assistent-tekst (slotbericht uit last_assistant_message, de rest uit het transcript) en houdt het stoppen tegen bij een ADR-, HDR-, PDR-, DFT- of JNL-id zonder omschrijving: in proza bij de eerste vermelding in de sessie, in een codeblok zonder taal bij de eerste vermelding in dat blok. Een omschrijving is los (een paar woorden volstaan); stil bij een schone beurt, bij stop_hook_active en bij een fout. De werkafspraak Ids met titel geldt per sessie en in elke startprompt"
+    notitie: "Maatregel van het incidentpatroon id-with-title (zes incidenten, drie met de werkafspraak geladen), besloten door Jarón 2026-11-13 tot 2026-11-15. Spike met replay op het transcript van de sessie van HDR-037: per bericht 12 à 13 van 16 beurten geblokkeerd, per sessie 5. De eerste live test bleef stil omdat het slotbericht nog niet op schijf stond; opgelost met last_assistant_message uit het hookschema van Claude Code. Afgewogen: alleen tekst, een UserPromptSubmit-herinnering, een prompt-hook, per bericht, de exacte titel, een uitzondering bij een verzoek. Buiten bereik: REQ-ids en kwesties (incident 1 en 6), een id laat in de sessie, een verkeerde omschrijving. Ongeveer 1 op 8 beurten in oude sessies zou blokkeren. Een zevende incident viel tijdens het boeken en de hook ving het; oordeel van Jarón: hield, beoordeeld-tot 7"
+    bestand: hdr-038-stop-hook-houdt-kaal-record-id-tegen.md

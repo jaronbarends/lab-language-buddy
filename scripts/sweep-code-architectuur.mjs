@@ -7,10 +7,12 @@
 // need attention. Files that are green, or that have a registered "excluded"/"ceiling" within
 // their limit, are left out entirely.
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
-import { join } from "node:path";
-import { pathToFileURL } from "node:url";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { isRunDirectly } from "./run-directly.mjs";
+import { countTextLines } from "./sync-code-architectuur-register.mjs";
 
-const ROOT = new URL("..", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1");
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const REGISTER_PATH = "docs/code-architectuur-register.json";
 const SWEEP_ROOT = "src";
 const SOURCE_EXTENSIONS = new Set([".ts", ".tsx"]);
@@ -26,14 +28,6 @@ function walk(dir) {
     found.push(path);
   }
   return found;
-}
-
-function countLines(absolutePath) {
-  const content = readFileSync(absolutePath, "utf8");
-  if (content === "") {
-    return 0;
-  }
-  return content.split("\n").length - (content.endsWith("\n") ? 1 : 0);
 }
 
 function loadRegister() {
@@ -56,7 +50,7 @@ export function sweep() {
       continue;
     }
 
-    const lines = countLines(join(ROOT, file));
+    const lines = countTextLines(readFileSync(join(ROOT, file), "utf8"));
     const decision = decisions.get(file);
 
     if (decision?.position === "excluded") {
@@ -89,6 +83,6 @@ export function sweep() {
   return flagged;
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+if (isRunDirectly(import.meta.url)) {
   console.log(JSON.stringify(sweep(), null, 2));
 }

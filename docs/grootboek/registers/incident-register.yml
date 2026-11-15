@@ -68,7 +68,7 @@ patronen:
   - patroon: id-with-title
     titel: "Een genummerd record wordt alleen met zijn id aangehaald"
     maatregel: HDR-038
-    beoordeeld-tot: 7
+    beoordeeld-tot: 8
     incidenten:
       - datum: 2026-10-21
         wat: "Een kaal requirement-id in een statusupdate, waardoor de lezer het zelf moet opzoeken"
@@ -86,6 +86,9 @@ patronen:
       - datum: 2026-11-15
         wat: "In de sessie die HDR-038 boekte, noemde de lead HDR-038 kaal in een tussenbericht ('ik zwak de zin in HDR-038 af'); de net gekoppelde hook guard-id-with-title blokkeerde de beurt en de lead stuurde een aanvulling met de titel. Oordeel (Jarón, 2026-11-15): de maatregel hield; de hook ving het en de aanvulling volgde"
         bron: "de Stop-hook guard-id-with-title, in de sessie die HDR-038 boekte"
+      - datum: 2026-11-15
+        wat: "In de sessie van de scripts-robuustheid noemde de lead HDR-034 in het slotbericht na de review zonder titel bij de eerste vermelding; de hook guard-id-with-title blokkeerde de beurt en de lead stuurde een aanvulling met de titel. Oordeel (Jarón, 2026-11-15): de maatregel hield; de hook ving het en de aanvulling volgde"
+        bron: "de Stop-hook guard-id-with-title, in de sessie van de scripts-robuustheid"
   - patroon: branch-before-edit
     titel: "Er wordt gewerkt op de integratiebranch voordat er een branch bestaat"
     maatregel: HDR-011

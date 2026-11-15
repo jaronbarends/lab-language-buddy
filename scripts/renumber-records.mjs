@@ -14,8 +14,9 @@
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { dirname, isAbsolute, join } from "node:path";
-import { fileURLToPath, pathToFileURL } from "node:url";
+import { fileURLToPath } from "node:url";
 import { RECORD_TYPES, checkRecords, formatId, idNumber, parseRegister } from "./records.mjs";
+import { isRunDirectly } from "./run-directly.mjs";
 
 const DEFAULT_BASE = "origin/main";
 
@@ -226,6 +227,6 @@ function main() {
   }
 }
 
-if (process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url) {
+if (isRunDirectly(import.meta.url)) {
   main();
 }

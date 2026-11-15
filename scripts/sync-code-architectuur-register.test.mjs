@@ -5,7 +5,7 @@
 // register and the real git index stay out of reach.
 import assert from "node:assert/strict";
 import { execFileSync, spawnSync } from "node:child_process";
-import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
+import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, unlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { afterEach, describe, it } from "node:test";
@@ -16,6 +16,9 @@ const SCRIPT = "scripts/sync-code-architectuur-register.mjs";
 const REGISTER = "docs/code-architectuur-register.json";
 const PREFIX = "sync-code-architectuur-register:";
 const roots = [];
+// Symlinks and junctions made by a test. afterEach removes these before the roots, so a recursive
+// removal never runs through a link into the folder it points at.
+const links = [];
 
 // A register in the shape of docs/code-architectuur-register.json, one entry per path with its
 // line count.
@@ -54,18 +57,19 @@ function read(root, path) {
   return readFileSync(join(root, path), "utf8");
 }
 
-// A throwaway git repo with a copy of the script, the files (path to text) and a register with
-// the line counts given, all committed. The repo gets its real path: the script runs main() only
-// when it was started with its own path, and a temp folder can sit behind a symlink (/var on
-// macOS). autocrlf is off so that git add prints no line-ending warning, whatever the global
-// config says.
-function makeRepo(files, lineCounts) {
-  const root = realpathSync(mkdtempSync(join(tmpdir(), "sync-register-test-")));
+// A throwaway git repo with a copy of the script and the helper it imports, the files (path to
+// text) and a register with the line counts given, all committed. The folder name starts with
+// `folderPrefix`. autocrlf is off so that git add prints no line-ending warning, whatever the
+// global config says.
+function makeRepo(files, lineCounts, folderPrefix = "sync-register-test-") {
+  const root = mkdtempSync(join(tmpdir(), folderPrefix));
   roots.push(root);
   git(root, "init", "-q", "-b", "main");
   git(root, "config", "core.autocrlf", "false");
   mkdirSync(join(root, "scripts"));
-  copyFileSync(fileURLToPath(new URL("./sync-code-architectuur-register.mjs", import.meta.url)), join(root, SCRIPT));
+  for (const script of ["sync-code-architectuur-register.mjs", "run-directly.mjs"]) {
+    copyFileSync(fileURLToPath(new URL(`./${script}`, import.meta.url)), join(root, "scripts", script));
+  }
   for (const [path, text] of Object.entries(files)) {
     write(root, path, text);
   }
@@ -88,7 +92,22 @@ function run(root, ...args) {
   return { status, stdout, stderr };
 }
 
+// A junction (a symlink outside Windows) at a fresh path that points at `target`. Its parent
+// folder is a root, removed only after the link itself is gone.
+function makeLink(target) {
+  const parent = mkdtempSync(join(tmpdir(), "sync-register-link-"));
+  roots.push(parent);
+  const link = join(parent, "repo");
+  symlinkSync(target, link, "junction");
+  links.push(link);
+  return link;
+}
+
 afterEach(() => {
+  // unlinkSync removes the link, never what it points at.
+  while (links.length > 0) {
+    unlinkSync(links.pop());
+  }
   while (roots.length > 0) {
     rmSync(roots.pop(), { recursive: true, force: true });
   }
@@ -203,5 +222,32 @@ describe("the command with --check, as register:check runs it", () => {
       stderr: `${PREFIX} src/gone.ts no longer exists, leaving its entry untouched\n`,
     });
     assert.deepEqual(staged(root), []);
+  });
+});
+
+describe("the command, started from an unusual path", () => {
+  // A root taken from the URL pathname kept a space as %20, so every read missed the register.
+  it("works in a repo whose folder name contains a space", () => {
+    const root = makeRepo({ "src/a.ts": "one\ntwo\n" }, { "src/a.ts": 2 }, "sync register test-");
+    write(root, "src/a.ts", "one\ntwo\nthree\n");
+    assert.deepEqual(run(root), {
+      status: 0,
+      stdout: `${PREFIX} refreshed line counts in ${REGISTER}\n`,
+      stderr: "",
+    });
+    assert.equal(read(root, REGISTER), format(makeRegister({ "src/a.ts": 3 })));
+    assert.deepEqual(staged(root), [REGISTER]);
+  });
+
+  // Started through a link, argv[1] keeps the link path while import.meta.url is the resolved one:
+  // a guard that compared them as written skipped main() and exited 0 without a word.
+  it("runs when started through a junction to the repo", () => {
+    const root = makeRepo({ "src/a.ts": "one\n" }, { "src/a.ts": 1 });
+    const link = makeLink(root);
+    assert.deepEqual(run(link, "--check"), {
+      status: 0,
+      stdout: `${PREFIX} ${REGISTER} is up to date\n`,
+      stderr: "",
+    });
   });
 });

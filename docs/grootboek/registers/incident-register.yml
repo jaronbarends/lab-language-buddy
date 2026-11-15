@@ -51,7 +51,7 @@ patronen:
   - patroon: review-point-context
     titel: "Een beslispunt wordt voorgelegd voordat het in de chat op zichzelf staat"
     maatregel: HDR-034
-    beoordeeld-tot: 3
+    beoordeeld-tot: 4
     incidenten:
       - datum: 2026-10-03
         wat: "Een bevinding beschreven als een schema met drie losse optionele velden, zodat het reviewbestand geopend moest worden om haar te begrijpen"
@@ -63,12 +63,12 @@ patronen:
         wat: "Een kwartier later bij K10 van JNL-002 hetzelfde: eerst een vetgedrukt advies, dan een leesverslag en een optietabel, nergens wat de kwestie is. De sessie begon met een startprompt die een lead-sessie in Jaróns stem had geschreven: K10 in drie compacte zinnen en de vraag om opties met één advies, niet om uitleg, zodat het leek alsof Jarón de kwestie al kende. De indexregel van de geheugennotitie noemde alleen reviewbevindingen"
         bron: "correctie van Jarón in de sessie voor K10 van de grootboekronde"
       - datum: 2026-11-13
-        wat: "Vroeg akkoord op 'de koppeling' van de id-with-title-hook zonder uit te leggen dat dat het aanmelden van het script in .claude/settings.json is, waarna Claude Code het na elke beurt draait; het woord stond alleen in een kop en eerder als 'niet gekoppeld'. Jarón moest vragen wat het betekende"
+        wat: "Vroeg akkoord op 'de koppeling' van de id-with-title-hook zonder uit te leggen dat dat het aanmelden van het script in .claude/settings.json is, waarna Claude Code het na elke beurt draait; het woord stond alleen in een kop en eerder als 'niet gekoppeld'. Jarón moest vragen wat het betekende. Oordeel (Jarón, 2026-11-15): de maatregel hield; één misser, en van een soort die al onder 'in gewone woorden' van HDR-034 valt"
         bron: "vraag van Jarón in de sessie over de maatregel voor id-with-title"
   - patroon: id-with-title
     titel: "Een genummerd record wordt alleen met zijn id aangehaald"
     maatregel: HDR-038
-    beoordeeld-tot: 8
+    beoordeeld-tot: 10
     incidenten:
       - datum: 2026-10-21
         wat: "Een kaal requirement-id in een statusupdate, waardoor de lezer het zelf moet opzoeken"
@@ -89,6 +89,12 @@ patronen:
       - datum: 2026-11-15
         wat: "In de sessie van de scripts-robuustheid noemde de lead HDR-034 in het slotbericht na de review zonder titel bij de eerste vermelding; de hook guard-id-with-title blokkeerde de beurt en de lead stuurde een aanvulling met de titel. Oordeel (Jarón, 2026-11-15): de maatregel hield; de hook ving het en de aanvulling volgde"
         bron: "de Stop-hook guard-id-with-title, in de sessie van de scripts-robuustheid"
+      - datum: 2026-11-15
+        wat: "In het spec-gesprek over Enter en Escape in het bewerkvak noemde de lead PDR-021 voor het eerst kaal in een tussenbericht ('Volgende vrije nummer is PDR-021'), vóór het record bestond; de titel kwam pas in het slotbericht. De hook guard-id-with-title blokkeerde de beurt en de lead stuurde een aanvulling met de titel. Oordeel (Jarón, 2026-11-15): de maatregel hield; de hook ving het en de aanvulling volgde"
+        bron: "de Stop-hook guard-id-with-title, in het spec-gesprek op de branch enable-enter-for-edit"
+      - datum: 2026-11-15
+        wat: "Bij het aankondigen van de reconciliatie op enable-enter-for-edit noemde de lead DFT-010 kaal ('tot en met DFT-010 loopt de tijdelijke kostenmeting'), een record dat nog niet bestaat en dus geen titel heeft; de zin gaf context, maar geen omschrijving van het id zelf. De hook guard-id-with-title blokkeerde de beurt en de lead stuurde een aanvulling. Oordeel (Jarón, 2026-11-15): de maatregel hield; de hook ving het en de aanvulling volgde"
+        bron: "de Stop-hook guard-id-with-title, bij de reconciliatie op de branch enable-enter-for-edit"
   - patroon: branch-before-edit
     titel: "Er wordt gewerkt op de integratiebranch voordat er een branch bestaat"
     maatregel: HDR-011

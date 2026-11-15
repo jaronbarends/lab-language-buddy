@@ -287,13 +287,13 @@ adrs:
   - id: "ADR-026"
     titel: "Safari/iPhone-eisen"
     status: implemented
-    versie: "1.0"
+    versie: "1.1"
     implementatie: 100
     omgeving: geen
     datum: 2026-09-23
     implementatie-datum: 2026-09-23
     beslissing: "Safari op iPhone is een harde eis en wordt ingebouwd met zes eisen: geen vast opname-mimeType, audio unlock synchroon in elke gesture, een 100dvh-flexkolom met safe-area-insets, een 16px-vloer op focusbare controls, device testing in elke fase en een contenteditable plaintext-only-div in plaats van een textarea"
-    notitie: "Overgezet uit plan.md (HDR-015): het plangedeelte Safari/iPhone requirements zonder rij-ids, met de notitie dat het opnameformaat is opgelost (WebM/Opus sinds Safari 18.4) en de uitwijkroute via AudioWorklet naar linear16. De datum is afgeleid, niet uit de bron"
+    notitie: "Overgezet uit plan.md (HDR-015): het plangedeelte Safari/iPhone requirements zonder rij-ids, met de notitie dat het opnameformaat is opgelost (WebM/Opus sinds Safari 18.4) en de uitwijkroute via AudioWorklet naar linear16. De datum is afgeleid, niet uit de bron. Versie 1.1 (2026-11-15): eis 2 spreekt van elke handler van een gesture in plaats van elke klik-handler, met Enter in het bewerkvak (PDR-021) als nieuwe gesture via handleSend"
     bestand: adr-026-safari-iphone-eisen.md
   - id: "ADR-027"
     titel: "`cacheComponents` blijft uit"

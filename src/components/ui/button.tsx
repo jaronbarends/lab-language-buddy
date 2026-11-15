@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import type { ButtonHTMLAttributes, ReactNode, Ref } from "react";
 
 import styles from "./button.module.css";
 
@@ -12,6 +12,8 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   fontSize?: ButtonFontSize;
   icon?: ReactNode;
   children: ReactNode;
+  /** React 19: a normal prop. It stays in `rest` and reaches the button untouched. */
+  ref?: Ref<HTMLButtonElement>;
 };
 
 export function Button({

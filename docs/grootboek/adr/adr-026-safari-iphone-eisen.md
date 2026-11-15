@@ -14,7 +14,9 @@ Safari op iPhone wordt ingebouwd, niet achteraf toegevoegd. Zes eisen:
    echte `mediaRecorder.mimeType` terug.
 2. **Audio unlock binnen elke gesture.** Eén hergebruikt `HTMLAudioElement`, met als `src` een
    stille WAV-data-URI van ongeveer 2 ms, dat **synchroon vóór elke `await`** wordt `.play()`ed in
-   elke klik-handler die tot afspelen kan leiden: *Start chat*, *Send* en elke replay-knop. Het
+   elke handler van een gesture die tot afspelen kan leiden: de klik op *Start chat*, *Send* en elke
+   replay-knop, en Enter in het bewerkvak (PDR-021, Het bewerkvak als chatvenster), dat via dezelfde
+   `handleSend` als *Send* loopt. Het
    AI-antwoord speelt pas na meerdere `await`ed fetches, en dan is de gesture verlopen. *Start chat*
    is de submitknop van een formulier, dus de unlock hoort in de `onClick` van die knop en niet in
    de `onSubmit` van het formulier: de klik vuurt altijd eerst, en bij Enter laat de browser ook een

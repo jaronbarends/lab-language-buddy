@@ -47,6 +47,10 @@ type DraftEditorProps = {
   /** The text to start from. Later edits come back through `onChange`, not through here. */
   draft: string;
   onChange: (draft: string) => void;
+  /** Enter on a device with a fine pointer: the same as the Send button. */
+  onSend: () => void;
+  /** Escape: the same as the Cancel edit button. */
+  onCancelEdit: () => void;
 };
 
 /**
@@ -65,11 +69,17 @@ type DraftEditorProps = {
  * never rendered from state, because re-rendering the text would throw the caret back
  * to the start. That is safe here since this component only exists while the turn is in
  * its editing state, so nothing else can change the text while it is on the screen.
+ *
+ * The keyboard works as in a chat window: with a mouse or trackpad Enter sends and
+ * Shift+Enter adds a line; on a touch screen, which has no Shift+Enter, Enter keeps
+ * adding a line. Escape cancels the edit everywhere.
  */
 export function DraftEditor({
   draft,
   conversationLang,
   onChange,
+  onSend,
+  onCancelEdit,
 }: DraftEditorProps) {
   const editorRef = useRef<HTMLSpanElement | null>(null);
   // Captured once so the effect below runs once, however often the parent re-renders.
@@ -105,6 +115,35 @@ export function DraftEditor({
     onChange(event.currentTarget.innerText);
   }
 
+  function handleKeyDown(event: React.KeyboardEvent<HTMLSpanElement>) {
+    // An IME uses Enter and Escape itself while composing. Safari fires the keydown of
+    // the Enter that ends a composition after compositionend, with isComposing false
+    // and keyCode 229, so the deprecated keyCode is the only way to tell.
+    if (event.nativeEvent.isComposing || event.keyCode === 229) {
+      return;
+    }
+
+    if (event.key === "Escape") {
+      event.preventDefault();
+      onCancelEdit();
+      return;
+    }
+
+    // Asked at the keypress rather than once, so an iPad that gains or loses a trackpad
+    // follows along.
+    const enterSends = window.matchMedia("(pointer: fine)").matches;
+    if (event.key === "Enter" && !event.shiftKey && enterSends) {
+      // Also for an empty field: onSend ignores empty text, so Enter then does
+      // nothing at all rather than adding a line, just as Send is disabled.
+      event.preventDefault();
+      // A held Enter on the Edit button repeats into the editor it just opened.
+      if (event.repeat) {
+        return;
+      }
+      onSend();
+    }
+  }
+
   return (
     <Bubble author="user" hasMinimumWidth>
       <BubbleText
@@ -121,6 +160,7 @@ export function DraftEditor({
         autoCorrect="off"
         autoCapitalize="off"
         onInput={handleInput}
+        onKeyDown={handleKeyDown}
       />
     </Bubble>
   );

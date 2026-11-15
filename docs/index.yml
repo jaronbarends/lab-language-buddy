@@ -133,10 +133,10 @@ documents:
     what: De vlaggen komen uit flag-icons, met alleen de zes benodigde SVG's geïmporteerd; overgezet uit plan.md.
     read_when: je vlaggen of talen in de UI toevoegt of de import van flag-icons aanraakt.
   - path: docs/grootboek/hdr/hdr-017-geen-testsuite-behalve-scripts.md
-    what: De app heeft geen testsuite, maar scripts die documenten herschrijven krijgen wel een node:test-test; overgezet uit plan.md.
-    read_when: je overweegt tests toe te voegen of een script schrijft dat documenten herschrijft.
+    what: De app heeft geen testsuite; een script dat documenten herschrijft moet een node:test-test hebben, en tests voor checks en enkele hooks bestaan zonder regel daarvoor; overgezet uit plan.md.
+    read_when: je overweegt tests toe te voegen (ook voor een check of hook) of een script schrijft dat documenten herschrijft.
   - path: docs/grootboek/hdr/hdr-018-contextlagen-en-drift-check.md
-    what: Waarom de context van het project gelaagd is (rules, CLAUDE.md per map, register, agents) en hoe npm run docs:check drift in de documentatie afdwingt; overgezet uit plan.md.
+    what: Waarom de context van het project gelaagd is (rules, CLAUDE.md per map, register, agents) en hoe npm run docs:check drift in de documentatie afdwingt; de lijst is de stand van 2026-10-20, de actuele lagen staan in de root-CLAUDE.md; overgezet uit plan.md.
     read_when: je de lagen van de context wijzigt, een nieuw document registreert of de docs:check aanpast.
   - path: docs/grootboek/hdr/hdr-019-stage-verifieren-op-iphone.md
     what: Vervangen door HDR-029 (2026-11-10). Was het besluit dat elke bouwstap op iPhone Safari werd geverifieerd, met voor live STT een uiting van meer dan 20 seconden; overgezet uit plan.md.

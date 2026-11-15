@@ -68,7 +68,7 @@ patronen:
   - patroon: id-with-title
     titel: "Een genummerd record wordt alleen met zijn id aangehaald"
     maatregel: HDR-038
-    beoordeeld-tot: 8
+    beoordeeld-tot: 10
     incidenten:
       - datum: 2026-10-21
         wat: "Een kaal requirement-id in een statusupdate, waardoor de lezer het zelf moet opzoeken"
@@ -89,6 +89,12 @@ patronen:
       - datum: 2026-11-15
         wat: "In de sessie van de scripts-robuustheid noemde de lead HDR-034 in het slotbericht na de review zonder titel bij de eerste vermelding; de hook guard-id-with-title blokkeerde de beurt en de lead stuurde een aanvulling met de titel. Oordeel (Jarón, 2026-11-15): de maatregel hield; de hook ving het en de aanvulling volgde"
         bron: "de Stop-hook guard-id-with-title, in de sessie van de scripts-robuustheid"
+      - datum: 2026-11-15
+        wat: "In de sessie van de tweede ronde besluiten toetsen noemde de lead twaalf record-ids kaal in tussenteksten tussen tool-aanroepen (onder meer HDR-015 tot en met HDR-019, HDR-029, ADR-001 en ADR-009), terwijl de werkafspraak Ids met titel in de geladen root-CLAUDE.md stond; de hook guard-id-with-title blokkeerde de beurt en de lead stuurde een aanvulling met de titels. Oordeel (Jarón, 2026-11-15): de maatregel hield; de hook ving het en de aanvulling volgde"
+        bron: "de Stop-hook guard-id-with-title, in de sessie van de tweede ronde besluiten toetsen"
+      - datum: 2026-11-15
+        wat: "In dezelfde sessie zette de lead een voorgesteld commitbericht met HDR-016, HDR-017 en HDR-018 zonder omschrijving in een codeblok zonder taal, terwijl een commitbericht buiten de sessie wordt gelezen; de hook guard-id-with-title blokkeerde de beurt en de lead stuurde het codeblok opnieuw met omschrijvingen. Oordeel (Jarón, 2026-11-15): de maatregel hield; de hook ving het en het codeblok werd vóór de commit hersteld"
+        bron: "de Stop-hook guard-id-with-title, in de sessie van de tweede ronde besluiten toetsen"
   - patroon: branch-before-edit
     titel: "Er wordt gewerkt op de integratiebranch voordat er een branch bestaat"
     maatregel: HDR-011

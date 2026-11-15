@@ -140,10 +140,10 @@ dan in plaats van een van beide blind te volgen.
 - **Controles voordat je iets af noemt.** Eerst `npm install` (zonder `node_modules` haalt `npx`
   stilletjes andere versies op en wijzigt `package.json`; de scripts hieronder falen dan
   zichtbaar), dan `npm run lint`, dan `npm run typegen && npm run typecheck`,
-  `npm run docs:check` (drift tussen docs en repo), `npm run test:scripts` (de tests van de scripts
-  die documenten herschrijven), `npm run register:check` (het code-architectuurregister wijkt niet
-  af), en dan `npm run build`. Alles wat audio, opname of layout raakt, vraagt ook een test op
-  een echte iPhone: Safari is een harde eis.
+  `npm run docs:check` (drift tussen docs en repo), `npm run test:scripts` (de tests van het
+  harnas: scripts die documenten herschrijven, checks en enkele hooks), `npm run register:check`
+  (het code-architectuurregister wijkt niet af), en dan `npm run build`. Alles wat audio, opname
+  of layout raakt, vraagt ook een test op een echte iPhone: Safari is een harde eis.
 - **Mappen.** `src/app` routes en globale CSS, `src/components` schermen en UI, `src/hooks`
   sessiecontext en effectdrivers, `src/lib` state machine, providerregistries en pure helpers.
   `spikes/` is een aparte app, uitgesloten van lint en typecheck.
@@ -157,10 +157,11 @@ machineleesbare inhoudsopgave: lees die eerst en open dan alleen het document da
 |---|---|---|
 | Codestijl | `.claude/rules/code-style.md` | wanneer een bestand in `src/` wordt aangeraakt |
 | Safari / iPhone | `.claude/rules/safari-ios.md` | wanneer componenten, hooks of STT-code worden aangeraakt |
+| Next.js 16 | `.claude/rules/nextjs-16.md` | wanneer een bestand in `src/app/`, `src/components/` of `next.config.ts` wordt aangeraakt |
 | Design system, componenten | `src/components/CLAUDE.md` | bij werk in `src/components/` |
 | Providers, state machine | `src/lib/CLAUDE.md` | bij werk in `src/lib/` |
 | Beslissingen | `docs/grootboek/` (ADR, PDR, HDR), via de registers en `docs/index.yml` | op aanvraag |
 | Code-architectuur | `docs/code-architectuur.md` + `docs/code-architectuur-register.json` | op aanvraag; vóór het splitsen of laten groeien van een bestand |
 | Grootboek | `docs/grootboek/`, via `registers/` | op aanvraag; `docs/grootboek/CLAUDE.md` laadt bij werk daar |
-| Procedures | `.claude/skills/` | bij aanroep (`/stage-review`, `/grootboek`) |
-| Agents | `.claude/agents/` (`builder`, `reviewer`) | bij delegatie; parallelle builders krijgen elk een eigen bestandsgrens en delen deze context |
+| Procedures | `.claude/skills/` | bij aanroep, of wanneer de taak bij hun beschrijving past (`feature`, `feature-worktree`, `grootboek`, `stage-review`, `triage`) |
+| Agents | `.claude/agents/` (`builder`, `reviewer`, `refactor-werkplaats`) | bij delegatie; parallelle builders krijgen elk een eigen bestandsgrens en delen deze context |

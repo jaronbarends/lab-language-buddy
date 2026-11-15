@@ -1,5 +1,8 @@
 "use client";
 
+import { useRef } from "react";
+import { flushSync } from "react-dom";
+
 import { Button } from "@/components/ui/button";
 import { CrossIcon, PencilIcon, SendIcon } from "@/components/ui/icons";
 import { unlockAudio } from "@/hooks/use-audio-playback";
@@ -30,6 +33,7 @@ export function ComposingControls({
   conversationLang,
 }: ComposingControlsProps) {
   const dispatch = useSessionDispatch();
+  const editButtonRef = useRef<HTMLButtonElement | null>(null);
 
   const editIsInProgress = turnState.name === "editing";
   const text = composedTextOf(turnState);
@@ -59,6 +63,15 @@ export function ComposingControls({
     });
   }
 
+  // Escape in the editor. Cancelling removes the editor that has the focus, which
+  // would leave it on <body>; Edit is the button that opened the edit, so the focus
+  // goes back there. A click on Cancel edit keeps its focus where it is.
+  function handleCancelEditFromKeyboard() {
+    // The Edit button is disabled until this state change has rendered.
+    flushSync(() => dispatch({ type: "DRAFT_EDIT_CANCELLED" }));
+    editButtonRef.current?.focus();
+  }
+
   return (
     <div className={styles.controls}>
       {turnState.name === "listening" && (
@@ -79,6 +92,8 @@ export function ComposingControls({
           draft={turnState.draft}
           conversationLang={conversationLang}
           onChange={(draft) => dispatch({ type: "DRAFT_CHANGED", draft })}
+          onSend={handleSend}
+          onCancelEdit={handleCancelEditFromKeyboard}
         />
       )}
 
@@ -88,6 +103,7 @@ export function ComposingControls({
 
       <div className={styles.sideBySide}>
         <Button
+          ref={editButtonRef}
           variant="secondary"
           icon={<PencilIcon />}
           onClick={() => dispatch({ type: "DRAFT_EDIT_STARTED" })}

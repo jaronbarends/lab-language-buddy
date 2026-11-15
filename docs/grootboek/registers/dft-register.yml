@@ -99,3 +99,17 @@ dfts:
       - src/lib/CLAUDE.md
     getoetst-tegen: f0369c9
     bestand: dft-007-reconciliatie-na-de-zelfcorrectieregel.md
+  - id: "DFT-008"
+    titel: "Reconciliatie na Enter en Escape in het bewerkvak — geen drift"
+    status: resolved
+    datum: 2026-11-15
+    aanleiding: "Reconciliatie per pull request (HDR-026) voor de branch enable-enter-for-edit: de code-commit b66a147 (PDR-021) raakt src/components, het werkgebied van de balans en van src/components/CLAUDE.md. Kosten: niet gemeten, er liep tegelijk een andere sessie in dezelfde sessielimiet"
+    bevindingen: 0
+    hoog: 0
+    midden: 0
+    laag: 0
+    documenten:
+      - docs/grootboek/software-architectuur.md
+      - src/components/CLAUDE.md
+    getoetst-tegen: b66a147
+    bestand: dft-008-reconciliatie-na-enter-en-escape-in-het-bewerkvak.md

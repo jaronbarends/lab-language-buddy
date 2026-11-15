@@ -345,6 +345,9 @@ documents:
   - path: docs/grootboek/dft/dft-007-reconciliatie-na-de-zelfcorrectieregel.md
     what: Driftrapport; reconciliatie van de balans en src/lib/CLAUDE.md na de zelfcorrectieregel in de corrector-prompt (ADR-008, versie 1.2) — geen drift. Met de kostenregel van de tijdelijke meting uit HDR-026.
     read_when: je een voorbeeld zoekt van een reconciliatie na een wijziging die alleen prompttekst raakt.
+  - path: docs/grootboek/dft/dft-008-reconciliatie-na-enter-en-escape-in-het-bewerkvak.md
+    what: Driftrapport; reconciliatie van de balans en src/components/CLAUDE.md na Enter en Escape in het bewerkvak (PDR-021) — geen drift. Overwogen en afgewezen dat PDR-021 in de lijst van bewuste keuzes in src/components/CLAUDE.md komt; kosten niet gemeten.
+    read_when: je een voorbeeld zoekt van een reconciliatie na een wijziging die een bestaand patroon volgt (callbacks naar een presentationeel component), of de kostenmeting van HDR-026 naloopt.
   - path: docs/grootboek/registers
     what: YAML-registers (adr, hdr, pdr, dft, jnl) — de goedkope index van het grootboek; lees ze voordat je een record opent.
     read_when: je een beslissing, de status ervan of een open driftrapport in het grootboek zoekt.

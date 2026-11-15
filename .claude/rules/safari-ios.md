@@ -14,8 +14,9 @@ De korte vorm:
 1. Hardcode nooit een mimeType voor opname. Vraag `MediaRecorder.isTypeSupported` en lees daarna
    de echte `mediaRecorder.mimeType` terug.
 2. Ontgrendel audio binnen elke gesture: speel de stille WAV af op het ene hergebruikte
-   `HTMLAudioElement`, synchroon, vóór elke `await`, in elke click handler die tot afspelen kan
-   leiden. In een formulier is dat de `onClick` van de submit-knop, niet `onSubmit`.
+   `HTMLAudioElement`, synchroon, vóór elke `await`, in elke handler van een gesture (klik of
+   toets) die tot afspelen kan leiden. In een formulier is dat de `onClick` van de submit-knop,
+   niet `onSubmit`.
 3. De layout is een flex column op `100dvh`, met `viewport-fit=cover` en de safe-area insets.
    Geen `position: fixed` balk.
 4. Elk focusbaar element is minstens 16px, anders zoomt iOS in bij focus.

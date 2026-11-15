@@ -226,3 +226,14 @@ pdrs:
     beslissing: "Kiest de gebruiker Me als wie begint, dan opent de thread met de infomelding 'Ask a question or name a topic you want to discuss': het eerste item, blijft de hele sessie staan en scrollt mee uit beeld; lijkt op de foutbox, in de infokleuren met FaCircleInfo; foutbox en infomelding hebben dezelfde, geërfde tekstgrootte"
     notitie: "Besluit van Jarón op 2026-11-13 in het spec-gesprek (specs/infomelding-als-de-gebruiker-begint.md). Waarom: het lege scherm zegt niet dat jij begint, en niet waarover. Afgevallen: uitleggen dat je met een AI praat; overwogen: verdwijnen na de eerste beurt of wegklikken. Het gedeelde component Feedback staat als uitzondering in docs/code-architectuur.md § 2.5. Blauw naast de blauwe gebruikersbubbel: op 2026-11-13 door Jarón in de browser en op de iPhone bekeken, goed"
     bestand: pdr-020-infomelding-als-de-gebruiker-begint.md
+  - id: "PDR-021"
+    titel: "Het bewerkvak als chatvenster: Enter verstuurt, Escape annuleert"
+    status: implemented
+    versie: "1.0"
+    implementatie: 100
+    omgeving: geen
+    datum: 2026-11-15
+    implementatie-datum: 2026-11-15
+    beslissing: "In de edit-modus verstuurt Enter op een apparaat met (pointer: fine) en geeft Shift+Enter daar een nieuwe regel; zonder fijne pointer (iPhone) blijft Enter een nieuwe regel; Escape is overal Cancel edit en zet de focus op Edit; Enter in een leeg vak doet niets, IME-compositie gaat voor; in reviewing verstuurt Enter niet"
+    notitie: "Besluit van Jarón op 2026-11-15 in het spec-gesprek (specs/enter-verstuurt-in-het-bewerkvak.md). Waarom: op de laptop is Edit de manier om te typen en het scherm ziet eruit als een chatvenster. Afgevallen: Enter overal versturen met enterKeyHint=send; voor de focus na Escape afgewogen: nergens en Send. Escape kwam van Jarón; leeg vak en IME door de agent ingevuld en aanvaard. Uit de review kwamen twee reparaties die Jarón koos: een herhaalde Enter verstuurt niet, en keyCode 229 voor IME in Safari. Op 2026-11-15 door Jarón getest: laptop (Enter, Shift+Enter, leeg vak, Escape met focus op Edit, ingedrukt gehouden Enter, klik op Cancel edit) en iPhone (return geeft een nieuwe regel)"
+    bestand: pdr-021-enter-verstuurt-escape-annuleert.md

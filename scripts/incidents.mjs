@@ -14,8 +14,9 @@
 // `beoordeeld-tot` that is not a whole number or exceeds the count, is an error.
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { fileURLToPath, pathToFileURL } from "node:url";
+import { fileURLToPath } from "node:url";
 import { parseRegister } from "./records.mjs";
+import { isRunDirectly } from "./run-directly.mjs";
 
 export const THRESHOLD = 3;
 const REGISTER = "docs/grootboek/registers/incident-register.yml";
@@ -186,6 +187,6 @@ function main() {
   process.exit(errors.length > 0 ? 1 : 0);
 }
 
-if (process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url) {
+if (isRunDirectly(import.meta.url)) {
   main();
 }
